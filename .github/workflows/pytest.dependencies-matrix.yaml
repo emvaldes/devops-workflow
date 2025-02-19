@@ -1,4 +1,4 @@
-name: PyTest (requirements.dependencies) matrix
+name: Parallel PyTest - Dependencies (Matrix)
 
 on:
   workflow_dispatch:
