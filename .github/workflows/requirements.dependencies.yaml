@@ -10,10 +10,17 @@ on:
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
-  run-tracing:
-    name: Run Tracing Module
+  dependencies-tests:
+    name: Run Dependencies Module Tests
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        test_module:
+          - test_load_requirements
+          - test_install_requirements
+          - test_is_package_installed
+          - test_update_installed_packages
+          - test_print_installed_packages
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -23,31 +30,17 @@ jobs:
         with:
           python-version: '3.11'  # Adjust if needed
 
-      - name: Run Tracing Module
-        id: tracing_run
-        run: |
-          echo "Running tracing module to verify functionality..."
-          python -m packages.appflow_tracer.tracing
-
-  install-dependencies:
-    name: Install Required Dependencies
-    runs-on: ubuntu-latest
-    needs: run-tracing  # Ensures tracing workflow completes successfully
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'  # Adjust if needed
-
-      - name: Install Dependencies
+      - name: Install Dependencies Module
         id: dependencies_install
         run: |
           echo "Running dependencies module to install missing packages..."
           python -m packages.requirements.dependencies
+
+      - name: Run Dependencies Pytest - ${{ matrix.test_module }}
+        id: dependencies_tests
+        run: |
+          echo "Running Pytest for dependencies module: ${{ matrix.test_module }}..."
+          pytest -v tests/requirements/dependencies/${{ matrix.test_module }}.py
 
       - name: Show Installed Packages
         run: |
