@@ -113,7 +113,7 @@ def test_manage_logfiles():
     patch.object(
         Path,
         "iterdir",
-        return_value=[Path(CONFIGS['logging']['logs_dirname'])]
+        return_value=[Path(CONFIGS["logging"]["logs_dirname"])]
     ), \
     patch.object(
         Path,
@@ -124,7 +124,7 @@ def test_manage_logfiles():
         Path,
         "glob",
         return_value=[
-            Path(f"{CONFIGS['logging']['logs_dirname']}/log{i}.txt") for i in range(10)
+            Path(f'{CONFIGS["logging"]["logs_dirname"]}/log{i}.txt') for i in range(10)
         ]
     ), \
     patch(
@@ -139,7 +139,7 @@ def test_manage_logfiles():
     patch("pathlib.Path.unlink") as mock_remove:
         log_files = sorted(
             Path(
-                CONFIGS['logging']['logs_dirname']
+                CONFIGS["logging"]["logs_dirname"]
             ).glob('*.txt'),
             key=lambda f: f.stat().st_mtime
         )
@@ -150,7 +150,7 @@ def test_manage_logfiles():
         deleted_logs = file_utils.manage_logfiles(CONFIGS)
         # Ensure the deleted logs match expected deletions
         assert set(deleted_logs) == set(f.as_posix() for f in expected_deletions), \
-            f"Expected {expected_deletions}, but got {deleted_logs}"
+            f'Expected {expected_deletions}, but got {deleted_logs}'
         # Ensure return type is a list
         assert isinstance(
             deleted_logs,

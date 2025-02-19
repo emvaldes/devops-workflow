@@ -89,9 +89,9 @@ def config_logfile(
     logs_dirname = Path(config["logging"]["logs_dirname"])
     if caller_log_path:
         log_path = Path(caller_log_path).resolve()
-        return log_path / f"{config['logging']['package_name']}_{timestamp}.log"
+        return log_path / f'{config["logging"]["package_name"]}_{timestamp}.log'
     else:
-        return logs_dirname / f"{config['logging']['package_name']}_{timestamp}.log"
+        return logs_dirname / f'{config["logging"]["package_name"]}_{timestamp}.log'
 
 def package_configs(overrides: dict = None) -> dict:
     """
@@ -113,7 +113,7 @@ def package_configs(overrides: dict = None) -> dict:
     """
 
     # config_file = Path(__file__).with_suffix(".json")
-    config_file = project_root / "configs" / f"{Path(__file__).stem}.json"
+    config_file = project_root / "configs" / f'{Path(__file__).stem}.json'
     try:
         if config_file.exists():
             with open(config_file, "r") as f:
@@ -178,7 +178,7 @@ def package_configs(overrides: dict = None) -> dict:
         return config
 
     except (FileNotFoundError, json.JSONDecodeError) as e:
-        print(f"⚠️ Error loading {config_file}: {e}")
+        print(f'Error loading {config_file}: {e}')
         sys.exit(1)
 
 def setup_configs(
@@ -240,7 +240,7 @@ def setup_configs(
         config_file.parent.mkdir(parents=True, exist_ok=True)
         # Create the file if it does not exist
         config_file.touch(exist_ok=True)
-        # print(f"Config File '{config_file}' created successfully.")
+        # print(f'Config File "{config_file}" created successfully.')
 
     config = None  # Default state if the file doesn't exist or is invalid
 
@@ -251,7 +251,7 @@ def setup_configs(
                 content = f.read().strip()  # Read the content and strip whitespace
                 # Check if the file is empty
                 if not content:
-                    # print(f"⚠️ {config_file} is empty. Regenerating...")
+                    # print(f'{config_file} is empty. Regenerating...')
                     config = None
                 else:
                     try:
@@ -259,15 +259,15 @@ def setup_configs(
                         config = json.loads(content)
                         # Check if the structure is correct
                         if not isinstance(config, dict) or "logging" not in config:
-                            # print(f"⚠️ {config_file} JSON structure is invalid. Regenerating...")
+                            # print(f'{config_file} JSON structure is invalid. Regenerating...')
                             config = None
                         # else:
                         #     needs_update = True  # The file is valid and we just need to update the logging section
                     except json.JSONDecodeError:
-                        # print(f"⚠️ {config_file} is not valid JSON. Regenerating...")
+                        # print(f'{config_file} is not valid JSON. Regenerating...')
                         config = None
         except (OSError, IOError) as e:
-            print(f"⚠️ Unable to read {config_file}: {e}")
+            print(f'Unable to read {config_file}: {e}')
             config = None  # Proceed to regenerate or handle as needed
 
     if config is None:
@@ -310,7 +310,7 @@ def setup_configs(
     # Save the modified configuration to disk in the correct package location
     with open(config_file, "w") as f:
         json.dump(config, f, indent=default_indent)
-    # print(f"Configuration updated: {config_file}")
+    # print(f'Configuration updated: {config_file}')
 
     # Config -> Logging -> Log Filename (current log-file)
     config["logging"]["log_filename"] = str(f'{target_logfile}_{timestamp}.log')

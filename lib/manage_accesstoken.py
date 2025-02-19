@@ -46,7 +46,7 @@ def manage_accesstoken():
         get_local_offset( globals.DEBUG_MODE )
     except Exception as e:
         print(
-            f"An error occurred during token or timezone processing: {e}",
+            f'An error occurred during token or timezone processing: {e}',
             file=sys.stderr
         )
         sys.exit(1)

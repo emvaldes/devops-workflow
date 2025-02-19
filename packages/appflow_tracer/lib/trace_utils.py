@@ -181,7 +181,7 @@ def trace_all(
         # Logs the function call if it's within the project scope.
     """
 
-        # print(f"\nTracing activated in {__name__}\n")
+        # print(f'\nTracing activated in {__name__}\n')
 
         # Define functions to be ignored
         excluded_functions = {"emit", "log_utils.log_message"}
@@ -275,15 +275,15 @@ def call_events(
             invoking_line = serialize_utils.sanitize_token_string(invoking_line)
             # {file_utils.relative_path(filename)} ({frame.f_code.co_name})[{frame.f_code.co_firstlineno}]"
 
-            message = f"\n[{log_category}] {caller_filename} ( {invoking_line} )".strip()
+            message = f'\n[{log_category}] {caller_filename} ( {invoking_line} )'.strip()
             if print_event:
                 log_utils.log_message(message, log_category, configs=configs)
 
             if caller_frame.f_code.co_name == "<module>":
                 caller_lineno = caller_info.lineno
                 caller_module = caller_filename if "/" not in caller_filename else caller_filename.split("/")[-1]
-                message  = f"[{log_category}] {caller_module}[{caller_lineno}] ( {invoking_line} ) "
-                message += f"-> {file_utils.relative_path(filename)} ({frame.f_code.co_name})[{frame.f_code.co_firstlineno}]"
+                message  = f'[{log_category}] {caller_module}[{caller_lineno}] ( {invoking_line} ) '
+                message += f'-> {file_utils.relative_path(filename)} ({frame.f_code.co_name})[{frame.f_code.co_firstlineno}]'
                 if print_event:
                     log_utils.log_message(message.strip(), log_category, configs=configs)
 
@@ -292,8 +292,8 @@ def call_events(
                 callee_info = inspect.getframeinfo(frame)
                 arg_values = inspect.getargvalues(frame)
                 arg_list = {arg: arg_values.locals[arg] for arg in arg_values.args}
-                message  = f"[{log_category}] {caller_filename} ({caller_co_name})[{caller_info.lineno}] "
-                message += f"-> {file_utils.relative_path(callee_info.filename)} ({frame.f_code.co_name})[{callee_info.lineno}]"
+                message  = f'[{log_category}] {caller_filename} ({caller_co_name})[{caller_info.lineno}] '
+                message += f'-> {file_utils.relative_path(callee_info.filename)} ({frame.f_code.co_name})[{callee_info.lineno}]'
                 # Fix: Ensure JSON serialization before passing data
                 try:
                     arg_list = json.loads(json.dumps({arg: arg_values.locals[arg] for arg in arg_values.args}, default=str))
@@ -303,7 +303,7 @@ def call_events(
                     log_utils.log_message(message.strip(), log_category, json_data=arg_list, configs=configs)
 
     except Exception as e:
-        logger.error(f"Error in trace_all: {e}")
+        logger.error(f'Error in trace_all: {e}')
 
 def return_events(
     logger: logging.Logger,
@@ -355,9 +355,9 @@ def return_events(
         if serialized_result["success"]:
             return_value = serialized_result["serialized"]  # Use the properly serialized string
         else:
-            return_value = f"[Unserializable: {serialized_result['type']}] Error: {serialized_result.get('error', 'Unknown')}"
-        # message  = f"\n[RETURN] {return_filename}[{return_lineno}] "
-        # message += f"-> RETURN VALUE (Type: {return_type}): {return_value}"
+            return_value = f'[Unserializable: {serialized_result["type"]}] Error: {serialized_result.get("error", "Unknown")}'
+        # message  = f'\n[RETURN] {return_filename}[{return_lineno}] '
+        # message += f'-> RETURN VALUE (Type: {return_type}): {return_value}'
         # , "RETURN", configs=configs)
 
         # Get the returning module/function name
@@ -388,11 +388,11 @@ def return_events(
         else:
             return_value = arg  # Keep original
 
-        message  = f"[{log_category}] {return_filename}[{return_lineno}] ( {return_line} ) "
+        message  = f'[{log_category}] {return_filename}[{return_lineno}] ( {return_line} ) '
         if return_value in [None, "null", ""] or isinstance(return_value, bool):
-            message += f"-> {arg_type}: {return_value}"
+            message += f'-> {arg_type}: {return_value}'
         else:
-            message += f"-> {arg_type}:"
+            message += f'-> {arg_type}:'
 
         if print_event:
             log_utils.log_message(message.strip(), log_category, json_data=return_value, configs=configs)
@@ -400,4 +400,4 @@ def return_events(
     # except Exception:
     #     pass  # Ignore frames that cannot be inspected
     except Exception as e:
-        logger.error(f"Error in trace_all return handling: {e}")
+        logger.error(f'Error in trace_all return handling: {e}')

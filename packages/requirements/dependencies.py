@@ -19,7 +19,7 @@ if str(LIB_DIR) not in sys.path:
 # # Debugging: Print sys.path to verify import paths
 # print("\n[DEBUG] sys.path contains:")
 # for path in sys.path:
-#     print(f"  - {path}")
+#     print(f'  - {path}')
 
 from packages.appflow_tracer import tracing
 from packages.appflow_tracer.lib import log_utils
@@ -33,12 +33,12 @@ def load_requirements(
     requirements_path = Path(requirements_file).resolve()
     if not requirements_path.exists():
         log_utils.log_message(
-            f"Requirements file not found: {requirements_path}",
+            f'Requirements file not found: {requirements_path}',
             environment.category.error.id,
             configs=configs
         )
         raise FileNotFoundError(
-            f"ERROR: Requirements file not found at {requirements_path}"
+            f'ERROR: Requirements file not found at {requirements_path}'
         )
     try:
         with open(requirements_path, "r") as f:
@@ -57,12 +57,12 @@ def load_requirements(
             return dependencies
     except json.JSONDecodeError as e:
         log_utils.log_message(
-            f"Invalid JSON in '{requirements_path}': {e}",
+            f'Invalid JSON in "{requirements_path}": {e}',
             environment.category.error.id,
             configs=configs
         )
         raise ValueError(
-            f"ERROR: Invalid JSON structure in '{requirements_path}'.\nDetails: {e}"
+            f'ERROR: Invalid JSON structure in "{requirements_path}".\nDetails: {e}'
         )
 
 def get_installed_version(package: str) -> Optional[str]:
@@ -154,12 +154,12 @@ def install_requirements(
         installed_version = get_installed_version(package)
         if installed_version == version:
             log_utils.log_message(
-                f"{package} {installed_version} is already installed. Skipping installation.",
+                f'{package} {installed_version} is already installed. Skipping installation.',
                 configs=configs
             )
             continue  # Fix: Skip calling `install_or_update_package` if version matches**
         log_utils.log_message(
-            f"{package} is missing or outdated. Installing...",
+            f'{package} is missing or outdated. Installing...',
             configs=configs
         )
         install_or_update_package(
@@ -184,13 +184,13 @@ def install_or_update_package(
     installed_version = get_installed_version(package)
     if installed_version == version:
         log_utils.log_message(
-            f"{package} {installed_version} is already installed.",
+            f'{package} {installed_version} is already installed.',
             configs=configs
         )
         return
     if is_brew_available():
         log_utils.log_message(
-            f"Checking {package} installation via Brew...",
+            f'Checking {package} installation via Brew...',
             configs=configs
         )
         try:
@@ -205,7 +205,7 @@ def install_or_update_package(
         if brew_installed_version:
             if version and brew_installed_version != version:
                 log_utils.log_message(
-                    f"Upgrading {package} to {version} via Brew...",
+                    f'Upgrading {package} to {version} via Brew...',
                     configs=configs
                 )
                 subprocess.run(
@@ -214,13 +214,13 @@ def install_or_update_package(
                 )
             else:
                 log_utils.log_message(
-                    f"{package} {brew_installed_version} is already up to date (Brew).",
+                    f'{package} {brew_installed_version} is already up to date (Brew).',
                     configs=configs
                 )
             return
         # If Brew is available but doesn't have the package, try installing via Brew
         log_utils.log_message(
-            f"Installing {package} via Brew...",
+            f'Installing {package} via Brew...',
             configs=configs
         )
         subprocess.run(
@@ -230,7 +230,7 @@ def install_or_update_package(
         return
     # If Brew isn't an option, install via Pip
     log_utils.log_message(
-        f"Installing {package} via Pip...",
+        f'Installing {package} via Pip...',
         configs=configs
     )
     pip_install_cmd = [
@@ -241,7 +241,7 @@ def install_or_update_package(
         "--quiet"
     ]
     if version:
-        pip_install_cmd.append(f"{package}=={version}")
+        pip_install_cmd.append(f'{package}=={version}')
     else:
         pip_install_cmd.append(package)
     try:
@@ -250,12 +250,12 @@ def install_or_update_package(
             check=True
         )
         log_utils.log_message(
-            f"Successfully installed {package} via Pip.",
+            f'Successfully installed {package} via Pip.',
             configs=configs
         )
     except subprocess.CalledProcessError as e:
         log_utils.log_message(
-            f"Failed to install {package} via Pip. Error: {e}",
+            f'Failed to install {package} via Pip. Error: {e}',
             environment.category.error.id,
             configs=configs
         )
@@ -287,7 +287,7 @@ def is_package_installed(
     version = version_info.get("target")
     if not version:
         log_utils.log_message(
-            f"Skipping {package}: Missing 'target' version.",
+            f'Skipping {package}: Missing "target" version.',
             environment.category.warning.id,
             configs=configs
         )
@@ -304,13 +304,13 @@ def is_package_installed(
             brew_version = result.stdout.strip().split()[-1] if result.stdout else None
             if brew_version == version:
                 log_utils.log_message(
-                    f"{package}=={brew_version} detected via Brew.",
+                    f'{package}=={brew_version} detected via Brew.',
                     configs=configs
                 )
                 return True
             elif brew_version:
                 log_utils.log_message(
-                    f"{package} installed via Brew, but version {brew_version} != {version} (expected).",
+                    f'{package} installed via Brew, but version {brew_version} != {version} (expected).',
                     environment.category.warning.id,
                     configs=configs
                 )
@@ -320,13 +320,13 @@ def is_package_installed(
         installed_version = importlib.metadata.version(package)
         if installed_version == version:
             log_utils.log_message(
-                f"{package}=={installed_version} is installed (Pip detected).",
+                f'{package}=={installed_version} is installed (Pip detected).',
                 configs=configs
             )
             return True
         else:
             log_utils.log_message(
-                f"{package} installed, but version {installed_version} != {version} (expected).",
+                f'{package} installed, but version {installed_version} != {version} (expected).',
                 environment.category.warning.id,
                 configs=configs
             )
@@ -334,7 +334,7 @@ def is_package_installed(
     except importlib.metadata.PackageNotFoundError:
         if not brew_version:
             log_utils.log_message(
-                f"{package} is NOT installed via Pip or Brew.",
+                f'{package} is NOT installed via Pip or Brew.',
                 environment.category.error.id,
                 configs=configs
             )
@@ -382,7 +382,7 @@ def print_installed_packages(
 
     if not Path(config_filepath).exists():
         log_utils.log_message(
-            f"Installed package file not found: {config_filepath}",
+            f'Installed package file not found: {config_filepath}',
             configs=configs
         )
         return
@@ -401,12 +401,12 @@ def print_installed_packages(
 
             # status_icon = "Ok" if status == "installed" else "Missing"
             log_utils.log_message(
-                f"{package} (Required: {target_version}, Installed: {installed_version})",
+                f'{package} (Required: {target_version}, Installed: {installed_version})',
                 configs=configs
             )
     except json.JSONDecodeError:
         log_utils.log_message(
-            f"Error: Invalid JSON structure in {config_filepath}",
+            f'Error: Invalid JSON structure in {config_filepath}',
             configs=configs
         )
 
@@ -470,7 +470,7 @@ def update_installed_packages(
             indent=4
         )
     log_utils.log_message(
-        f"Installed package status updated in {config_filepath}",
+        f'Installed package status updated in {config_filepath}',
         configs=configs
     )
 
@@ -509,7 +509,7 @@ def main() -> None:
         configs=CONFIGS
     )
     log_utils.log_message(
-        f"Logs are being saved in: {CONFIGS["logging"].get("log_filename")}",
+        f'Logs are being saved in: {CONFIGS["logging"].get("log_filename")}',
         configs=CONFIGS
     )
 

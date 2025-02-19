@@ -109,7 +109,7 @@ def log_message(
     # configs = configs or CONFIGS  # Default to global CONFIGS if not provided
     # print(f'log_message(configs): {json.dumps(configs, indent=default_indent, ensure_ascii=False)}')
     # Define logger if not available
-    logger = handler or logging.getLogger(f"{configs['logging']['package_name']}.{configs['logging']['module_name']}")
+    logger = handler or logging.getLogger(f'{configs["logging"]["package_name"]}.{configs["logging"]["module_name"]}')
     # print(f'Logger: {logger}')
 
     log_level = log_levels.get(log_category.upper(), logging.INFO)
@@ -156,7 +156,7 @@ def output_logfile(
     logfile_message = f'{log_category}: {message}'
 
     # if json_data:
-    #     logfile_message += f"\n{json_data}"
+    #     logfile_message += f'\n{json_data}'
     if json_data:
         logfile_message += "\n" + json.dumps(json_data, separators=(',', ':'))  # Ensure proper JSON formatting
 
@@ -195,11 +195,11 @@ def output_console(
     color = configs["colors"].get(log_category.upper(), configs["colors"]["RESET"])
     if not color.startswith("\033"):  # Ensure it's an ANSI color code
         color = configs["colors"]["RESET"]
-    console_message = f"{color}{message}{configs['colors']['RESET']}"
+    console_message = f'{color}{message}{configs["colors"]["RESET"]}'
     print(console_message)  # Print colored message
     if json_data:
         compressed = configs["tracing"]["json"].get("compressed", None)
-        # print(f"DEBUG: compressed={compressed} json_data={json_data}")  # Debugging output
+        # print(f'DEBUG: compressed={compressed} json_data={json_data}')  # Debugging output
         if compressed is not None:
             if isinstance(json_data, str):
                 # Print strings as-is (no JSON formatting)

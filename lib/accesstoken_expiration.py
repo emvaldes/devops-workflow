@@ -51,13 +51,13 @@ def get_access_token():
         return datetime.datetime.utcfromtimestamp( token.expires_on )  # Expiration time
     except AzureError as e:
         print(
-            f"Azure SDK error while fetching token: {e}",
+            f'Azure SDK error while fetching token: {e}',
             file=sys.stderr
         )
         return None
     except Exception as e:
         print(
-            f"Error fetching access token: {e}",
+            f'Error fetching access token: {e}',
             file=sys.stderr
         )
         return None
@@ -79,7 +79,7 @@ def print_token_expiration( debug=False ):
         # Debugging output if enabled
         if debug:
             print(
-                f"Access Token (JSON) -> {{'accessToken': '{AccessToken}', 'expiresOn': '{TokenExpiration}'}}",
+                f'Access Token (JSON) -> {{"accessToken": "{AccessToken}", "expiresOn": "{TokenExpiration}"}}',
                 file=sys.stdout
             )
         # Handle the expiration
@@ -100,13 +100,13 @@ def print_token_expiration( debug=False ):
             )
             return
         print(
-            f"Token expiration date: {expiration_string}",
+            f'Token expiration date: {expiration_string}',
             file=sys.stdout
         )
         return TokenExpiration
     except Exception as e:
         print(
-            f"Error processing token expiration: {e}",
+            f'Error processing token expiration: {e}',
             file=sys.stderr
         )
 
@@ -120,7 +120,7 @@ def print_remaining_time():
             minutes_remaining = (time_remaining.total_seconds() % 3600) // 60
             seconds_remaining = time_remaining.total_seconds() % 60
             print(
-                f"Available Remaining Time: {int(hours_remaining)} hours, {int(minutes_remaining)} minutes, {int(seconds_remaining)} seconds",
+                f'Available Remaining Time: {int(hours_remaining)} hours, {int(minutes_remaining)} minutes, {int(seconds_remaining)} seconds',
                 file=sys.stdout
             )
         else:
@@ -130,7 +130,7 @@ def print_remaining_time():
             )
     except Exception as e:
         print(
-            f"Error calculating remaining time: {e}",
+            f'Error calculating remaining time: {e}',
             file=sys.stderr
         )
 
@@ -141,7 +141,7 @@ def main(debug=False):
         print_remaining_time()
     except Exception as e:
         print(
-            f"Critical error: {e}",
+            f'Critical error: {e}',
             file=sys.stderr
         )
         sys.exit(1)

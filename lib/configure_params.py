@@ -98,13 +98,13 @@ def load_json_sources(
             with open(filepath, "r") as file:
                 data = json.load(file)
                 if not isinstance(data, dict):
-                    raise ValueError(f"ERROR: JSON file '{filepath}' must contain an object at the root level.")
+                    raise ValueError(f'ERROR: JSON file "{filepath}" must contain an object at the root level.')
                 json_data.append(data)
                 merged_data.update(data)  # Merge the content
         except json.JSONDecodeError as e:
-            raise ValueError(f"ERROR: Invalid JSON structure in '{filepath}'.\nDetails: {e}")
+            raise ValueError(f'ERROR: Invalid JSON structure in "{filepath}".\nDetails: {e}')
         except Exception as e:
-            raise RuntimeError(f"ERROR: Unable to read '{filepath}'. Details: {e}")
+            raise RuntimeError(f'ERROR: Unable to read "{filepath}". Details: {e}')
     return tuple(json_data) if mode == "fetch" else merged_data
 # # Example call
 # if __name__ == "__main__":
@@ -120,9 +120,9 @@ def load_json_sources(
 #     """Retrieve a dictionary of all target_env values categorized by section."""
 #     try:
 #         expected_path = system_params_filepath.resolve()
-#         logging.info(f"Looking for {system_params_filename} at: {expected_path}")
+#         logging.info(f'Looking for {system_params_filename} at: {expected_path}')
 #         if not system_params_filepath.exists():
-#             logging.critical(f"{system_params_filepath} file is missing. Expected at: {expected_path}")
+#             logging.critical(f'{system_params_filepath} file is missing. Expected at: {expected_path}')
 #             sys.exit(1)
 #         with open(system_params_filepath, "r") as json_file:
 #             system_params_json = json.load(json_file)
@@ -132,16 +132,16 @@ def load_json_sources(
 #             section_options = section_data.get("options", {})
 #             # Ensure section_options is a dictionary before processing
 #             if not isinstance(section_options, dict):
-#                 raise TypeError(f"Expected a dictionary for 'options' in section {section}, but got {type(section_options).__name__}")
+#                 raise TypeError(f'Expected a dictionary for "options" in section {section}, but got {type(section_options).__name__}')
 #             # runtime_vars[section.upper()] = {
 #             runtime_vars[section] = {
 #                 "title": section_title,
 #                 "options": {key: details.get("default", "") for key, details in section_options.items() if isinstance(details, dict)}
 #             }
-#         # logging.info(f"Extracted runtime vars: {runtime_vars}")
+#         # logging.info(f'Extracted runtime vars: {runtime_vars}')
 #         return runtime_vars
 #     except Exception as e:
-#         logging.error(f"Error retrieving runtime variables: {e}")
+#         logging.error(f'Error retrieving runtime variables: {e}')
 #         sys.exit(1)
 
 def fetching_runtime_variables() -> Dict[str, Dict[str, Union[str, Dict[str, str]]]]:
@@ -161,9 +161,9 @@ def fetching_runtime_variables() -> Dict[str, Dict[str, Union[str, Dict[str, str
 
     try:
         # expected_path = system_params_filepath.resolve()
-        # logging.info(f"Looking for {system_params_filename} at: {expected_path}")
+        # logging.info(f'Looking for {system_params_filename} at: {expected_path}')
         # if not system_params_filepath.exists():
-        #     logging.critical(f"{system_params_filepath} file is missing. Expected at: {expected_path}")
+        #     logging.critical(f'{system_params_filepath} file is missing. Expected at: {expected_path}')
         #     sys.exit(1)
         # Use load_json_sources instead of manually opening the file
         system_params_json = load_json_sources([str(path) for path in system_params_listing], mode="merge")
@@ -173,14 +173,14 @@ def fetching_runtime_variables() -> Dict[str, Dict[str, Union[str, Dict[str, str
             section_options = section_data.get("options", {})
             # Ensure section_options is a dictionary before processing
             if not isinstance(section_options, dict):
-                raise TypeError(f"Expected a dictionary for 'options' in section {section}, but got {type(section_options).__name__}")
+                raise TypeError(f'Expected a dictionary for "options" in section {section}, but got {type(section_options).__name__}')
             runtime_vars[section] = {
                 "title": section_title,
                 "options": {key: details.get("default", "") for key, details in section_options.items() if isinstance(details, dict)}
             }
         return runtime_vars
     except Exception as e:
-        logging.error(f"Error retrieving runtime variables: {e}")
+        logging.error(f'Error retrieving runtime variables: {e}')
         sys.exit(1)
 
 def initialize_env_file():
@@ -200,7 +200,7 @@ def initialize_env_file():
                 logging.critical(f'Failed to populate .env due to missing {system_params_filepath}. Execution halted.')
                 sys.exit(1)
     except Exception as e:
-        logging.error(f"Failed to initialize .env file: {e}")
+        logging.error(f'Failed to initialize .env file: {e}')
         sys.exit(1)
 
 def initialize_runtime_file():
@@ -220,7 +220,7 @@ def initialize_runtime_file():
                 logging.critical(f'Failed to populate {runtime_params_filename} due to missing {system_params_filepath}. Execution halted.')
                 sys.exit(1)
     except Exception as e:
-        logging.error(f"Failed to initialize {runtime_params_filename} file: {e}")
+        logging.error(f'Failed to initialize {runtime_params_filename} file: {e}')
         sys.exit(1)
 
 def populate_env_file() -> bool:
@@ -243,15 +243,15 @@ def populate_env_file() -> bool:
             for section, section_data in runtime_vars.items():
                 # Use the "title" field if available, or fall back to the section name
                 section_title = section_data.get("title", section)
-                logging.debug(f"Using section [ {section_title} ]")
-                env_file.write(f"## {section_title}\n")
+                logging.debug(f'Using section [ {section_title} ]')
+                env_file.write(f'## {section_title}\n')
                 for key, value in section_data.get("options", {}).items():
-                    env_file.write(f"{key}={value}\n")
+                    env_file.write(f'{key}={value}\n')
                 env_file.write("\n")
         logging.info(".env file populated with environment variables.")
         return validate_env_file()
     except Exception as e:
-        logging.error(f"Error populating .env file: {e}")
+        logging.error(f'Error populating .env file: {e}')
         return False
 
 def populate_runtime_file() -> bool:
@@ -289,10 +289,10 @@ def populate_runtime_file() -> bool:
             json.dump(runtime_vars, file, indent=4)
         # logging.info(f'Updated {runtime_params_filename} file with structured environment variables from {', '.join(str(path.relative_to(project_root)) for path in system_params_listing)} and .env files.')
         sources = ", ".join(str(path.relative_to(project_root)) for path in system_params_listing)
-        logging.info(f"Updated '{runtime_params_filename}' with env variables from {sources} and .env files.")
+        logging.info(f'Updated "{runtime_params_filename}" with env variables from {sources} and .env files.')
         return True
     except Exception as e:
-        logging.critical(f"ERROR: Unable to initialize {runtime_params_filename} config file. Details: {e}")
+        logging.critical(f'ERROR: Unable to initialize {runtime_params_filename} config file. Details: {e}')
         sys.exit(1)
 
 def validate_env_file() -> bool:
@@ -312,13 +312,13 @@ def validate_env_file() -> bool:
             return False
         with open(env_filepath, "r") as env_file:
             content = env_file.read().strip()
-            logging.info(f".env file content:\n{content}")
+            logging.info(f'.env file content:\n{content}')
             if content == "" or content == env_file_header.strip():
                 logging.warning(".env file exists but is invalid (empty or only contains the header).")
                 return False
         return True
     except Exception as e:
-        logging.error(f"Error validating .env file: {e}")
+        logging.error(f'Error validating .env file: {e}')
         return False
 
 def validate_runtime_file() -> bool:
@@ -344,7 +344,7 @@ def validate_runtime_file() -> bool:
                 return False
         return True
     except Exception as e:
-        logging.error(f"Error validating .env file: {e}")
+        logging.error(f'Error validating .env file: {e}')
         return False
 
 def main() -> Tuple[Dict, Dict]:
@@ -375,7 +375,7 @@ def main() -> Tuple[Dict, Dict]:
         system_params = load_json_sources([str(path) for path in system_params_listing], mode="merge")
         return system_params, runtime_params
     except Exception as e:
-        logging.error(f"Error processing environment configuration: {e}")
+        logging.error(f'Error processing environment configuration: {e}')
         return {}
 
 if __name__ == "__main__":
@@ -387,7 +387,7 @@ if __name__ == "__main__":
 #         if not runtime_params_filepath.exists():
 #             with open(runtime_params_filepath, "w") as file:
 #                 json.dump({}, file, indent=4)
-#             logging.info(f"Created missing {runtime_params_filepath}.")
+#             logging.info(f'Created missing {runtime_params_filepath}.')
 #
 #         with open(runtime_params_filepath, "w") as file:
 #             json.dump({}, file, indent=4)

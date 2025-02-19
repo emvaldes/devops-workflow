@@ -1,4 +1,4 @@
-$ python ./scripts/testing.py 
+$ python ./scripts/testing.py
 [CALL] packages/appflow_tracer/tracing ( file_utils.manage_logfiles(CONFIGS) )
 [CALL] packages/appflow_tracer/tracing (setup_logging)[219] -> packages/appflow_tracer/lib/file_utils (manage_logfiles)[96]
 {

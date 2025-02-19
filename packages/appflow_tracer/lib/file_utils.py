@@ -145,10 +145,10 @@ def manage_logfiles(configs: dict = None) -> None:
                 deleted_logs.append(log_file.as_posix())
                 # Ensure logging only runs if enabled
                 if configs["logging"].get("enable", True):
-                    log_utils.log_message(f"🗑️ Deleted old log: {log_file.as_posix()}", category.warning.id, configs=configs)
+                    log_utils.log_message(f'Deleted old log: {log_file.as_posix()}', category.warning.id, configs=configs)
             except Exception as e:
                 if configs["logging"].get("enable", True):
-                    log_utils.log_message(f"⚠️ Error deleting {log_file.as_posix()}: {e}", category.error.id, configs=configs)
+                    log_utils.log_message(f'Error deleting {log_file.as_posix()}: {e}', category.error.id, configs=configs)
     return deleted_logs
 
 def relative_path(filepath: str) -> str:

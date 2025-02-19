@@ -58,7 +58,7 @@ if str(LIB_DIR) not in sys.path:
 # Debugging: Print sys.path to verify import paths
 # print("\n[DEBUG] sys.path contains:")
 # for path in sys.path:
-#     print(f"  - {path}")
+#     print(f'  - {path}')
 
 # Import system_variables from lib.system_variables
 from lib.system_variables import (
@@ -159,13 +159,13 @@ def setup_logging(
         if caller_path.is_relative_to(project_root):
             # If the caller is within project_root, construct a relative log path
             relative_path = caller_path.relative_to(project_root)
-            log_filename = relative_path.parent / f"{log_filename}"
+            log_filename = relative_path.parent / f'{log_filename}'
         else:
             # If the caller is outside project_root, just use its absolute path under logs
-            log_filename = caller_path.parent.relative_to(caller_path.anchor) / f"{log_filename}"
+            log_filename = caller_path.parent.relative_to(caller_path.anchor) / f'{log_filename}'
     # else:
     #     # If we couldn’t determine the caller file, fallback to a default
-    #     log_filename = f"default"
+    #     log_filename = f'default'
     # Determining configs parameter
     if configs:
         CONFIGS = configs
@@ -179,7 +179,7 @@ def setup_logging(
         raise ValueError("Configs must be a dictionary")
     # print( f'CONFIGS: {json.dumps(CONFIGS, indent=default_indent)}' )
     logfile = CONFIGS["logging"].get("log_filename", False)
-    logger = logging.getLogger(f"{CONFIGS['logging']['package_name']}.{CONFIGS['logging']['module_name']}")
+    logger = logging.getLogger(f'{CONFIGS["logging"]["package_name"]}.{CONFIGS["logging"]["module_name"]}')
     logger.propagate = False  # Prevent handler duplication
     logger.setLevel(logging.DEBUG)
     # Remove existing handlers before adding new ones (Prevents duplicate logging)
@@ -298,4 +298,4 @@ if __name__ == "__main__":
 #         # print("\n📄 Log file content:")
 #         print(file.read())
 # except Exception as e:
-#     print(f"⚠️ Unable to read log file: {e}")
+#     print(f'Unable to read log file: {e}')

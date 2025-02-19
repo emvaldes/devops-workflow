@@ -69,7 +69,7 @@ def test_debug_installation(
     mock_get_version.return_value = expected_version
     result = mock_get_version(package)
     # Print debug information
-    print(f"Testing package: {package}, Expected Version: {expected_version}, Got: {result}")
+    print(f'Testing package: {package}, Expected Version: {expected_version}, Got: {result}')
     assert result == expected_version
 
 def test_load_requirements_invalid_json(

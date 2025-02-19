@@ -69,18 +69,18 @@ def load_argument_config() -> dict:
         dict: A dictionary containing the parsed argument definitions.
     """
     if not system_params_filepath.exists():
-        raise FileNotFoundError(f"ERROR: Argument configuration file not found at {system_params_filepath}")
+        raise FileNotFoundError(f'ERROR: Argument configuration file not found at {system_params_filepath}')
     ## Handles empty files, permission issues, and invalid JSON.
     try:
         with open(system_params_filepath, "r") as file:
             data = json.load(file)
             if not data:
-                raise ValueError(f"ERROR: Empty JSON file '{system_params_filepath}'. Please check the contents.")
+                raise ValueError(f'ERROR: Empty JSON file "{system_params_filepath}". Please check the contents.')
             return data
     except json.JSONDecodeError as e:
-        raise ValueError(f"ERROR: Invalid JSON structure in '{system_params_filepath}'.\nDetails: {e}")
+        raise ValueError(f'ERROR: Invalid JSON structure in "{system_params_filepath}".\nDetails: {e}'")
     except Exception as e:
-        raise RuntimeError(f"ERROR: Unable to read '{system_params_filepath}'. Details: {e}")
+        raise RuntimeError(f'ERROR: Unable to read "{system_params_filepath}". Details: {e}')
 
 def convert_types(kwargs: dict) -> dict:
     """
@@ -140,7 +140,7 @@ def parse_arguments__prototype(
     if getattr(args, "debug", False):
         print("\nParsed CLI Arguments (JSON):")
         ## for key, value in vars(args).items():
-        ##     print(f"{key}: {value}")
+        ##     print(f'{key}: {value}')
         print(json.dumps(vars(args), indent=4))
     return args
 
@@ -166,7 +166,7 @@ def parse_arguments(args: dict) -> argparse.Namespace:
         "bool": bool
     }
 
-    # print(f"System Parameters (loaded): {json.dumps(args, indent=4)}")
+    # print(f'System Parameters (loaded): {json.dumps(args, indent=4)}')
 
     parsed_args = {}  # Store parsed arguments manually
     for section, section_data in args.items():
@@ -188,18 +188,18 @@ def parse_arguments(args: dict) -> argparse.Namespace:
                 # Check if flags exist before calling parser.add_argument
                 flags = details.get("flags")
                 if not flags:
-                    logging.error(f"Missing 'flags' in argument: {param}")
+                    logging.error(f'Missing "flags" in argument: {param}')
                     continue
                 try:
                     parser.add_argument(*flags, **kwargs)
                 except Exception as e:
-                    logging.error(f"Failed to add argument {param} in section {section} with details {kwargs}: {e}")
+                    logging.error(f'Failed to add argument {param} in section {section} with details {kwargs}: {e}')
                     raise
     args, unknown = parser.parse_known_args()
     args_dict = vars(args)
     # Log any unknown arguments that were ignored
     if unknown:
-        logging.warning(f"Unknown CLI arguments ignored: {unknown}")
+        logging.warning(f'Unknown CLI arguments ignored: {unknown}')
 
     return args
 

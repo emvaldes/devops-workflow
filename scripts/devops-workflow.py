@@ -69,7 +69,7 @@ try:
     from packages.requirements import dependencies
     dependencies.main()  # Ensure dependencies are installed
 except ImportError as e:
-    print(f"ERROR: Failed to import dependency management: {e}")
+    print(f'ERROR: Failed to import dependency management: {e}')
     sys.exit(1)
 
 # Import tracing module (no need to pass arguments)
@@ -113,7 +113,7 @@ def remove_pycache() -> None:
     if pycache_dir.exists():
         shutil.rmtree(pycache_dir)
         print()
-        logging.info(f"{pycache_dir} removed.\n")
+        logging.info(f'{pycache_dir} removed.\n')
 
 def request_input(var_name: str) -> str:
     """
@@ -137,11 +137,11 @@ def request_input(var_name: str) -> str:
     """
 
     if not sys.stdin.isatty():
-        print(f"ERROR: Required parameter '{var_name}' is missing and cannot be requested in a non-interactive environment.")
+        print(f'ERROR: Required parameter "{var_name}" is missing and cannot be requested in a non-interactive environment.')
         exit(1)
     try:
         while True:
-            user_input = input(f"⚠ '{var_name}' is missing. Please enter a value: ").strip()
+            user_input = input(f'"{var_name}" is missing. Please enter a value: ').strip()
             if user_input:
                 return user_input
             print("\033[F\033[K", end="", flush=True)  ## Move cursor up and clear line
@@ -176,8 +176,8 @@ def main() -> None:
     atexit.register(remove_pycache)
 
     # ## Debugging Info
-    # # print(f"Logging Level: {logging.getLogger().getEffectiveLevel()} (10=DEBUG, 20=INFO, 30=WARNING, 40=ERROR, 50=CRITICAL)")
-    # # print(f"\nApplication CLI Arguments (Before Processing): {sys.argv}")
+    # # print(f'Logging Level: {logging.getLogger().getEffectiveLevel()} (10=DEBUG, 20=INFO, 30=WARNING, 40=ERROR, 50=CRITICAL)')
+    # # print(f'\nApplication CLI Arguments (Before Processing): {sys.argv}')
     #
     # # print("RunTime Variables type", type(RUNTIME_PARAMS))
     # args = parse_arguments( SYSTEM_PARAMS )
@@ -217,7 +217,7 @@ def main() -> None:
         if key_upper in allowed_RUNTIME_PARAMS and value is not None:
 
     #         RUNTIME_PARAMS[key_upper] = value
-    #         ## logging.debug(f"Environment Variable [ {key_upper} = '{value}' ]")
+    #         ## logging.debug(f'Environment Variable [ {key_upper} = "{value}" ]')
     # for key, value in RUNTIME_PARAMS.items():
     #     os.environ[key] = str(value)
     #
@@ -237,54 +237,54 @@ def main() -> None:
     #     if var in RUNTIME_PARAMS:
     #         raw_value = RUNTIME_PARAMS[var]
     #         if RUNTIME_PARAMS.get("DEBUG"):
-    #             logging.debug(f"\nInspecting Environment Variable: '{var}'")
+    #             logging.debug(f'\nInspecting Environment Variable: "{var}"')
 
     for var in system_params.REQUIRED_RUNTIME_PARAMS:
         if var in system_params.RUNTIME_PARAMS:
             raw_value = system_params.RUNTIME_PARAMS[var]
             if system_params.RUNTIME_PARAMS.get("DEBUG"):
-                logging.debug(f"Inspecting Environment Variable: '{var}'")
+                logging.debug(f'Inspecting Environment Variable: "{var}"')
 
-                logging.debug(f"- Raw Value: {raw_value}")
-                logging.debug(f"- Type: {type(raw_value)}")
-                logging.debug(f"- Length (if applicable): {len(raw_value) if isinstance(raw_value, str) else 'N/A'}")
-                logging.debug(f"- Stripped Value: '{raw_value.strip()}'" if isinstance(raw_value, str) else "N/A")
-                logging.debug(f"- Is None? {'YES' if raw_value is None else 'NO'}")
-                logging.debug(f"- Is Empty String? {'YES' if str(raw_value).strip() == '' else 'NO'}")
+                logging.debug(f'- Raw Value: {raw_value}')
+                logging.debug(f'- Type: {type(raw_value)}')
+                logging.debug(f'- Length (if applicable): {len(raw_value) if isinstance(raw_value, str) else "N/A"}')
+                logging.debug(f'- Stripped Value: "{raw_value.strip()}"' if isinstance(raw_value, str) else "N/A")
+                logging.debug(f'- Is None? {"YES" if raw_value is None else "NO"}')
+                logging.debug(f'- Is Empty String? {"YES" if str(raw_value).strip() == "" else "NO"}')
 
             ## Convert string "None" to actual NoneType
             if isinstance(raw_value, str) and raw_value.strip().lower() == "none":
                 RUNTIME_PARAMS[var] = None
 
         # if RUNTIME_PARAMS[var] in [None, ""]:
-        #     logging.critical(f"CRITICAL ERROR: Required parameter '{var}' is missing or invalid ('None' detected).")
-        #     print(f"CRITICAL ERROR: Required parameter '{var}' is missing or invalid ('None' detected).")
-        #     logging.debug(f"sys.stdin.isatty() = {sys.stdin.isatty()}")
+        #     logging.critical(f'CRITICAL ERROR: Required parameter "{var}" is missing or invalid ("None" detected).')
+        #     print(f'CRITICAL ERROR: Required parameter "{var}" is missing or invalid ("None" detected).')
+        #     logging.debug(f'sys.stdin.isatty() = {sys.stdin.isatty()}')
 
                 system_params.RUNTIME_PARAMS[var] = None
         if system_params.RUNTIME_PARAMS[var] in [None, ""]:
-            logging.critical(f"CRITICAL ERROR: Required parameter '{var}' is missing or invalid.")
+            logging.critical(f'CRITICAL ERROR: Required parameter "{var}" is missing or invalid.')
 
             if sys.stdin.isatty():
-                logging.info(f"Interactive Mode Detected. Prompting user for '{var}'...")
+                logging.info(f'Interactive Mode Detected. Prompting user for "{var}"...')
                 try:
 
                     # while not RUNTIME_PARAMS[var]:  ## Ensures empty string or None triggers the prompt
                     #     RUNTIME_PARAMS[var] = request_input(var)
                     #     # RUNTIME_PARAMS[var] = parse_and_collect_user_inputs("configs/system-params.json", REQUIRED_RUNTIME_PARAMS)[var]
-                    #     logging.debug(f"User Input for '{var}': {RUNTIME_PARAMS[var]}")
+                    #     logging.debug(f'User Input for "{var}": {RUNTIME_PARAMS[var]}')
 
                     while not system_params.RUNTIME_PARAMS[var]:
                         system_params.RUNTIME_PARAMS[var] = request_input(var)
-                        logging.debug(f"User Input for '{var}': {system_params.RUNTIME_PARAMS[var]}")
+                        logging.debug(f'User Input for "{var}": {system_params.RUNTIME_PARAMS[var]}')
 
                 except KeyboardInterrupt:
                     logging.error("\nERROR: User interrupted input. Exiting.")
                     exit(1)
             else:
-                logging.critical(f"ERROR: Required parameter '{var}' is missing and cannot be requested in a non-interactive environment.")
+                logging.critical(f'ERROR: Required parameter "{var}" is missing and cannot be requested in a non-interactive environment.')
                 exit(1)
-    ## logging.debug(f"DEBUG Final Value Before Check: {RUNTIME_PARAMS.get('DEBUG')}")
+    ## logging.debug(f'DEBUG Final Value Before Check: {RUNTIME_PARAMS.get("DEBUG")}')
     ## if RUNTIME_PARAMS.get("DEBUG"):
 
     print("\nEnd-User's Input parameters (override):")

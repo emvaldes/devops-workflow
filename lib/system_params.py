@@ -85,12 +85,12 @@ def load_json_config(runtime_params_filepath: Path) -> dict:
         with open(runtime_params_filepath, "r") as file:
             data = json.load(file)
             if not data:
-                raise ValueError(f"ERROR: Empty JSON file '{runtime_params_filepath}'. Please check the contents.")
+                raise ValueError(f'ERROR: Empty JSON file "{runtime_params_filepath}". Please check the contents.')
             return data
     except json.JSONDecodeError as e:
-        raise ValueError(f"ERROR: Invalid JSON structure in '{runtime_params_filepath}'.\nDetails: {e}")
+        raise ValueError(f'ERROR: Invalid JSON structure in "{runtime_params_filepath}".\nDetails: {e}')
     except Exception as e:
-        raise RuntimeError(f"ERROR: Unable to read '{runtime_params_filepath}'. Details: {e}")
+        raise RuntimeError(f'ERROR: Unable to read "{runtime_params_filepath}". Details: {e}')
 
 def get_runtime_variable(
     name: str,
@@ -116,11 +116,11 @@ def get_runtime_variable(
     try:
         value = os.getenv(name)
         if required and (value is None or value.strip() == ""):
-            logging.warning(f"WARNING: Required parameter '{name}' is missing or empty.")
+            logging.warning(f'WARNING: Required parameter "{name}" is missing or empty.')
             return None
         return value
     except Exception as e:
-        raise RuntimeError(f"ERROR: Unable to load environment variable '{name}'. Details: {e}")
+        raise RuntimeError(f'ERROR: Unable to load environment variable "{name}". Details: {e}')
 
 ## Ensure runtime_params_filepath file exists, create it based on system-params file if missing
 if not runtime_params_filepath.exists():
@@ -129,7 +129,7 @@ if not runtime_params_filepath.exists():
         missing_files = [path for path in [project_params_filepath, default_params_filepath] if not path.exists()]
         if missing_files:
             missing_filenames = ", ".join(str(path) for path in missing_files)
-            raise FileNotFoundError(f"ERROR: The following files are missing: {missing_filenames}.")
+            raise FileNotFoundError(f'ERROR: The following files are missing: {missing_filenames}.')
 
         arguments_data = load_json_sources([str(path) for path in system_params_listing], mode="merge")
 
@@ -144,20 +144,20 @@ if not runtime_params_filepath.exists():
             json.dump(initial_defaults, file, indent=4)
 
         # if runtime_params_filepath.exists():  # Ensure the file was actually created
-        #     logging.info(f"Successfully created {runtime_params_filename} using sources: {', '.join(str(path.relative_to(project_root)) for path in system_params_listing)}.")
+        #     logging.info(f'Successfully created {runtime_params_filename} using sources: {", ".join(str(path.relative_to(project_root)) for path in system_params_listing)}.')
         # else:
-        #     logging.info(f"Unable to create {runtime_params_filename} missing sources: {', '.join(str(path.relative_to(project_root)) for path in system_params_listing)}.")
+        #     logging.info(f'Unable to create {runtime_params_filename} missing sources: {", ".join(str(path.relative_to(project_root)) for path in system_params_listing)}.')
         status = "Successfully created" if runtime_params_filepath.exists() else "Unable to create"
         sources = ", ".join(str(path.relative_to(project_root)) for path in system_params_listing)
-        logging.info(f"{status} {runtime_params_filename} using sources: {sources}.")
+        logging.info(f'{status} {runtime_params_filename} using sources: {sources}.')
 
     except Exception as e:
-        logging.critical(f"ERROR: Unable to create {runtime_params_filename}. Details: {e}")
+        logging.critical(f'ERROR: Unable to create {runtime_params_filename}. Details: {e}')
         sys.exit(1)
 else:
     with open(runtime_params_filepath, "w") as file:
         file.write("{}")  # Overwrite with an empty JSON object
-    logging.info(f"Flushed {runtime_params_filepath} to ensure a fresh structure.")
+    logging.info(f'Flushed {runtime_params_filepath} to ensure a fresh structure.')
 
 ## Run configure_params() first to generate runtime-params file
 try:
@@ -173,7 +173,7 @@ try:
         }
         for section, section_data in RUNTIME_PARAMS.items()
     }
-    print( f"Sections Vars type:", type(SECTIONS_VARS))
+    print( f'Sections Vars type:', type(SECTIONS_VARS))
     print( f'Section Vars: {SECTIONS_VARS}' )
 
     # # Set environment variables for all sections
@@ -185,7 +185,7 @@ try:
     # required_vars = SECTIONS_VARS.get("REQUIRED", {})
     # missing_vars = [var for var in required_vars if not os.environ.get(var)]
     # if missing_vars:
-    #     logging.critical(f"CRITICAL ERROR: Missing required environment variables: {', '.join(missing_vars)}")
+    #     logging.critical(f'CRITICAL ERROR: Missing required environment variables: {", ".join(missing_vars)}')
     #     sys.exit(1)
     # # ## Debug mode conversion
     # # if "DEBUG" in os.environ:
@@ -193,7 +193,7 @@ try:
     # # if "VERBOSE" in os.environ:
     # #     os.environ["VERBOSE"] = str(os.environ["VERBOSE"].lower() == "true")
 except Exception as e:
-    logging.critical(f"ERROR: Exception occurred while running configure_params: {e}")
+    logging.critical(f'ERROR: Exception occurred while running configure_params: {e}')
     # sys.exit(1)
 # ## Logging final merged configuration
 # logging.info("Default's merged configuration (RUNTIME_VARS):")

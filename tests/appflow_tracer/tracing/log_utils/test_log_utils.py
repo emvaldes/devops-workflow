@@ -134,7 +134,7 @@ def test_output_logfile(mock_logger) -> None:
             {"extra": "data"}
         )
         # Validate correct log format
-        expected_message = f"{environment.category.info.id}: Log file test message"
+        expected_message = f'{environment.category.info.id}: Log file test message'
         expected_json = json.dumps(
             {"extra": "data"},
             separators=(',', ':')
@@ -199,10 +199,10 @@ def test_output_console(
                 r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])'
             )
             log_messages = [ansi_escape.sub('', call) for call in actual_calls if "Console log test" in call]
-            assert log_messages, f"Expected log message not found: {actual_calls}"
-            assert log_messages[0] == "Console log test", f"Expected:\nConsole log test\nGot:\n{log_messages[0]}"
+            assert log_messages, f'Expected log message not found: {actual_calls}'
+            assert log_messages[0] == "Console log test", f'Expected:\nConsole log test\nGot:\n{log_messages[0]}'
             if expect_json:
-                assert expected_format in actual_calls, f"Expected JSON:\n{expected_format}\nGot:\n{actual_calls}"
+                assert expected_format in actual_calls, f'Expected JSON:\n{expected_format}\nGot:\n{actual_calls}'
     finally:
         # Restore CONFIGS after the test
         CONFIGS = original_configs

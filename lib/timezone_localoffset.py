@@ -55,26 +55,26 @@ def get_local_offset( debug=False ):
         LocalTimeZone = local_tz
         LocalOffset = local_offset
         # Print output in the requested format
-        print(f"Local Time Zone:\t{local_tz} ({local_tz.utcoffset(local_time)})")
-        print(f"Current Local Time:\t{local_time.strftime('%m/%d/%Y %H:%M:%S')}")
-        print(f"Current UTC Time:\t{utc_time.strftime('%m/%d/%Y %H:%M:%S')}")
-        print(f"Local Time Offset:\t{int(local_offset)} hours")
+        print(f'Local Time Zone:\t{local_tz} ({local_tz.utcoffset(local_time)})')
+        print(f'Current Local Time:\t{local_time.strftime("%m/%d/%Y %H:%M:%S")}')
+        print(f'Current UTC Time:\t{utc_time.strftime("%m/%d/%Y %H:%M:%S")}')
+        print(f'Local Time Offset:\t{int(local_offset)} hours')
         # Debugging output if enabled
         if debug:
-            print(f"\nLocal Time Zone:\t{local_tz} ({local_tz.tzname(local_time)})", file=sys.stdout)
-            print(f"Current Local Time:\t{local_time.strftime('%m/%d/%Y %H:%M:%S')}", file=sys.stdout)
-            print(f"Current UTC Time:\t{utc_time.strftime('%m/%d/%Y %H:%M:%S')}", file=sys.stdout)
-            print(f"Local Time Offset:\t{local_offset} hours", file=sys.stdout)
+            print(f'\nLocal Time Zone:\t{local_tz} ({local_tz.tzname(local_time)})', file=sys.stdout)
+            print(f'Current Local Time:\t{local_time.strftime("%m/%d/%Y %H:%M:%S")}', file=sys.stdout)
+            print(f'Current UTC Time:\t{utc_time.strftime("%m/%d/%Y %H:%M:%S")}', file=sys.stdout)
+            print(f'Local Time Offset:\t{local_offset} hours', file=sys.stdout)
         return local_offset
     except Exception as e:
-        print(f"Error retrieving time zone: {e}", file=sys.stderr)
+        print(f'Error retrieving time zone: {e}', file=sys.stderr)
 
 def main( debug=False ):
     """Main entry point to process time zone offset."""
     try:
         get_local_offset( debug )
     except Exception as e:
-        print(f"Error processing time zone: {e}", file=sys.stderr)
+        print(f'Error processing time zone: {e}', file=sys.stderr)
         sys.exit( 1 )
 
 if __name__ == "__main__":
