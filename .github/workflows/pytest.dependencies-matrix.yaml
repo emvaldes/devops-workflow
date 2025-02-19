@@ -81,30 +81,15 @@ jobs:
       - name: Extract Test Functions
         id: extract
         run: |
-          TEST_FILE="${{ env.TEST_DIR }}test_dependencies.py"
-
-          if [[ ! -f "$TEST_FILE" ]]; then
-            echo "ERROR: Test file '$TEST_FILE' not found!"
-            echo "tests=[\"dummy_test_function\"]" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          TESTS=$(python -c "import re, json; \
-            try: \
-              with open('$TEST_FILE', 'r') as f: \
-                tests = re.findall(r'^def (test_[a-zA-Z0-9_]+)', f.read(), re.MULTILINE); \
-                print(json.dumps(tests if tests else ['dummy_test_function'])) \
-            except Exception as e: \
-              print(json.dumps(['dummy_test_function']))")
+          TESTS=$(python -c "import re, json, sys; \
+            f = open('${{ env.TEST_DIR }}test_dependencies.py', 'r'); \
+            tests = re.findall(r'^def (test_[a-zA-Z0-9_]+)', f.read(), re.MULTILINE); \
+            f.close(); \
+            sys.stdout.write(json.dumps(tests if tests else ['dummy_test_function']))")
 
           echo "Extracted test functions: $TESTS"
 
-          # ✅ Ensure valid JSON before passing to GitHub Actions output
-          if [[ -z "$TESTS" || "$TESTS" == "[]" ]]; then
-            echo "WARNING: No test functions found! Setting default test."
-            TESTS='["dummy_test_function"]'
-          fi
-
+          # Ensure valid JSON before passing to GitHub Actions output
           echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
 
   run-tests:
@@ -181,15 +166,32 @@ jobs:
         with:
           path: artifacts/
 
-      - name: Display test results
-        run: |
-          echo "Aggregating test results..."
-          ls -R artifacts/
-
-      - name: Generate Summary
+      - name: Display Test Results Summary
         run: |
           echo "## Dependencies Test Summary" >> $GITHUB_STEP_SUMMARY
-          for file in artifacts/*/*.xml; do
-            echo "### Test Report: $file" >> $GITHUB_STEP_SUMMARY
-            cat "$file" >> $GITHUB_STEP_SUMMARY
-          done
+
+          echo "Aggregating test results..."
+          find artifacts/ -type f -name "*.xml" > test_files.txt
+
+          TOTAL=0
+          PASSED=0
+          FAILED=0
+          SKIPPED=0
+
+          while read -r FILE; do
+            echo "Processing: $FILE"
+            TEST_NAME=$(basename "$FILE")
+            TOTAL_TESTS=$(grep -oP '(?<=tests=")[0-9]+' "$FILE" | paste -sd+ | bc)
+            FAILED_TESTS=$(grep -oP '(?<=failures=")[0-9]+' "$FILE" | paste -sd+ | bc)
+            SKIPPED_TESTS=$(grep -oP '(?<=skipped=")[0-9]+' "$FILE" | paste -sd+ | bc)
+            PASSED_TESTS=$((TOTAL_TESTS - FAILED_TESTS - SKIPPED_TESTS))
+
+            echo "### $TEST_NAME: $TOTAL_TESTS total, $PASSED_TESTS passed, $FAILED_TESTS failed, $SKIPPED_TESTS skipped" >> $GITHUB_STEP_SUMMARY
+
+            TOTAL=$((TOTAL + TOTAL_TESTS))
+            PASSED=$((PASSED + PASSED_TESTS))
+            FAILED=$((FAILED + FAILED_TESTS))
+            SKIPPED=$((SKIPPED + SKIPPED_TESTS))
+          done < test_files.txt
+
+          echo "## Final Summary: $TOTAL tests run, $PASSED passed, $FAILED failed, $SKIPPED skipped" >> $GITHUB_STEP_SUMMARY
