@@ -14,8 +14,6 @@ jobs:
   install-pytest:
     name: Install PyTest
     runs-on: ubuntu-latest
-    outputs:
-      pytest_installed: ${{ steps.check-pytest.outcome == 'success' }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -25,22 +23,16 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Check if PyTest is Installed
-        id: check-pytest
-        run: |
-          if ! python -m pytest --version; then
-            exit 1
-          fi
-
       - name: Install PyTest
-        if: steps.check-pytest.outcome != 'success'
         run: |
+          echo "Ensuring PyTest is installed..."
           python -m pip install --upgrade pip
           python -m pip install pytest
 
   dependencies-tests:
     name: Run Dependencies Module Tests
     runs-on: ubuntu-latest
+    needs: install-pytest
     strategy:
       matrix:
         test_module:
@@ -62,7 +54,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'  # Adjust if needed
+          python-version: '3.11'
 
       - name: Run Dependencies Pytest - ${{ matrix.test_module }}
         id: dependencies_tests
