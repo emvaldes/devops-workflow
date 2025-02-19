@@ -10,8 +10,8 @@ on:
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
-  test-and-run-tracing:
-    name: Test and Run Tracing Module
+  dependencies:
+    name: Install Required Dependencies
     runs-on: ubuntu-latest
 
     steps:
@@ -23,26 +23,45 @@ jobs:
         with:
           python-version: '3.11'  # Adjust if needed
 
-      - name: Ensure Dependencies Are Installed
+      - name: Install Dependencies
+        id: dependencies_install
         run: |
           echo "Running dependencies module to install missing packages..."
           python -m packages.requirements.dependencies
 
-      - name: Run Pytest for AppFlow Tracer
+      - name: Run Dependencies Tests
+        id: dependencies_tests
         run: |
-          echo "Running tests for appflow_tracer package..."
-          pytest -v tests/appflow_tracer
+          echo "Running Pytest for dependencies module..."
+          pytest -v tests/requirements/dependencies
+
+      - name: Show Installed Packages
+        run: |
+          echo "Running dependencies module to show installed packages..."
+          python -m packages.requirements.dependencies --show-installed
+
+  tracing:
+    name: Run Tracing Module
+    runs-on: ubuntu-latest
+    needs: dependencies  # Ensures dependencies workflow completes successfully
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'  # Adjust if needed
+
+      - name: Run Tracing Tests
+        id: tracing_tests
+        run: |
+          echo "Running Pytest for tracing module..."
+          pytest -v tests/appflow_tracer/tracing
 
       - name: Run Tracing Module
         id: tracing_run
         run: |
-          echo "Running the tracing module..."
+          echo "Running tracing module to verify functionality..."
           python -m packages.appflow_tracer.tracing
-
-      - name: Report Tracing Execution Status
-        run: |
-          if [ "${{ steps.tracing_run.outcome }}" == "success" ]; then
-            echo "Tracing module executed successfully."
-          else
-            echo "Tracing module execution failed." && exit 1
-          fi
