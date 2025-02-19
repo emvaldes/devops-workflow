@@ -1,56 +1,163 @@
-name: Parallel PyTest - Dependencies (Jobs)
+name: Dependencies Module Tests
 
 on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
-  discover-tests:
+  install-pytest:
     runs-on: ubuntu-latest
-    outputs:
-      test-functions: ${{ steps.collect-tests.outputs.test-functions }}
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: "3.10"
 
       - name: Install Pytest
         run: |
+          python -m ensurepip --upgrade
           python -m pip install --upgrade pip
-          pip install pytest
+          python -m pip install pytest
 
-      - name: Collect test functions
-        id: collect-tests
-        run: |
-          echo "Collecting test functions..."
-          TEST_FUNCTIONS=$(pytest tests/requirements/dependencies/test_dependencies.py --collect-only -q | grep "::" | awk -F '::' '{print $2}')
-          JSON_ARRAY=$(echo "$TEST_FUNCTIONS" | jq -R -s -c 'split("\n")[:-1]')
-          echo "test-functions=$JSON_ARRAY" >> "$GITHUB_ENV"
-          echo "test-functions=$JSON_ARRAY" >> "$GITHUB_OUTPUT"
-
-  run-tests:
-    needs: discover-tests
+  test_load_requirements_valid:
+    needs: install-pytest
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        test-function: ${{ fromJson(needs.discover-tests.outputs.test-functions) }}
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: "3.10"
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pytest
+      - name: Run test_load_requirements_valid
+        run: pytest tests/requirements/dependencies/test_dependencies.py::test_load_requirements_valid
 
-      - name: Run Pytest for ${{ matrix.test-function }}
-        run: |
-          pytest tests/requirements/dependencies/test_dependencies.py::${{ matrix.test-function }}
+  test_load_requirements_missing:
+    needs: install-pytest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Run test_load_requirements_missing
+        run: pytest tests/requirements/dependencies/test_dependencies.py::test_load_requirements_missing
+
+  test_load_requirements_invalid_json:
+    needs: install-pytest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Run test_load_requirements_invalid_json
+        run: pytest tests/requirements/dependencies/test_dependencies.py::test_load_requirements_invalid_json
+
+  test_is_package_installed:
+    needs: install-pytest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Run test_is_package_installed
+        run: pytest tests/requirements/dependencies/test_dependencies.py::test_is_package_installed
+
+  test_install_requirements:
+    needs: install-pytest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Run test_install_requirements
+        run: pytest tests/requirements/dependencies/test_dependencies.py::test_install_requirements
+
+  test_parse_arguments_default:
+    needs: install-pytest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Run test_parse_arguments_default
+        run: pytest tests/requirements/dependencies/test_dependencies.py::test_parse_arguments_default
+
+  test_parse_arguments_custom:
+    needs: install-pytest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Run test_parse_arguments_custom
+        run: pytest tests/requirements/dependencies/test_dependencies.py::test_parse_arguments_custom
+
+  test_update_installed_packages:
+    needs: install-pytest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Run test_update_installed_packages
+        run: pytest tests/requirements/dependencies/test_dependencies.py::test_update_installed_packages
+
+  test_print_installed_packages:
+    needs: install-pytest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Run test_print_installed_packages
+        run: pytest tests/requirements/dependencies/test_dependencies.py::test_print_installed_packages
