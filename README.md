@@ -1,6 +1,8 @@
 # Project Documentation
 
-[![Setup Python Dependencies](https://github.com/emvaldes/devops-workflow/actions/workflows/requirements.dependencies.yml/badge.svg)](https://github.com/emvaldes/devops-workflow/actions/workflows/requirements.dependencies.yml)
+[![AppFlow-Tracer -> Tracing Module](https://github.com/emvaldes/devops-workflow/actions/workflows/appflow_tracer.tracing.yaml/badge.svg)](https://github.com/emvaldes/devops-workflow/actions/workflows/appflow_tracer.tracing.yaml)
+
+[![Requirements -> Dependencies Module](https://github.com/emvaldes/devops-workflow/actions/workflows/requirements.dependencies.yml/badge.svg)](https://github.com/emvaldes/devops-workflow/actions/workflows/requirements.dependencies.yml)
 
 ## Project Structure
 

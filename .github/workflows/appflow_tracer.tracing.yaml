@@ -1,4 +1,4 @@
-name: Run Tracing Module
+name: AppFlow-Tracer -> Tracing Module
 
 on:
   push:
@@ -23,11 +23,11 @@ jobs:
         with:
           python-version: '3.11'  # Adjust if needed
 
-      - name: Ensure Dependencies Are Installed
-        run: |
-          echo "Running dependencies module to install missing packages..."
-          python -m packages.requirements.dependencies
-
+      # - name: Ensure Dependencies Are Installed
+      #   run: |
+      #     echo "Running dependencies module to install missing packages..."
+      #     python -m packages.requirements.dependencies
+      #
       - name: Run Pytest for AppFlow Tracer
         run: |
           echo "Running tests for appflow_tracer package..."

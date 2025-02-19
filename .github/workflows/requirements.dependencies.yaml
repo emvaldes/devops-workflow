@@ -1,21 +1,38 @@
-name: Setup Python Dependencies
-run-name: ${{ github.actor }} -> Setup Python Dependencies
+name: Requirements -> Dependencies Module
 
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
   workflow_dispatch:  # Allows manual triggering
-    name: Manual Deployment
-    description: Triggering Manual Deployment
 
 jobs:
+  run-tracing:
+    name: Run Tracing Module
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'  # Adjust if needed
+
+      - name: Run Tracing Module
+        id: tracing_run
+        run: |
+          echo "Running tracing module to verify functionality..."
+          python -m packages.appflow_tracer.tracing
+
   install-dependencies:
     name: Install Required Dependencies
     runs-on: ubuntu-latest
+    needs: run-tracing  # Ensures tracing workflow completes successfully
 
     steps:
       - name: Checkout Repository
