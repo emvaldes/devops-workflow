@@ -1,4 +1,4 @@
-name: Run Tracing Module Tests
+name: AppFlow-Tracer -> Tracing Module
 
 on:
   push:
