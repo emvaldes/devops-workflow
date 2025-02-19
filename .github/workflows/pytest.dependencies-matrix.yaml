@@ -169,27 +169,58 @@ jobs:
       - name: Generate JSON Summary
         run: |
           echo "Aggregating test results..."
-          find artifacts/ -type f -name "*.xml" > test_files.txt
+          find artifacts/ -type f -name "*.xml" > test_files.txt ;
 
-          echo '{ "test_summary": [' > test_results.json
+          # Generate JSON using jq for proper formatting
+          jq -n '{test_summary: []}' > test_results.json 2>/dev/null ;
 
-          FIRST=true
           while read -r FILE; do
-            TEST_NAME=$(basename $(dirname "$FILE"))  # Extract test function name
-            PYTHON_VERSION=$(echo "$FILE" | grep -oP '(?<=pytest-results-)[0-9]+\.[0-9]+')  # Extract Python version
 
-            TOTAL_TESTS=$(grep -oP '(?<=tests=")[0-9]+' "$FILE" | paste -sd+ | bc)
-            FAILED_TESTS=$(grep -oP '(?<=failures=")[0-9]+' "$FILE" | paste -sd+ | bc)
-            SKIPPED_TESTS=$(grep -oP '(?<=skipped=")[0-9]+' "$FILE" | paste -sd+ | bc)
-            PASSED_TESTS=$((TOTAL_TESTS - FAILED_TESTS - SKIPPED_TESTS))
+            # Extract test function name
+            full_testname=$( basename $( dirname "${FILE}" ) ) ;
+            # Extract Python version
+            python_version="$(
+              echo "${full_testname}" | grep -oP '(?<=pytest-results-)[0-9]+\.[0-9]+'
+            )" ;
+            # Remove prefix
+            test_name="$(
+              echo "${full_testname}" | sed -E "s/pytest-results-[0-9]+\.[0-9]+-//"
+            )" ;
 
-            [[ "$FIRST" == "true" ]] && FIRST=false || echo ',' >> test_results.json
-            echo "{ \"python_version\": \"$PYTHON_VERSION\", \"test_name\": \"$TEST_NAME\", \"total\": $TOTAL_TESTS, \"passed\": $PASSED_TESTS, \"failed\": $FAILED_TESTS, \"skipped\": $SKIPPED_TESTS }" >> test_results.json
+            total_tests=$(
+              grep -oP '(?<=tests=")[0-9]+' "$FILE" | paste -sd+ | bc
+            ) ;
+            failed_tests=$(
+              grep -oP '(?<=failures=")[0-9]+' "$FILE" | paste -sd+ | bc
+            ) ;
+            SKIPPED_TESTS=$(
+              grep -oP '(?<=skipped=")[0-9]+' "$FILE" | paste -sd+ | bc
+            ) ;
+            passed_tests=$((
+              total_tests - failed_tests - skipped_tests
+            )) ;
 
-          done < test_files.txt
+            declare -a report=();
+             report_structure=('[ { "python_version": "'${python_version}'",');
+            report_structure+=('"test_name": "'${test_name}'",');
+            report_structure+=('"total": '${total}',');
+            report_structure+=('"passed": '${passed}',');
+            report_structure+=('"failed": '${failed}',');
+            report_structure+=('"skipped": '${skipped}' } ]');
 
-          echo "] }" >> test_results.json
-          cat test_results.json  # ✅ Print JSON to logs for debugging
+            jq --arg python_version "${python_version}" \
+               --arg test_name "${test_name}" \
+               --argjson total "${total_tests}" \
+               --argjson passed "${passed_tests}" \
+               --argjson failed "${failed_tests}" \
+               --argjson skipped "${skipped_tests}" \
+               '.test_summary += '${report_structure} \
+               test_results.json > temp.json && mv temp.json test_results.json ;
+
+          done < test_files.txt ;
+
+          # ✅ Print JSON as a single formatted block
+          cat test_results.json | jq .
 
       - name: Upload JSON Summary
         uses: actions/upload-artifact@v4
