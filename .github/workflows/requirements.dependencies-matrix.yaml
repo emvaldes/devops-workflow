@@ -1,4 +1,4 @@
-name: Run Dependencies Tests
+name: PyTest (requirements.dependencies) matrix
 
 on:
   workflow_dispatch:
