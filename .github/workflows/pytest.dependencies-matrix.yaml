@@ -1,4 +1,5 @@
-name: Parallel PyTest - Dependencies (Matrix) 1
+---
+name: Parallel PyTest - Dependencies (Matrix)
 
 on:
   workflow_dispatch:
@@ -10,7 +11,7 @@ on:
       - main
 
 env:
-  TEST_DIR: tests/requirements/dependencies/  # Defined once for reusability
+  TEST_DIR: tests/requirements/dependencies/
 
 jobs:
 
@@ -30,7 +31,8 @@ jobs:
 
       - name: Generate requirements.txt from JSON
         run: |
-          jq -r '.dependencies[] |
+          jq -r '
+            .dependencies[] |
             if .version.target then
               "\(.package)==\(.version.target)"
             else
@@ -57,7 +59,7 @@ jobs:
           echo "Generated final-requirements.txt:"
           cat final-requirements.txt
 
-      - name: Upload `requirements.txt` and `final-requirements.txt` as Artifacts
+      - name: Upload `requirements.txt` and `final-requirements.txt`
         uses: actions/upload-artifact@v4
         with:
           name: requirements-${{ matrix.python-version }}
@@ -65,7 +67,7 @@ jobs:
             requirements.txt
             final-requirements.txt
 
-extract-tests:
+  extract-tests:
     runs-on: ubuntu-latest
     outputs:
       test_functions: ${{ steps.extract.outputs.tests }}
@@ -80,7 +82,7 @@ extract-tests:
 import re, json
 with open("${{ env.TEST_DIR }}test_dependencies.py", "r") as f:
     tests = re.findall(r'^def (test_[a-zA-Z0-9_]+)', f.read(), re.MULTILINE)
-print(json.dumps(tests))  # Ensures correct JSON output
+print(json.dumps(tests))
 EOF
           )
           echo "Extracted test functions: $TESTS"
@@ -139,7 +141,8 @@ EOF
 
       - name: Run Pytest Function
         run: |
-          pytest -v --junitxml=test-results.xml ${{ env.TEST_DIR }}test_dependencies.py::${{ matrix.test_function }}
+          pytest -v --junitxml=test-results.xml \
+          ${{ env.TEST_DIR }}test_dependencies.py::${{ matrix.test_function }}
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
