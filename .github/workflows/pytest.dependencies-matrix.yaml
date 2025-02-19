@@ -166,32 +166,33 @@ jobs:
         with:
           path: artifacts/
 
-      - name: Display Test Results Summary
+      - name: Generate JSON Summary
         run: |
-          echo "## Dependencies Test Summary" >> $GITHUB_STEP_SUMMARY
-
           echo "Aggregating test results..."
           find artifacts/ -type f -name "*.xml" > test_files.txt
 
-          TOTAL=0
-          PASSED=0
-          FAILED=0
-          SKIPPED=0
+          echo '{ "test_summary": [' > test_results.json
 
+          FIRST=true
           while read -r FILE; do
-            echo "Processing: $FILE"
-            TEST_NAME=$(basename "$FILE")
+            TEST_NAME=$(basename $(dirname "$FILE"))  # Extract test function name
+            PYTHON_VERSION=$(echo "$FILE" | grep -oP '(?<=pytest-results-)[0-9]+\.[0-9]+')  # Extract Python version
+
             TOTAL_TESTS=$(grep -oP '(?<=tests=")[0-9]+' "$FILE" | paste -sd+ | bc)
             FAILED_TESTS=$(grep -oP '(?<=failures=")[0-9]+' "$FILE" | paste -sd+ | bc)
             SKIPPED_TESTS=$(grep -oP '(?<=skipped=")[0-9]+' "$FILE" | paste -sd+ | bc)
             PASSED_TESTS=$((TOTAL_TESTS - FAILED_TESTS - SKIPPED_TESTS))
 
-            echo "### $TEST_NAME: $TOTAL_TESTS total, $PASSED_TESTS passed, $FAILED_TESTS failed, $SKIPPED_TESTS skipped" >> $GITHUB_STEP_SUMMARY
+            [[ "$FIRST" == "true" ]] && FIRST=false || echo ',' >> test_results.json
+            echo "{ \"python_version\": \"$PYTHON_VERSION\", \"test_name\": \"$TEST_NAME\", \"total\": $TOTAL_TESTS, \"passed\": $PASSED_TESTS, \"failed\": $FAILED_TESTS, \"skipped\": $SKIPPED_TESTS }" >> test_results.json
 
-            TOTAL=$((TOTAL + TOTAL_TESTS))
-            PASSED=$((PASSED + PASSED_TESTS))
-            FAILED=$((FAILED + FAILED_TESTS))
-            SKIPPED=$((SKIPPED + SKIPPED_TESTS))
           done < test_files.txt
 
-          echo "## Final Summary: $TOTAL tests run, $PASSED passed, $FAILED failed, $SKIPPED skipped" >> $GITHUB_STEP_SUMMARY
+          echo "] }" >> test_results.json
+          cat test_results.json  # ✅ Print JSON to logs for debugging
+
+      - name: Upload JSON Summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-summary
+          path: test_results.json
