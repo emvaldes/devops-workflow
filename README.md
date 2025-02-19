@@ -1,5 +1,7 @@
 # Project Documentation
 
+[![Setup Python Dependencies](https://github.com/emvaldes/devops-workflow/actions/workflows/requirements.dependencies.yml/badge.svg)](https://github.com/emvaldes/devops-workflow/actions/workflows/requirements.dependencies.yml)
+
 ## Project Structure
 
 ```console
