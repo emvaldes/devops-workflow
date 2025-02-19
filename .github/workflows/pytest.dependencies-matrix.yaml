@@ -1,4 +1,3 @@
----
 name: Parallel PyTest - Dependencies (Matrix)
 
 on:
