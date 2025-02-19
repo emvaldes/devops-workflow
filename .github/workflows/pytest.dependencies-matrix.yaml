@@ -76,12 +76,13 @@ jobs:
       - name: Extract Test Functions
         id: extract
         run: |
-          TESTS=$(python -c "
-import re
-with open('${{ env.TEST_DIR }}test_dependencies.py', 'r') as f:
+          TESTS=$(python - <<EOF
+import re, json
+with open("${{ env.TEST_DIR }}test_dependencies.py", "r") as f:
     tests = re.findall(r'^def (test_[a-zA-Z0-9_]+)', f.read(), re.MULTILINE)
-print(tests)
-" | jq -R -s -c 'split(\"\\n\")[:-1]')
+print(json.dumps(tests))  # Ensures correct JSON output
+EOF
+          )
           echo "Extracted test functions: $TESTS"
           echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
 
