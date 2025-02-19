@@ -10,6 +10,34 @@ on:
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
+
+  install-pytest:
+    name: Install PyTest
+    runs-on: ubuntu-latest
+    outputs:
+      pytest_installed: ${{ steps.check-pytest.outcome == 'success' }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Check if PyTest is Installed
+        id: check-pytest
+        run: |
+          if ! python -m pytest --version; then
+            exit 1
+          fi
+
+      - name: Install PyTest
+        if: steps.check-pytest.outcome != 'success'
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest
+
   dependencies-tests:
     name: Run Dependencies Module Tests
     runs-on: ubuntu-latest
@@ -36,17 +64,17 @@ jobs:
         with:
           python-version: '3.11'  # Adjust if needed
 
+      - name: Run Dependencies Pytest - ${{ matrix.test_module }}
+        id: dependencies_tests
+        run: |
+          echo "Running Pytest for dependencies module: ${{ matrix.test_module }}..."
+          pytest -v -s --capture=no --log-cli-level=DEBUG tests/requirements/dependencies/${{ matrix.test_module }}.py
+
       - name: Install Dependencies Module
         id: dependencies_install
         run: |
           echo "Running dependencies module to install missing packages..."
           python -m packages.requirements.dependencies
-
-      - name: Run Dependencies Pytest - ${{ matrix.test_module }}
-        id: dependencies_tests
-        run: |
-          echo "Running Pytest for dependencies module: ${{ matrix.test_module }}..."
-          pytest -v tests/requirements/dependencies/${{ matrix.test_module }}.py
 
       - name: Show Installed Packages
         run: |
