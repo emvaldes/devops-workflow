@@ -53,11 +53,13 @@ jobs:
         run: |
           pip freeze > final-requirements.txt
 
-      - name: Upload Final requirements.txt as Artifact
+      - name: Upload `requirements.txt` and `final-requirements.txt` as Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: final-requirements-${{ matrix.python-version }}
-          path: final-requirements.txt
+          name: requirements-${{ matrix.python-version }}
+          path: |
+            requirements.txt
+            final-requirements.txt
 
   extract-tests:
     runs-on: ubuntu-latest
@@ -96,6 +98,17 @@ jobs:
           path: ~/.cache/pip
           key: pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
           restore-keys: pip-${{ matrix.python-version }}-
+
+      - name: Download `requirements.txt`
+        uses: actions/download-artifact@v4
+        with:
+          name: requirements-${{ matrix.python-version }}
+          path: .
+
+      - name: Verify `requirements.txt` Exists
+        run: |
+          echo "Contents of requirements.txt:"
+          cat requirements.txt
 
       - name: Reinstall Dependencies from Cache
         run: |
