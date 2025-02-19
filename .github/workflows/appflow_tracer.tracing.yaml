@@ -1,0 +1,48 @@
+name: Run Tracing Module
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  test-and-run-tracing:
+    name: Test and Run Tracing Module
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'  # Adjust if needed
+
+      - name: Ensure Dependencies Are Installed
+        run: |
+          echo "Running dependencies module to install missing packages..."
+          python -m packages.requirements.dependencies
+
+      - name: Run Pytest for AppFlow Tracer
+        run: |
+          echo "Running tests for appflow_tracer package..."
+          pytest -v tests/appflow_tracer
+
+      - name: Run Tracing Module
+        id: tracing_run
+        run: |
+          echo "Running the tracing module..."
+          python -m packages.appflow_tracer.tracing
+
+      - name: Report Tracing Execution Status
+        run: |
+          if [ "${{ steps.tracing_run.outcome }}" == "success" ]; then
+            echo "Tracing module executed successfully."
+          else
+            echo "Tracing module execution failed." && exit 1
+          fi
