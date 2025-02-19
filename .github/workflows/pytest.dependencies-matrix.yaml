@@ -1,7 +1,8 @@
+---
 name: Parallel PyTest - Dependencies (Matrix)
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: {}  # ✅ Fix: GitHub Actions expects `{}` for workflow_dispatch
   push:
     branches:
       - main
@@ -18,7 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version:
+          - "3.9"
+          - "3.10"
+          - "3.11"
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -58,7 +62,7 @@ jobs:
           echo "Generated final-requirements.txt:"
           cat final-requirements.txt
 
-      - name: Upload `requirements.txt` and `final-requirements.txt`
+      - name: Upload requirements.txt
         uses: actions/upload-artifact@v4
         with:
           name: requirements-${{ matrix.python-version }}
@@ -77,13 +81,10 @@ jobs:
       - name: Extract Test Functions
         id: extract
         run: |
-          TESTS=$(python <<EOF
-import re, json
-with open("${{ env.TEST_DIR }}test_dependencies.py", "r") as f:
-    tests = re.findall(r'^def (test_[a-zA-Z0-9_]+)', f.read(), re.MULTILINE)
-print(json.dumps(tests))
-EOF
-          )
+          TESTS=$(python -c "import re, json; \
+            with open('${{ env.TEST_DIR }}test_dependencies.py', 'r') as f: \
+              tests = re.findall(r'^def (test_[a-zA-Z0-9_]+)', f.read(), re.MULTILINE); \
+            print(json.dumps(tests))")
           echo "Extracted test functions: $TESTS"
           echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
 
@@ -92,7 +93,10 @@ EOF
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version:
+          - "3.9"
+          - "3.10"
+          - "3.11"
         test_function: ${{ fromJson(needs.extract-tests.outputs.test_functions) }}
     steps:
       - name: Checkout Repository
@@ -110,7 +114,7 @@ EOF
           key: pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
           restore-keys: pip-${{ matrix.python-version }}-
 
-      - name: Download `requirements.txt`
+      - name: Download requirements.txt
         uses: actions/download-artifact@v4
         with:
           name: requirements-${{ matrix.python-version }}
@@ -121,7 +125,7 @@ EOF
           echo "Downloaded artifacts:"
           ls -l
 
-      - name: Verify `requirements.txt` Exists
+      - name: Verify requirements.txt Exists
         run: |
           echo "Checking if requirements.txt exists..."
           if [[ -f requirements.txt ]]; then
