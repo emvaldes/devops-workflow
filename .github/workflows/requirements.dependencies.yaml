@@ -1,74 +1,49 @@
-name: Requirements -> Dependencies Module
+name: Run Dependencies Tests
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
   pull_request:
     branches:
       - main
-  workflow_dispatch:  # Allows manual triggering
 
 jobs:
-
-  install-pytest:
-    name: Install PyTest
+  extract-tests:
     runs-on: ubuntu-latest
+    outputs:
+      test_functions: ${{ steps.extract.outputs.tests }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Extract Test Functions
+        id: extract
+        run: |
+          TEST_FILE="tests/requirements/dependencies/test_dependencies.py"
+          TESTS=$(grep -oP '^def \Ktest_[a-zA-Z0-9_]+' "$TEST_FILE" | jq -R -s -c 'split("\n")[:-1]')
+          echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
+
+  run-tests:
+    needs: extract-tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test_function: ${{ fromJson(needs.extract-tests.outputs.test_functions) }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Python and Dependencies
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
-      - name: Install PyTest
+      - name: Install Required Packages
         run: |
-          echo "Ensuring PyTest is installed..."
           python -m pip install --upgrade pip
           python -m pip install pytest
 
-  dependencies-tests:
-    name: Run Dependencies Module Tests
-    runs-on: ubuntu-latest
-    needs: install-pytest
-    strategy:
-      matrix:
-        test_module:
-          - test_debug_installation
-          - test_load_requirements_invalid_json
-          - test_load_requirements_missing
-          - test_load_requirements_valid
-          - test_install_or_update_package
-          - test_install_requirements
-          - test_is_package_installed
-          - test_parse_arguments_custom
-          - test_parse_arguments_default
-          - test_print_installed_packages
-          - test_update_installed_packages
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
-      - name: Run Dependencies Pytest - ${{ matrix.test_module }}
-        id: dependencies_tests
-        run: |
-          echo "Running Pytest for dependencies module: ${{ matrix.test_module }}..."
-          pytest -v -s --capture=no --log-cli-level=DEBUG tests/requirements/dependencies/${{ matrix.test_module }}.py
-
-      - name: Install Dependencies Module
-        id: dependencies_install
-        run: |
-          echo "Running dependencies module to install missing packages..."
-          python -m packages.requirements.dependencies
-
-      - name: Show Installed Packages
-        run: |
-          echo "Running dependencies module to show installed packages..."
-          python -m packages.requirements.dependencies --show-installed
+      - name: Run Pytest Function
+        run: pytest -v tests/requirements/dependencies/test_dependencies.py::${{ matrix.test_function }}
