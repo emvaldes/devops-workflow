@@ -16,11 +16,17 @@ jobs:
     strategy:
       matrix:
         test_module:
-          - test_load_requirements
+          - test_debug_installation
+          - test_load_requirements_invalid_json
+          - test_load_requirements_missing
+          - test_load_requirements_valid
+          - test_install_or_update_package
           - test_install_requirements
           - test_is_package_installed
-          - test_update_installed_packages
+          - test_parse_arguments_custom
+          - test_parse_arguments_default
           - test_print_installed_packages
+          - test_update_installed_packages
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
