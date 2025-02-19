@@ -36,6 +36,8 @@ jobs:
             else
               .package
             end' packages/requirements/requirements.json > requirements.txt
+          echo "Generated requirements.txt:"
+          cat requirements.txt
 
       - name: Cache Dependencies
         uses: actions/cache@v3
@@ -52,6 +54,8 @@ jobs:
       - name: Generate Final requirements.txt
         run: |
           pip freeze > final-requirements.txt
+          echo "Generated final-requirements.txt:"
+          cat final-requirements.txt
 
       - name: Upload `requirements.txt` and `final-requirements.txt` as Artifacts
         uses: actions/upload-artifact@v4
@@ -72,8 +76,13 @@ jobs:
       - name: Extract Test Functions
         id: extract
         run: |
-          TEST_FILE="${{ env.TEST_DIR }}test_dependencies.py"
-          TESTS=$(awk '/^def test_/ {print substr($2, 1, length($2)-2)}' "$TEST_FILE" | jq -R -s -c 'split("\n")[:-1]')
+          TESTS=$(python -c "
+import re
+with open('${{ env.TEST_DIR }}test_dependencies.py', 'r') as f:
+    tests = re.findall(r'^def (test_[a-zA-Z0-9_]+)', f.read(), re.MULTILINE)
+print(tests)
+" | jq -R -s -c 'split(\"\\n\")[:-1]')
+          echo "Extracted test functions: $TESTS"
           echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
 
   run-tests:
@@ -105,10 +114,22 @@ jobs:
           name: requirements-${{ matrix.python-version }}
           path: .
 
+      - name: Verify Downloaded Artifacts
+        run: |
+          echo "Downloaded artifacts:"
+          ls -l
+
       - name: Verify `requirements.txt` Exists
         run: |
-          echo "Contents of requirements.txt:"
-          cat requirements.txt
+          echo "Checking if requirements.txt exists..."
+          if [[ -f requirements.txt ]]; then
+            echo "requirements.txt found!"
+            echo "Contents of requirements.txt:"
+            cat requirements.txt
+          else
+            echo "ERROR: requirements.txt is missing!"
+            exit 1
+          fi
 
       - name: Reinstall Dependencies from Cache
         run: |
