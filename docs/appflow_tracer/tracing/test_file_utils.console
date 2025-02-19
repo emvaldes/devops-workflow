@@ -1,0 +1,13 @@
+$ pytest -v tests/appflow_tracer/tracing/file_utils/test_file_utils.py ;
+====================================================================================== test session starts =======================================================================================
+platform darwin -- Python 3.13.2, pytest-8.3.4, pluggy-1.5.0 -- /usr/local/Cellar/pytest/8.3.4/libexec/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/emvaldes/.repos/azure/workspaces/azure-profiles/python
+collected 4 items
+
+tests/appflow_tracer/tracing/file_utils/test_file_utils.py::test_is_project_file PASSED                                                                                                    [ 25%]
+tests/appflow_tracer/tracing/file_utils/test_file_utils.py::test_manage_logfiles PASSED                                                                                                    [ 50%]
+tests/appflow_tracer/tracing/file_utils/test_file_utils.py::test_relative_path PASSED                                                                                                      [ 75%]
+tests/appflow_tracer/tracing/file_utils/test_file_utils.py::test_remove_ansi_escape_codes PASSED                                                                                           [100%]
+
+======================================================================================= 4 passed in 1.31s ========================================================================================

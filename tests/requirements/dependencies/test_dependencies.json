@@ -1,0 +1,36 @@
+{
+    "colors": {
+        "CALL": "\u001b[92m",
+        "RETURN": "\u001b[93m",
+        "IMPORT": "\u001b[94m",
+        "DEBUG": "\u001b[96m",
+        "INFO": "\u001b[97m",
+        "WARNING": "\u001b[91m",
+        "ERROR": "\u001b[31m",
+        "CRITICAL": "\u001b[41m",
+        "RESET": "\u001b[0m"
+    },
+    "logging": {
+        "enable": true,
+        "max_logfiles": 5,
+        "package_name": "tests/requirements/dependencies",
+        "module_name": "test_dependencies",
+        "logs_dirname": "logs/tests/requirements/dependencies",
+        "log_filename": "logs/tests/requirements/dependencies/test_dependencies.log"
+    },
+    "tracing": {
+        "enable": true,
+        "json": {
+            "compressed": true
+        }
+    },
+    "events": {
+        "call": false,
+        "return": false,
+        "import": false
+    },
+    "stats": {
+        "created": "2025-02-18T04:37:26.261894",
+        "updated": "2025-02-19T01:48:04.682836+00:00"
+    }
+}
