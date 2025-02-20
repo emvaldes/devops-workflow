@@ -18,6 +18,7 @@ fi
 
 while read -r FILE; do
   echo "📄 Processing: $FILE"
+  cat $FILE
 
   python_version=$(echo "$FILE" | sed -E 's/.*pytest-results-([0-9]+\.[0-9]+)-.*/\1/')
   test_name=$(basename "$(dirname "$FILE")" | sed -E 's/pytest-results-[0-9]+\.[0-9]+-//')
