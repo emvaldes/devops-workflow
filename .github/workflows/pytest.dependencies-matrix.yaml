@@ -141,7 +141,7 @@ jobs:
         run: |
           JSON_FILE="${GITHUB_WORKSPACE}/test_results.json"
           if [[ ! -f "$JSON_FILE" ]]; then
-            echo "❌ ERROR: test_results.json is missing!"
+            echo "ERROR: test_results.json is missing!"
             exit 1
           fi
           echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
