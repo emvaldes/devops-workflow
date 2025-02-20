@@ -40,7 +40,7 @@ jobs:
     steps:
       - name: Check PyTest Modules
         run: |
-          if [[ -z "${{ inputs.PYTESTS_DIR }}" ]]; then
+          if [[ -z "${{ env.PYTESTS_DIR }}" ]]; then
             echo -en "Error: inputs.pytests_dir must be provided. " ;
             echo -e  "The workflow cannot proceed without a valid target." ;
             exit 1 ;
@@ -51,7 +51,7 @@ jobs:
     steps:
       - name: Check Packages Modules
         run: |
-          if [[ -z "${{ inputs.PACKAGES_DIR }}" ]]; then
+          if [[ -z "${{ env.PACKAGES_DIR }}" ]]; then
             echo -en "Error: inputs.packages_dir must be provided. " ;
             echo -e  "The workflow cannot proceed without a valid target." ;
             exit 1 ;
