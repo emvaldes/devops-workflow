@@ -1,0 +1,94 @@
+{
+  "test_summary": [
+    {
+      "python_version": "3.11",
+      "class_name": "tests",
+      "test_name": "sample_test",
+      "execution_time": "0.123",
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "python_version": "3.11",
+      "class_name": "tests",
+      "test_name": "sample_test",
+      "execution_time": "0.123",
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "python_version": "3.11",
+      "class_name": "tests",
+      "test_name": "sample_test",
+      "execution_time": "0.123",
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "python_version": "3.11",
+      "class_name": "tests",
+      "test_name": "sample_test",
+      "execution_time": "0.123",
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "python_version": "3.11",
+      "class_name": "tests",
+      "test_name": "sample_test",
+      "execution_time": "0.123",
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "python_version": "3.11",
+      "class_name": "tests",
+      "test_name": "sample_test",
+      "execution_time": "0.123",
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "python_version": "3.11",
+      "class_name": "tests",
+      "test_name": "sample_test",
+      "execution_time": "0.123",
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "python_version": "3.11",
+      "class_name": "tests",
+      "test_name": "sample_test",
+      "execution_time": "0.123",
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "python_version": "3.11",
+      "class_name": "tests",
+      "test_name": "sample_test",
+      "execution_time": "0.123",
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    }
+  ]
+}
