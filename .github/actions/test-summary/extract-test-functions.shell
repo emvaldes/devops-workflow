@@ -6,11 +6,11 @@ set -o pipefail  # Fail if any piped command fails
 TEST_FILE="tests/requirements/dependencies/test_dependencies.py"
 OUTPUT_FILE="test_functions.json"
 
-echo "Extracting test functions from: $TEST_FILE"
+echo "🔍 Extracting test functions from: $TEST_FILE"
 
 # Ensure the file exists before proceeding
 if [[ ! -f "$TEST_FILE" ]]; then
-    echo "ERROR: Test file not found: $TEST_FILE"
+    echo "❌ ERROR: Test file not found: $TEST_FILE"
     echo '{"test_functions": ["dummy_test_function"]}' > "$OUTPUT_FILE"
     exit 1
 fi
@@ -34,24 +34,32 @@ try:
     with open(output_file, "w", encoding="utf-8") as out_f:
         json.dump(json_output, out_f, indent=2, ensure_ascii=False, sort_keys=True)
 
-    print(json.dumps(json_output, indent=2))  # Print JSON correctly
-    print(f"Extracted test functions saved to: {output_file}")
+    print(json.dumps(json_output, indent=2, ensure_ascii=False, sort_keys=True))  # ✅ Print JSON properly
+    print(f"✅ Extracted test functions saved to: {output_file}")
 except Exception as e:
     json_output = {"test_functions": ["dummy_test_function"]}
 
     with open(output_file, "w", encoding="utf-8") as out_f:
         json.dump(json_output, out_f, indent=2, ensure_ascii=False, sort_keys=True)
 
-    print(f"ERROR: Failed to extract test functions: {e}", file=sys.stderr)
-    print(json.dumps(json_output, indent=2))  # Print fallback JSON
+    print(f"❌ ERROR: Failed to extract test functions: {e}", file=sys.stderr)
+    print(json.dumps(json_output, indent=2, ensure_ascii=False, sort_keys=True))  # ✅ Print fallback JSON
 EOF
 
-# Trim extra spaces or newlines
+# ✅ Remove any unwanted characters
 sed -i 's/[[:space:]]*$//' "$OUTPUT_FILE"
 
-# Validate JSON (Debugging Step)
-echo "Validating JSON Structure..."
-cat "$OUTPUT_FILE" | jq . || { echo "JSON Validation Failed!"; exit 1; }
+# ✅ Check for hidden invalid characters
+echo "🔍 Hex Dump Debugging (Check for Hidden Characters)"
+hexdump -C "$OUTPUT_FILE"
 
-echo "Final JSON Output:"
+# ✅ Validate JSON (Debugging Step)
+echo "🔍 Validating JSON Structure..."
+if ! jq -e . "$OUTPUT_FILE" > /dev/null 2>&1; then
+    echo "❌ ERROR: test_functions.json contains invalid characters!"
+    cat "$OUTPUT_FILE"
+    exit 1
+fi
+
+echo "📄 Final JSON Output:"
 cat "$OUTPUT_FILE"
