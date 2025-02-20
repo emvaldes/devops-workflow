@@ -1,3 +1,0 @@
-artifacts//pytest-results-3.10-test_install_requirements/test-results.xml
-artifacts//pytest-results-3.9-test_debug_installation/test-results.xml
-artifacts//pytest-results-3.11-test_update_installed_packages/test-results.xml

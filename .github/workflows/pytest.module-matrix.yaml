@@ -144,8 +144,8 @@ jobs:
       - name: Verify Downloaded Artifacts
         run: |
           echo "Downloaded Artifacts: " ;
-          ls -al test_functions.log ;
-          ls -al test_results.json ;
+          ls -al ./artifacts/test_functions.log ;
+          ls -al ./artifacts/test_results.json ;
 
       - name: Verify requirements.txt Exists
         run: |
