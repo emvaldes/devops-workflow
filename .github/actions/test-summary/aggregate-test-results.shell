@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-# set -x
-# pwd
-# tree artifacts/
+# set -x ;
+# pwd ;
+# tree artifacts/ ;
 
-set -e  # Exit on error
-set -o pipefail  # Fail if any piped command fails
-shopt -s nullglob  # Prevent errors if no files are found
+set -e ;             # Exit on error
+set -o pipefail ;    # Fail if any piped command fails
+shopt -s nullglob ;  # Prevent errors if no files are found
 
 test_functions='artifacts/test_functions.log' ;
 test_results='artifacts/test_results.json' ;
@@ -26,7 +26,9 @@ while read -r test_file; do
   echo -e "\nProcessing: ${test_file}" ;
 
   # Normalize XML (Remove new lines & extra spaces)
-  xml_content=$( tr -d '\n' < "${test_file}" | sed -e 's/\([[:blank:]]\)\{2,\}/ /g' ) ;
+  xml_content=$(
+    tr -d '\n' < "${test_file}" | sed -e 's/\([[:blank:]]\)\{2,\}/ /g'
+  ) ;
 
   # echo -e "Normalized XML Content:" ;
   echo -e "${xml_content}" ;
@@ -110,5 +112,5 @@ while read -r test_file; do
 done < ${test_functions} ;
 
 # Print JSON for debugging
-echo -e "Final Aggregated Test Results [${test_results}]: " ;
-cat ${test_results} | jq . ;
+# echo -e "Final Aggregated Test Results [${test_results}]: " ;
+# cat ${test_results} | jq . ;

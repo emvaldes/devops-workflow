@@ -1,40 +1,50 @@
 #!/usr/bin/env bash
 
-set -e  # Exit on error
-set -o pipefail  # Fail if any piped command fails
+set -e ;           # Exit on error
+set -o pipefail ;  # Fail if any piped command fails
 
-echo "🔍 Debugging Artifacts Directory..."
+echo -e "Debugging Artifacts Directory..." ;
 
 # Check current directory
-echo "📂 Current Working Directory: $(pwd)"
+echo -e "Current Working Directory: $( pwd )" ;
 
 # Print all available environment variables related to artifacts
-echo "🔍 Environment Variables:"
-env | grep -i 'artifact' || echo "No artifact-related variables found."
+echo -e "Environment Variables:" ;
+env | grep -i 'artifact' || echo "No artifact-related variables found." ;
 
 # Locate any artifacts directories
-echo "🔍 Searching for artifacts..."
-ARTIFACT_DIRS=$(find "$GITHUB_WORKSPACE" -type d -name "artifacts" 2>/dev/null || echo "No artifacts directory found.")
+echo -e "Searching for artifacts..." ;
+ARTIFACT_DIRS=$(
+  find "${GITHUB_WORKSPACE}" -type d -name "artifacts" 2>/dev/null \
+  || echo "No artifacts directory found."
+) ;
 
-if [[ -z "$ARTIFACT_DIRS" || "$ARTIFACT_DIRS" == "No artifacts directory found." ]]; then
-    echo "❌ ERROR: No artifacts directory detected!"
-else
-    echo "✅ Found artifacts directory at: $ARTIFACT_DIRS"
-fi
+if [[ -z "${ARTIFACT_DIRS}" \
+      || "${ARTIFACT_DIRS}" == "No artifacts directory found."
+   ]]; then
+        echo -e "ERROR: No artifacts directory detected!" ;
+  else  echo -e "Found artifacts directory at: ${ARTIFACT_DIRS}" ;
+fi ;
 
 # Find all XML files (expected test results)
-echo "🔍 Searching for test result files..."
-TEST_RESULTS=$(find "$GITHUB_WORKSPACE" -name "*.xml" 2>/dev/null || echo "No test result files found.")
+echo -e "Searching for test result files..." ;
+TEST_RESULTS=$(
+  find "${GITHUB_WORKSPACE}" -name "*.xml" 2>/dev/null \
+  || echo "No test result files found."
+) ;
 
-if [[ -z "$TEST_RESULTS" || "$TEST_RESULTS" == "No test result files found." ]]; then
-    echo "❌ ERROR: No test results found!"
-else
-    echo "✅ Found test result files:"
-    echo "$TEST_RESULTS"
-fi
+if [[ -z "${TEST_RESULTS}" \
+      || "${TEST_RESULTS}" == "No test result files found."
+   ]]; then
+        echo "ERROR: No test results found!" ;
+  else  echo "Found test result files:" ;
+        echo "${TEST_RESULTS}" ;
+fi ;
 
 # List all files in the detected artifacts directory (if found)
-if [[ -n "$ARTIFACT_DIRS" && "$ARTIFACT_DIRS" != "No artifacts directory found." ]]; then
-    echo "📂 Listing contents of artifacts directory..."
-    ls -R "$ARTIFACT_DIRS"
-fi
+if [[ -n "${ARTIFACT_DIRS}" \
+      && "${ARTIFACT_DIRS}" != "No artifacts directory found."
+   ]]; then
+    echo -e "Listing contents of artifacts directory..." ;
+    ls -R "${ARTIFACT_DIRS}" ;
+fi ;

@@ -143,8 +143,8 @@ jobs:
 
       - name: Verify Downloaded Artifacts
         run: |
-          echo "Downloaded artifacts: " ;
-          tree -FClah --prune -I .git ;
+          echo "Downloaded Artifacts: " ;
+          tree -FClah --prune -I .git ${{ env.ARTIFACTS_DIR }} 2>/dev/null ;
 
       - name: Verify requirements.txt Exists
         run: |
@@ -164,11 +164,6 @@ jobs:
         run: |
           pytest -v --junitxml=pytest-results.xml \
           "${{ env.PYTEST_DIR }}/test_dependencies.py::${{ matrix.test_function }}"
-
-      # - name: Listing - Created Artifacts Content
-      #   run: |
-      #     declare -a files=($( find . -type f -name '*.xml' ));
-      #     for file in ${files[@]}; do echo -e "\nFile: ${file}"; cat ${file}; done;
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
@@ -211,7 +206,7 @@ jobs:
       - name: Verify Downloaded Artifacts
         run: |
           echo "Listing downloaded artifacts..." ;
-          tree -FClah --prune -I .git ;
+          tree -FClah --prune -I .git ${{ env.ARTIFACTS_DIR }} 2>/dev/null ;
 
       - name: Listing - Downloaded Artifacts Content
         run: |
@@ -224,6 +219,6 @@ jobs:
 
       - name: Listing Entire Project
         run: |
-          tree -FClah --prune -I .git ${{ github.workspace }} ;
+          tree -FCla --prune -I .git ${{ github.workspace }} ;
           cat ${{ env.ARTIFACTS_DIR }}/test_functions.log ;
           cat ${{ env.ARTIFACTS_DIR }}/test_results.json ;
