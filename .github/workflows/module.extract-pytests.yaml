@@ -9,6 +9,10 @@ on:
         required: true
         type: string
 
+      GITHUB_ACTION:
+        required: true
+        type: string
+
 jobs:
 
   extract-pytests:
@@ -22,12 +26,12 @@ jobs:
 
       - name: Ensure Shell Script is Executable
         run: |
-          chmod +x "${{ env.GITHUB_ACTION }}/extract-test-functions.shell" ;
+          chmod +x "${{ inputs.GITHUB_ACTION }}/extract-test-functions.shell" ;
 
       - name: Extract Test Functions
         id: extract
         run: |
-          "${{ env.GITHUB_ACTION }}/extract-test-functions.shell" ;
+          "${{ inputs.GITHUB_ACTION }}/extract-test-functions.shell" ;
           if ! jq -e . test_functions.json > /dev/null 2>&1; then
             echo -e "ERROR: test_functions.json is not valid JSON!" ;
             cat test_functions.json ;
