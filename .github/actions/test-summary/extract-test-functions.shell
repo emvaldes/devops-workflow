@@ -16,11 +16,11 @@ if [[ ! -f "$TEST_FILE" ]]; then
 fi ;
 
 # Run Python script separately and output to JSON file
-python3 <<EOF > "${OUTPUT_FILE}"
+python3 <<EOF > "$OUTPUT_FILE"
 import re, json, sys
 
-output_file = "${OUTPUT_FILE}"
-test_file = "${TEST_FILE}"
+output_file = "$OUTPUT_FILE"
+test_file = "$TEST_FILE"
 
 try:
     with open(test_file, "r", encoding="utf-8") as f:
