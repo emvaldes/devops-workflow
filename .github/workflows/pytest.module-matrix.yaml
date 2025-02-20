@@ -175,7 +175,7 @@ jobs:
 
       - name: Ensure Debug Script is Executable
         run: |
-          chmod +x ${{ env.GITHUB_ACTION }}/debug-artifacts.shell
+          chmod +x ${{ env.GITHUB_ACTION }}/debug-artifacts-state.shell
 
       - name: Debug - Locate Artifacts
         run: |
