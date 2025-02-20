@@ -234,6 +234,8 @@ jobs:
       - name: Listing Entire Project
         run: |
           tree -FClah --prune -I .git ${{ github.workspace }} ;
+          cat ./test_files.txt ;
+          cat ./test_results.json ;
 
   # aggregate-test-results:
   #   needs: run-pytests
