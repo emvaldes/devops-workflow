@@ -4,14 +4,14 @@ run-name: ${{ github.actor }} -> Dependencies (Matrix)
 
 on:
 
-  workflow_dispatch:
-    name: Manual Deployment
-    description: 'Triggering Manual Deployment'
-
-    logLevel:
-      description: 'Log level'
-      required: false
-      default: 'warning'
+  workflow_dispatch: {}
+    # name: Manual Deployment
+    # description: 'Triggering Manual Deployment'
+    #
+    # logLevel:
+    #   description: 'Log level'
+    #   required: false
+    #   default: 'warning'
 
   push:
     branches:
