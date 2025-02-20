@@ -201,7 +201,7 @@ jobs:
       - name: Download All Test Artifacts
         uses: actions/download-artifact@v4
         with:
-          path: ${{ env.ARTIFACTS_DIR }}/
+          path: artifacts/
 
       - name: Verify Downloaded Artifacts
         run: |
