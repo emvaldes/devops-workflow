@@ -6,11 +6,22 @@ shopt -s nullglob  # Prevent errors if no files are found
 
 echo "🔍 Aggregating test results..."
 
+# ✅ Debugging Step: Show Current Directory
+echo "📂 Current Directory: $(pwd)"
+echo "📂 Listing available files and directories:"
+ls -R
+
 # ✅ Ensure the artifacts directory exists
 if [[ ! -d "artifacts/" ]]; then
   echo "❌ ERROR: 'artifacts/' directory not found!"
+  echo "🔍 Checking if artifacts were downloaded elsewhere..."
+  find . -type d -name "artifacts" || echo "⚠️ No artifacts directory found anywhere!"
   exit 1
 fi
+
+# ✅ List files inside artifacts
+echo "📂 Listing contents of 'artifacts/':"
+ls -R artifacts/
 
 # ✅ Find XML files
 find artifacts/ -type f -name "*.xml" > test_files.txt
