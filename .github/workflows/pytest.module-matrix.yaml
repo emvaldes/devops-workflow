@@ -1,6 +1,6 @@
 ---
 name: Parallel PyTest - Dependencies (Matrix)
-run-name: ${{ github.actor }} -> Dependencies (Matrix)
+# run-name: ${{ github.actor }} -> Dependencies (Matrix)
 
 on:
 
