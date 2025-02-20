@@ -29,16 +29,23 @@ try:
 
     test_functions = test_functions if test_functions else ["dummy_test_function"]
 
-    with open(output_file, "w", encoding="utf-8") as out_f:
-        json.dump({"test_functions": test_functions}, out_f, indent=2)
+    json_output = {"test_functions": test_functions}
 
-    print(f"Extracted test functions saved to: {output_file}")
+    with open(output_file, "w", encoding="utf-8") as out_f:
+        json.dump(json_output, out_f, indent=2, ensure_ascii=False, sort_keys=True)
+
+    print(json.dumps(json_output, indent=2))  # ✅ Print JSON correctly
+    print(f"✅ Extracted test functions saved to: {output_file}")
 except Exception as e:
-    with open(output_file, "w", encoding="utf-8") as out_f:
-        json.dump({"test_functions": ["dummy_test_function"]}, out_f, indent=2)
+    json_output = {"test_functions": ["dummy_test_function"]}
 
-    print(f"ERROR: Failed to extract test functions: {e}", file=sys.stderr)
+    with open(output_file, "w", encoding="utf-8") as out_f:
+        json.dump(json_output, out_f, indent=2, ensure_ascii=False, sort_keys=True)
+
+    print(f"❌ ERROR: Failed to extract test functions: {e}", file=sys.stderr)
+    print(json.dumps(json_output, indent=2))  # ✅ Print fallback JSON
 EOF
+
 
 echo "JSON Output:"
 cat "$OUTPUT_FILE"
