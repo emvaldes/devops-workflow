@@ -5,9 +5,6 @@ run-name: ${{ github.actor }} -> Module (Maxtrix)
 on:
 
   workflow_call:
-    name: Manual Deployment
-    description: "Triggering Manual Deployment"
-
     inputs:
 
       pytest_dir:
