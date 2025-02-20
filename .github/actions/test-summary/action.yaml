@@ -31,21 +31,23 @@ runs:
 
     - name: Ensure Shell Script is Executable
       shell: bash
-      run: chmod +x ${{ env.GITHUB_ACTION }}/aggregate-test-results.shell
+      run: |
+        chmod +x ${{ env.GITHUB_ACTION }}/aggregate-test-results.shell ;
 
     - name: Run Summary Script
       shell: bash
-      run: ./${{ env.GITHUB_ACTION }}/aggregate-test-results.shell
+      run: |
+        ./${{ env.GITHUB_ACTION }}/aggregate-test-results.shell ;
 
     - name: Verify JSON Output
       shell: bash
       run: |
         if [[ ! -f test_results.json ]]; then
-          echo "ERROR: No test results JSON generated!"
-          exit 1
-        fi
-        echo "Generated Test Summary JSON:"
-        cat test_results.json | jq .
+          echo -e "ERROR: No test results JSON generated!" ;
+          exit 1 ;
+        fi ;
+        echo -e "Generated Test Summary JSON: " ;
+        cat test_results.json | jq . ;
 
     - name: Upload JSON Summary
       uses: actions/upload-artifact@v4

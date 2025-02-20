@@ -35,7 +35,7 @@ jobs:
 
       - name: Debug PYTHON_VERSIONS
         run: |
-          echo "PYTHON_VERSIONS: ${{ vars.PYTHON_VERSIONS }}"
+          echo -e "PYTHON_VERSIONS: ${{ vars.PYTHON_VERSIONS }}" ;
 
       - name: Install Python and Dependencies
         uses: actions/setup-python@v4
@@ -50,9 +50,9 @@ jobs:
               "\(.package)==\(.version.target)"
             else
               .package
-            end' "${{ env.PACKAGES_DIR }}/requirements.json" > requirements.txt
-          echo "Generated requirements.txt:"
-          cat requirements.txt
+            end' "${{ env.PACKAGES_DIR }}/requirements.json" > requirements.txt ;
+          echo -e "Generated requirements.txt:" ;
+          cat requirements.txt ;
 
       - name: Cache Dependencies
         uses: actions/cache@v3
@@ -63,14 +63,14 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          python -m pip install --upgrade pip ;
+          python -m pip install -r requirements.txt ;
 
       - name: Generate Final requirements.txt
         run: |
-          pip freeze > final-requirements.txt
-          echo "Generated final-requirements.txt:"
-          cat final-requirements.txt
+          pip freeze > final-requirements.txt ;
+          echo -e "Generated final-requirements.txt: " ;
+          cat final-requirements.txt ;
 
       - name: Upload requirements.txt
         uses: actions/upload-artifact@v4
@@ -91,20 +91,19 @@ jobs:
 
       - name: Ensure Shell Script is Executable
         run: |
-          chmod +x "${{ env.GITHUB_ACTION }}/extract-test-functions.shell"
+          chmod +x "${{ env.GITHUB_ACTION }}/extract-test-functions.shell" ;
 
       - name: Extract Test Functions
         id: extract
         run: |
-          "${{ env.GITHUB_ACTION }}/extract-test-functions.shell"
+          "${{ env.GITHUB_ACTION }}/extract-test-functions.shell" ;
           if ! jq -e . test_functions.json > /dev/null 2>&1; then
-            echo "ERROR: test_functions.json is not valid JSON!"
-            cat test_functions.json
-            exit 1
-          fi
-          TESTS=$(jq -c '.test_functions' test_functions.json)
-          # echo "Extracted test functions: $TESTS"
-          echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
+            echo -e "ERROR: test_functions.json is not valid JSON!" ;
+            cat test_functions.json ;
+            exit 1 ;
+          fi ;
+          TESTS=$( jq -c '.test_functions' test_functions.json ) ;
+          echo -e "tests=$TESTS" >> "$GITHUB_OUTPUT" ;
 
   run-pytests:
     needs: [install-pytest, extract-tests]
@@ -144,21 +143,21 @@ jobs:
       - name: Verify requirements.txt Exists
         run: |
           if [[ ! -f requirements.txt ]]; then
-            echo "ERROR: requirements.txt is missing!"
-            exit 1
-          fi
-          echo "requirements.txt found!"
-          cat requirements.txt
+            echo -e "ERROR: requirements.txt is missing!" ;
+            exit 1 ;
+          fi ;
+          echo -e "requirements.txt found!" ;
+          cat requirements.txt ;
 
       - name: Reinstall Dependencies from Cache
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          python -m pip install --upgrade pip ;
+          python -m pip install -r requirements.txt ;
 
       - name: Run Pytest Function
         run: |
           pytest -v --junitxml=pytest-results.xml \
-          "${{ env.PYTEST_DIR }}/test_dependencies.py::${{ matrix.test_function }}"
+          "${{ env.PYTEST_DIR }}/test_dependencies.py::${{ matrix.test_function }}" ;
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
@@ -168,9 +167,9 @@ jobs:
 
       - name: Debug - List Uploaded Artifacts
         run: |
-          echo "Listing uploaded artifacts..." ;
+          echo -e "Listing uploaded artifacts..." ;
           find $GITHUB_WORKSPACE -type f -name "*.xml" || echo "No test result files found." ;
-          echo "Checking artifact storage location..." ;
+          echo -e "Checking artifact storage location..." ;
 
   aggregate-test-results:
     needs: run-pytests
@@ -187,11 +186,11 @@ jobs:
 
       - name: Ensure Debug Script is Executable
         run: |
-          chmod +x ${{ env.GITHUB_ACTION }}/debug-artifacts-state.shell
+          chmod +x ${{ env.GITHUB_ACTION }}/debug-artifacts-state.shell ;
 
       - name: Debug - Locate Artifacts
         run: |
-          ${{ env.GITHUB_ACTION }}/debug-artifacts-state.shell
+          ${{ env.GITHUB_ACTION }}/debug-artifacts-state.shell ;
 
       - name: Download All Test Artifacts
         uses: actions/download-artifact@v4
@@ -200,12 +199,12 @@ jobs:
 
       - name: Verify Downloaded Artifacts
         run: |
-          echo "Listing downloaded artifacts..." ;
+          echo -e "Listing downloaded artifacts..." ;
           tree -FCla --prune -I .git ./artifacts 2>/dev/null ;
 
       - name: Aggregate Pytest Results
         run: |
-          ${{ env.GITHUB_ACTION }}/aggregate-test-results.shell
+          ${{ env.GITHUB_ACTION }}/aggregate-test-results.shell ;
 
       - name: Listing Entire Project
         run: |
