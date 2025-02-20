@@ -165,10 +165,12 @@ jobs:
           name: pytest-results-${{ matrix.python-version }}-${{ matrix.test_function }}
           path: test-results.xml
 
-      - name: List Created Artifacts
+      - name: Debug - List Uploaded Artifacts
         run: |
-          echo "📂 Listing created artifacts..."
-          ls -R ${{ env.ARTIFACTS_DIR }} || echo "No artifacts found!"
+          echo "📂 Listing uploaded artifacts..."
+          find $GITHUB_WORKSPACE -type f -name "*.xml" || echo "No test result files found."
+          echo "🔍 Checking artifact storage location..."
+          ls -R $GITHUB_WORKSPACE || echo "No artifacts directory found."
 
   aggregate-test-results:
     needs: run-pytests
