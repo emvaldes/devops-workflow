@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+set -e  # Exit on error
+
+echo "Aggregating test results..."
+find artifacts/ -type f -name "*.xml" > test_files.txt
+
+# Initialize JSON structure
+jq -n '{test_summary: []}' > test_results.json 2>/dev/null
+
+while read -r FILE; do
+  python_version=$(echo "$FILE" | sed -E 's/.*pytest-results-([0-9]+\.[0-9]+)-.*/\1/')
+  test_name=$(basename "$(dirname "$FILE")" | sed -E 's/pytest-results-[0-9]+\.[0-9]+-//')
+
+  total_tests=$(grep -o 'tests="[0-9]*"' "$FILE" | grep -o '[0-9]*' || echo "0")
+  failed_tests=$(grep -o 'failures="[0-9]*"' "$FILE" | grep -o '[0-9]*' || echo "0")
+  skipped_tests=$(grep -o 'skipped="[0-9]*"' "$FILE" | grep -o '[0-9]*' || echo "0")
+  passed_tests=$((total_tests - failed_tests - skipped_tests))
+
+  TEST_CASES=$(xmllint --xpath "//testcase" "$FILE" 2>/dev/null)
+
+  echo "$TEST_CASES" | grep -o '<testcase .*\/>' | while read -r LINE; do
+    ACTUAL_TEST_NAME=$(echo "$LINE" | sed -E 's/.*name="([^"]+)".*/\1/')
+    CLASS_NAME=$(echo "$LINE" | sed -E 's/.*classname="([^"]+)".*/\1/')
+    EXEC_TIME=$(echo "$LINE" | sed -E 's/.*time="([^"]+)".*/\1/')
+
+    FAILED=$(grep -c "<failure" <<< "$LINE")
+    SKIPPED=$(grep -c "<skipped" <<< "$LINE")
+    PASSED=$((1 - FAILED - SKIPPED))
+
+    jq --arg python_version "$python_version" \
+       --arg test_name "$ACTUAL_TEST_NAME" \
+       --arg class_name "$CLASS_NAME" \
+       --arg exec_time "$EXEC_TIME" \
+       --argjson total "$total_tests" \
+       --argjson passed "$passed_tests" \
+       --argjson failed "$failed_tests" \
+       --argjson skipped "$skipped_tests" \
+       '.test_summary += [{"python_version": $python_version, "class_name": $class_name, "test_name": $test_name, "execution_time": $exec_time, "total": $total, "passed": $passed, "failed": $failed, "skipped": $skipped}]' \
+       test_results.json > temp.json && mv temp.json test_results.json
+  done
+
+done < test_files.txt
+
+# Print JSON
+cat test_results.json | jq .
