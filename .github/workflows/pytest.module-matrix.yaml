@@ -27,6 +27,7 @@ jobs:
     strategy:
       matrix:
         python-version: ${{ fromJson(vars.PYTHON_VERSIONS).python }}
+        # Default value: { "python": [ "3.9", "3.10", "3.11" ] }
     steps:
 
       - name: Install System Packages
