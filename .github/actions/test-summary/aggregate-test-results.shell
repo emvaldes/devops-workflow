@@ -11,8 +11,8 @@ shopt -s nullglob  # Prevent errors if no files are found
 echo "🔍 Aggregating test results..."
 find artifacts/ -type f -name "*.xml" > test_files.txt
 
-# ✅ Ensure JSON starts correctly
-jq -n '{test_summary: []}' > test_results.json
+# ✅ Initialize JSON structure
+jq -n '{test_summary: []}' > test_results.json 2>/dev/null
 
 if [[ ! -s test_files.txt ]]; then
   echo "⚠️ No test result files found in 'artifacts/'!"
@@ -22,26 +22,28 @@ fi
 while read -r FILE; do
   echo "📄 Processing: $FILE"
 
-  # Debug: Show File Content
-  echo "📜 XML Content of $FILE:"
-  cat "$FILE"
+  # ✅ Normalize XML (Remove new lines & extra spaces)
+  XML_CONTENT=$(tr -d '\n' < "$FILE" | sed 's/\s\s*/ /g')
+
+  echo "📜 Normalized XML Content:"
+  echo "$XML_CONTENT"
 
   python_version=$(echo "$FILE" | sed -E 's/.*pytest-results-([0-9]+\.[0-9]+)-.*/\1/')
   test_name=$(basename "$(dirname "$FILE")" | sed -E 's/pytest-results-[0-9]+\.[0-9]+-//')
 
-  total_tests=$(grep -Eo 'tests="[0-9]+"' "$FILE" | grep -Eo '[0-9]+' || echo "0")
-  failed_tests=$(grep -Eo 'failures="[0-9]+"' "$FILE" | grep -Eo '[0-9]+' || echo "0")
-  skipped_tests=$(grep -Eo 'skipped="[0-9]+"' "$FILE" | grep -Eo '[0-9]+' || echo "0")
+  total_tests=$(grep -Eo 'tests="[0-9]+"' <<< "$XML_CONTENT" | grep -Eo '[0-9]+' || echo "0")
+  failed_tests=$(grep -Eo 'failures="[0-9]+"' <<< "$XML_CONTENT" | grep -Eo '[0-9]+' || echo "0")
+  skipped_tests=$(grep -Eo 'skipped="[0-9]+"' <<< "$XML_CONTENT" | grep -Eo '[0-9]+' || echo "0")
   passed_tests=$((total_tests - failed_tests - skipped_tests))
 
-  # ✅ Ensure variables are numeric
+  # ✅ Ensure all variables are numeric
   [[ "$total_tests" =~ ^[0-9]+$ ]] || total_tests=0
   [[ "$failed_tests" =~ ^[0-9]+$ ]] || failed_tests=0
   [[ "$skipped_tests" =~ ^[0-9]+$ ]] || skipped_tests=0
   [[ "$passed_tests" =~ ^[0-9]+$ ]] || passed_tests=0
 
-  # ✅ Extract test case details using the correct XPath (handling namespaces)
-  TEST_CASES=$(xmllint --xpath "/*[local-name()='testsuites']/*[local-name()='testsuite']/*[local-name()='testcase']" "$FILE" 2>/dev/null || echo "")
+  # ✅ Extract test case details using `grep` instead of `xmllint`
+  TEST_CASES=$(echo "$XML_CONTENT" | grep -o '<testcase .*\/>' || echo "")
 
   if [[ -z "$TEST_CASES" ]]; then
     echo "❌ ERROR: No valid test cases found in '$FILE'"
@@ -52,7 +54,7 @@ while read -r FILE; do
   echo "✅ Extracted Test Cases from $FILE:"
   echo "$TEST_CASES"
 
-  while read -r LINE; do
+  echo "$TEST_CASES" | while read -r LINE; do
     ACTUAL_TEST_NAME=$(echo "$LINE" | sed -E 's/.*name="([^"]+)".*/\1/')
     CLASS_NAME=$(echo "$LINE" | sed -E 's/.*classname="([^"]+)".*/\1/')
     EXEC_TIME=$(echo "$LINE" | sed -E 's/.*time="([^"]+)".*/\1/')
@@ -63,7 +65,7 @@ while read -r FILE; do
 
     echo "✅ Adding test result: $ACTUAL_TEST_NAME (Passed: $PASSED, Failed: $FAILED, Skipped: $SKIPPED)"
 
-    # ✅ Use a temporary file for JSON safety
+    # ✅ Update JSON summary safely
     jq --arg python_version "$python_version" \
        --arg test_name "$ACTUAL_TEST_NAME" \
        --arg class_name "$CLASS_NAME" \
@@ -75,7 +77,7 @@ while read -r FILE; do
        '.test_summary += [{"python_version": $python_version, "class_name": $class_name, "test_name": $test_name, "execution_time": $exec_time, "total": $total, "passed": $passed, "failed": $failed, "skipped": $skipped}]' \
        test_results.json > temp.json && mv temp.json test_results.json
 
-  done <<< "$TEST_CASES"
+  done
 
 done < test_files.txt
 
