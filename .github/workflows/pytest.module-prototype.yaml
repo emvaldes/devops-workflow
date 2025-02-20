@@ -5,7 +5,6 @@ run-name: ${{ github.actor }} -> Module (Prototype)
 on:
 
   workflow_dispatch:
-
     name: Manual Deployment
     description: "Triggering Manual Deployment"
 

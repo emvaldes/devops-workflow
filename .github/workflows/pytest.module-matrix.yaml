@@ -5,9 +5,7 @@ run-name: ${{ github.actor }} -> ${{ inputs.module_name }}
 on:
 
   workflow_call:
-
     name: Manual Deployment
-    description: "Triggering Manual Deployment"
 
     inputs:
 
