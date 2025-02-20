@@ -161,6 +161,10 @@ jobs:
     needs: run-pytests
     runs-on: ubuntu-latest
     steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4  # ✅ Ensures the local action is available
+
       - name: Aggregate Pytest Results
         uses: ./.github/actions/test-summary
         with:
@@ -168,12 +172,14 @@ jobs:
 
       - name: Print Summary to GitHub Actions UI
         run: |
-          echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## 📝 Test Results Summary" >> $GITHUB_STEP_SUMMARY
           cat test_results.json | jq -r '
             .test_summary[] |
-            "**Python \(.python_version)** - **\(.test_name)**\n" +
-            "   - Class: \(.class_name)\n" +
-            "   - Execution Time: \(.execution_time) sec\n" +
-            "   - **Total Tests:** \(.total)\n" +
-            "   - **Passed:** \(.passed)  **Failed:** \(.failed)  **Skipped:** \(.skipped)\n"
+            "Python Version: \(.python_version)\n" +
+            "Test Name: \(.test_name)\n" +
+            "Class: \(.class_name)\n" +
+            "Execution Time: \(.execution_time) sec\n" +
+            "Total Tests: \(.total)\n" +
+            "Passed: \(.passed) | Failed: \(.failed) | Skipped: \(.skipped)\n" +
+            "-----------------------------------------\n"
           ' >> $GITHUB_STEP_SUMMARY

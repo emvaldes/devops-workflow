@@ -1,18 +1,24 @@
 name: "Aggregate Pytest Results"
 description: "Parses and summarizes pytest results into a structured JSON file"
-author: "Your Name"
+author: "Eduardo Valdes"
+
 inputs:
+
   artifact_name:
     description: "The artifact name containing test result XML files"
     required: true
     default: "pytest-results"
+
 outputs:
   summary_json:
     description: "Path to the generated JSON summary file"
     value: "./test_results.json"
+
 runs:
   using: "composite"
+
   steps:
+
     - name: Download test results
       uses: actions/download-artifact@v4
       with:
@@ -21,7 +27,7 @@ runs:
 
     - name: Run summary script
       shell: bash
-      run: .github/actions/test-summary/entrypoint.shell
+      run: .github/actions/test-summary/entrypoint.sh
 
     - name: Upload JSON Summary
       uses: actions/upload-artifact@v4

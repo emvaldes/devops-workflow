@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e  # Exit on error
+set -xe  # Exit on error
 
 echo "Aggregating test results..."
 find artifacts/ -type f -name "*.xml" > test_files.txt
