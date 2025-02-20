@@ -3,7 +3,7 @@
     {
       "python_version": "3.11",
       "class_name": "tests",
-      "test_name": "tests\nsample_test",
+      "test_name": "sample_test",
       "execution_time": "0.123",
       "total": 1,
       "passed": 1,
@@ -13,7 +13,7 @@
     {
       "python_version": "3.11",
       "class_name": "tests",
-      "test_name": "tests\nsample_test",
+      "test_name": "sample_test",
       "execution_time": "0.123",
       "total": 1,
       "passed": 1,
@@ -23,7 +23,7 @@
     {
       "python_version": "3.11",
       "class_name": "tests",
-      "test_name": "tests\nsample_test",
+      "test_name": "sample_test",
       "execution_time": "0.123",
       "total": 1,
       "passed": 1,
@@ -33,7 +33,7 @@
     {
       "python_version": "3.11",
       "class_name": "tests",
-      "test_name": "tests\nsample_test",
+      "test_name": "sample_test",
       "execution_time": "0.123",
       "total": 1,
       "passed": 1,
@@ -43,7 +43,7 @@
     {
       "python_version": "3.11",
       "class_name": "tests",
-      "test_name": "tests\nsample_test",
+      "test_name": "sample_test",
       "execution_time": "0.123",
       "total": 1,
       "passed": 1,
@@ -53,7 +53,7 @@
     {
       "python_version": "3.11",
       "class_name": "tests",
-      "test_name": "tests\nsample_test",
+      "test_name": "sample_test",
       "execution_time": "0.123",
       "total": 1,
       "passed": 1,
@@ -63,7 +63,7 @@
     {
       "python_version": "3.11",
       "class_name": "tests",
-      "test_name": "tests\nsample_test",
+      "test_name": "sample_test",
       "execution_time": "0.123",
       "total": 1,
       "passed": 1,
@@ -73,7 +73,7 @@
     {
       "python_version": "3.11",
       "class_name": "tests",
-      "test_name": "tests\nsample_test",
+      "test_name": "sample_test",
       "execution_time": "0.123",
       "total": 1,
       "passed": 1,
@@ -83,7 +83,7 @@
     {
       "python_version": "3.11",
       "class_name": "tests",
-      "test_name": "tests\nsample_test",
+      "test_name": "sample_test",
       "execution_time": "0.123",
       "total": 1,
       "passed": 1,
