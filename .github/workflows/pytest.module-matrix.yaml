@@ -1,5 +1,5 @@
 ---
-name: PyTest Module - Generic
+name: PyTest Module - Generic 1
 run-name: Running Pytest for ${{ inputs.module_name }}
 
 on:
