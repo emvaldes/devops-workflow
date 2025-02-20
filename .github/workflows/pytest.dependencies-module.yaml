@@ -1,5 +1,5 @@
 ---
-name: PyTest - Requirements/Dependencies Module
+name: PyTest - Dependencies Module
 run-name: ${{ github.actor }} -> PyTest Dependencies Module
 
 on:
