@@ -3,7 +3,7 @@
 set -xe  # Exit on error
 
 echo "Aggregating test results..."
-find artifacts/ -type f -name "*.xml" > test_files.txt
+find artifacts/ -type f -name "*.xml" > test_files.txt ;
 
 # Initialize JSON structure
 jq -n '{test_summary: []}' > test_results.json 2>/dev/null
@@ -40,7 +40,7 @@ while read -r FILE; do
        test_results.json > temp.json && mv temp.json test_results.json
   done
 
-done < test_files.txt
+done < test_files.txt ;
 
 # Print JSON
 cat test_results.json | jq .
