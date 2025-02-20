@@ -92,7 +92,7 @@ jobs:
           # Ensure valid JSON before passing to GitHub Actions output
           echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
 
-  run-tests:
+  run-pytests:
     needs: [install-pytest, extract-tests]
     runs-on: ubuntu-latest
     strategy:
@@ -158,7 +158,7 @@ jobs:
           path: test-results.xml
 
   aggregate-test-results:
-    needs: run-tests
+    needs: run-pytests
     runs-on: ubuntu-latest
     steps:
       - name: Download all test results
@@ -175,52 +175,50 @@ jobs:
           jq -n '{test_summary: []}' > test_results.json 2>/dev/null ;
 
           while read -r FILE; do
-
-            # Extract test function name
-            full_testname=$( basename $( dirname "${FILE}" ) ) ;
             # Extract Python version
             python_version="$(
-              echo "${full_testname}" | grep -oP '(?<=pytest-results-)[0-9]+\.[0-9]+'
+              echo "${FILE}" | grep -oP '(?<=pytest-results-)[0-9]+\.[0-9]+'
             )" ;
-            # Remove prefix
-            test_name="$(
-              echo "${full_testname}" | sed -E "s/pytest-results-[0-9]+\.[0-9]+-//"
-            )" ;
-
-            total_tests=$(
-              grep -oP '(?<=tests=")[0-9]+' "$FILE" | paste -sd+ | bc
+            # Extract relevant test data from XML
+            test_cases=$(
+              xmllint --xpath "//testcase" "$FILE" 2>/dev/null
             ) ;
-            failed_tests=$(
-              grep -oP '(?<=failures=")[0-9]+' "$FILE" | paste -sd+ | bc
-            ) ;
-            SKIPPED_TESTS=$(
-              grep -oP '(?<=skipped=")[0-9]+' "$FILE" | paste -sd+ | bc
-            ) ;
-            passed_tests=$((
-              total_tests - failed_tests - skipped_tests
-            )) ;
+            # Process each test case in the XML file
+            echo "${test_cases}" | grep -oP '<testcase .*?\/>' | \
 
-            declare -a report=();
-             report_structure=('[ { "python_version": "'${python_version}'",');
-            report_structure+=('"test_name": "'${test_name}'",');
-            report_structure+=('"total": '${total}',');
-            report_structure+=('"passed": '${passed}',');
-            report_structure+=('"failed": '${failed}',');
-            report_structure+=('"skipped": '${skipped}' } ]');
+            while read -r LINE; do
+              test_name=$( echo "${LINE}" | grep -oP '(?<=name=")[^"]+' ) ;
+              class_name=$( echo "${LINE}" | grep -oP '(?<=classname=")[^"]+' ) ;
+              exec_time=$( echo "${LINE}" | grep -oP '(?<=time=")[^"]+' ) ;
+              failed=$( grep -c "<failure" <<< "${LINE}" ) ;
+              skipped=$( grep -c "<skipped" <<< "${LINE}" ) ;
+              passed=$( ( 1 - failed - skipped ) ) ;
 
-            jq --arg python_version "${python_version}" \
-               --arg test_name "${test_name}" \
-               --argjson total "${total_tests}" \
-               --argjson passed "${passed_tests}" \
-               --argjson failed "${failed_tests}" \
-               --argjson skipped "${skipped_tests}" \
-               '.test_summary += '${report_structure} \
-               test_results.json > temp.json && mv temp.json test_results.json ;
+              declare -a report=() ;
+               report_structure=('[ { "python_version": "'${python_version}'",') ;
+              report_structure+=('"class_name": "'${class_name}'",') ;
+              report_structure+=('"test_name": "'${test_name}'",') ;
+              report_structure+=('"execution_time": '${exec_time}',') ;
+              report_structure+=('"total": '${total}',') ;
+              report_structure+=('"passed": '${passed}',') ;
+              report_structure+=('"failed": '${failed}',') ;
+              report_structure+=('"skipped": '${skipped}' } ]') ;
+
+              jq --arg python_version "${python_version}" \
+                 --arg test_name "${test_name}" \
+                 --arg class_name "${class_name}" \
+                 --arg exec_time "${exec_time}" \
+                 --argjson passed "${passed}" \
+                 --argjson failed "${failed}" \
+                 --argjson skipped "${skipped}" \
+                 '.test_summary += ${report_structure}' \
+                 test_results.json > temp.json && mv temp.json test_results.json ;
+            done ;
 
           done < test_files.txt ;
 
-          # ✅ Print JSON as a single formatted block
-          cat test_results.json | jq .
+          # Print JSON as a single formatted block
+          cat test_results.json | jq . ;
 
       - name: Upload JSON Summary
         uses: actions/upload-artifact@v4
