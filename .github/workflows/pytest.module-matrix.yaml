@@ -165,6 +165,38 @@ jobs:
           name: pytest-results-${{ matrix.python-version }}-${{ matrix.test_function }}
           path: test-results.xml
 
+  aggregate-test-results:
+    needs: run-pytests
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Debug: Print Environment Variables
+        run: |
+          env | grep -i 'artifact'
+
+      - name: Debug: Locate Possible Artifacts
+        run: |
+          echo "🔍 Searching for artifacts in the runner..."
+          find $GITHUB_WORKSPACE -type d -name "artifacts" || echo "No artifacts directory found."
+          find $GITHUB_WORKSPACE -name "*.xml" || echo "No test result files found."
+
+      - name: Download All Test Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+
+      - name: Verify Downloaded Artifacts
+        run: |
+          echo "📂 Listing downloaded artifacts..."
+          ls -R artifacts/ || echo "No artifacts found!"
+
+      - name: Aggregate Pytest Results
+        run: |
+          "${{ env.GITHUB_ACTION }}/aggregate-test-results.shell"
+
   # aggregate-test-results:
   #   needs: run-pytests
   #   runs-on: ubuntu-latest
