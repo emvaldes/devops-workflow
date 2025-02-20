@@ -46,7 +46,7 @@ except Exception as e:
 EOF ;
 
 # Validate JSON before proceeding
-if ! jq -e . "${OUTPUT_FILE}" > /dev/null 2>&1; then
+if ! jq -e . "${OUTPUT_FILE}" 2>&1>/dev/null; then
     echo "ERROR: test_functions.json is not valid JSON!" ;
     cat "${OUTPUT_FILE}" ;
     exit 1 ;
