@@ -148,8 +148,8 @@ jobs:
       - name: Verify Downloaded Artifacts
         run: |
           echo "Downloaded artifacts: " ;
-          ls -l ;
-          tree -FCla --prune -I .git ;
+          # ls -l ;
+          tree -FClah --prune -I .git ;
 
       - name: Verify requirements.txt Exists
         run: |
@@ -181,8 +181,13 @@ jobs:
           echo "📂 Listing uploaded artifacts..." ;
           find $GITHUB_WORKSPACE -type f -name "*.xml" || echo "No test result files found." ;
           echo "🔍 Checking artifact storage location..." ;
-          ls -R $GITHUB_WORKSPACE || echo "No artifacts directory found." ;
-          tree -FCla --prune -I .git ;
+          # ls -R $GITHUB_WORKSPACE || echo "No artifacts directory found." ;
+          tree -FClah --prune -I .git ;
+
+      - name: DEBUG - Listing Artifacts Content
+        run: |
+          declare -a files=($( find ${{ github.workspace }}/artifacts -type f -name '*.xml' ));
+          for file in ${files[@]}; do echo -e "\nFile: ${file}"; cat ${file}; done;
 
   aggregate-test-results:
     needs: run-pytests
@@ -213,8 +218,8 @@ jobs:
       - name: Verify Downloaded Artifacts
         run: |
           echo "📂 Listing downloaded artifacts..." ;
-          ls -R artifacts/ || echo "No artifacts found!" ;
-          tree -FCla --prune -I .git ;
+          # ls -R artifacts/ || echo "No artifacts found!" ;
+          tree -FClah --prune -I .git ;
 
       - name: Aggregate Pytest Results
         run: |
@@ -222,7 +227,7 @@ jobs:
 
       - name: Listing Entire Project
         run: |
-          tree -FCla --prune -I .git ${{ github.workspace }} ;
+          tree -FClah --prune -I .git ${{ github.workspace }} ;
 
   # aggregate-test-results:
   #   needs: run-pytests
