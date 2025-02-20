@@ -2,34 +2,18 @@
 
 set -e  # Exit on error
 set -o pipefail  # Fail if any piped command fails
+shopt -s nullglob  # Prevent errors if no files are found
 
 echo "🔍 Aggregating test results..."
-echo "📂 Current Directory: $(pwd)"
-
-# ✅ Ensure artifacts are downloaded before running aggregation
-echo "📂 Checking available directories..."
-find . -type d  # ✅ Debugging step
-
-# ✅ Locate artifacts dynamically
-ARTIFACTS_DIR=$(find . -type d -name "pytest-results-*" -print -quit)
-
-if [[ -z "$ARTIFACTS_DIR" ]]; then
-    echo "❌ ERROR: No test result artifacts found!"
-    exit 1
-fi
-
-echo "✅ Found test results in: $ARTIFACTS_DIR"
-
-# ✅ Find all XML test result files
-find "$ARTIFACTS_DIR" -type f -name "*.xml" > test_files.txt
-
-if [[ ! -s test_files.txt ]]; then
-    echo "❌ ERROR: No XML test result files found!"
-    exit 1
-fi
+find artifacts/ -type f -name "*.xml" > test_files.txt
 
 # ✅ Initialize JSON structure
-jq -n '{test_summary: []}' > test_results.json
+jq -n '{test_summary: []}' > test_results.json 2>/dev/null
+
+if [[ ! -s test_files.txt ]]; then
+  echo "⚠️ No test result files found in 'artifacts/'!"
+  exit 1
+fi
 
 while read -r FILE; do
   echo "📄 Processing: $FILE"
@@ -42,12 +26,14 @@ while read -r FILE; do
   skipped_tests=$(grep -Eo 'skipped="[0-9]+"' "$FILE" | grep -Eo '[0-9]+' || echo "0")
   passed_tests=$((total_tests - failed_tests - skipped_tests))
 
+  # ✅ Ensure all variables are numeric
   [[ "$total_tests" =~ ^[0-9]+$ ]] || total_tests=0
   [[ "$failed_tests" =~ ^[0-9]+$ ]] || failed_tests=0
   [[ "$skipped_tests" =~ ^[0-9]+$ ]] || skipped_tests=0
   [[ "$passed_tests" =~ ^[0-9]+$ ]] || passed_tests=0
 
-  TEST_CASES=$(xmllint --xpath "//testcase" "$FILE" 2>/dev/null || echo "")
+  # ✅ Extract test case details using `xmllint`
+  TEST_CASES=$(xmllint --xpath "//testsuite/testcase" "$FILE" 2>/dev/null || echo "")
 
   if [[ -z "$TEST_CASES" ]]; then
     echo "⚠️ No valid test cases found in '$FILE'"
@@ -59,20 +45,9 @@ while read -r FILE; do
     CLASS_NAME=$(echo "$LINE" | sed -E 's/.*classname="([^"]+)".*/\1/')
     EXEC_TIME=$(echo "$LINE" | sed -E 's/.*time="([^"]+)".*/\1/')
 
-    FAILED=$([[ "$LINE" =~ "<failure" ]] && echo "1" || echo "0")
-    SKIPPED=$([[ "$LINE" =~ "<skipped" ]] && echo "1" || echo "0")
+    FAILED=$(echo "$LINE" | grep -o "<failure" | wc -l)
+    SKIPPED=$(echo "$LINE" | grep -o "<skipped" | wc -l)
     PASSED=$((1 - FAILED - SKIPPED))
-
-    echo jq --arg python_version "$python_version" \
-       --arg test_name "$ACTUAL_TEST_NAME" \
-       --arg class_name "$CLASS_NAME" \
-       --arg exec_time "$EXEC_TIME" \
-       --argjson total "$total_tests" \
-       --argjson passed "$passed_tests" \
-       --argjson failed "$failed_tests" \
-       --argjson skipped "$skipped_tests" \
-       '.test_summary += [{"python_version": $python_version, "class_name": $class_name, "test_name": $test_name, "execution_time": $exec_time, "total": $total, "passed": $passed, "failed": $failed, "skipped": $skipped}]' \
-       test_results.json > temp.json && mv temp.json test_results.json
 
     jq --arg python_version "$python_version" \
        --arg test_name "$ACTUAL_TEST_NAME" \
