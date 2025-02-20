@@ -144,7 +144,7 @@ jobs:
       - name: Verify Downloaded Artifacts
         run: |
           echo "Downloaded Artifacts: " ;
-          tree -FClah --prune -I .git ${{ env.ARTIFACTS_DIR }} ;
+          tree -FClah --prune -I .git ${{ env.ARTIFACTS_DIR }} 2>/dev/null ;
 
       - name: Verify requirements.txt Exists
         run: |
@@ -206,7 +206,7 @@ jobs:
       - name: Verify Downloaded Artifacts
         run: |
           echo "Listing downloaded artifacts..." ;
-          tree -FClah --prune -I .git ${{ env.ARTIFACTS_DIR }} ;
+          tree -FClah --prune -I .git ${{ env.ARTIFACTS_DIR }} 2>/dev/null ;
 
       - name: Listing - Downloaded Artifacts Content
         run: |
