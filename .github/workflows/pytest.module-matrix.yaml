@@ -167,8 +167,13 @@ jobs:
 
       - name: Run Pytest Function
         run: |
-          pytest -v --junitxml=test-results.xml \
+          pytest -v --junitxml=${{ matrix.test_function }}-results.xml \
           "${{ env.PYTEST_DIR }}/test_dependencies.py::${{ matrix.test_function }}"
+
+      - name: Listing - Created Artifacts Content
+        run: |
+          declare -a files=($( find . -type f -name '*.xml' ));
+          for file in ${files[@]}; do echo -e "\nFile: ${file}"; cat ${file}; done;
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
@@ -183,11 +188,6 @@ jobs:
           echo "🔍 Checking artifact storage location..." ;
           # ls -R $GITHUB_WORKSPACE || echo "No artifacts directory found." ;
           tree -FClah --prune -I .git ;
-
-      - name: DEBUG - Listing Artifacts Content
-        run: |
-          declare -a files=($( find ${{ github.workspace }}/artifacts -type f -name '*.xml' ));
-          for file in ${files[@]}; do echo -e "\nFile: ${file}"; cat ${file}; done;
 
   aggregate-test-results:
     needs: run-pytests
@@ -220,6 +220,11 @@ jobs:
           echo "📂 Listing downloaded artifacts..." ;
           # ls -R artifacts/ || echo "No artifacts found!" ;
           tree -FClah --prune -I .git ;
+
+      - name: Listing - Created Artifacts Content
+        run: |
+          declare -a files=($( find ./artifacts -type f -name '*.xml' ));
+          for file in ${files[@]}; do echo -e "\nFile: ${file}"; cat ${file}; done;
 
       - name: Aggregate Pytest Results
         run: |
