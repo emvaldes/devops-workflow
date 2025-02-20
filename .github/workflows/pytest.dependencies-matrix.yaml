@@ -158,7 +158,7 @@ jobs:
           path: test-results.xml
 
   aggregate-test-results:
-    needs: run-tests
+    needs: run-pytest
     runs-on: ubuntu-latest
     steps:
       - name: Download all test results
