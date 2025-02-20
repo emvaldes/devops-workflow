@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<testsuites><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="0.999"><testcase classname="tests" name="sample_test" time="0.123"/></testsuite></testsuites>
