@@ -66,6 +66,7 @@ jobs:
       uses: ./.github/workflows/module.extract-pytests.yaml
       with:
         PYTESTS_DIR: ${{ inputs.pytests_dir }}
+        GITHUB_ACTION: ${{ env.GITHUB_ACTION }}
 
   run-pytests:
     needs: [install-packages, extract-pytests]
