@@ -5,35 +5,37 @@ set -o pipefail  # Fail if any piped command fails
 shopt -s nullglob  # Prevent errors if no files are found
 
 echo "🔍 Aggregating test results..."
-
-# ✅ Debugging Step: Show Current Directory
 echo "📂 Current Directory: $(pwd)"
 echo "📂 Listing available files and directories:"
-ls -R
+find . -maxdepth 3
 
-# ✅ Ensure the artifacts directory exists
-if [[ ! -d "artifacts/" ]]; then
-  echo "❌ ERROR: 'artifacts/' directory not found!"
+# ✅ Ensure 'artifacts/' directory exists before proceeding
+ARTIFACTS_DIR="artifacts"
+if [[ ! -d "$ARTIFACTS_DIR" ]]; then
+  echo "❌ ERROR: '$ARTIFACTS_DIR/' directory not found!"
   echo "🔍 Checking if artifacts were downloaded elsewhere..."
-  find . -type d -name "artifacts" || echo "⚠️ No artifacts directory found anywhere!"
-  exit 1
+
+  ALT_DIR=$(find . -type d -name "artifacts" | head -n 1)
+
+  if [[ -n "$ALT_DIR" ]]; then
+    echo "✅ Found artifacts in: $ALT_DIR"
+    ARTIFACTS_DIR="$ALT_DIR"
+  else
+    echo "❌ ERROR: No valid artifacts directory found!"
+    exit 1
+  fi
 fi
 
-# ✅ List files inside artifacts
-echo "📂 Listing contents of 'artifacts/':"
-ls -R artifacts/
-
-# ✅ Find XML files
-find artifacts/ -type f -name "*.xml" > test_files.txt
-
-# ✅ Check if any XML files exist
-if [[ ! -s test_files.txt ]]; then
-  echo "⚠️ WARNING: No test result files found in 'artifacts/'!"
-  exit 1
-fi
+# ✅ Find test result XML files
+find "$ARTIFACTS_DIR" -type f -name "*.xml" > test_files.txt
 
 # ✅ Initialize JSON structure
 jq -n '{test_summary: []}' > test_results.json 2>/dev/null
+
+if [[ ! -s test_files.txt ]]; then
+  echo "⚠️ No test result files found in '$ARTIFACTS_DIR'!"
+  exit 1
+fi
 
 while read -r FILE; do
   echo "📄 Processing: $FILE"
