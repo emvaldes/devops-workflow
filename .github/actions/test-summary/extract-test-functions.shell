@@ -34,18 +34,24 @@ try:
     with open(output_file, "w", encoding="utf-8") as out_f:
         json.dump(json_output, out_f, indent=2, ensure_ascii=False, sort_keys=True)
 
-    print(json.dumps(json_output, indent=2))  # ✅ Print JSON correctly
-    print(f"✅ Extracted test functions saved to: {output_file}")
+    print(json.dumps(json_output, indent=2))  # Print JSON correctly
+    print(f"Extracted test functions saved to: {output_file}")
 except Exception as e:
     json_output = {"test_functions": ["dummy_test_function"]}
 
     with open(output_file, "w", encoding="utf-8") as out_f:
         json.dump(json_output, out_f, indent=2, ensure_ascii=False, sort_keys=True)
 
-    print(f"❌ ERROR: Failed to extract test functions: {e}", file=sys.stderr)
-    print(json.dumps(json_output, indent=2))  # ✅ Print fallback JSON
+    print(f"ERROR: Failed to extract test functions: {e}", file=sys.stderr)
+    print(json.dumps(json_output, indent=2))  # Print fallback JSON
 EOF
 
+# Trim extra spaces or newlines
+sed -i 's/[[:space:]]*$//' "$OUTPUT_FILE"
 
-echo "JSON Output:"
+# Validate JSON (Debugging Step)
+echo "Validating JSON Structure..."
+cat "$OUTPUT_FILE" | jq . || { echo "JSON Validation Failed!"; exit 1; }
+
+echo "Final JSON Output:"
 cat "$OUTPUT_FILE"
