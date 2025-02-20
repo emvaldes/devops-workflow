@@ -1,9 +1,0 @@
-artifacts//pytest-results-3.11-test_parse_arguments_custom/pytest-results.xml
-artifacts//pytest-results-3.11-test_install_requirements/pytest-results.xml
-artifacts//pytest-results-3.11-test_load_requirements_invalid_json/pytest-results.xml
-artifacts//pytest-results-3.11-test_print_installed_packages/pytest-results.xml
-artifacts//pytest-results-3.11-test_update_installed_packages/pytest-results.xml
-artifacts//pytest-results-3.11-test_debug_installation/pytest-results.xml
-artifacts//pytest-results-3.11-test_install_or_update_package/pytest-results.xml
-artifacts//pytest-results-3.11-test_parse_arguments_default/pytest-results.xml
-artifacts//pytest-results-3.11-test_is_package_installed/pytest-results.xml
