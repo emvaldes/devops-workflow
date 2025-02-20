@@ -174,11 +174,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Ensure Debug Script is Executable
-        run: chmod +x "${{ env.GITHUB_ACTION }}/debug-artifacts.shell"
+        run: |
+          chmod +x ${{ env.GITHUB_ACTION }}/debug-artifacts.shell
 
       - name: Debug: Locate Artifacts
         run: |
-          ${{ env.GITHUB_ACTION }}/debug-artifacts.shell
+          ${{ env.GITHUB_ACTION }}/debug-artifacts-state.shell
 
       - name: Download All Test Artifacts
         uses: actions/download-artifact@v4
@@ -191,7 +192,8 @@ jobs:
           ls -R artifacts/ || echo "No artifacts found!"
 
       - name: Aggregate Pytest Results
-        run: "${{ env.GITHUB_ACTION }}/aggregate-test-results.shell"
+        run: |
+          ${{ env.GITHUB_ACTION }}/aggregate-test-results.shell
 
   # aggregate-test-results:
   #   needs: run-pytests
