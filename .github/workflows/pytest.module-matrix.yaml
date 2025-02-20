@@ -103,7 +103,7 @@ jobs:
             exit 1
           fi
           TESTS=$(jq -c '.test_functions' test_functions.json)
-          echo "Extracted test functions: $TESTS"
+          # echo "Extracted test functions: $TESTS"
           echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
 
   run-pytests:
@@ -144,7 +144,8 @@ jobs:
       - name: Verify Downloaded Artifacts
         run: |
           echo "Downloaded Artifacts: " ;
-          tree -FCla --prune -I .git 2>/dev/null ;
+          ls -al test_functions.log ;
+          ls -al test_results.json ;
 
       - name: Verify requirements.txt Exists
         run: |
