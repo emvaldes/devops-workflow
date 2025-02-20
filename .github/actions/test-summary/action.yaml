@@ -3,11 +3,10 @@ description: "Parses and summarizes pytest results into a structured JSON file"
 author: "Eduardo Valdes"
 
 inputs:
-
   artifact_name:
     description: "The artifact name containing test result XML files"
     required: true
-    default: "pytest-results"
+    default: "pytest-results-*"
 
 outputs:
   summary_json:
@@ -18,16 +17,22 @@ runs:
   using: "composite"
 
   steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4  # ✅ Ensures the action runs with the latest repo contents
 
     - name: Download test results
       uses: actions/download-artifact@v4
       with:
-        name: ${{ inputs.artifact_name }}
-        path: artifacts/
+        pattern: ${{ inputs.artifact_name }}  # ✅ Allows wildcard matching
+        merge-multiple: true  # ✅ Merges multiple test result files into `artifacts/`
+
+    - name: Ensure Shell Script is Executable
+      shell: bash
+      run: chmod +x .github/actions/test-summary/entrypoint.shell  # ✅ Prevents permission issues
 
     - name: Run summary script
       shell: bash
-      run: .github/actions/test-summary/entrypoint.sh
+      run: .github/actions/test-summary/entrypoint.shell
 
     - name: Upload JSON Summary
       uses: actions/upload-artifact@v4

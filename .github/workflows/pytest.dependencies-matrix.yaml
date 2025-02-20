@@ -19,13 +19,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version:
-          - "3.9"
-          - "3.10"
-          - "3.11"
+        # Uses the environment variable
+        python-version: ${{ fromJson(vars.PYTHON_VERSIONS).python }}
     steps:
+
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Debug PYTHON_VERSIONS
+        run: |
+          echo "Raw PYTHON_VERSIONS: ${{ vars.PYTHON_VERSIONS }}"
 
       - name: Install Python and Dependencies
         uses: actions/setup-python@v4
@@ -75,6 +78,7 @@ jobs:
     outputs:
       test_functions: ${{ steps.extract.outputs.tests }}
     steps:
+
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -82,10 +86,9 @@ jobs:
         id: extract
         run: |
           TESTS=$(python -c "import re, json, sys; \
-            f = open('${{ env.TEST_DIR }}test_dependencies.py', 'r'); \
-            tests = re.findall(r'^def (test_[a-zA-Z0-9_]+)', f.read(), re.MULTILINE); \
-            f.close(); \
-            sys.stdout.write(json.dumps(tests if tests else ['dummy_test_function']))")
+            with open('${{ env.TEST_DIR }}test_dependencies.py', 'r') as f: \
+              tests = re.findall(r'^def (test_[a-zA-Z0-9_]+)', f.read(), re.MULTILINE); \
+            print(json.dumps(tests if tests else ['dummy_test_function']))")
 
           echo "Extracted test functions: $TESTS"
 
@@ -97,12 +100,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version:
-          - "3.9"
-          - "3.10"
-          - "3.11"
+        # Uses the environment variable
+        python-version: ${{ fromJson(vars.PYTHON_VERSIONS).python }}
         test_function: ${{ fromJson(needs.extract-tests.outputs.test_functions) }}
     steps:
+
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -168,11 +170,11 @@ jobs:
       - name: Aggregate Pytest Results
         uses: ./.github/actions/test-summary
         with:
-          artifact_name: pytest-results
+          artifact_name: "pytest-results-*"
 
       - name: Print Summary to GitHub Actions UI
         run: |
-          echo "## 📝 Test Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
           cat test_results.json | jq -r '
             .test_summary[] |
             "Python Version: \(.python_version)\n" +

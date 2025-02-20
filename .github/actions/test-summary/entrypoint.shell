@@ -1,21 +1,28 @@
 #!/usr/bin/env bash
 
-set -xe  # Exit on error
+set -e  # Exit on error
+set -o pipefail  # Fail if any piped command fails
 
 echo "Aggregating test results..."
 find artifacts/ -type f -name "*.xml" > test_files.txt ;
 
-# Initialize JSON structure
+# ✅ Initialize JSON structure
 jq -n '{test_summary: []}' > test_results.json 2>/dev/null
 
 while read -r FILE; do
   python_version=$(echo "$FILE" | sed -E 's/.*pytest-results-([0-9]+\.[0-9]+)-.*/\1/')
   test_name=$(basename "$(dirname "$FILE")" | sed -E 's/pytest-results-[0-9]+\.[0-9]+-//')
 
-  total_tests=$(grep -o 'tests="[0-9]*"' "$FILE" | grep -o '[0-9]*' || echo "0")
-  failed_tests=$(grep -o 'failures="[0-9]*"' "$FILE" | grep -o '[0-9]*' || echo "0")
-  skipped_tests=$(grep -o 'skipped="[0-9]*"' "$FILE" | grep -o '[0-9]*' || echo "0")
+  total_tests=$(grep -Eo 'tests="[0-9]+"' "$FILE" | grep -Eo '[0-9]+' || echo "0")
+  failed_tests=$(grep -Eo 'failures="[0-9]+"' "$FILE" | grep -Eo '[0-9]+' || echo "0")
+  skipped_tests=$(grep -Eo 'skipped="[0-9]+"' "$FILE" | grep -Eo '[0-9]+' || echo "0")
   passed_tests=$((total_tests - failed_tests - skipped_tests))
+
+  # ✅ Ensure all variables are numeric
+  [[ -z "$total_tests" ]] && total_tests=0
+  [[ -z "$passed_tests" ]] && passed_tests=0
+  [[ -z "$failed_tests" ]] && failed_tests=0
+  [[ -z "$skipped_tests" ]] && skipped_tests=0
 
   TEST_CASES=$(xmllint --xpath "//testcase" "$FILE" 2>/dev/null)
 
@@ -42,5 +49,5 @@ while read -r FILE; do
 
 done < test_files.txt ;
 
-# Print JSON
+# ✅ Print JSON for debugging
 cat test_results.json | jq .
