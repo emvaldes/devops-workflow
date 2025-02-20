@@ -177,7 +177,8 @@ jobs:
         run: chmod +x "${{ env.GITHUB_ACTION }}/debug-artifacts.shell"
 
       - name: Debug: Locate Artifacts
-        run: "${{ env.GITHUB_ACTION }}/debug-artifacts.shell"
+        run: |
+          ${{ env.GITHUB_ACTION }}/debug-artifacts.shell
 
       - name: Download All Test Artifacts
         uses: actions/download-artifact@v4
