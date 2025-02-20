@@ -5,7 +5,9 @@ set -e  # Exit on error
 set -o pipefail  # Fail if any piped command fails
 shopt -s nullglob  # Prevent errors if no files are found
 
+pwd
 echo "🔍 Aggregating test results..."
+tree artifacts/
 find artifacts/ -type f -name "*.xml" > test_files.txt
 
 # ✅ Initialize JSON structure
