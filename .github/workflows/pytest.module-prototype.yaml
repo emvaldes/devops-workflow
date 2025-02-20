@@ -1,45 +1,41 @@
 ---
-name: PyTest Module - Generic
-run-name: Running Pytest for ${{ inputs.module_name }}
+name: Parallel PyTest - Dependencies (Matrix)
+run-name: ${{ github.actor }} -> Dependencies (Matrix)
 
 on:
-  workflow_call:
-    inputs:
-      module_name:
-        description: "Name of the module being tested"
-        required: true
-        type: string
-      pytest_dir:
-        description: "Directory of the tests for the module"
-        required: true
-        type: string
-      packages_dir:
-        description: "Directory containing requirements for the module"
-        required: true
-        type: string
+  workflow_dispatch:
+    name: Manual Deployment
+    description: "Triggering Manual Deployment"
+
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 env:
-  PYTEST_DIR: "${{ github.workspace }}/${{ inputs.pytest_dir }}"
-  PACKAGES_DIR: "${{ github.workspace }}/${{ inputs.packages_dir }}"
+  PYTEST_DIR: "${{ github.workspace }}/tests/requirements/dependencies"
+  PACKAGES_DIR: "${{ github.workspace }}/packages/requirements"
   GITHUB_ACTION: "${{ github.workspace }}/.github/actions/test-summary"
   ARTIFACTS_DIR: "${{ github.workspace }}/artifacts"
 
 jobs:
+
   install-pytest:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ${{ fromJson(vars.PYTHON_VERSIONS).python }}
+        # Default value: { "python": [ "3.9", "3.10", "3.11" ] }
     steps:
 
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Debug Input Variables
+      - name: Debug PYTHON_VERSIONS
         run: |
-          echo -e "Module Name: ${{ inputs.module_name }}" ;
-          echo -e "PYTEST_DIR: ${{ env.PYTEST_DIR }}" ;
-          echo -e "PACKAGES_DIR: ${{ env.PACKAGES_DIR }}" ;
+          echo -e "PYTHON_VERSIONS: ${{ vars.PYTHON_VERSIONS }}" ;
 
       - name: Install Python and Dependencies
         uses: actions/setup-python@v4
@@ -58,16 +54,31 @@ jobs:
           echo -e "Generated requirements.txt:" ;
           cat requirements.txt ;
 
+      - name: Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: pip-${{ matrix.python-version }}-
+
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip ;
           python -m pip install -r requirements.txt ;
 
+      - name: Generate Final requirements.txt
+        run: |
+          pip freeze > final-requirements.txt ;
+          echo -e "Generated final-requirements.txt: " ;
+          cat final-requirements.txt ;
+
       - name: Upload requirements.txt
         uses: actions/upload-artifact@v4
         with:
           name: requirements-${{ matrix.python-version }}
-          path: requirements.txt
+          path: |
+            requirements.txt
+            final-requirements.txt
 
   extract-tests:
     runs-on: ubuntu-latest
@@ -103,6 +114,11 @@ jobs:
         test_function: ${{ fromJson(needs.extract-tests.outputs.test_functions) }}
     steps:
 
+      - name: Install System Packages
+        run: |
+          sudo apt-get update --yes ;
+          sudo apt-get install tree jq --yes ;
+
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -110,6 +126,33 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+
+      - name: Restore Cached Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ matrix.python-version }}-${{ matrix.test_function }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: pip-${{ matrix.python-version }}-${{ matrix.test_function }}-
+
+      - name: Download requirements.txt
+        uses: actions/download-artifact@v4
+        with:
+          name: requirements-${{ matrix.python-version }}
+          path: .
+
+      - name: Verify requirements.txt Exists
+        run: |
+          if [[ ! -f requirements.txt ]]; then
+            echo -e "ERROR: requirements.txt is missing!" ;
+            exit 1 ;
+          fi ;
+          echo -e "requirements.txt found!" ;
+          cat requirements.txt ;
+
+      - name: Reinstall Dependencies from Cache
+        run: |
+          python -m pip install --upgrade pip ;
+          python -m pip install -r requirements.txt ;
 
       - name: Run Pytest Function
         run: |
@@ -122,26 +165,37 @@ jobs:
           name: pytest-results-${{ matrix.python-version }}-${{ matrix.test_function }}
           path: pytest-results.xml
 
+      - name: Debug - List Uploaded Artifacts
+        run: |
+          echo -e "Listing uploaded artifacts..." ;
+          find $GITHUB_WORKSPACE -type f -name "*.xml" || echo "No test result files found." ;
+          echo -e "Checking artifact storage location..." ;
+
   aggregate-test-results:
     needs: run-pytests
     runs-on: ubuntu-latest
     steps:
+
+      - name: Install System Packages
+        run: |
+          sudo apt-get update --yes ;
+          sudo apt-get install tree jq --yes ;
 
       - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Ensure Debug Script is Executable
         run: |
-          chmod +x "${{ env.GITHUB_ACTION }}/debug-artifacts-state.shell" ;
+          chmod +x ${{ env.GITHUB_ACTION }}/debug-artifacts-state.shell ;
 
       - name: Debug - Locate Artifacts
         run: |
-          "${{ env.GITHUB_ACTION }}/debug-artifacts-state.shell" ;
+          ${{ env.GITHUB_ACTION }}/debug-artifacts-state.shell ;
 
       - name: Download All Test Artifacts
         uses: actions/download-artifact@v4
         with:
-          path: "${{ env.ARTIFACTS_DIR }}/"
+          path: ${{ env.ARTIFACTS_DIR }}/
 
       - name: Verify Downloaded Artifacts
         run: |
@@ -150,10 +204,10 @@ jobs:
 
       - name: Aggregate Pytest Results
         run: |
-          "${{ env.GITHUB_ACTION }}/aggregate-test-results.shell" ;
+          ${{ env.GITHUB_ACTION }}/aggregate-test-results.shell ;
 
-      - name: Upload Aggregated Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: aggregated-test-results
-          path: "${{ env.ARTIFACTS_DIR }}/test_results.json"
+      - name: Listing Entire Project
+        run: |
+          tree -FCla --prune -I .git ${{ github.workspace }} ;
+          # cat ${{ env.ARTIFACTS_DIR }}/test_functions.log ;
+          # cat ${{ env.ARTIFACTS_DIR }}/test_results.json ;
