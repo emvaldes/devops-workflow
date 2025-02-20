@@ -206,12 +206,7 @@ jobs:
       - name: Verify Downloaded Artifacts
         run: |
           echo "Listing downloaded artifacts..." ;
-          tree -FCla --prune -I .git 2>/dev/null ;
-
-      - name: Listing - Downloaded Artifacts Content
-        run: |
-          declare -a files=($( find . -type f -name '*.xml' ));
-          for file in ${files[@]}; do echo -e "\nFile: ${file}"; cat ${file}; done;
+          tree -FCla --prune -I .git ./artifacts 2>/dev/null ;
 
       - name: Aggregate Pytest Results
         run: |
