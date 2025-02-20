@@ -2,7 +2,7 @@
 name: Parallel PyTest - Dependencies (Matrix)
 run-name: ${{ github.actor }} -> Dependencies (Matrix)
 on:
-  workflow_dispatch: {}  # ✅ Fix: Corrected truthy value
+  workflow_dispatch: true  # ✅ Fix: Corrected truthy value
   push:
     branches:
       - main
@@ -12,7 +12,7 @@ on:
 
 env:
   PYTEST_DIR: "${GITHUB_WORKSPACE}/tests/requirements/dependencies"
-  PACKAGES_DIR: "${GITHUB_WORKSPACE}/packages/requirements/"
+  PACKAGES_DIR: "${GITHUB_WORKSPACE}/packages/requirements"
   GITHUB_ACTION: "${GITHUB_WORKSPACE}/.github/actions/test-summary"
 
 jobs:
@@ -28,7 +28,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Debug PYTHON_VERSIONS
-        run: echo "PYTHON_VERSIONS: ${{ vars.PYTHON_VERSIONS }}"
+        run: |
+          echo "PYTHON_VERSIONS: ${{ vars.PYTHON_VERSIONS }}"
 
       - name: Install Python and Dependencies
         uses: actions/setup-python@v4
@@ -36,7 +37,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Generate requirements.txt from JSON
-        run: |
+        run: >
           jq -r '
             .dependencies[] |
             if .version.target then
@@ -44,27 +45,26 @@ jobs:
             else
               .package
             end' "${{ env.PACKAGES_DIR }}/requirements.json" > ./requirements.txt
-
-          echo "Generated requirements.txt:"
-          cat requirements.txt
+          && echo "Generated requirements.txt:" && cat requirements.txt
 
       - name: Cache Dependencies
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
+          key: >
+            pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
           restore-keys: pip-${{ matrix.python-version }}-
 
       - name: Install Dependencies
-        run: |
+        run: >
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          && python -m pip install -r requirements.txt
 
       - name: Generate Final requirements.txt
-        run: |
+        run: >
           pip freeze > final-requirements.txt
-          echo "Generated final-requirements.txt:"
-          cat final-requirements.txt
+          && echo "Generated final-requirements.txt:"
+          && cat final-requirements.txt
 
       - name: Upload requirements.txt
         uses: actions/upload-artifact@v4
@@ -88,11 +88,11 @@ jobs:
 
       - name: Extract Test Functions
         id: extract
-        run: |
+        run: >
           "${{ env.GITHUB_ACTION }}/extract-test-functions.shell"
-          TESTS=$(cat test_functions.json | jq -c '.test_functions')
-          echo "Extracted test functions: $TESTS"
-          echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
+          && TESTS=$(cat test_functions.json | jq -c '.test_functions')
+          && echo "Extracted test functions: $TESTS"
+          && echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
 
   run-pytests:
     needs: [install-pytest, extract-tests]
@@ -115,7 +115,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: pip-${{ matrix.python-version }}-${{ matrix.test_function }}-${{ hashFiles('requirements.txt') }}
+          key: >
+            pip-${{ matrix.python-version }}-${{ matrix.test_function }}-${{ hashFiles('requirements.txt') }}
           restore-keys: pip-${{ matrix.python-version }}-${{ matrix.test_function }}-
 
       - name: Download requirements.txt
@@ -130,23 +131,22 @@ jobs:
           ls -l
 
       - name: Verify requirements.txt Exists
-        run: |
+        run: >
           if [[ ! -f requirements.txt ]]; then
             echo "ERROR: requirements.txt is missing!"
             exit 1
           fi
-
-          echo "requirements.txt found!"
-          cat requirements.txt
+          && echo "requirements.txt found!"
+          && cat requirements.txt
 
       - name: Reinstall Dependencies from Cache
-        run: |
+        run: >
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          && python -m pip install -r requirements.txt
 
       - name: Run Pytest Function
-        run: |
-          pytest -v --junitxml=test-results.xml \
+        run: >
+          pytest -v --junitxml=test-results.xml
           "${{ env.PYTEST_DIR }}/test_dependencies.py::${{ matrix.test_function }}"
 
       - name: Upload Test Results
@@ -169,9 +169,9 @@ jobs:
           artifact_name: "pytest-results-*"
 
       - name: Print Summary to GitHub Actions UI
-        run: |
+        run: >
           echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
-          cat test_results.json | jq -r '
+          && cat test_results.json | jq -r '
             .test_summary[] |
             "Python Version: \(.python_version)\n" +
             "Test Name: \(.test_name)\n" +
