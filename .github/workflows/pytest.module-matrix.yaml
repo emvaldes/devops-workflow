@@ -1,6 +1,6 @@
 ---
 name: Parallel PyTest - Package Module
-run-name: ${{ github.actor }} -> ${{ inputs.module_name }}
+run-name: ${{ github.actor }} -> Package Module
 
 on:
 
