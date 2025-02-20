@@ -2,7 +2,7 @@
 name: Parallel PyTest - Dependencies (Matrix)
 run-name: ${{ github.actor }} -> Dependencies (Matrix)
 on:
-  workflow_dispatch:
+  workflow_dispatch: {}  # ✅ Fix: Corrected truthy value
   push:
     branches:
       - main
@@ -11,8 +11,8 @@ on:
       - main
 
 env:
-  PYTEST_DIR:    "${GITHUB_WORKSPACE}/tests/requirements/dependencies"
-  PACKAGES_DIR:  "${GITHUB_WORKSPACE}/packages/requirements"
+  PYTEST_DIR: "${GITHUB_WORKSPACE}/tests/requirements/dependencies"
+  PACKAGES_DIR: "${GITHUB_WORKSPACE}/packages/requirements/"
   GITHUB_ACTION: "${GITHUB_WORKSPACE}/.github/actions/test-summary"
 
 jobs:
@@ -43,9 +43,10 @@ jobs:
               "\(.package)==\(.version.target)"
             else
               .package
-            end' "${PACKAGES_DIR}/requirements.json" > "${GITHUB_WORKSPACE}/requirements.txt"
+            end' "${{ env.PACKAGES_DIR }}/requirements.json" > ./requirements.txt
+
           echo "Generated requirements.txt:"
-          cat "${GITHUB_WORKSPACE}/requirements.txt"
+          cat requirements.txt
 
       - name: Cache Dependencies
         uses: actions/cache@v3
@@ -57,21 +58,21 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r "${GITHUB_WORKSPACE}/requirements.txt"
+          python -m pip install -r requirements.txt
 
       - name: Generate Final requirements.txt
         run: |
-          pip freeze > "${GITHUB_WORKSPACE}/final-requirements.txt"
+          pip freeze > final-requirements.txt
           echo "Generated final-requirements.txt:"
-          cat "${GITHUB_WORKSPACE}/final-requirements.txt"
+          cat final-requirements.txt
 
       - name: Upload requirements.txt
         uses: actions/upload-artifact@v4
         with:
           name: requirements-${{ matrix.python-version }}
           path: |
-            "${GITHUB_WORKSPACE}/requirements.txt"
-            "${GITHUB_WORKSPACE}/final-requirements.txt"
+            requirements.txt
+            final-requirements.txt
 
   extract-tests:
     runs-on: ubuntu-latest
@@ -83,16 +84,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Ensure Shell Script is Executable
-        run: |
-          if [[ ! -x "${GITHUB_ACTION}/extract-test-functions.shell" ]]; then
-            chmod +x "${GITHUB_ACTION}/extract-test-functions.shell"
-          fi
+        run: chmod +x "${{ env.GITHUB_ACTION }}/extract-test-functions.shell"
 
       - name: Extract Test Functions
         id: extract
         run: |
-          "${GITHUB_ACTION}/extract-test-functions.shell"
-          TESTS=$(jq -c '.test_functions' < test_functions.json)
+          "${{ env.GITHUB_ACTION }}/extract-test-functions.shell"
+          TESTS=$(cat test_functions.json | jq -c '.test_functions')
           echo "Extracted test functions: $TESTS"
           echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
 
@@ -113,10 +111,43 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Restore Cached Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ matrix.python-version }}-${{ matrix.test_function }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: pip-${{ matrix.python-version }}-${{ matrix.test_function }}-
+
+      - name: Download requirements.txt
+        uses: actions/download-artifact@v4
+        with:
+          name: requirements-${{ matrix.python-version }}
+          path: .
+
+      - name: Verify Downloaded Artifacts
+        run: |
+          echo "Downloaded artifacts:"
+          ls -l
+
+      - name: Verify requirements.txt Exists
+        run: |
+          if [[ ! -f requirements.txt ]]; then
+            echo "ERROR: requirements.txt is missing!"
+            exit 1
+          fi
+
+          echo "requirements.txt found!"
+          cat requirements.txt
+
+      - name: Reinstall Dependencies from Cache
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
       - name: Run Pytest Function
         run: |
           pytest -v --junitxml=test-results.xml \
-          "${PYTEST_DIR}/test_dependencies.py::${{ matrix.test_function }}"
+          "${{ env.PYTEST_DIR }}/test_dependencies.py::${{ matrix.test_function }}"
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
@@ -139,13 +170,8 @@ jobs:
 
       - name: Print Summary to GitHub Actions UI
         run: |
-          JSON_FILE="${GITHUB_WORKSPACE}/test_results.json"
-          if [[ ! -f "$JSON_FILE" ]]; then
-            echo "ERROR: test_results.json is missing!"
-            exit 1
-          fi
           echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
-          cat "$JSON_FILE" | jq -r '
+          cat test_results.json | jq -r '
             .test_summary[] |
             "Python Version: \(.python_version)\n" +
             "Test Name: \(.test_name)\n" +
