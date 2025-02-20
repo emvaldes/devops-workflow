@@ -1,6 +1,6 @@
 ---
-name: PyTest Module - Generic
-run-name: Running Pytest for ${{ inputs.module_name }}
+name: Parallel PyTest - Module (Matrix)
+run-name: Parallel PyTest - ${{ inputs.module_name }}
 
 on:
   workflow_call:
