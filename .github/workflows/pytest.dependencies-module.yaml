@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
 
-      pytest_dir:
+      pytests_dir:
         description: 'Directory containing PyTest files'
         required: false
         default: 'tests/requirements/dependencies'
@@ -29,5 +29,5 @@ jobs:
   call-module-matrix:
     uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
-      pytest_dir: ${{ inputs.pytest_dir }}
+      pytests_dir: ${{ inputs.pytest_dir }}
       packages_dir: ${{ inputs.packages_dir }}
