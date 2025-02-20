@@ -4,7 +4,7 @@ run-name: ${{ github.actor }} -> Module (Prototype)
 
 on:
 
-  workflow_dispatch:
+  workflow_call:
     name: Manual Deployment
     description: "Triggering Manual Deployment"
 
@@ -37,6 +37,28 @@ env:
   ARTIFACTS_DIR: "${{ github.workspace }}/artifacts"
 
 jobs:
+
+  pytest-input:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PyTest Modules
+        run: |
+          if [[ -z "${{ inputs.pytest_dir }}" ]]; then
+            echo -en "Error: pytest_dir must be provided. " ;
+            echo -e  "The workflow cannot proceed without a valid target." ;
+            exit 1 ;
+          fi ;
+
+  packages-input:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Packages Modules
+        run: |
+          if [[ -z "${{ inputs.packages_dir }}" ]]; then
+            echo -en "Error: pytest_dir must be provided. " ;
+            echo -e  "The workflow cannot proceed without a valid target." ;
+            exit 1 ;
+          fi ;
 
   install-pytest:
     runs-on: ubuntu-latest
