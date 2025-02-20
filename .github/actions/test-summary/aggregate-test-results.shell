@@ -21,7 +21,6 @@ while read -r FILE; do
   python_version=$(echo "$FILE" | sed -E 's/.*pytest-results-([0-9]+\.[0-9]+)-.*/\1/')
   test_name=$(basename "$(dirname "$FILE")" | sed -E 's/pytest-results-[0-9]+\.[0-9]+-//')
 
-  # ✅ Extract total, failed, and skipped test counts
   total_tests=$(grep -Eo 'tests="[0-9]+"' "$FILE" | grep -Eo '[0-9]+' || echo "0")
   failed_tests=$(grep -Eo 'failures="[0-9]+"' "$FILE" | grep -Eo '[0-9]+' || echo "0")
   skipped_tests=$(grep -Eo 'skipped="[0-9]+"' "$FILE" | grep -Eo '[0-9]+' || echo "0")
@@ -33,25 +32,24 @@ while read -r FILE; do
   [[ "$skipped_tests" =~ ^[0-9]+$ ]] || skipped_tests=0
   [[ "$passed_tests" =~ ^[0-9]+$ ]] || passed_tests=0
 
-  # ✅ Extract test case details using correct XML structure
-  TEST_CASES=$(xmllint --xpath "//testsuites/testsuite/testcase" "$FILE" 2>/dev/null || echo "")
+  # ✅ Extract test case details properly
+  TEST_CASES=$(xmllint --xpath "//testcase" "$FILE" 2>/dev/null || echo "")
 
   if [[ -z "$TEST_CASES" ]]; then
     echo "⚠️ No valid test cases found in '$FILE'"
     continue
   fi
 
+  # 🔍 Extract individual test cases using a while loop
   echo "$TEST_CASES" | grep -o '<testcase .*\/>' | while read -r LINE; do
-    ACTUAL_TEST_NAME=$(echo "$LINE" | sed -E 's/.*name="([^"]+)".*/\1/')
-    CLASS_NAME=$(echo "$LINE" | sed -E 's/.*classname="([^"]+)".*/\1/')
-    EXEC_TIME=$(echo "$LINE" | sed -E 's/.*time="([^"]+)".*/\1/')
+    ACTUAL_TEST_NAME=$(echo "$LINE" | grep -o 'name="[^"]*"' | cut -d'"' -f2)
+    CLASS_NAME=$(echo "$LINE" | grep -o 'classname="[^"]*"' | cut -d'"' -f2)
+    EXEC_TIME=$(echo "$LINE" | grep -o 'time="[^"]*"' | cut -d'"' -f2)
 
-    # ✅ Count failures and skips correctly
-    FAILED=$(echo "$LINE" | grep -o "<failure" | wc -l)
-    SKIPPED=$(echo "$LINE" | grep -o "<skipped" | wc -l)
+    FAILED=$([[ "$LINE" =~ "<failure" ]] && echo "1" || echo "0")
+    SKIPPED=$([[ "$LINE" =~ "<skipped" ]] && echo "1" || echo "0")
     PASSED=$((1 - FAILED - SKIPPED))
 
-    # ✅ Append results to JSON
     jq --arg python_version "$python_version" \
        --arg test_name "$ACTUAL_TEST_NAME" \
        --arg class_name "$CLASS_NAME" \
@@ -66,6 +64,6 @@ while read -r FILE; do
 
 done < test_files.txt
 
-# ✅ Debugging - Validate JSON & Output
+# ✅ Print JSON for debugging
 echo "📊 Final Aggregated Test Results:"
 cat test_results.json | jq .
