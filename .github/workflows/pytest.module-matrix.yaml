@@ -174,7 +174,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Debug: Print Environment Variables
-        run: env | grep -i 'artifact'
+        run: |
+          env | grep -i 'artifact'
 
       - name: Debug: Locate Possible Artifacts
         run: |
