@@ -3,6 +3,7 @@ name: Parallel PyTest - Module (Prototype)
 run-name: ${{ github.actor }} -> Module (Prototype)
 
 on:
+
   workflow_dispatch:
 
     name: Manual Deployment

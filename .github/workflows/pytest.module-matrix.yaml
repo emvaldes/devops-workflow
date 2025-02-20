@@ -1,8 +1,9 @@
 ---
-name: Parallel PyTest - ${{ inputs.module_name }}
+name: Parallel PyTest - Package Module
 run-name: ${{ github.actor }} -> ${{ inputs.module_name }}
 
 on:
+
   workflow_call:
 
     name: Manual Deployment
