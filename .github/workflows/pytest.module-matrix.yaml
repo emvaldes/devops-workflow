@@ -89,12 +89,27 @@ jobs:
       - name: Ensure Shell Script is Executable
         run: chmod +x "${{ env.GITHUB_ACTION }}/extract-test-functions.shell"
 
+      # - name: Extract Test Functions
+      #   id: extract
+      #   run: |
+      #     "${{ env.GITHUB_ACTION }}/extract-test-functions.shell"
+      #
+      #     TESTS=$(cat test_functions.json | jq -c '.test_functions')
+      #     echo "Extracted test functions: $TESTS"
+      #     echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
+
       - name: Extract Test Functions
         id: extract
         run: |
           "${{ env.GITHUB_ACTION }}/extract-test-functions.shell"
 
-          TESTS=$(cat test_functions.json | jq -c '.test_functions')
+          if ! jq -e . test_functions.json > /dev/null 2>&1; then
+            echo "ERROR: test_functions.json is not valid JSON!"
+            cat test_functions.json
+            exit 1
+          fi
+
+          TESTS=$(jq -c '.test_functions' test_functions.json)
           echo "Extracted test functions: $TESTS"
           echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
 
