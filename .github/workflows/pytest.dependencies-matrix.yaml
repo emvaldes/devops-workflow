@@ -92,7 +92,7 @@ jobs:
           # Ensure valid JSON before passing to GitHub Actions output
           echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
 
-  run-pytests:
+  run-pytest:
     needs: [install-pytest, extract-tests]
     runs-on: ubuntu-latest
     strategy:
@@ -158,7 +158,7 @@ jobs:
           path: test-results.xml
 
   aggregate-test-results:
-    needs: run-pytests
+    needs: run-tests
     runs-on: ubuntu-latest
     steps:
       - name: Download all test results
@@ -169,59 +169,114 @@ jobs:
       - name: Generate JSON Summary
         run: |
           echo "Aggregating test results..."
-          find artifacts/ -type f -name "*.xml" > test_files.txt ;
+          find artifacts/ -type f -name "*.xml" > test_files.txt
 
-          # Generate JSON using jq for proper formatting
-          jq -n '{test_summary: []}' > test_results.json 2>/dev/null ;
+          # ✅ Initialize JSON structure
+          jq -n '{test_summary: []}' > test_results.json 2>/dev/null
 
           while read -r FILE; do
-            # Extract Python version
-            python_version="$(
-              echo "${FILE}" | grep -oP '(?<=pytest-results-)[0-9]+\.[0-9]+'
-            )" ;
-            # Extract relevant test data from XML
-            test_cases=$(
-              xmllint --xpath "//testcase" "$FILE" 2>/dev/null
-            ) ;
+            PYTHON_VERSION=$(echo "$FILE" | grep -oP '(?<=pytest-results-)[0-9]+\.[0-9]+')  # Extract Python version
+
+            # ✅ Extract relevant test data from XML
+            TEST_CASES=$(xmllint --xpath "//testcase" "$FILE" 2>/dev/null)
+
             # Process each test case in the XML file
-            echo "${test_cases}" | grep -oP '<testcase .*?\/>' | \
+            echo "$TEST_CASES" | grep -oP '<testcase .*?\/>' | while read -r LINE; do
+              TEST_NAME=$(echo "$LINE" | grep -oP '(?<=name=")[^"]+')
+              CLASS_NAME=$(echo "$LINE" | grep -oP '(?<=classname=")[^"]+')
+              EXEC_TIME=$(echo "$LINE" | grep -oP '(?<=time=")[^"]+')
 
-            while read -r LINE; do
-              test_name=$( echo "${LINE}" | grep -oP '(?<=name=")[^"]+' ) ;
-              class_name=$( echo "${LINE}" | grep -oP '(?<=classname=")[^"]+' ) ;
-              exec_time=$( echo "${LINE}" | grep -oP '(?<=time=")[^"]+' ) ;
-              failed=$( grep -c "<failure" <<< "${LINE}" ) ;
-              skipped=$( grep -c "<skipped" <<< "${LINE}" ) ;
-              passed=$( ( 1 - failed - skipped ) ) ;
+              FAILED=$(grep -c "<failure" <<< "$LINE")
+              SKIPPED=$(grep -c "<skipped" <<< "$LINE")
+              PASSED=$((1 - FAILED - SKIPPED))
 
-              declare -a report=() ;
-               report_structure=('[ { "python_version": "'${python_version}'",') ;
-              report_structure+=('"class_name": "'${class_name}'",') ;
-              report_structure+=('"test_name": "'${test_name}'",') ;
-              report_structure+=('"execution_time": '${exec_time}',') ;
-              report_structure+=('"total": '${total}',') ;
-              report_structure+=('"passed": '${passed}',') ;
-              report_structure+=('"failed": '${failed}',') ;
-              report_structure+=('"skipped": '${skipped}' } ]') ;
+              jq --arg python_version "$PYTHON_VERSION" \
+                 --arg test_name "$TEST_NAME" \
+                 --arg class_name "$CLASS_NAME" \
+                 --arg exec_time "$EXEC_TIME" \
+                 --argjson passed "$PASSED" \
+                 --argjson failed "$FAILED" \
+                 --argjson skipped "$SKIPPED" \
+                 '.test_summary += [{"python_version": $python_version, "class_name": $class_name, "test_name": $test_name, "execution_time": $exec_time, "passed": $passed, "failed": $failed, "skipped": $skipped}]' \
+                 test_results.json > temp.json && mv temp.json test_results.json
+            done
 
-              jq --arg python_version "${python_version}" \
-                 --arg test_name "${test_name}" \
-                 --arg class_name "${class_name}" \
-                 --arg exec_time "${exec_time}" \
-                 --argjson passed "${passed}" \
-                 --argjson failed "${failed}" \
-                 --argjson skipped "${skipped}" \
-                 '.test_summary += ${report_structure}' \
-                 test_results.json > temp.json && mv temp.json test_results.json ;
-            done ;
+          done < test_files.txt
 
-          done < test_files.txt ;
-
-          # Print JSON as a single formatted block
-          cat test_results.json | jq . ;
+          # ✅ Print formatted JSON
+          cat test_results.json | jq .
 
       - name: Upload JSON Summary
         uses: actions/upload-artifact@v4
         with:
           name: test-results-summary
           path: test_results.json
+
+  # aggregate-test-results:
+  #   needs: run-pytest
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Download all test results
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         path: artifacts/
+  #
+  #     - name: Generate JSON Summary
+  #       run: |
+  #         echo "Aggregating test results..."
+  #         find artifacts/ -type f -name "*.xml" > test_files.txt ;
+  #
+  #         # Generate JSON using jq for proper formatting
+  #         jq -n '{test_summary: []}' > test_results.json 2>/dev/null ;
+  #
+  #         while read -r FILE; do
+  #           # Extract Python version
+  #           python_version="$(
+  #             echo "${FILE}" | grep -oP '(?<=pytest-results-)[0-9]+\.[0-9]+'
+  #           )" ;
+  #           # Extract relevant test data from XML
+  #           test_cases=$(
+  #             xmllint --xpath "//testcase" "$FILE" 2>/dev/null
+  #           ) ;
+  #           # Process each test case in the XML file
+  #           echo "${test_cases}" | grep -oP '<testcase .*?\/>' | \
+  #
+  #           while read -r LINE; do
+  #             test_name=$( echo "${LINE}" | grep -oP '(?<=name=")[^"]+' ) ;
+  #             class_name=$( echo "${LINE}" | grep -oP '(?<=classname=")[^"]+' ) ;
+  #             exec_time=$( echo "${LINE}" | grep -oP '(?<=time=")[^"]+' ) ;
+  #             failed=$( grep -c "<failure" <<< "${LINE}" ) ;
+  #             skipped=$( grep -c "<skipped" <<< "${LINE}" ) ;
+  #             passed=$( ( 1 - failed - skipped ) ) ;
+  #
+  #             declare -a report=() ;
+  #              report_structure=('[ { "python_version": "'${python_version}'",') ;
+  #             report_structure+=('"class_name": "'${class_name}'",') ;
+  #             report_structure+=('"test_name": "'${test_name}'",') ;
+  #             report_structure+=('"execution_time": '${exec_time}',') ;
+  #             report_structure+=('"total": '${total}',') ;
+  #             report_structure+=('"passed": '${passed}',') ;
+  #             report_structure+=('"failed": '${failed}',') ;
+  #             report_structure+=('"skipped": '${skipped}' } ]') ;
+  #
+  #             jq --arg python_version "${python_version}" \
+  #                --arg test_name "${test_name}" \
+  #                --arg class_name "${class_name}" \
+  #                --arg exec_time "${exec_time}" \
+  #                --argjson passed "${passed}" \
+  #                --argjson failed "${failed}" \
+  #                --argjson skipped "${skipped}" \
+  #                '.test_summary += ${report_structure}' \
+  #                test_results.json > temp.json && mv temp.json test_results.json ;
+  #           done ;
+  #
+  #         done < test_files.txt ;
+  #
+  #         # Print JSON as a single formatted block
+  #         cat test_results.json | jq . ;
+  #
+  #     - name: Upload JSON Summary
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: test-results-summary
+  #         path: test_results.json
