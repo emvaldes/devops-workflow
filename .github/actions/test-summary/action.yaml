@@ -11,31 +11,50 @@ inputs:
 outputs:
   summary_json:
     description: "Path to the generated JSON summary file"
-    value: "./test_results.json"
+    value: "${{ github.workspace }}/test_results.json"
+
+env:
+  GITHUB_ACTION: "${GITHUB_WORKSPACE}/.github/actions/test-summary"
 
 runs:
   using: "composite"
 
   steps:
     - name: Checkout Repository
-      uses: actions/checkout@v4  # ✅ Ensures the action runs with the latest repo contents
+      uses: actions/checkout@v4
+
+    - name: Ensure Artifacts Directory Exists
+      shell: bash
+      run: mkdir -p "${GITHUB_WORKSPACE}/artifacts"
 
     - name: Download test results
       uses: actions/download-artifact@v4
       with:
-        pattern: ${{ inputs.artifact_name }}  # ✅ Allows wildcard matching
-        merge-multiple: true  # ✅ Merges multiple test result files into `artifacts/`
+        pattern: ${{ inputs.artifact_name }}
+        merge-multiple: true
+        path: "${GITHUB_WORKSPACE}/artifacts/"
 
     - name: Ensure Shell Script is Executable
       shell: bash
-      run: chmod +x .github/actions/test-summary/entrypoint.shell  # ✅ Prevents permission issues
+      run: chmod +x "${GITHUB_ACTION}/aggregate-test-results.shell"
 
     - name: Run summary script
       shell: bash
-      run: .github/actions/test-summary/entrypoint.shell
+      run: "${GITHUB_ACTION}/aggregate-test-results.shell"
+
+    - name: Verify JSON Output
+      shell: bash
+      run: |
+        JSON_FILE="${GITHUB_WORKSPACE}/test_results.json"
+        if [[ ! -f "$JSON_FILE" ]]; then
+          echo "ERROR: No test results JSON generated!"
+          exit 1
+        fi
+        echo "Generated Test Summary JSON:"
+        cat "$JSON_FILE" | jq .
 
     - name: Upload JSON Summary
       uses: actions/upload-artifact@v4
       with:
         name: test-results-summary
-        path: test_results.json
+        path: "${GITHUB_WORKSPACE}/test_results.json"

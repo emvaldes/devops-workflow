@@ -4,10 +4,10 @@ set -e  # Exit on error
 set -o pipefail  # Fail if any piped command fails
 shopt -s nullglob  # Prevent errors if no files are found
 
-echo "🔍 Aggregating test results..."
+echo "Aggregating test results..."
 find artifacts/ -type f -name "*.xml" > test_files.txt
 
-# ✅ Initialize JSON structure
+# Initialize JSON structure
 jq -n '{test_summary: []}' > test_results.json 2>/dev/null
 
 if [[ ! -s test_files.txt ]]; then
@@ -16,7 +16,7 @@ if [[ ! -s test_files.txt ]]; then
 fi
 
 while read -r FILE; do
-  echo "📄 Processing: $FILE"
+  echo "Processing: $FILE"
 
   python_version=$(echo "$FILE" | sed -E 's/.*pytest-results-([0-9]+\.[0-9]+)-.*/\1/')
   test_name=$(basename "$(dirname "$FILE")" | sed -E 's/pytest-results-[0-9]+\.[0-9]+-//')
@@ -26,13 +26,13 @@ while read -r FILE; do
   skipped_tests=$(grep -Eo 'skipped="[0-9]+"' "$FILE" | grep -Eo '[0-9]+' || echo "0")
   passed_tests=$((total_tests - failed_tests - skipped_tests))
 
-  # ✅ Ensure all variables are numeric
+  # Ensure all variables are numeric
   [[ "$total_tests" =~ ^[0-9]+$ ]] || total_tests=0
   [[ "$failed_tests" =~ ^[0-9]+$ ]] || failed_tests=0
   [[ "$skipped_tests" =~ ^[0-9]+$ ]] || skipped_tests=0
   [[ "$passed_tests" =~ ^[0-9]+$ ]] || passed_tests=0
 
-  # ✅ Extract test case details
+  # Extract test case details using xmllint for accuracy
   TEST_CASES=$(xmllint --xpath "//testcase" "$FILE" 2>/dev/null || echo "")
 
   if [[ -z "$TEST_CASES" ]]; then
@@ -40,6 +40,7 @@ while read -r FILE; do
     continue
   fi
 
+  # Process each test case separately
   echo "$TEST_CASES" | grep -o '<testcase .*\/>' | while read -r LINE; do
     ACTUAL_TEST_NAME=$(echo "$LINE" | sed -E 's/.*name="([^"]+)".*/\1/')
     CLASS_NAME=$(echo "$LINE" | sed -E 's/.*classname="([^"]+)".*/\1/')
@@ -63,6 +64,6 @@ while read -r FILE; do
 
 done < test_files.txt
 
-# ✅ Print JSON for debugging
+# Print JSON for debugging
 echo "📊 Final Aggregated Test Results:"
 cat test_results.json | jq .
