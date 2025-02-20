@@ -27,7 +27,7 @@ runs:
       uses: actions/download-artifact@v4
       with:
         name: ${{ inputs.artifact_name }}
-        path: artifacts/  # ✅ Ensures test results go to the correct location
+        path: artifacts/  # Ensures test results go to the correct location
 
     - name: Ensure Shell Script is Executable
       shell: bash
@@ -41,10 +41,10 @@ runs:
       shell: bash
       run: |
         if [[ ! -f test_results.json ]]; then
-          echo "❌ ERROR: No test results JSON generated!"
+          echo "ERROR: No test results JSON generated!"
           exit 1
         fi
-        echo "✅ Generated Test Summary JSON:"
+        echo "Generated Test Summary JSON:"
         cat test_results.json | jq .
 
     - name: Upload JSON Summary

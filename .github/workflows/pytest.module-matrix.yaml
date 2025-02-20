@@ -141,11 +141,6 @@ jobs:
           name: requirements-${{ matrix.python-version }}
           path: .
 
-      - name: Verify Downloaded Artifacts
-        run: |
-          echo "Downloaded Artifacts: " ;
-          tree -FCla --prune -I .git 2>/dev/null ;
-
       - name: Verify requirements.txt Exists
         run: |
           if [[ ! -f requirements.txt ]]; then
@@ -215,5 +210,5 @@ jobs:
       - name: Listing Entire Project
         run: |
           tree -FCla --prune -I .git ${{ github.workspace }} ;
-          cat ${{ env.ARTIFACTS_DIR }}/test_functions.log ;
-          cat ${{ env.ARTIFACTS_DIR }}/test_results.json ;
+          # cat ${{ env.ARTIFACTS_DIR }}/test_functions.log ;
+          # cat ${{ env.ARTIFACTS_DIR }}/test_results.json ;
