@@ -1,8 +1,6 @@
 # Project Documentation
 
-[![AppFlow-Tracer -> Tracing Module](https://github.com/emvaldes/devops-workflow/actions/workflows/appflow_tracer.tracing.yaml/badge.svg)](https://github.com/emvaldes/devops-workflow/actions/workflows/appflow_tracer.tracing.yaml)
-
-[![Requirements -> Dependencies Module](https://github.com/emvaldes/devops-workflow/actions/workflows/requirements.dependencies.yml/badge.svg)](https://github.com/emvaldes/devops-workflow/actions/workflows/requirements.dependencies.yml)
+[![Parallel PyTest - Dependencies (Matrix)](https://github.com/emvaldes/devops-workflow/actions/workflows/pytest.module-matrix.yaml/badge.svg)](https://github.com/emvaldes/devops-workflow/actions/workflows/pytest.module-matrix.yaml)
 
 ## Project Structure
 
