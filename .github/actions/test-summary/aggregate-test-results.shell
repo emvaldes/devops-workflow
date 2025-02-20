@@ -2,40 +2,34 @@
 
 set -e  # Exit on error
 set -o pipefail  # Fail if any piped command fails
-shopt -s nullglob  # Prevent errors if no files are found
 
 echo "🔍 Aggregating test results..."
 echo "📂 Current Directory: $(pwd)"
-echo "📂 Listing available files and directories:"
-find . -maxdepth 3
 
-# ✅ Ensure 'artifacts/' directory exists before proceeding
-ARTIFACTS_DIR="artifacts"
-if [[ ! -d "$ARTIFACTS_DIR" ]]; then
-  echo "❌ ERROR: '$ARTIFACTS_DIR/' directory not found!"
-  echo "🔍 Checking if artifacts were downloaded elsewhere..."
+# ✅ Ensure artifacts are downloaded before running aggregation
+echo "📂 Checking available directories..."
+find . -type d  # ✅ Debugging step
 
-  ALT_DIR=$(find . -type d -name "artifacts" | head -n 1)
+# ✅ Locate artifacts dynamically
+ARTIFACTS_DIR=$(find . -type d -name "pytest-results-*" -print -quit)
 
-  if [[ -n "$ALT_DIR" ]]; then
-    echo "✅ Found artifacts in: $ALT_DIR"
-    ARTIFACTS_DIR="$ALT_DIR"
-  else
-    echo "❌ ERROR: No valid artifacts directory found!"
+if [[ -z "$ARTIFACTS_DIR" ]]; then
+    echo "❌ ERROR: No test result artifacts found!"
     exit 1
-  fi
 fi
 
-# ✅ Find test result XML files
+echo "✅ Found test results in: $ARTIFACTS_DIR"
+
+# ✅ Find all XML test result files
 find "$ARTIFACTS_DIR" -type f -name "*.xml" > test_files.txt
 
-# ✅ Initialize JSON structure
-jq -n '{test_summary: []}' > test_results.json 2>/dev/null
-
 if [[ ! -s test_files.txt ]]; then
-  echo "⚠️ No test result files found in '$ARTIFACTS_DIR'!"
-  exit 1
+    echo "❌ ERROR: No XML test result files found!"
+    exit 1
 fi
+
+# ✅ Initialize JSON structure
+jq -n '{test_summary: []}' > test_results.json
 
 while read -r FILE; do
   echo "📄 Processing: $FILE"
@@ -48,13 +42,11 @@ while read -r FILE; do
   skipped_tests=$(grep -Eo 'skipped="[0-9]+"' "$FILE" | grep -Eo '[0-9]+' || echo "0")
   passed_tests=$((total_tests - failed_tests - skipped_tests))
 
-  # ✅ Ensure all variables are numeric
   [[ "$total_tests" =~ ^[0-9]+$ ]] || total_tests=0
   [[ "$failed_tests" =~ ^[0-9]+$ ]] || failed_tests=0
   [[ "$skipped_tests" =~ ^[0-9]+$ ]] || skipped_tests=0
   [[ "$passed_tests" =~ ^[0-9]+$ ]] || passed_tests=0
 
-  # ✅ Extract test case details
   TEST_CASES=$(xmllint --xpath "//testcase" "$FILE" 2>/dev/null || echo "")
 
   if [[ -z "$TEST_CASES" ]]; then

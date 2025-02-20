@@ -11,10 +11,10 @@ inputs:
 outputs:
   summary_json:
     description: "Path to the generated JSON summary file"
-    value: "${{ github.workspace }}/test_results.json"
+    value: "./test_results.json"
 
 env:
-  GITHUB_ACTION: "${GITHUB_WORKSPACE}/.github/actions/test-summary"
+  GITHUB_ACTION: ${{ github.workspace }}/.github/actions/test-summary
 
 runs:
   using: "composite"
@@ -23,38 +23,32 @@ runs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Ensure Artifacts Directory Exists
-      shell: bash
-      run: mkdir -p "${GITHUB_WORKSPACE}/artifacts"
-
-    - name: Download test results
+    - name: Download Test Artifacts
       uses: actions/download-artifact@v4
       with:
-        pattern: ${{ inputs.artifact_name }}
-        merge-multiple: true
-        path: "${GITHUB_WORKSPACE}/artifacts/"
+        name: ${{ inputs.artifact_name }}
+        path: artifacts/  # ✅ Ensures test results go to the correct location
 
     - name: Ensure Shell Script is Executable
       shell: bash
-      run: chmod +x "${GITHUB_ACTION}/aggregate-test-results.shell"
+      run: chmod +x ${{ env.GITHUB_ACTION }}/aggregate-test-results.shell
 
-    - name: Run summary script
+    - name: Run Summary Script
       shell: bash
-      run: "${GITHUB_ACTION}/aggregate-test-results.shell"
+      run: ./${{ env.GITHUB_ACTION }}/aggregate-test-results.shell
 
     - name: Verify JSON Output
       shell: bash
       run: |
-        JSON_FILE="${GITHUB_WORKSPACE}/test_results.json"
-        if [[ ! -f "$JSON_FILE" ]]; then
-          echo "ERROR: No test results JSON generated!"
+        if [[ ! -f test_results.json ]]; then
+          echo "❌ ERROR: No test results JSON generated!"
           exit 1
         fi
-        echo "Generated Test Summary JSON:"
-        cat "$JSON_FILE" | jq .
+        echo "✅ Generated Test Summary JSON:"
+        cat test_results.json | jq .
 
     - name: Upload JSON Summary
       uses: actions/upload-artifact@v4
       with:
         name: test-results-summary
-        path: "${GITHUB_WORKSPACE}/test_results.json"
+        path: test_results.json
