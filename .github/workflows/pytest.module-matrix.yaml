@@ -173,15 +173,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Debug: Print Environment Variables
-        run: |
-          env | grep -i 'artifact'
+      - name: Ensure Debug Script is Executable
+        run: chmod +x "${{ env.GITHUB_ACTION }}/debug-artifacts.shell"
 
-      - name: Debug: Locate Possible Artifacts
-        run: |
-          echo "🔍 Searching for artifacts in the runner..."
-          find $GITHUB_WORKSPACE -type d -name "artifacts" || echo "No artifacts directory found."
-          find $GITHUB_WORKSPACE -name "*.xml" || echo "No test result files found."
+      - name: Debug: Locate Artifacts
+        run: "${{ env.GITHUB_ACTION }}/debug-artifacts.shell"
 
       - name: Download All Test Artifacts
         uses: actions/download-artifact@v4
@@ -194,8 +190,7 @@ jobs:
           ls -R artifacts/ || echo "No artifacts found!"
 
       - name: Aggregate Pytest Results
-        run: |
-          "${{ env.GITHUB_ACTION }}/aggregate-test-results.shell"
+        run: "${{ env.GITHUB_ACTION }}/aggregate-test-results.shell"
 
   # aggregate-test-results:
   #   needs: run-pytests
