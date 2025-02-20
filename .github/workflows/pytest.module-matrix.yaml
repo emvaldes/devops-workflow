@@ -31,8 +31,8 @@ jobs:
 
       - name: Install System Packages
         run: |
-          apt update --yes ;
-          apt install tree jq --yes ;
+          sudo apt-get update --yes ;
+          sudo apt-get install tree jq --yes ;
 
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -121,8 +121,8 @@ jobs:
 
       - name: Install System Packages
         run: |
-          apt update --yes ;
-          apt install tree jq --yes ;
+          sudo apt-get update --yes ;
+          sudo apt-get install tree jq --yes ;
 
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -191,8 +191,8 @@ jobs:
 
       - name: Install System Packages
         run: |
-          apt update --yes ;
-          apt install tree jq --yes ;
+          sudo apt-get update --yes ;
+          sudo apt-get install tree jq --yes ;
 
       - name: Checkout Repository
         uses: actions/checkout@v4
