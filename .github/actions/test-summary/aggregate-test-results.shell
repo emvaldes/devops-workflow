@@ -63,6 +63,17 @@ while read -r FILE; do
     SKIPPED=$([[ "$LINE" =~ "<skipped" ]] && echo "1" || echo "0")
     PASSED=$((1 - FAILED - SKIPPED))
 
+    echo jq --arg python_version "$python_version" \
+       --arg test_name "$ACTUAL_TEST_NAME" \
+       --arg class_name "$CLASS_NAME" \
+       --arg exec_time "$EXEC_TIME" \
+       --argjson total "$total_tests" \
+       --argjson passed "$passed_tests" \
+       --argjson failed "$failed_tests" \
+       --argjson skipped "$skipped_tests" \
+       '.test_summary += [{"python_version": $python_version, "class_name": $class_name, "test_name": $test_name, "execution_time": $exec_time, "total": $total, "passed": $passed, "failed": $failed, "skipped": $skipped}]' \
+       test_results.json > temp.json && mv temp.json test_results.json
+
     jq --arg python_version "$python_version" \
        --arg test_name "$ACTUAL_TEST_NAME" \
        --arg class_name "$CLASS_NAME" \
