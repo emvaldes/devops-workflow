@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-set -x
-pwd
-tree artifacts/
-
 set -e  # Exit on error
 set -o pipefail  # Fail if any piped command fails
 shopt -s nullglob  # Prevent errors if no files are found
@@ -29,8 +25,6 @@ while read -r FILE; do
   python_version=$(echo "$FILE" | sed -E 's/.*pytest-results-([0-9]+\.[0-9]+)-.*/\1/')
   test_name=$(basename "$(dirname "$FILE")" | sed -E 's/pytest-results-[0-9]+\.[0-9]+-//')
 
-  cat $FILE
-
   total_tests=$(grep -Eo 'tests="[0-9]+"' "$FILE" | grep -Eo '[0-9]+' || echo "0")
   failed_tests=$(grep -Eo 'failures="[0-9]+"' "$FILE" | grep -Eo '[0-9]+' || echo "0")
   skipped_tests=$(grep -Eo 'skipped="[0-9]+"' "$FILE" | grep -Eo '[0-9]+' || echo "0")
@@ -42,13 +36,17 @@ while read -r FILE; do
   [[ "$skipped_tests" =~ ^[0-9]+$ ]] || skipped_tests=0
   [[ "$passed_tests" =~ ^[0-9]+$ ]] || passed_tests=0
 
-  # ✅ Extract test case details using the correct XPath
-  TEST_CASES=$(xmllint --xpath "//testsuite/testcase" "$FILE" 2>/dev/null || echo "")
+  # ✅ Extract test case details using the correct XPath (handling namespaces)
+  TEST_CASES=$(xmllint --xpath "/*[local-name()='testsuites']/*[local-name()='testsuite']/*[local-name()='testcase']" "$FILE" 2>/dev/null || echo "")
 
   if [[ -z "$TEST_CASES" ]]; then
-    echo "⚠️ No valid test cases found in '$FILE'"
+    echo "❌ ERROR: No valid test cases found in '$FILE'"
     continue
   fi
+
+  # Debug: Show extracted test cases
+  echo "✅ Extracted Test Cases from $FILE:"
+  echo "$TEST_CASES"
 
   while read -r LINE; do
     ACTUAL_TEST_NAME=$(echo "$LINE" | sed -E 's/.*name="([^"]+)".*/\1/')
