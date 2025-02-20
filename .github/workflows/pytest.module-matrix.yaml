@@ -18,6 +18,13 @@ on:
         required: true
         type: string
 
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
 env:
   PYTEST_DIR: "${{ github.workspace }}/${{ inputs.pytest_dir }}"
   PACKAGES_DIR: "${{ github.workspace }}/${{ inputs.packages_dir }}"
