@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+  <testsuite name="pytest" errors="0" failures="1" skipped="0" tests="3" time="1.019" timestamp="2025-02-19T22:57:56.046763+00:00" hostname="local">
+    <testcase classname="tests.requirements.dependencies.test_dependencies" name="test_debug_installation" time="0.217">
+      <failure message="AssertionError">Expected True but got False</failure>
+    </testcase>
+    <testcase classname="tests.requirements.dependencies.test_dependencies" name="test_check_config" time="0.120"/>
+    <testcase classname="tests.requirements.dependencies.test_dependencies" name="test_dependency_load" time="0.185"/>
+  </testsuite>
+</testsuites>

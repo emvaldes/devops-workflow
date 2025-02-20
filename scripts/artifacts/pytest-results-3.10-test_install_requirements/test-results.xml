@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+  <testsuite name="pytest" errors="0" failures="0" skipped="1" tests="2" time="0.850" timestamp="2025-02-19T22:58:30.123456+00:00" hostname="local">
+    <testcase classname="tests.requirements.dependencies.test_dependencies" name="test_install_requirements" time="0.315"/>
+    <testcase classname="tests.requirements.dependencies.test_dependencies" name="test_missing_dependency" time="0.320">
+      <skipped message="Skipping due to missing package"/>
+    </testcase>
+  </testsuite>
+</testsuites>

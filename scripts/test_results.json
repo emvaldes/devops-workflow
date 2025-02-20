@@ -1,0 +1,44 @@
+{
+  "test_summary": [
+    {
+      "python_version": "3.10",
+      "class_name": "tests.requirements.dependencies.test_dependencies",
+      "test_name": "test_install_requirements",
+      "execution_time": "0.315",
+      "total": 2,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 1
+    },
+    {
+      "python_version": "3.9",
+      "class_name": "tests.requirements.dependencies.test_dependencies",
+      "test_name": "test_check_config",
+      "execution_time": "0.120",
+      "total": 3,
+      "passed": 2,
+      "failed": 1,
+      "skipped": 0
+    },
+    {
+      "python_version": "3.9",
+      "class_name": "tests.requirements.dependencies.test_dependencies",
+      "test_name": "test_dependency_load",
+      "execution_time": "0.185",
+      "total": 3,
+      "passed": 2,
+      "failed": 1,
+      "skipped": 0
+    },
+    {
+      "python_version": "3.11",
+      "class_name": "tests.requirements.dependencies.test_dependencies",
+      "test_name": "test_update_installed_packages",
+      "execution_time": "0.450",
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    }
+  ]
+}
