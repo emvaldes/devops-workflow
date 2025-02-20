@@ -179,7 +179,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pytest-results-${{ matrix.python-version }}-${{ matrix.test_function }}
-          path: test-results.xml
+          path: ${{ matrix.test_function }}-results.xml
 
       - name: Debug - List Uploaded Artifacts
         run: |
@@ -221,9 +221,9 @@ jobs:
           # ls -R artifacts/ || echo "No artifacts found!" ;
           tree -FClah --prune -I .git ;
 
-      - name: Listing - Created Artifacts Content
+      - name: Listing - Downloaded Artifacts Content
         run: |
-          declare -a files=($( find ./artifacts -type f -name '*.xml' ));
+          declare -a files=($( find . -type f -name '*.xml' ));
           for file in ${files[@]}; do echo -e "\nFile: ${file}"; cat ${file}; done;
 
       - name: Aggregate Pytest Results
