@@ -165,10 +165,10 @@ jobs:
           pytest -v --junitxml=pytest-results.xml \
           "${{ env.PYTEST_DIR }}/test_dependencies.py::${{ matrix.test_function }}"
 
-      - name: Listing - Created Artifacts Content
-        run: |
-          declare -a files=($( find . -type f -name '*.xml' ));
-          for file in ${files[@]}; do echo -e "\nFile: ${file}"; cat ${file}; done;
+      # - name: Listing - Created Artifacts Content
+      #   run: |
+      #     declare -a files=($( find . -type f -name '*.xml' ));
+      #     for file in ${files[@]}; do echo -e "\nFile: ${file}"; cat ${file}; done;
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
@@ -181,7 +181,6 @@ jobs:
           echo "Listing uploaded artifacts..." ;
           find $GITHUB_WORKSPACE -type f -name "*.xml" || echo "No test result files found." ;
           echo "Checking artifact storage location..." ;
-          tree -FClah --prune -I .git ;
 
   aggregate-test-results:
     needs: run-pytests
@@ -207,12 +206,11 @@ jobs:
       - name: Download All Test Artifacts
         uses: actions/download-artifact@v4
         with:
-          path: artifacts/
+          path: ${{ env.ARTIFACTS_DIR }}/
 
       - name: Verify Downloaded Artifacts
         run: |
-          echo "📂 Listing downloaded artifacts..." ;
-          # ls -R artifacts/ || echo "No artifacts found!" ;
+          echo "Listing downloaded artifacts..." ;
           tree -FClah --prune -I .git ;
 
       - name: Listing - Downloaded Artifacts Content
@@ -227,36 +225,5 @@ jobs:
       - name: Listing Entire Project
         run: |
           tree -FClah --prune -I .git ${{ github.workspace }} ;
-          cat ./test_files.txt ;
-          cat ./test_results.json ;
-
-  # aggregate-test-results:
-  #   needs: run-pytests
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@v4
-  #
-  #     - name: Debug: Print Environment Variables
-  #       run: env | grep -i 'artifact'
-  #
-  #     - name: Debug: Locate Possible Artifacts
-  #       run: |
-  #         echo "🔍 Searching for artifacts in the runner..."
-  #         find $GITHUB_WORKSPACE -type d -name "artifacts" || echo "No artifacts directory found."
-  #         find $GITHUB_WORKSPACE -name "*.xml" || echo "No test result files found."
-  #
-  #     - name: Download All Test Artifacts
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         path: artifacts/
-  #
-  #     - name: Verify Downloaded Artifacts
-  #       run: |
-  #         echo "📂 Listing downloaded artifacts..."
-  #         ls -R artifacts/ || echo "No artifacts found!"
-  #
-  #     - name: Aggregate Pytest Results
-  #       run: |
-  #         "${{ env.GITHUB_ACTION }}/aggregate-test-results.shell"
+          cat ${{ env.ARTIFACTS_DIR }}/test_functions.log ;
+          cat ${{ env.ARTIFACTS_DIR }}/test_results.json ;
