@@ -1,8 +1,18 @@
 ---
 name: Parallel PyTest - Dependencies (Matrix)
 run-name: ${{ github.actor }} -> Dependencies (Matrix)
+
 on:
-  workflow_dispatch: true  # ✅ Fix: Corrected truthy value
+
+  workflow_dispatch:
+    name: Manual Deployment
+    description: 'Triggering Manual Deployment'
+
+    logLevel:
+      description: 'Log level'
+      required: false
+      default: 'warning'
+
   push:
     branches:
       - main
