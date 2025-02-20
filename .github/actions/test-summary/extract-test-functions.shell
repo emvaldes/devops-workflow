@@ -3,6 +3,7 @@
 set -e  # Exit on error
 set -o pipefail  # Fail if any piped command fails
 
+# TEST_FILE="../../../tests/requirements/dependencies/test_dependencies.py"
 TEST_FILE="tests/requirements/dependencies/test_dependencies.py"
 OUTPUT_FILE="test_functions.json"
 
@@ -28,38 +29,28 @@ try:
         test_functions = re.findall(r'^def (test_[a-zA-Z0-9_]+)', content, re.MULTILINE)
 
     test_functions = test_functions if test_functions else ["dummy_test_function"]
-
     json_output = {"test_functions": test_functions}
 
     with open(output_file, "w", encoding="utf-8") as out_f:
         json.dump(json_output, out_f, indent=2, ensure_ascii=False, sort_keys=True)
 
-    print(json.dumps(json_output, indent=2, ensure_ascii=False, sort_keys=True))  # ✅ Print JSON properly
-    print(f"✅ Extracted test functions saved to: {output_file}")
+    print(json.dumps(json_output, indent=2, ensure_ascii=False, sort_keys=True))  # ✅ Print JSON only (No extra text)
 except Exception as e:
     json_output = {"test_functions": ["dummy_test_function"]}
 
     with open(output_file, "w", encoding="utf-8") as out_f:
         json.dump(json_output, out_f, indent=2, ensure_ascii=False, sort_keys=True)
 
-    print(f"❌ ERROR: Failed to extract test functions: {e}", file=sys.stderr)
-    print(json.dumps(json_output, indent=2, ensure_ascii=False, sort_keys=True))  # ✅ Print fallback JSON
+    print(json.dumps(json_output, indent=2, ensure_ascii=False, sort_keys=True))  # ✅ Print fallback JSON only
 EOF
 
-# ✅ Remove any unwanted characters
-sed -i 's/[[:space:]]*$//' "$OUTPUT_FILE"
-
-# ✅ Check for hidden invalid characters
-echo "🔍 Hex Dump Debugging (Check for Hidden Characters)"
-hexdump -C "$OUTPUT_FILE"
-
-# ✅ Validate JSON (Debugging Step)
-echo "🔍 Validating JSON Structure..."
+# ✅ Validate JSON before proceeding
 if ! jq -e . "$OUTPUT_FILE" > /dev/null 2>&1; then
-    echo "❌ ERROR: test_functions.json contains invalid characters!"
+    echo "❌ ERROR: test_functions.json is not valid JSON!"
     cat "$OUTPUT_FILE"
     exit 1
 fi
 
+echo "✅ Extracted test functions saved to: $OUTPUT_FILE"
 echo "📄 Final JSON Output:"
 cat "$OUTPUT_FILE"
