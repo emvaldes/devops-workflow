@@ -17,13 +17,13 @@ on:
         required: false
         default: 'packages/requirements'
 
-  push:
-    branches:
-      - master
-
-  pull_request:
-    branches:
-      - master
+  # push:
+  #   branches:
+  #     - master
+  #
+  # pull_request:
+  #   branches:
+  #     - master
 
 jobs:
   call-module-matrix:
