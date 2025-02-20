@@ -1,12 +1,13 @@
 ---
 name: Install Packages/Dependencies
-on: workflow_call
+on:
 
-inputs:
+  workflow_call:
+    inputs:
 
-  PACKAGES_DIR:
-    required: true
-    type: string
+      PACKAGES_DIR:
+        required: true
+        type: string
 
 jobs:
 
