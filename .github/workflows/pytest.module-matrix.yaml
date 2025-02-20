@@ -33,7 +33,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Debug PYTHON_VERSIONS
-        run: echo "PYTHON_VERSIONS: ${{ vars.PYTHON_VERSIONS }}"
+        run: |
+          echo "PYTHON_VERSIONS: ${{ vars.PYTHON_VERSIONS }}"
 
       - name: Install Python and Dependencies
         uses: actions/setup-python@v4
@@ -41,7 +42,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Generate requirements.txt from JSON
-        run: >
+        run: |
           jq -r '
             .dependencies[] |
             if .version.target then
@@ -59,12 +60,12 @@ jobs:
           restore-keys: "pip-${{ matrix.python-version }}-"
 
       - name: Install Dependencies
-        run: >
+        run: |
           python -m pip install --upgrade pip
           && python -m pip install -r requirements.txt
 
       - name: Generate Final requirements.txt
-        run: >
+        run: |
           pip freeze > final-requirements.txt
           && echo "Generated final-requirements.txt:"
           && cat final-requirements.txt
@@ -91,7 +92,7 @@ jobs:
 
       - name: Extract Test Functions
         id: extract
-        run: >
+        run: |
           "${{ env.GITHUB_ACTION }}/extract-test-functions.shell"
           && TESTS=$(cat test_functions.json | jq -c '.test_functions')
           && echo "Extracted test functions: $TESTS"
@@ -133,7 +134,7 @@ jobs:
           ls -l
 
       - name: Verify requirements.txt Exists
-        run: >
+        run: |
           if [[ ! -f requirements.txt ]]; then
             echo "ERROR: requirements.txt is missing!"
             exit 1
@@ -142,12 +143,12 @@ jobs:
           && cat requirements.txt
 
       - name: Reinstall Dependencies from Cache
-        run: >
+        run: |
           python -m pip install --upgrade pip
           && python -m pip install -r requirements.txt
 
       - name: Run Pytest Function
-        run: >
+        run: |
           pytest -v --junitxml=test-results.xml
           "${{ env.PYTEST_DIR }}/test_dependencies.py::${{ matrix.test_function }}"
 
@@ -184,7 +185,7 @@ jobs:
         run: "${{ env.GITHUB_ACTION }}/aggregate-test-results.shell"
 
       - name: Print Summary to GitHub Actions UI
-        run: >
+        run: |
           echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
           && cat test_results.json | jq -r '
             .test_summary[] |
