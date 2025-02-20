@@ -40,6 +40,7 @@ env:
   ARTIFACTS_DIR: "${{ github.workspace }}/artifacts"
 
 jobs:
+
   install-pytest:
     runs-on: ubuntu-latest
     strategy:
