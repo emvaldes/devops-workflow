@@ -1,33 +1,22 @@
 ---
-name: Parallel PyTest - Package Module
-run-name: ${{ github.actor }} -> Package Module
+name: PyTest Module - Generic
+run-name: Running Pytest for ${{ inputs.module_name }}
 
 on:
-
   workflow_call:
     inputs:
-
       module_name:
         description: "Name of the module being tested"
         required: true
         type: string
-
       pytest_dir:
         description: "Directory of the tests for the module"
         required: true
         type: string
-
       packages_dir:
         description: "Directory containing requirements for the module"
         required: true
         type: string
-
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
 
 env:
   PYTEST_DIR: "${{ github.workspace }}/${{ inputs.pytest_dir }}"
@@ -36,7 +25,6 @@ env:
   ARTIFACTS_DIR: "${{ github.workspace }}/artifacts"
 
 jobs:
-
   install-pytest:
     runs-on: ubuntu-latest
     strategy:
@@ -49,9 +37,9 @@ jobs:
 
       - name: Debug Input Variables
         run: |
-          echo -e "Module Name: ${{ inputs.module_name }}" ;
-          echo -e "PYTEST_DIR: ${{ env.PYTEST_DIR }}" ;
-          echo -e "PACKAGES_DIR: ${{ env.PACKAGES_DIR }}" ;
+          echo "Module Name: ${{ inputs.module_name }}"
+          echo "PYTEST_DIR: ${{ env.PYTEST_DIR }}"
+          echo "PACKAGES_DIR: ${{ env.PACKAGES_DIR }}"
 
       - name: Install Python and Dependencies
         uses: actions/setup-python@v4
@@ -60,20 +48,14 @@ jobs:
 
       - name: Generate requirements.txt from JSON
         run: |
-          jq -r '
-            .dependencies[] |
-            if .version.target then
-              "\(.package)==\(.version.target)"
-            else
-              .package
-            end' "${{ env.PACKAGES_DIR }}/requirements.json" > requirements.txt ;
-          echo -e "Generated requirements.txt:" ;
-          cat requirements.txt ;
+          jq -r '.dependencies[] | if .version.target then "\(.package)==\(.version.target)" else .package end' "${{ env.PACKAGES_DIR }}/requirements.json" > requirements.txt
+          echo "Generated requirements.txt:"
+          cat requirements.txt
 
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip ;
-          python -m pip install -r requirements.txt ;
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
 
       - name: Upload requirements.txt
         uses: actions/upload-artifact@v4
@@ -91,20 +73,19 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Ensure Shell Script is Executable
-        run: |
-          chmod +x "${{ env.GITHUB_ACTION }}/extract-test-functions.shell" ;
+        run: chmod +x "${{ env.GITHUB_ACTION }}/extract-test-functions.shell"
 
       - name: Extract Test Functions
         id: extract
         run: |
-          "${{ env.GITHUB_ACTION }}/extract-test-functions.shell" ;
+          "${{ env.GITHUB_ACTION }}/extract-test-functions.shell"
           if ! jq -e . test_functions.json > /dev/null 2>&1; then
-            echo -e "ERROR: test_functions.json is not valid JSON!" ;
-            cat test_functions.json ;
-            exit 1 ;
-          fi ;
-          TESTS=$( jq -c '.test_functions' test_functions.json ) ;
-          echo -e "tests=$TESTS" >> "$GITHUB_OUTPUT" ;
+            echo "ERROR: test_functions.json is not valid JSON!"
+            cat test_functions.json
+            exit 1
+          fi
+          TESTS=$(jq -c '.test_functions' test_functions.json)
+          echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
 
   run-pytests:
     needs: [install-pytest, extract-tests]
@@ -125,8 +106,7 @@ jobs:
 
       - name: Run Pytest Function
         run: |
-          pytest -v --junitxml=pytest-results.xml \
-          "${{ env.PYTEST_DIR }}/test_dependencies.py::${{ matrix.test_function }}" ;
+          pytest -v --junitxml=pytest-results.xml "${{ env.PYTEST_DIR }}/test_dependencies.py::${{ matrix.test_function }}"
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
@@ -143,12 +123,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Ensure Debug Script is Executable
-        run: |
-          chmod +x "${{ env.GITHUB_ACTION }}/debug-artifacts-state.shell" ;
+        run: chmod +x "${{ env.GITHUB_ACTION }}/debug-artifacts-state.shell"
 
       - name: Debug - Locate Artifacts
-        run: |
-          "${{ env.GITHUB_ACTION }}/debug-artifacts-state.shell" ;
+        run: "${{ env.GITHUB_ACTION }}/debug-artifacts-state.shell"
 
       - name: Download All Test Artifacts
         uses: actions/download-artifact@v4
@@ -157,12 +135,11 @@ jobs:
 
       - name: Verify Downloaded Artifacts
         run: |
-          echo -e "Listing downloaded artifacts..." ;
-          tree -FCla --prune -I .git ./artifacts 2>/dev/null ;
+          echo "Listing downloaded artifacts..."
+          tree -FCla --prune -I .git ./artifacts 2>/dev/null
 
       - name: Aggregate Pytest Results
-        run: |
-          "${{ env.GITHUB_ACTION }}/aggregate-test-results.shell" ;
+        run: "${{ env.GITHUB_ACTION }}/aggregate-test-results.shell"
 
       - name: Upload Aggregated Report
         uses: actions/upload-artifact@v4
