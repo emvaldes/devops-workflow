@@ -5,7 +5,7 @@ run-name: ${{ github.actor }} -> Dependencies (Matrix)
 on:
   workflow_dispatch:
     name: Manual Deployment
-    description: "Triggering Manual Deployment"
+    description: 'Triggering Manual Deployment'
 
   push:
     branches:
@@ -15,10 +15,10 @@ on:
       - main
 
 env:
-  PYTEST_DIR: "${{ github.workspace }}/tests/requirements/dependencies"
-  PACKAGES_DIR: "${{ github.workspace }}/packages/requirements"
-  GITHUB_ACTION: "${{ github.workspace }}/.github/actions/test-summary"
-  ARTIFACTS_DIR: "${{ github.workspace }}/artifacts"
+  PYTEST_DIR: "${GITHUB_WORKSPACE}/tests/requirements/dependencies"
+  PACKAGES_DIR: "${GITHUB_WORKSPACE}/packages/requirements"
+  GITHUB_ACTION: "${GITHUB_WORKSPACE}/.github/actions/test-summary"
+  ARTIFACTS_DIR: "${GITHUB_WORKSPACE}/artifacts"
 
 jobs:
 
@@ -41,39 +41,38 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Generate requirements.txt from JSON
-        run: |
+        run: >
           jq -r '
             .dependencies[] |
             if .version.target then
               "\(.package)==\(.version.target)"
             else
               .package
-            end' "${{ env.PACKAGES_DIR }}/requirements.json" > requirements.txt
-          echo "Generated requirements.txt:"
-          cat requirements.txt
+            end' "${{ env.PACKAGES_DIR }}/requirements.json" > ./requirements.txt
+          && echo "Generated requirements.txt:" && cat requirements.txt
 
       - name: Cache Dependencies
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
-          restore-keys: pip-${{ matrix.python-version }}-
+          key: "pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}"
+          restore-keys: "pip-${{ matrix.python-version }}-"
 
       - name: Install Dependencies
-        run: |
+        run: >
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          && python -m pip install -r requirements.txt
 
       - name: Generate Final requirements.txt
-        run: |
+        run: >
           pip freeze > final-requirements.txt
-          echo "Generated final-requirements.txt:"
-          cat final-requirements.txt
+          && echo "Generated final-requirements.txt:"
+          && cat final-requirements.txt
 
       - name: Upload requirements.txt
         uses: actions/upload-artifact@v4
         with:
-          name: requirements-${{ matrix.python-version }}
+          name: "requirements-${{ matrix.python-version }}"
           path: |
             requirements.txt
             final-requirements.txt
@@ -92,11 +91,11 @@ jobs:
 
       - name: Extract Test Functions
         id: extract
-        run: |
+        run: >
           "${{ env.GITHUB_ACTION }}/extract-test-functions.shell"
-          TESTS=$(cat test_functions.json | jq -c '.test_functions')
-          echo "Extracted test functions: $TESTS"
-          echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
+          && TESTS=$(cat test_functions.json | jq -c '.test_functions')
+          && echo "Extracted test functions: $TESTS"
+          && echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
 
   run-pytests:
     needs: [install-pytest, extract-tests]
@@ -119,14 +118,13 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: >
-            pip-${{ matrix.python-version }}-${{ matrix.test_function }}-${{ hashFiles('requirements.txt') }}
-          restore-keys: pip-${{ matrix.python-version }}-${{ matrix.test_function }}-
+          key: "pip-${{ matrix.python-version }}-${{ matrix.test_function }}-${{ hashFiles('requirements.txt') }}"
+          restore-keys: "pip-${{ matrix.python-version }}-${{ matrix.test_function }}-"
 
       - name: Download requirements.txt
         uses: actions/download-artifact@v4
         with:
-          name: requirements-${{ matrix.python-version }}
+          name: "requirements-${{ matrix.python-version }}"
           path: .
 
       - name: Verify Downloaded Artifacts
@@ -135,29 +133,29 @@ jobs:
           ls -l
 
       - name: Verify requirements.txt Exists
-        run: |
+        run: >
           if [[ ! -f requirements.txt ]]; then
             echo "ERROR: requirements.txt is missing!"
             exit 1
           fi
-          echo "requirements.txt found!"
-          cat requirements.txt
+          && echo "requirements.txt found!"
+          && cat requirements.txt
 
       - name: Reinstall Dependencies from Cache
-        run: |
+        run: >
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          && python -m pip install -r requirements.txt
 
       - name: Run Pytest Function
-        run: |
-          pytest -v --junitxml="${{ env.ARTIFACTS_DIR }}/test-results.xml" \
+        run: >
+          pytest -v --junitxml=test-results.xml
           "${{ env.PYTEST_DIR }}/test_dependencies.py::${{ matrix.test_function }}"
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
         with:
-          name: pytest-results-${{ matrix.python-version }}-${{ matrix.test_function }}
-          path: "${{ env.ARTIFACTS_DIR }}/test-results.xml"
+          name: "pytest-results-${{ matrix.python-version }}-${{ matrix.test_function }}"
+          path: test-results.xml
 
   aggregate-test-results:
     needs: run-pytests
@@ -179,13 +177,16 @@ jobs:
           echo "📂 Listing Downloaded Files in '${{ env.ARTIFACTS_DIR }}':"
           ls -R "${{ env.ARTIFACTS_DIR }}"
 
+      - name: Ensure Shell Script is Executable
+        run: chmod +x "${{ env.GITHUB_ACTION }}/aggregate-test-results.shell"
+
       - name: Aggregate Pytest Results
         run: "${{ env.GITHUB_ACTION }}/aggregate-test-results.shell"
 
       - name: Print Summary to GitHub Actions UI
-        run: |
+        run: >
           echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
-          cat test_results.json | jq -r '
+          && cat test_results.json | jq -r '
             .test_summary[] |
             "Python Version: \(.python_version)\n" +
             "Test Name: \(.test_name)\n" +
