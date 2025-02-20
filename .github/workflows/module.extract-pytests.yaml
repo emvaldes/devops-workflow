@@ -1,0 +1,37 @@
+---
+name: Extract PyTest Test-Functions
+on:
+
+  workflow_call:
+    inputs:
+
+      PYTESTS_DIR:
+        required: true
+        type: string
+
+jobs:
+
+  extract-pytests:
+    runs-on: ubuntu-latest
+    outputs:
+      test_functions: ${{ steps.extract.outputs.tests }}
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Ensure Shell Script is Executable
+        run: |
+          chmod +x "${{ env.GITHUB_ACTION }}/extract-test-functions.shell" ;
+
+      - name: Extract Test Functions
+        id: extract
+        run: |
+          "${{ env.GITHUB_ACTION }}/extract-test-functions.shell" ;
+          if ! jq -e . test_functions.json > /dev/null 2>&1; then
+            echo -e "ERROR: test_functions.json is not valid JSON!" ;
+            cat test_functions.json ;
+            exit 1 ;
+          fi ;
+          TESTS=$( jq -c '.test_functions' test_functions.json ) ;
+          echo -e "tests=$TESTS" >> "$GITHUB_OUTPUT" ;

@@ -7,7 +7,7 @@ on:
   workflow_call:
     inputs:
 
-      pytest_dir:
+      pytests_dir:
         required: true
         type: string
         default: false
@@ -27,7 +27,7 @@ on:
 
 env:
 
-  PYTEST_DIR: "${{ github.workspace }}/${{ inputs.pytest_dir }}"
+  PYTESTS_DIR: "${{ github.workspace }}/${{ inputs.pytests_dir }}"
   PACKAGES_DIR: "${{ github.workspace }}/${{ inputs.packages_dir }}"
 
   GITHUB_ACTION: "${{ github.workspace }}/.github/actions/test-summary"
@@ -40,8 +40,8 @@ jobs:
     steps:
       - name: Check PyTest Modules
         run: |
-          if [[ -z "${{ env.PYTEST_DIR }}" ]]; then
-            echo -en "Error: pytest_dir must be provided. " ;
+          if [[ -z "${{ inputs.PYTESTS_DIR }}" ]]; then
+            echo -en "Error: inputs.pytests_dir must be provided. " ;
             echo -e  "The workflow cannot proceed without a valid target." ;
             exit 1 ;
           fi ;
@@ -51,8 +51,8 @@ jobs:
     steps:
       - name: Check Packages Modules
         run: |
-          if [[ -z "${{ env.PACKAGES_DIR }}" ]]; then
-            echo -en "Error: pytest_dir must be provided. " ;
+          if [[ -z "${{ inputs.PACKAGES_DIR }}" ]]; then
+            echo -en "Error: inputs.packages_dir must be provided. " ;
             echo -e  "The workflow cannot proceed without a valid target." ;
             exit 1 ;
           fi ;
@@ -62,96 +62,18 @@ jobs:
       with:
         PACKAGES_DIR: ${{ inputs.packages_dir }}
 
-  # install-packages:
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       python-version: ${{ fromJson(vars.PYTHON_VERSIONS).python }}
-  #       # Default value: { "python": [ "3.9", "3.10", "3.11" ] }
-  #   steps:
-  #
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@v4
-  #
-  #     - name: Debug PYTHON_VERSIONS
-  #       run: |
-  #         echo -e "PYTHON_VERSIONS: ${{ vars.PYTHON_VERSIONS }}" ;
-  #
-  #     - name: Install Python and Dependencies
-  #       uses: actions/setup-python@v4
-  #       with:
-  #         python-version: ${{ matrix.python-version }}
-  #
-  #     - name: Generate requirements.txt from JSON
-  #       run: |
-  #         jq -r '
-  #           .dependencies[] |
-  #           if .version.target then
-  #             "\(.package)==\(.version.target)"
-  #           else
-  #             .package
-  #           end' "${{ env.PACKAGES_DIR }}/requirements.json" > requirements.txt ;
-  #         echo -e "Generated requirements.txt:" ;
-  #         cat requirements.txt ;
-  #
-  #     - name: Cache Dependencies
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: ~/.cache/pip
-  #         key: pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
-  #         restore-keys: pip-${{ matrix.python-version }}-
-  #
-  #     - name: Install Dependencies
-  #       run: |
-  #         python -m pip install --upgrade pip ;
-  #         python -m pip install -r requirements.txt ;
-  #
-  #     - name: Generate Final requirements.txt
-  #       run: |
-  #         pip freeze > final-requirements.txt ;
-  #         echo -e "Generated final-requirements.txt: " ;
-  #         cat final-requirements.txt ;
-  #
-  #     - name: Upload requirements.txt
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: requirements-${{ matrix.python-version }}
-  #         path: |
-  #           requirements.txt
-  #           final-requirements.txt
-
-  extract-tests:
-    runs-on: ubuntu-latest
-    outputs:
-      test_functions: ${{ steps.extract.outputs.tests }}
-    steps:
-
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Ensure Shell Script is Executable
-        run: |
-          chmod +x "${{ env.GITHUB_ACTION }}/extract-test-functions.shell" ;
-
-      - name: Extract Test Functions
-        id: extract
-        run: |
-          "${{ env.GITHUB_ACTION }}/extract-test-functions.shell" ;
-          if ! jq -e . test_functions.json > /dev/null 2>&1; then
-            echo -e "ERROR: test_functions.json is not valid JSON!" ;
-            cat test_functions.json ;
-            exit 1 ;
-          fi ;
-          TESTS=$( jq -c '.test_functions' test_functions.json ) ;
-          echo -e "tests=$TESTS" >> "$GITHUB_OUTPUT" ;
+  extract-pytests:
+      uses: ./.github/workflows/module.extract-pytests.yaml
+      with:
+        PYTESTS_DIR: ${{ inputs.pytests_dir }}
 
   run-pytests:
-    needs: [install-packages, extract-tests]
+    needs: [install-packages, extract-pytests]
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ${{ fromJson(vars.PYTHON_VERSIONS).python }}
-        test_function: ${{ fromJson(needs.extract-tests.outputs.test_functions) }}
+        test_function: ${{ fromJson(needs.extract-pytests.outputs.test_functions) }}
     steps:
 
       - name: Install System Packages
@@ -197,7 +119,7 @@ jobs:
       - name: Run Pytest Function
         run: |
           pytest -v --junitxml=pytest-results.xml \
-          "${{ env.PYTEST_DIR }}/test_dependencies.py::${{ matrix.test_function }}" ;
+          "${{ inputs.PYTESTS_DIR }}/test_dependencies.py::${{ matrix.test_function }}" ;
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
