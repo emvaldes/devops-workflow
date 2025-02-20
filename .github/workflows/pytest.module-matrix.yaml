@@ -1,6 +1,6 @@
 ---
-name: Parallel PyTest - Module (Prototype)
-run-name: ${{ github.actor }} -> Module (Prototype)
+name: Parallel PyTest - Module (Maxtrix)
+run-name: ${{ github.actor }} -> Module (Maxtrix)
 
 on:
 

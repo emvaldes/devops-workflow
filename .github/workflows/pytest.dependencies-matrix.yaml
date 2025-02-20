@@ -1,6 +1,6 @@
 ---
-name: PyTest Module Runner
-run-name: ${{ github.actor }} -> Module Runner
+name: PyTest - Requirements/Dependencies Module
+run-name: ${{ github.actor }} -> PyTest Dependencies Module
 
 on:
 
