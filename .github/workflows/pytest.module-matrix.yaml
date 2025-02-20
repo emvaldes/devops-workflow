@@ -57,10 +57,10 @@ jobs:
             exit 1 ;
           fi ;
 
-  install-dependencies:
+  install-packages:
       uses: ./.github/workflows/module.install-packages.yaml
       with:
-        PACKAGES_DIR: ${{ env.PACKAGES_DIR }}
+        PACKAGES_DIR: ${{ inputs.packages_dir }}
 
   # install-packages:
   #   runs-on: ubuntu-latest
