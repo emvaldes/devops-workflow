@@ -10,13 +10,13 @@ echo -e "Current Working Directory: $( pwd )" ;
 
 # Print all available environment variables related to artifacts
 echo -e "Environment Variables:" ;
-env | grep -i 'artifact' || echo "No artifact-related variables found." ;
+env | grep -i 'artifact' || echo -e "No artifact-related variables found." ;
 
 # Locate any artifacts directories
 echo -e "Searching for artifacts..." ;
 ARTIFACT_DIRS=$(
   find "${GITHUB_WORKSPACE}" -type d -name "artifacts" 2>/dev/null \
-  || echo "No artifacts directory found."
+  || echo -e "No artifacts directory found."
 ) ;
 
 if [[ -z "${ARTIFACT_DIRS}" \
@@ -30,15 +30,15 @@ fi ;
 echo -e "Searching for test result files..." ;
 TEST_RESULTS=$(
   find "${GITHUB_WORKSPACE}" -name "*.xml" 2>/dev/null \
-  || echo "No test result files found."
+  || echo -e "No test result files found."
 ) ;
 
 if [[ -z "${TEST_RESULTS}" \
       || "${TEST_RESULTS}" == "No test result files found."
    ]]; then
-        echo "ERROR: No test results found!" ;
-  else  echo "Found test result files:" ;
-        echo "${TEST_RESULTS}" ;
+        echo -e "ERROR: No test results found!" ;
+  else  echo -e "Found test result files:" ;
+        echo -e "${TEST_RESULTS}" ;
 fi ;
 
 # List all files in the detected artifacts directory (if found)

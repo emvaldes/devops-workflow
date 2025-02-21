@@ -15,7 +15,7 @@ on:
         required: false
         default: 'tests/requirements/dependencies'
 
-      packages_dir:
+      package_path:
         description: 'Directory containing package files'
         required: false
         default: 'packages/requirements/dependencies'
@@ -33,4 +33,4 @@ jobs:
     uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
       pytests_dir: ${{ inputs.pytests_dir }}
-      packages_dir: ${{ inputs.packages_dir }}
+      package_path: ${{ inputs.package_path }}

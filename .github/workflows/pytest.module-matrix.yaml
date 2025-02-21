@@ -14,7 +14,7 @@ on:
         type: string
         default: false
 
-      packages_dir:
+      package_path:
         required: true
         type: string
         default: false
@@ -24,7 +24,7 @@ on:
         type: string
         default: ".github/actions/test-summary"
 
-      artifacts_dir:
+      artifacts_path:
         required: false
         type: string
         default: "artifacts"
@@ -55,8 +55,8 @@ jobs:
     steps:
       - name: Check Packages Modules
         run: |
-          if [[ -z "${{ inputs.packages_dir }}" ]]; then
-            echo -en "Error: inputs.packages_dir must be provided. " ;
+          if [[ -z "${{ inputs.package_path }}" ]]; then
+            echo -en "Error: inputs.package_path must be provided. " ;
             echo -e  "The workflow cannot proceed without a valid target." ;
             exit 1 ;
           fi ;
@@ -64,12 +64,12 @@ jobs:
   install-packages:
       uses: ./.github/workflows/module.install-packages.yaml
       with:
-        PACKAGES_DIR: ${{ inputs.packages_dir }}
+        package_path: ${{ inputs.package_path }}
 
   extract-pytests:
       uses: ./.github/workflows/module.extract-pytests.yaml
       with:
-        GITHUB_ACTION: "${{ inputs.github_action }}"
+        github_action: "${{ inputs.github_action }}"
 
   running-pytests:
       needs: [install-packages, extract-pytests]
@@ -81,59 +81,11 @@ jobs:
       needs: running-pytests
       uses: ./.github/workflows/module.aggregate-results.yaml
       with:
-        GITHUB_ACTION: "${{ inputs.github_action }}"
-        ARTIFACTS_DIR: "${{ inputs.artifacts_dir }}"
+        github_action: "${{ inputs.github_action }}"
+        artifacts_path: "${{ inputs.artifacts_path }}"
 
   execute-module:
     needs: aggregate-test-results
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ${{ fromJson(vars.PYTHON_VERSIONS).python }}
-    steps:
-
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Restore Cached Dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
-          restore-keys: pip-${{ matrix.python-version }}-
-
-      - name: Download requirements.txt
-        uses: actions/download-artifact@v4
-        with:
-          name: requirements-${{ matrix.python-version }}
-          path: .
-
-      - name: Verify requirements.txt Exists
-        run: |
-          if [[ ! -f requirements.txt ]]; then
-            echo "ERROR: requirements.txt is missing!" ;
-            exit 1 ;
-          fi ;
-          echo "requirements.txt found!" ;
-          cat requirements.txt ;
-
-      - name: Install Python and Dependencies
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Reinstall Dependencies from Cache
-        run: |
-          python -m pip install --upgrade pip ;
-          python -m pip install -r requirements.txt ;
-
-      - name: Set PYTHONPATH to Repository Root
-        run: |
-          echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV ;
-          echo -e "PYTHONPATH set to: ${GITHUB_WORKSPACE}" ;
-
-      - name: Convert Path & Execute Python Module
-        run: |
-          package_module=$( echo "${{ inputs.packages_dir }}" | sed 's/\//./g' ) ;
-          echo "Executing Python module: ${package_module}" ;
-          python -m $package_module ;
+    uses: ./.github/workflows/module.execute-module.yaml
+    with:
+      package_path: ${{ inputs.package_path }}

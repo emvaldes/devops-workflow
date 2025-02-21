@@ -47,11 +47,11 @@ EOF
 
 # Validate JSON before proceeding
 if ! jq -e . "$OUTPUT_FILE" > /dev/null 2>&1; then
-    echo "ERROR: test_functions.json is not valid JSON!" ;
+    echo -e "ERROR: test_functions.json is not valid JSON!" ;
     cat "${OUTPUT_FILE}" ;
     exit 1 ;
 fi ;
 
-echo "Extracted test functions saved to: ${OUTPUT_FILE}" ;
-echo "Final JSON Output:" ;
+echo -e "Extracted test functions saved to: ${OUTPUT_FILE}" ;
+echo -e "Final JSON Output:" ;
 cat "${OUTPUT_FILE}" ;

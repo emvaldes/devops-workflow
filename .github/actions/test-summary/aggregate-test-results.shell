@@ -33,7 +33,7 @@ while read -r test_file; do
   # echo -e "Normalized XML Content:" ;
   echo -e "${xml_content}" ;
 
-  python_version=$( echo "${test_file}" \
+  python_version=$( echo -e "${test_file}" \
     | sed -E 's/.*pytest-results-([0-9]+\.[0-9]+)-.*/\1/' ) ;
 
   test_name=$( basename "$(dirname "${test_file}")" \
@@ -71,7 +71,7 @@ while read -r test_file; do
     continue ;
   fi ;
 
-  echo "${test_cases}" | while read -r LINE; do
+  echo -e "${test_cases}" | while read -r LINE; do
     # echo -e "Reading line: ${LINE}" ;
 
     actual_testname=$( echo "$LINE" | sed -E 's/.*name="([^"]+)".*/\1/' ) ;
@@ -81,11 +81,6 @@ while read -r test_file; do
     failed_tests=$( [[ "$LINE" =~ "<failure" ]] && echo "1" || echo "0" ) ;
     skipped_tests=$( [[ "$LINE" =~ "<skipped" ]] && echo "1" || echo "0" ) ;
     passed_tests=$(( 1 - failed_tests - skipped_tests )) ;
-
-    # echo -en "Adding test result: ${actual_testname} ( " ;
-    # echo -en "Passed: ${passed_tests}, " ;
-    # echo -en "Failed: ${failed_tests}, " ;
-    # echo -e  "Skipped: ${skipped_tests} )" ;
 
     declare -a extract_results=() ;
     extract_results+=( "{ \"python_version\": \"${python_version}\"," )
@@ -100,7 +95,7 @@ while read -r test_file; do
     # Ensure JSON is valid before passing to jq
     json_structure=$( echo -e "[ ${extract_results[*]} ]" | jq -c . )
     # echo -e "\nJSON Structure: ${json_structure}" ;
-    echo "${json_structure}" | jq .
+    echo -e "${json_structure}" | jq .
 
     # Update JSON summary safely
     jq --argjson structure "${json_structure}" \

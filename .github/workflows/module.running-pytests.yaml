@@ -76,5 +76,5 @@ jobs:
       - name: Debug - List Uploaded Artifacts
         run: |
           echo -e "Listing uploaded artifacts..." ;
-          find $GITHUB_WORKSPACE -type f -name "*.xml" || echo "No test result files found." ;
+          find $GITHUB_WORKSPACE -type f -name "*.xml" || echo -e "No test result files found." ;
           echo -e "Checking artifact storage location..." ;
