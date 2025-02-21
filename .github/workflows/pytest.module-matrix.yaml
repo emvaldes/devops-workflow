@@ -64,13 +64,6 @@ jobs:
             exit 1 ;
           fi ;
 
-  github-action:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Validate GitHub Action path
-        run: |
-          echo -e "GitHub Action: '${{ inputs.GITHUB_ACTION }}'" ;
-
   install-packages:
       uses: ./.github/workflows/module.install-packages.yaml
       with:

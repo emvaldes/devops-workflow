@@ -5,6 +5,7 @@ name: Extract PyTest Test-Functions
 on:
 
   workflow_call:
+
     inputs:
 
       PYTESTS_DIR:
@@ -15,14 +16,13 @@ on:
         required: true
         type: string
 
-jobs:
+    outputs:
 
-  github-action:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Validate GitHub Action path
-        run: |
-          echo -e "GitHub Action: '${{ inputs.GITHUB_ACTION }}'" ;
+      test_functions:
+        description: "Extracted PyTest Functions"
+        value: ${{ jobs.extract-pytests.outputs.test_functions }}
+
+jobs:
 
   extract-pytests:
     runs-on: ubuntu-latest
