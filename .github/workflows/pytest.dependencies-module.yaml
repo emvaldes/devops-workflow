@@ -32,5 +32,5 @@ jobs:
   call-module-matrix:
     uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
-      pytests_dir: ${{ inputs.pytest_dir }}
+      pytests_dir: ${{ inputs.pytests_dir }}
       packages_dir: ${{ inputs.packages_dir }}
