@@ -76,7 +76,7 @@ jobs:
   extracting-pytests:
     id: extracting_pytests
     needs: [pytests_location, packages_location]
-    uses: ${{ github.workflow }}/module.extract-pytests.yaml
+    uses: ${{ github.workflow }}/module.extract-pytests.yaml@master
     with:
       github_action: "${{ inputs.github_action }}"
 
