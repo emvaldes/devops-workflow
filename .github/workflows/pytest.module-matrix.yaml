@@ -1,8 +1,8 @@
 ---
 ## File: pytest.dependencies-matrix.yaml
 
-name: PyTest Modules Matrix
-run-name: ${{ github.actor }} -> Modules Matrix
+name: PyTest - Package Module Matrix
+run-name: ${{ github.actor }} -> Package Module Matrix
 
 on:
 
