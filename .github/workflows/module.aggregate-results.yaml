@@ -20,7 +20,7 @@ on:
 
       aggregated_results:
         description: "Signaling PyTest aggregation completion"
-        value: "true"
+        value: ${{ jobs.aggregate-pytest-results.outputs.aggregated_results }}
 
 jobs:
 
@@ -69,4 +69,9 @@ jobs:
       - name: Configure Workflow Status
         id: task_status
         run: |
+
           echo "aggregated_results=true" >> $GITHUB_ENV
+          # echo "Aggregate Results - GitHub Environment:\n${GITHUB_ENV}" ;
+
+          echo "aggregated_results=true" >> $GITHUB_OUTPUT
+          # echo "Aggregate Results - GitHub Environment:\n${GITHUB_OUTPUT}" ;

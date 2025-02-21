@@ -29,6 +29,9 @@ on:
         type: string
         default: "artifacts"
 
+    outputs:
+      aggregated_results: ${{ jobs.workflow-completed.outputs.aggregated_results }}
+
 # push:
 #   branches:
 #     - master
@@ -85,9 +88,15 @@ jobs:
     needs: aggregate-pytest-results
     runs-on: ubuntu-latest
     outputs:
-      aggregated_results: ${{ needs.aggregate-pytest-results.outputs.aggregated_results }}
+      aggregated_results: ${{ steps.workflow_status.outputs.aggregated_results }}
     steps:
 
       - name: Workflow Completion
+        id: workflow_status
         run: |
-          echo -e "PyTest Aggregation Complete: ${{ needs.aggregate-pytest-results.outputs.aggregated_results }}"
+
+          echo "aggregated_results=true" >> $GITHUB_ENV
+          # echo "Dependencies Matrix - GitHub Environment:\n${GITHUB_ENV}" ;
+
+          echo "aggregated_results=true" >> $GITHUB_OUTPUT
+          # echo "Dependencies Matrix - GitHub Environment:\n${GITHUB_OUTPUT}" ;
