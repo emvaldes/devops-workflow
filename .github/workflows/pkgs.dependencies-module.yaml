@@ -32,14 +32,14 @@ jobs:
 
   install-packages:
     id: install_packages
-    uses: ${{ github.workflow }}/module.install-packages.yaml
+    uses: ./.github/workflows/module.install-packages.yaml
     with:
       package_path: ${{ inputs.package_path }}
 
   pytest-module:
     id: pytest_module
     needs: install_packages
-    uses: ${{ github.workflow }}/pytest.dependencies-matrix.yaml
+    uses: ./.github/workflows/pytest.dependencies-matrix.yaml
     with:
       pytests_dir: ${{ inputs.pytests_dir }}
       package_path: ${{ inputs.package_path }}
