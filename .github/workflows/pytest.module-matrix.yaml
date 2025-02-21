@@ -19,10 +19,10 @@ on:
         type: string
         default: false
 
-      github_action:
-        required: true
-        type: string
-        default: "${{ github.workspace }}/.github/actions/test-summary"
+      # github_action:
+      #   required: true
+      #   type: string
+      #   default: "${{ github.workspace }}/.github/actions/test-summary"
 
   # push:
   #   branches:
@@ -37,6 +37,7 @@ env:
   PYTESTS_DIR: "${{ github.workspace }}/${{ inputs.pytests_dir }}"
   PACKAGES_DIR: "${{ github.workspace }}/${{ inputs.packages_dir }}"
 
+  GITHUB_ACTION: "${{ github.workspace }}/.github/actions/test-summary"
   ARTIFACTS_DIR: "${{ github.workspace }}/artifacts"
 
 jobs:
@@ -72,7 +73,7 @@ jobs:
       uses: ./.github/workflows/module.extract-pytests.yaml
       with:
         PYTESTS_DIR: ${{ inputs.pytests_dir }}
-        GITHUB_ACTION: "${{ github.workspace }}/${{ inputs.github_action }}"
+        GITHUB_ACTION: "${{ env.GITHUB_ACTION }}"
 
   run-pytests:
     needs: [install-packages, extract-pytests]

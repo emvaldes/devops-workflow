@@ -33,4 +33,3 @@ jobs:
     with:
       pytests_dir: ${{ inputs.pytest_dir }}
       packages_dir: ${{ inputs.packages_dir }}
-      github_action: false
