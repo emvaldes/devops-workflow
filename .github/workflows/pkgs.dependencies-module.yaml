@@ -41,8 +41,6 @@ jobs:
     with:
       pytests_dir: ${{ inputs.pytests_dir }}
       package_path: ${{ inputs.package_path }}
-    outputs:
-      aggregated_results: ${{ steps.aggregate-pytest-results.outputs.aggregated_results }}
 
   execute-module:
     needs: pytest-module
