@@ -16,12 +16,6 @@ on:
         required: true
         type: string
 
-    outputs:
-
-      test_functions:
-        description: "Extracted PyTest Functions"
-        value: ${{ jobs.extract-pytests.outputs.test_functions }}
-
 jobs:
 
   aggregate-test-results:
