@@ -29,7 +29,7 @@ on:
 #     - master
 
 env:
-  github_workflows: "./.github/workflows"
+  github_workflows: ".github/workflows"
 
 jobs:
 

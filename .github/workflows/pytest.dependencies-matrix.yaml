@@ -44,7 +44,7 @@ on:
 #     - master
 
 env:
-  github_workflows: "./.github/workflows"
+  github_workflows: ".github/workflows"
 
 jobs:
 
@@ -79,21 +79,21 @@ jobs:
   extracting-pytests:
     id: extracting_pytests
     needs: [pytests_location, packages_location]
-    uses: ${{ env.github_workflows }}/module.extract-pytests.yaml
+    uses: ./${{ env.github_workflows }}/module.extract-pytests.yaml
     with:
       github_action: "${{ inputs.github_action }}"
 
   running-pytests:
     id: running_pytests
     needs: extracting_pytests
-    uses: ${{ env.github_workflows }}/module.running-pytests.yaml
+    uses: ./${{ env.github_workflows }}/module.running-pytests.yaml
     with:
       test_functions: ${{ needs.extracting_pytests.outputs.test_functions }}
 
   aggregating-pytests:
     id: aggregating_pytests
     needs: running_pytests
-    uses: ${{ env.github_workflows }}/module.aggregate-results.yaml
+    uses: ./${{ env.github_workflows }}/module.aggregate-results.yaml
     with:
       github_action: "${{ inputs.github_action }}"
       artifacts_path: "${{ inputs.artifacts_path }}"
