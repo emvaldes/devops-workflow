@@ -89,7 +89,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ${{ fromJson(vars.PYTHON_VERSIONS).python }}  # Ensure the matrix is defined
+        python-version: ${{ fromJson(vars.PYTHON_VERSIONS).python }}
     steps:
 
       - name: Checkout Repository
@@ -127,7 +127,12 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
-      - name: Execute Python Module
-        run: |
-          echo -e "Executing Python module..."
-          python -m "${{ inputs.packages_dir }}/dependencies"
+    - name: Set PYTHONPATH
+      run: |
+        echo "PYTHONPATH=$GITHUB_WORKSPACE/${{ inputs.packages_dir }}" >> $GITHUB_ENV
+        echo "PYTHONPATH set to: $GITHUB_WORKSPACE/${{ inputs.packages_dir }}"
+
+    - name: Execute Python Module
+      run: |
+        echo -e "Executing Python module..."
+        python -m dependencies  # Remove the `/` before the module name
