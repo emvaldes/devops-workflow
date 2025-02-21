@@ -1,4 +1,6 @@
 ---
+## File: pytest.module-matrix.yaml
+
 name: Parallel PyTest - Module (Matrix)
 run-name: ${{ github.actor }} -> PyTest Module (Matrix)
 
@@ -17,6 +19,11 @@ on:
         type: string
         default: false
 
+      github_action:
+        required: true
+        type: string
+        default: "${{ github.workspace }}/.github/actions/test-summary"
+
   # push:
   #   branches:
   #     - master
@@ -30,7 +37,6 @@ env:
   PYTESTS_DIR: "${{ github.workspace }}/${{ inputs.pytests_dir }}"
   PACKAGES_DIR: "${{ github.workspace }}/${{ inputs.packages_dir }}"
 
-  GITHUB_ACTION: "${{ github.workspace }}/.github/actions/test-summary"
   ARTIFACTS_DIR: "${{ github.workspace }}/artifacts"
 
 jobs:
@@ -66,7 +72,7 @@ jobs:
       uses: ./.github/workflows/module.extract-pytests.yaml
       with:
         PYTESTS_DIR: ${{ inputs.pytests_dir }}
-        GITHUB_ACTION: ${{ env.GITHUB_ACTION }}
+        GITHUB_ACTION: "${{ github.workspace }}/${{ inputs.github_action }}"
 
   run-pytests:
     needs: [install-packages, extract-pytests]
