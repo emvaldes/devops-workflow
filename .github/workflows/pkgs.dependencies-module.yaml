@@ -44,7 +44,7 @@ jobs:
 
   execute-module:
     needs: pytest-module
-    if: needs.pytest_module.outputs.aggregated_results
+    if: needs.pytest-module.outputs.aggregated_results
     uses: ./.github/workflows/module.execute-module.yaml
     with:
       package_path: ${{ inputs.package_path }}
