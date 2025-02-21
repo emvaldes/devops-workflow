@@ -84,50 +84,51 @@ jobs:
         GITHUB_ACTION: "${{ inputs.github_action }}"
         ARTIFACTS_DIR: "${{ inputs.artifacts_dir }}"
 
-  # execute-module:
-  #   needs: aggregate-test-results
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       python-version: ${{ fromJson(vars.PYTHON_VERSIONS).python }}  # Ensure the matrix is defined
-  #   steps:
-  #
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@v4
-  #
-  #     - name: Restore Cached Dependencies
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: ~/.cache/pip
-  #         key: pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
-  #         restore-keys: pip-${{ matrix.python-version }}-
-  #
-  #     - name: Download requirements.txt
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: requirements-${{ matrix.python-version }}  # Ensure correct name is used
-  #         path: .
-  #
-  #     - name: Verify requirements.txt Exists
-  #       run: |
-  #         if [[ ! -f requirements.txt ]]; then
-  #           echo "ERROR: requirements.txt is missing!"
-  #           exit 1
-  #         fi
-  #         echo "requirements.txt found!"
-  #         cat requirements.txt
-  #
-  #     - name: Install Python and Dependencies
-  #       uses: actions/setup-python@v4
-  #       with:
-  #         python-version: ${{ matrix.python-version }}
-  #
-  #     - name: Reinstall Dependencies from Cache
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         python -m pip install -r requirements.txt
-  #
-  #     - name: Execute Python Module
-  #       run: |
-  #         echo -e "Executing Python module..."
-  #         python -m "${{ inputs.packages_dir }}/dependencies"
+  execute-module:
+    needs: aggregate-test-results
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ${{ fromJson(vars.PYTHON_VERSIONS).python }}  # Ensure the matrix is defined
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Restore Cached Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: pip-${{ matrix.python-version }}-
+
+      - name: Download requirements.txt
+        uses: actions/download-artifact@v4
+        with:
+          name: requirements-${{ matrix.python-version }}  # Ensure correct name is used
+          path: .
+
+      - name: Verify requirements.txt Exists
+        run: |
+          if [[ ! -f requirements.txt ]]; then
+            echo "ERROR: requirements.txt is missing!"
+            exit 1
+          fi
+          echo "requirements.txt found!"
+          cat requirements.txt
+
+      - name: Install Python and Dependencies
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Reinstall Dependencies from Cache
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Execute Python Module
+        run: |
+          echo -e "Executing Python module..."
+          # python -m "${{ inputs.packages_dir }}/dependencies"
+          python -m packages.requirements.dependencies ;
