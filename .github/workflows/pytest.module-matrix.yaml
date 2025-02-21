@@ -102,7 +102,7 @@ jobs:
       - name: Download All Test Artifacts
         uses: actions/download-artifact@v4
         with:
-          path: ${{ env.ARTIFACTS_DIR }}/
+          path: ${{ github.workspace }}/${{ inputs.artifacts_dir }}/
 
       - name: Install Python and Dependencies
         uses: actions/setup-python@v4
