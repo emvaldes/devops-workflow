@@ -44,7 +44,7 @@ on:
 #     - master
 
 env:
-  GITHUB_WORKFLOWS: "${{ github.repository }}/.github/workflows"
+  GITHUB_WORKFLOWS: ".github/workflows"
 
 jobs:
 
