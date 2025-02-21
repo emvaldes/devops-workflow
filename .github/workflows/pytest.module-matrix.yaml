@@ -130,4 +130,4 @@ jobs:
       - name: Execute Python Module
         run: |
           echo -e "Executing Python module..."
-          python -m "${{ env.PACKAGES_DIR }}/dependencies"
+          python -m "${{ inputs.packages_dir }}/dependencies"
