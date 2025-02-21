@@ -1,8 +1,8 @@
 ---
 ## File: pytest.dependencies-module.yaml
 
-name: PyTest - Dependencies Module
-run-name: ${{ github.actor }} -> PyTest Dependencies Module
+name: Requirements - Dependencies Module
+run-name: ${{ github.actor }} -> Dependencies Module
 
 on:
 

@@ -1,8 +1,8 @@
 ---
 ## File: pytest.dependencies-matrix.yaml
 
-name: Parallel PyTest - Module (Matrix)
-run-name: ${{ github.actor }} -> PyTest Module (Matrix)
+name: Requirements - Dependencies Matrix
+run-name: ${{ github.actor }} -> Dependencies Matrix
 
 on:
 
