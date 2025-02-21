@@ -7,6 +7,7 @@ run-name: ${{ github.actor }} -> Dependencies Matrix
 on:
 
   workflow_call:
+
     inputs:
 
       pytests_dir:
@@ -30,7 +31,9 @@ on:
         default: "artifacts"
 
     outputs:
-      aggregated_results: ${{ jobs.workflow-completed.outputs.aggregated_results }}
+      aggregated_results:
+        description: "Providing PyTest Results Aggregation status"
+        value: ${{ jobs.workflow-completed.outputs.aggregated_results }}
 
 # push:
 #   branches:
@@ -88,15 +91,13 @@ jobs:
     needs: aggregate-pytest-results
     runs-on: ubuntu-latest
     outputs:
-      aggregated_results: ${{ steps.workflow_status.outputs.aggregated_results }}
+      aggregated_results: "true"
     steps:
 
       - name: Workflow Completion
-        id: workflow_status
         run: |
 
           echo "aggregated_results=true" >> $GITHUB_ENV
-          # echo "Dependencies Matrix - GitHub Environment:\n${GITHUB_ENV}" ;
 
-          echo "aggregated_results=true" >> $GITHUB_OUTPUT
-          # echo "Dependencies Matrix - GitHub Environment:\n${GITHUB_OUTPUT}" ;
+          echo "Dependencies Matrix - GitHub Environment:\n${GITHUB_ENV}" ;
+          echo "Dependencies Matrix - GitHub Environment:\n${GITHUB_OUTPUT}" ;

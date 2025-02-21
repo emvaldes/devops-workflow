@@ -19,7 +19,7 @@ on:
     outputs:
 
       aggregated_results:
-        description: "Signaling PyTest aggregation completion"
+        description: "Signaling PyTest Results Aggregation completion"
         value: ${{ jobs.aggregate-pytest-results.outputs.aggregated_results }}
 
 jobs:
