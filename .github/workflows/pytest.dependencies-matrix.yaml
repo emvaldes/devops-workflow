@@ -96,8 +96,6 @@ jobs:
 
       - name: Workflow Completion
         run: |
-
           echo "aggregated_results=true" >> $GITHUB_ENV
-
-          echo "Dependencies Matrix - GitHub Environment:\n${GITHUB_ENV}" ;
-          echo "Dependencies Matrix - GitHub Environment:\n${GITHUB_OUTPUT}" ;
+          # echo "Dependencies Matrix - GitHub Environment:\n${GITHUB_ENV}" ;
+          # echo "Dependencies Matrix - GitHub Environment:\n${GITHUB_OUTPUT}" ;
