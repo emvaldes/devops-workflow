@@ -78,6 +78,7 @@ jobs:
         test_functions: ${{ needs.extract-pytests.outputs.test_functions }}
 
   aggregate-test-results:
+      needs: running-pytests
       uses: ./.github/workflows/module.aggregate-results.yaml
       with:
         GITHUB_ACTION: "${{ inputs.github_action }}"
