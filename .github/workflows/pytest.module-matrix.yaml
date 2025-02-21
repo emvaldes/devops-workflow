@@ -87,6 +87,9 @@ jobs:
   execute-module:
     needs: aggregate-test-results
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ${{ fromJson(vars.PYTHON_VERSIONS).python }}  # Ensure the matrix is defined
     steps:
 
       - name: Checkout Repository
@@ -102,7 +105,7 @@ jobs:
       - name: Download requirements.txt
         uses: actions/download-artifact@v4
         with:
-          name: requirements-${{ matrix.python-version }}
+          name: requirements-${{ matrix.python-version }}  # Ensure correct name is used
           path: .
 
       - name: Verify requirements.txt Exists
@@ -127,4 +130,4 @@ jobs:
       - name: Execute Python Module
         run: |
           echo -e "Executing Python module..."
-          python -m "${{ env.packages_dir }}/dependencies"
+          python -m "${{ env.PACKAGES_DIR }}/dependencies"
