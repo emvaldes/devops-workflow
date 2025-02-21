@@ -17,6 +17,13 @@ on:
 
 jobs:
 
+  github-action:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate GitHub Action path
+        run: |
+          echo -e "GitHub Action: '${{ inputs.GITHUB_ACTION }}'" ;
+
   extract-pytests:
     runs-on: ubuntu-latest
     outputs:
@@ -28,7 +35,6 @@ jobs:
 
       - name: Ensure Shell Script is Executable
         run: |
-          echo -e "GitHub Action: '${{ inputs.GITHUB_ACTION }}'" ;
           chmod +x "${{ inputs.GITHUB_ACTION }}/extract-test-functions.shell" ;
 
       - name: Extract Test Functions

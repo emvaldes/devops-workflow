@@ -80,7 +80,7 @@ jobs:
       uses: ./.github/workflows/module.extract-pytests.yaml
       with:
         PYTESTS_DIR: ${{ inputs.pytests_dir }}
-        GITHUB_ACTION: "${{ github.workspace }}/${{ inputs.github_action }}"
+        GITHUB_ACTION: "${{ inputs.github_action }}"
 
   run-pytests:
     needs: [install-packages, extract-pytests]
