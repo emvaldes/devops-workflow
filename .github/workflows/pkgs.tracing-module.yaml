@@ -28,13 +28,10 @@ on:
 #   branches:
 #     - master
 
-env:
-  github_workflows: ".github/workflows"
-
 jobs:
 
   dependencies-module:
-    uses: ${{ env.github_workflows }}/pytest.dependencies-module.yaml
+    uses: ./.github/workflows/pytest.dependencies-module.yaml
     with:
       pytests_dir: ${{ inputs.pytests_dir }}
       package_path: ${{ inputs.package_path }}

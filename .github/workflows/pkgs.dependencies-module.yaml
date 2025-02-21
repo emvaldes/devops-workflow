@@ -28,21 +28,18 @@ on:
 #   branches:
 #     - master
 
-env:
-  github_workflows: ".github/workflows"
-
 jobs:
 
   install-packages:
     id: install_packages
-    uses: ./${{ env.github_workflows }}/module.install-packages.yaml
+    uses: ./.github/workflows/module.install-packages.yaml
     with:
       package_path: ${{ inputs.package_path }}
 
   pytest-module:
     id: pytest_module
     needs: install_packages
-    uses: ./${{ env.github_workflows }}/pytest.dependencies-matrix.yaml
+    uses: ./.github/workflows/pytest.dependencies-matrix.yaml
     with:
       pytests_dir: ${{ inputs.pytests_dir }}
       package_path: ${{ inputs.package_path }}
@@ -51,7 +48,7 @@ jobs:
     id: execute_module
     needs: pytest_module
     if: needs.pytest_module.outputs.aggregated_results
-    uses: ./${{ env.github_workflows }}/module.execute-module.yaml
+    uses: ./.github/workflows/module.execute-module.yaml
     with:
       package_path: ${{ inputs.package_path }}
 
