@@ -77,7 +77,7 @@ jobs:
       with:
         test_functions: ${{ needs.extract-pytests.outputs.test_functions }}
 
-  aggregate-test-results:
+  aggregate-pytest-results:
       needs: running-pytests
       uses: ./.github/workflows/module.aggregate-results.yaml
       with:
@@ -85,7 +85,7 @@ jobs:
         artifacts_path: "${{ inputs.artifacts_path }}"
 
   # execute-module:
-  #   needs: aggregate-test-results
+  #   needs: aggregate-pytest-results
   #   uses: ./.github/workflows/module.execute-module.yaml
   #   with:
   #     package_path: ${{ inputs.package_path }}

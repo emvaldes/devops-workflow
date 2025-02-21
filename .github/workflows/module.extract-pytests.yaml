@@ -31,12 +31,12 @@ jobs:
 
       - name: Ensure Shell Script is Executable
         run: |
-          chmod +x "${{ inputs.github_action }}/extract-test-functions.shell" ;
+          chmod +x "${{ inputs.github_action }}/extract-pytest-functions.shell" ;
 
       - name: Extract Test Functions
         id: extract
         run: |
-          "${{ inputs.github_action }}/extract-test-functions.shell" ;
+          "${{ inputs.github_action }}/extract-pytest-functions.shell" ;
           if ! jq -e . test_functions.json > /dev/null 2>&1; then
             echo -e "ERROR: test_functions.json is not valid JSON!" ;
             cat test_functions.json ;

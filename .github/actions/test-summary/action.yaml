@@ -32,12 +32,12 @@ runs:
     - name: Ensure Shell Script is Executable
       shell: bash
       run: |
-        chmod +x ${{ env.GITHUB_ACTION }}/aggregate-test-results.shell ;
+        chmod +x ${{ env.GITHUB_ACTION }}/aggregate-pytest-results.shell ;
 
     - name: Run Summary Script
       shell: bash
       run: |
-        ./${{ env.GITHUB_ACTION }}/aggregate-test-results.shell ;
+        ./${{ env.GITHUB_ACTION }}/aggregate-pytest-results.shell ;
 
     - name: Verify JSON Output
       shell: bash

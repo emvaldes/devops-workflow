@@ -95,12 +95,12 @@ jobs:
 
       - name: Ensure Shell Script is Executable
         run: |
-          chmod +x "${{ env.github_action }}/extract-test-functions.shell" ;
+          chmod +x "${{ env.github_action }}/extract-pytest-functions.shell" ;
 
       - name: Extract Test Functions
         id: extract
         run: |
-          "${{ env.github_action }}/extract-test-functions.shell" ;
+          "${{ env.github_action }}/extract-pytest-functions.shell" ;
           if ! jq -e . test_functions.json > /dev/null 2>&1; then
             echo -e "ERROR: test_functions.json is not valid JSON!" ;
             cat test_functions.json ;
@@ -175,7 +175,7 @@ jobs:
           find $GITHUB_WORKSPACE -type f -name "*.xml" || echo -e "No test result files found." ;
           echo -e "Checking artifact storage location..." ;
 
-  aggregate-test-results:
+  aggregate-pytest-results:
     needs: run-pytests
     runs-on: ubuntu-latest
     steps:
@@ -208,7 +208,7 @@ jobs:
 
       - name: Aggregate Pytest Results
         run: |
-          ${{ env.github_action }}/aggregate-test-results.shell ;
+          ${{ env.github_action }}/aggregate-pytest-results.shell ;
 
       - name: Listing Entire Project
         run: |
@@ -217,7 +217,7 @@ jobs:
           # cat ${{ env.artifacts_path }}/test_results.json ;
 
   execute-module:
-    needs: aggregate-test-results
+    needs: aggregate-pytest-results
     runs-on: ubuntu-latest
     strategy:
       matrix:

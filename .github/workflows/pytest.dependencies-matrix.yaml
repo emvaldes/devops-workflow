@@ -42,6 +42,7 @@ jobs:
   pytest-params:
     runs-on: ubuntu-latest
     steps:
+
       - name: Check PyTest Modules
         run: |
           if [[ -z "${{ inputs.pytests_dir }}" ]]; then
@@ -53,6 +54,7 @@ jobs:
   packages-params:
     runs-on: ubuntu-latest
     steps:
+
       - name: Check Packages Modules
         run: |
           if [[ -z "${{ inputs.package_path }}" ]]; then
@@ -67,14 +69,25 @@ jobs:
         github_action: "${{ inputs.github_action }}"
 
   running-pytests:
-      needs: [install-packages, extract-pytests]
+      needs: extract-pytests
       uses: ./.github/workflows/module.running-pytests.yaml
       with:
         test_functions: ${{ needs.extract-pytests.outputs.test_functions }}
 
-  aggregate-test-results:
+  aggregate-pytest-results:
       needs: running-pytests
       uses: ./.github/workflows/module.aggregate-results.yaml
       with:
         github_action: "${{ inputs.github_action }}"
         artifacts_path: "${{ inputs.artifacts_path }}"
+
+  workflow-completed:
+    needs: aggregate-pytest-results
+    runs-on: ubuntu-latest
+    outputs:
+      aggregated_results: ${{ needs.aggregate-pytest-results.outputs.aggregated_results }}
+    steps:
+
+      - name: Workflow Completion
+        run: |
+          echo -e "PyTest Aggregation Complete: ${{ needs.aggregate-pytest-results.outputs.aggregated_results }}"
