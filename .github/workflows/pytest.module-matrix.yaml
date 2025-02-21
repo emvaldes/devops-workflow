@@ -37,6 +37,7 @@ env:
   PYTESTS_DIR: "${{ github.workspace }}/${{ inputs.pytests_dir }}"
   PACKAGES_DIR: "${{ github.workspace }}/${{ inputs.packages_dir }}"
 
+  GITHUB_ACTION: "${{ github.workspace }}/.github/actions/test-summary"
   ARTIFACTS_DIR: "${{ github.workspace }}/artifacts"
 
 jobs:
