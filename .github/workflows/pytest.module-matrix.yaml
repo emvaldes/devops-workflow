@@ -1,5 +1,5 @@
 ---
-## File: pytest.dependencies-matrix.yaml
+## File: pytest.module-matrix.yaml
 
 name: PyTest - Package Module Matrix
 run-name: ${{ github.actor }} -> Package Module Matrix

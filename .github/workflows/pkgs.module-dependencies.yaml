@@ -1,5 +1,5 @@
 ---
-## File: pkgs.dependencies-module.yaml
+## File: pkgs.module-dependencies.yaml
 
 name: Requirements - Dependencies Module
 run-name: ${{ github.actor }} -> Dependencies Module

@@ -1,5 +1,5 @@
 ---
-## File: pkgs.dependencies-module.yaml
+## File: pkgs.module-tracing.yaml
 
 name: AppFlow-Tracer - Tracing Module
 run-name: ${{ github.actor }} -> Tracing Module
