@@ -1,8 +1,8 @@
 ---
 ## File: pkgs.dependencies-module.yaml
 
-name: Requirements - Dependencies Module
-run-name: ${{ github.actor }} -> Dependencies Module
+name: AppFlow-Tracer - Tracing Module
+run-name: ${{ github.actor }} -> Tracing Module
 
 on:
 
@@ -13,12 +13,12 @@ on:
       pytests_dir:
         description: 'Directory containing PyTest files'
         required: false
-        default: 'tests/requirements/dependencies'
+        default: 'tests/appflow_tracer/tracing'
 
       package_path:
         description: 'Directory containing package files'
         required: false
-        default: 'packages/requirements/dependencies'
+        default: 'packages/appflow_tracer/tracing'
 
 # push:
 #   branches:
@@ -30,14 +30,14 @@ on:
 
 jobs:
 
-  install-packages:
-    uses: ./.github/workflows/module.install-packages.yaml
-    with:
-      package_path: ${{ inputs.package_path }}
+  dependencies:
+    uses: ./.github/workflows/pkgs.module-dependencies.yaml
+    # with:
+    #   package_path: ${{ inputs.package_path }}
 
   pytest-module:
     needs: install-packages
-    uses: ./.github/workflows/pytest.dependencies-matrix.yaml
+    uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
       pytests_dir: ${{ inputs.pytests_dir }}
       package_path: ${{ inputs.package_path }}

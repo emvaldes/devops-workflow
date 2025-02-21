@@ -1,0 +1,60 @@
+---
+## File: pkgs.dependencies-module.yaml
+
+name: Requirements - Dependencies Module
+run-name: ${{ github.actor }} -> Dependencies Module
+
+on:
+
+  workflow_dispatch:
+
+    inputs:
+
+      pytests_dir:
+        description: 'Directory containing PyTest files'
+        required: false
+        default: 'tests/requirements/dependencies'
+
+      package_path:
+        description: 'Directory containing package files'
+        required: false
+        default: 'packages/requirements/dependencies'
+
+# push:
+#   branches:
+#     - master
+#
+# pull_request:
+#   branches:
+#     - master
+
+jobs:
+
+  install-packages:
+    uses: ./.github/workflows/module.install-packages.yaml
+    with:
+      package_path: ${{ inputs.package_path }}
+
+  pytest-module:
+    needs: install-packages
+    uses: ./.github/workflows/pytest.module-matrix.yaml
+    with:
+      pytests_dir: ${{ inputs.pytests_dir }}
+      package_path: ${{ inputs.package_path }}
+
+  execute-module:
+    needs: pytest-module
+    if: needs.pytest-module.outputs.aggregated_results
+    uses: ./.github/workflows/module.execute-module.yaml
+    with:
+      package_path: ${{ inputs.package_path }}
+
+  workflow-completed:
+    needs: execute-module
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Completed Dependencies Module
+        id: dependencies_module
+        run: |
+          echo -e "Completed Dependencies Workflow" ;
