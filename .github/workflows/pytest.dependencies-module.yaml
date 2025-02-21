@@ -29,8 +29,20 @@ on:
 #     - master
 
 jobs:
-  call-module-matrix:
+
+  install-packages:
+      uses: ./.github/workflows/module.install-packages.yaml
+      with:
+        package_path: ${{ inputs.package_path }}
+
+  module-matrix:
     uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
       pytests_dir: ${{ inputs.pytests_dir }}
+      package_path: ${{ inputs.package_path }}
+
+  execute-module:
+    needs: aggregate-test-results
+    uses: ./.github/workflows/module.execute-module.yaml
+    with:
       package_path: ${{ inputs.package_path }}

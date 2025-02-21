@@ -61,10 +61,10 @@ jobs:
             exit 1 ;
           fi ;
 
-  install-packages:
-      uses: ./.github/workflows/module.install-packages.yaml
-      with:
-        package_path: ${{ inputs.package_path }}
+  # install-packages:
+  #     uses: ./.github/workflows/module.install-packages.yaml
+  #     with:
+  #       package_path: ${{ inputs.package_path }}
 
   extract-pytests:
       uses: ./.github/workflows/module.extract-pytests.yaml
@@ -84,8 +84,8 @@ jobs:
         github_action: "${{ inputs.github_action }}"
         artifacts_path: "${{ inputs.artifacts_path }}"
 
-  execute-module:
-    needs: aggregate-test-results
-    uses: ./.github/workflows/module.execute-module.yaml
-    with:
-      package_path: ${{ inputs.package_path }}
+  # execute-module:
+  #   needs: aggregate-test-results
+  #   uses: ./.github/workflows/module.execute-module.yaml
+  #   with:
+  #     package_path: ${{ inputs.package_path }}
