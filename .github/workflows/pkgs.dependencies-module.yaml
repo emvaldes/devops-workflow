@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Listing Entire Project
-        id: listing_project
+      - name: Completed Dependencies Module
+        id: dependencies_module
         run: |
-          tree -FCla --prune -I .git ${{ github.workspace }} ;
+          echo -e "Completed Dependencies Workflow" ;
