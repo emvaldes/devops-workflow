@@ -36,13 +36,14 @@ jobs:
 
       - name: Generate requirements.txt from JSON
         run: |
+          PACKAGE_PARENT_DIR="$( dirname ${{ inputs.PACKAGES_DIR }} )";
           jq -r '
             .dependencies[] |
             if .version.target then
               "\(.package)==\(.version.target)"
             else
               .package
-            end' "${{ inputs.PACKAGES_DIR }}/requirements.json" > requirements.txt ;
+            end' "${PACKAGE_PARENT_DIR}/requirements.json" > requirements.txt ;
           echo -e "Generated requirements.txt:" ;
           cat requirements.txt ;
 

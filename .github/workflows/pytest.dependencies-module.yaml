@@ -18,7 +18,7 @@ on:
       packages_dir:
         description: 'Directory containing package files'
         required: false
-        default: 'packages/requirements'
+        default: 'packages/requirements/dependencies'
 
 # push:
 #   branches:
