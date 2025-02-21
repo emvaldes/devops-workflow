@@ -24,6 +24,11 @@ on:
         type: string
         default: ".github/actions/test-summary"
 
+      artifacts_dir:
+        required: false
+        type: string
+        default: "artifacts"
+
   # push:
   #   branches:
   #     - master
@@ -34,8 +39,8 @@ on:
 
 env:
 
-  GITHUB_ACTION: "${{ github.workspace }}/.github/actions/test-summary"
-  ARTIFACTS_DIR: "${{ github.workspace }}/artifacts"
+  # GITHUB_ACTION: "${{ github.workspace }}/.github/actions/test-summary"
+  # ARTIFACTS_DIR: "${{ github.workspace }}/artifacts"
 
 jobs:
 
@@ -82,3 +87,4 @@ jobs:
       uses: ./.github/workflows/module.aggregate-results.yaml
       with:
         GITHUB_ACTION: "${{ inputs.github_action }}"
+        ARTIFACTS_DIR: "${{ inputs.artifacts_dir }}"
