@@ -69,7 +69,6 @@ jobs:
   extract-pytests:
       uses: ./.github/workflows/module.extract-pytests.yaml
       with:
-        PYTESTS_DIR: ${{ inputs.pytests_dir }}
         GITHUB_ACTION: "${{ inputs.github_action }}"
 
   running-pytests:
@@ -79,42 +78,6 @@ jobs:
         test_functions: ${{ needs.extract-pytests.outputs.test_functions }}
 
   aggregate-test-results:
-    needs: running-pytests
-    runs-on: ubuntu-latest
-    steps:
-
-      - name: Install System Packages
-        run: |
-          sudo apt-get update --yes ;
-          sudo apt-get install tree jq --yes ;
-
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Ensure Debug Script is Executable
-        run: |
-          chmod +x ${{ env.GITHUB_ACTION }}/debug-artifacts-state.shell ;
-
-      - name: Debug - Locate Artifacts
-        run: |
-          ${{ env.GITHUB_ACTION }}/debug-artifacts-state.shell ;
-
-      - name: Download All Test Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: ${{ env.ARTIFACTS_DIR }}/
-
-      - name: Verify Downloaded Artifacts
-        run: |
-          echo -e "Listing downloaded artifacts..." ;
-          tree -FCla --prune -I .git ./artifacts 2>/dev/null ;
-
-      - name: Aggregate Pytest Results
-        run: |
-          ${{ env.GITHUB_ACTION }}/aggregate-test-results.shell ;
-
-      - name: Listing Entire Project
-        run: |
-          tree -FCla --prune -I .git ${{ github.workspace }} ;
-          # cat ${{ env.ARTIFACTS_DIR }}/test_functions.log ;
-          # cat ${{ env.ARTIFACTS_DIR }}/test_results.json ;
+      uses: ./.github/workflows/module.aggregate-results.yaml
+      with:
+        GITHUB_ACTION: "${{ inputs.github_action }}"

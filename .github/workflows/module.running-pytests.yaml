@@ -1,7 +1,7 @@
 ---
 ## File: module.running-pytests.yaml
 
-name: Running PyTests Module
+name: Running PyTests Test Functions
 on:
 
   workflow_call:

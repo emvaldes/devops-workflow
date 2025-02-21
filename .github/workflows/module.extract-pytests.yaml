@@ -8,10 +8,6 @@ on:
 
     inputs:
 
-      PYTESTS_DIR:
-        required: true
-        type: string
-
       GITHUB_ACTION:
         required: true
         type: string
