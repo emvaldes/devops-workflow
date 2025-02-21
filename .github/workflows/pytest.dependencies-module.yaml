@@ -36,7 +36,7 @@ jobs:
         package_path: ${{ inputs.package_path }}
 
   module-matrix:
-    uses: ./.github/workflows/pytest.module-matrix.yaml
+    uses: ./.github/workflows/pytest.dependencies-matrix.yaml
     with:
       pytests_dir: ${{ inputs.pytests_dir }}
       package_path: ${{ inputs.package_path }}

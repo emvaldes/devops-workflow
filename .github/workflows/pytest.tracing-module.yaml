@@ -1,5 +1,5 @@
 ---
-## File: pytest.tracer-tracing-module.yaml
+## File: pytest.tracing-module.yaml
 
 name: PyTest - Tracer/Tracing Module
 run-name: ${{ github.actor }} -> PyTest Tracer/Tracing Module
@@ -29,8 +29,9 @@ on:
 #     - master
 
 jobs:
-  call-module-matrix:
-    uses: ./.github/workflows/pytest.module-matrix.yaml
+
+  dependencies-module:
+    uses: ./.github/workflows/pytest.dependencies-module.yaml
     with:
       pytests_dir: ${{ inputs.pytests_dir }}
       package_path: ${{ inputs.package_path }}
