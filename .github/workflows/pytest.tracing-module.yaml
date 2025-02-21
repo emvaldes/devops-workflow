@@ -1,0 +1,36 @@
+---
+## File: pytest.dependencies-module.yaml
+
+name: PyTest - Tracer/Tracing Module
+run-name: ${{ github.actor }} -> PyTest Tracer/Tracing Module
+
+on:
+
+  workflow_dispatch:
+
+    inputs:
+
+      pytests_dir:
+        description: 'Directory containing PyTest files'
+        required: false
+        default: 'tests/appflow_tracer/tracing'
+
+      package_path:
+        description: 'Directory containing package files'
+        required: false
+        default: 'packages/appflow_tracer/tracing'
+
+# push:
+#   branches:
+#     - master
+#
+# pull_request:
+#   branches:
+#     - master
+
+jobs:
+  call-module-matrix:
+    uses: ./.github/workflows/pytest.module-matrix.yaml
+    with:
+      pytests_dir: ${{ inputs.pytests_dir }}
+      package_path: ${{ inputs.package_path }}
