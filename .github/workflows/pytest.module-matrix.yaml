@@ -127,8 +127,19 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
-      - name: Execute Python Module
+      # - name: Execute Python Module
+      #   run: |
+      #     echo -e "Executing Python module..."
+      #     # python -m "${{ inputs.packages_dir }}/dependencies"
+      #     # python -m packages.requirements.dependencies ;
+
+      - name: Set PYTHONPATH to Repository Root
         run: |
-          echo -e "Executing Python module..."
-          # python -m "${{ inputs.packages_dir }}/dependencies"
-          python -m packages.requirements.dependencies ;
+          echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+          echo "PYTHONPATH set to: $GITHUB_WORKSPACE"
+
+      - name: Convert Path & Execute Python Module
+        run: |
+          MODULE_PATH=$(echo "${{ inputs.packages_dir }}/dependencies" | sed 's/\//./g')
+          echo "Executing Python module: $MODULE_PATH"
+          python -m "$MODULE_PATH"
