@@ -33,7 +33,7 @@ on:
     outputs:
       aggregated_results:
         description: "Providing PyTest Results Aggregation status"
-        value: ${{ jobs.workflow-completed.outputs.aggregated_results }}
+        value: ${{ jobs.workflow_completed.outputs.aggregated_results }}
 
 # push:
 #   branches:
@@ -45,11 +45,13 @@ on:
 
 jobs:
 
-  pytest-params:
+  pytests-location:
+    id: pytests_location
     runs-on: ubuntu-latest
     steps:
 
       - name: Check PyTest Modules
+        id: validate_modules
         run: |
           if [[ -z "${{ inputs.pytests_dir }}" ]]; then
             echo -en "Error: inputs.pytests_dir must be provided. " ;
@@ -57,11 +59,13 @@ jobs:
             exit 1 ;
           fi ;
 
-  packages-params:
+  packages-location:
+    id: packages_location
     runs-on: ubuntu-latest
     steps:
 
       - name: Check Packages Modules
+        id: validate_packages
         run: |
           if [[ -z "${{ inputs.package_path }}" ]]; then
             echo -en "Error: inputs.package_path must be provided. " ;
@@ -69,33 +73,37 @@ jobs:
             exit 1 ;
           fi ;
 
-  extract-pytests:
-      uses: ./.github/workflows/module.extract-pytests.yaml
-      with:
-        github_action: "${{ inputs.github_action }}"
+  extracting-pytests:
+    id: extracting_pytests
+    needs: [pytests_location, packages_location]
+    uses: ${{ github.workflow }}/module.extract-pytests.yaml
+    with:
+      github_action: "${{ inputs.github_action }}"
 
   running-pytests:
-      needs: extract-pytests
-      uses: ./.github/workflows/module.running-pytests.yaml
-      with:
-        test_functions: ${{ needs.extract-pytests.outputs.test_functions }}
+    id: running_pytests
+    needs: extracting_pytests
+    uses: ${{ github.workflow }}/module.running-pytests.yaml
+    with:
+      test_functions: ${{ needs.extracting_pytests.outputs.test_functions }}
 
-  aggregate-pytest-results:
-      needs: running-pytests
-      uses: ./.github/workflows/module.aggregate-results.yaml
-      with:
-        github_action: "${{ inputs.github_action }}"
-        artifacts_path: "${{ inputs.artifacts_path }}"
+  aggregating-pytests:
+    id: aggregating_pytests
+    needs: running_pytests
+    uses: ${{ github.workflow }}/module.aggregate-results.yaml
+    with:
+      github_action: "${{ inputs.github_action }}"
+      artifacts_path: "${{ inputs.artifacts_path }}"
 
   workflow-completed:
-    needs: aggregate-pytest-results
+    id: workflow_completed
+    needs: aggregating_pytests
     runs-on: ubuntu-latest
     outputs:
-      aggregated_results: "true"
+      aggregated_results: ${{ needs.aggregating_pytests.outputs.aggregated_results }}
     steps:
 
       - name: Workflow Completion
+        id: workflow_status
         run: |
-          echo "aggregated_results=true" >> $GITHUB_ENV
-          # echo "Dependencies Matrix - GitHub Environment:\n${GITHUB_ENV}" ;
-          # echo "Dependencies Matrix - GitHub Environment:\n${GITHUB_OUTPUT}" ;
+          echo "Dependencies Matrix - GitHub Environment:\n${GITHUB_ENV}" ;

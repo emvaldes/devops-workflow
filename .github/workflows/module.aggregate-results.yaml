@@ -20,55 +20,56 @@ on:
 
       aggregated_results:
         description: "Signaling PyTest Results Aggregation completion"
-        value: ${{ jobs.aggregate-pytest-results.outputs.aggregated_results }}
+        value: ${{ jobs.aggregate_pytest_results.outputs.aggregated_results }}
 
 jobs:
 
   aggregate-pytest-results:
+    id: aggregate_pytest_results
     runs-on: ubuntu-latest
     outputs:
-      aggregated_results: ${{ steps.task_status.outputs.aggregated_results }}
+      aggregated_results: "true"
     steps:
 
       - name: Install System Packages
+        id: installing_system_packages
         run: |
           sudo apt-get update --yes ;
           sudo apt-get install tree jq --yes ;
 
       - name: Checkout Repository
+        id: checkout_repository
         uses: actions/checkout@v4
 
-      - name: Ensure Debug Script is Executable
+      - name: Ensure Script is Executable
+        id: executable_script
         run: |
-          chmod +x ${{ inputs.github_action }}/debug-artifacts-state.shell ;
+          chmod +x ${{ inputs.github_action }}/inspect-artifacts-state.shell ;
 
-      - name: Debug - Locate Artifacts
+      - name: Locating Artifacts
+        id: locating_artifacts
         run: |
-          ${{ inputs.github_action }}/debug-artifacts-state.shell ;
+          ${{ inputs.github_action }}/inspect-artifacts-state.shell ;
 
       - name: Download All Test Artifacts
+        id: downloading_artifacts
         uses: actions/download-artifact@v4
         with:
           path: ${{ inputs.artifacts_path }}/
 
       - name: Verify Downloaded Artifacts
+        id: verifying_artifacts
         run: |
           echo -e "Listing downloaded artifacts..." ;
           tree -FCla --prune -I .git ./artifacts 2>/dev/null ;
 
       - name: Aggregate Pytest Results
+        id: aggregating_results
         run: |
           ${{ inputs.github_action }}/aggregate-pytest-results.shell ;
 
-      - name: Listing Entire Project
-        run: |
-          tree -FCla --prune -I .git ${{ github.workspace }} ;
-          # cat ${{ inputs.artifacts_path }}/test_functions.log ;
-          # cat ${{ inputs.artifacts_path }}/test_results.json ;
-
       - name: Configure Workflow Status
-        id: task_status
+        id: workflow_status
         run: |
           echo "aggregated_results=true" >> $GITHUB_ENV
-          # echo "Aggregate Results - GitHub Environment:\n${GITHUB_ENV}" ;
-          # echo "Aggregate Results - GitHub Environment:\n${GITHUB_OUTPUT}" ;
+          echo "Aggregate Results - GitHub Environment:\n${GITHUB_ENV}" ;

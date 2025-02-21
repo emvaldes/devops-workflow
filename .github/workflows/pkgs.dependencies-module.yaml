@@ -31,20 +31,34 @@ on:
 jobs:
 
   install-packages:
-      uses: ./.github/workflows/module.install-packages.yaml
-      with:
-        package_path: ${{ inputs.package_path }}
+    id: install_packages
+    uses: ${{ github.workflow }}/module.install-packages.yaml
+    with:
+      package_path: ${{ inputs.package_path }}
 
   pytest-module:
-    needs: install-packages
-    uses: ./.github/workflows/pytest.dependencies-matrix.yaml
+    id: pytest_module
+    needs: install_packages
+    uses: ${{ github.workflow }}/pytest.dependencies-matrix.yaml
     with:
       pytests_dir: ${{ inputs.pytests_dir }}
       package_path: ${{ inputs.package_path }}
 
   execute-module:
-    needs: pytest-module
-    if: needs.pytest-module.outputs.aggregated_results == 'true'
+    id: execute_module
+    needs: pytest_module
+    if: needs.pytest_module.outputs.aggregated_results
     uses: ./.github/workflows/module.execute-module.yaml
     with:
       package_path: ${{ inputs.package_path }}
+
+  workflow-completed:
+    id: workflow_completed
+    needs: execute_module
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Listing Entire Project
+        id: listing_project
+        run: |
+          tree -FCla --prune -I .git ${{ github.workspace }} ;
