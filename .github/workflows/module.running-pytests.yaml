@@ -1,0 +1,80 @@
+---
+## File: module.running-pytests.yaml
+
+name: Running PyTests Module
+on:
+
+  workflow_call:
+
+    inputs:
+
+      test_functions:
+        required: true
+        type: string
+
+jobs:
+
+  running-pytests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
+        test_function: ${{ fromJson( inputs.test_functions ) }}
+    steps:
+
+      - name: Install System Packages
+        run: |
+          sudo apt-get update --yes ;
+          sudo apt-get install tree jq --yes ;
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Python and Dependencies
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Restore Cached Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ matrix.python-version }}-${{ matrix.test_function }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: pip-${{ matrix.python-version }}-${{ matrix.test_function }}-
+
+      - name: Download requirements.txt
+        uses: actions/download-artifact@v4
+        with:
+          name: requirements-${{ matrix.python-version }}
+          path: .
+
+      - name: Verify requirements.txt Exists
+        run: |
+          if [[ ! -f requirements.txt ]]; then
+            echo -e "ERROR: requirements.txt is missing!" ;
+            exit 1 ;
+          fi ;
+          echo -e "requirements.txt found!" ;
+          cat requirements.txt ;
+
+      - name: Reinstall Dependencies from Cache
+        run: |
+          python -m pip install --upgrade pip ;
+          python -m pip install -r requirements.txt ;
+
+      - name: Run Pytest Function
+        run: |
+          pytest -v --junitxml=pytest-results.xml \
+          "${{ inputs.pytests_dir }}/test_dependencies.py::${{ matrix.test_function }}" ;
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-results-${{ matrix.python-version }}-${{ matrix.test_function }}
+          path: pytest-results.xml
+
+      - name: Debug - List Uploaded Artifacts
+        run: |
+          echo -e "Listing uploaded artifacts..." ;
+          find $GITHUB_WORKSPACE -type f -name "*.xml" || echo "No test result files found." ;
+          echo -e "Checking artifact storage location..." ;
