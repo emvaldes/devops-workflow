@@ -34,8 +34,8 @@ on:
 
 env:
 
-  PYTESTS_DIR: "${{ github.workspace }}/${{ inputs.pytests_dir }}"
-  PACKAGES_DIR: "${{ github.workspace }}/${{ inputs.packages_dir }}"
+  # PYTESTS_DIR: "${{ github.workspace }}/${{ inputs.pytests_dir }}"
+  # PACKAGES_DIR: "${{ github.workspace }}/${{ inputs.packages_dir }}"
 
   GITHUB_ACTION: "${{ github.workspace }}/.github/actions/test-summary"
   ARTIFACTS_DIR: "${{ github.workspace }}/artifacts"
@@ -47,7 +47,7 @@ jobs:
     steps:
       - name: Check PyTest Modules
         run: |
-          if [[ -z "${{ env.PYTESTS_DIR }}" ]]; then
+          if [[ -z "${{ inputs.pytests_dir }}" ]]; then
             echo -en "Error: inputs.pytests_dir must be provided. " ;
             echo -e  "The workflow cannot proceed without a valid target." ;
             exit 1 ;
@@ -58,7 +58,7 @@ jobs:
     steps:
       - name: Check Packages Modules
         run: |
-          if [[ -z "${{ env.PACKAGES_DIR }}" ]]; then
+          if [[ -z "${{ inputs.packages_dir }}" ]]; then
             echo -en "Error: inputs.packages_dir must be provided. " ;
             echo -e  "The workflow cannot proceed without a valid target." ;
             exit 1 ;
@@ -127,7 +127,7 @@ jobs:
       - name: Run Pytest Function
         run: |
           pytest -v --junitxml=pytest-results.xml \
-          "${{ inputs.PYTESTS_DIR }}/test_dependencies.py::${{ matrix.test_function }}" ;
+          "${{ inputs.pytests_dir }}/test_dependencies.py::${{ matrix.test_function }}" ;
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
@@ -215,4 +215,4 @@ jobs:
   #     - name: Execute Python Module
   #       run: |
   #         echo -e "Executing Python module..." ;
-  #         python -m "${{ env.PACKAGES_DIR }}/dependencies" ;
+  #         python -m "${{ env.packages_dir }}/dependencies" ;
