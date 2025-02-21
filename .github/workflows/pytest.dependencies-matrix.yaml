@@ -46,12 +46,11 @@ on:
 jobs:
 
   pytests-location:
-    id: pytests_location
     runs-on: ubuntu-latest
     steps:
 
       - name: Check PyTest Modules
-        id: validate_modules
+        id: pytests_location
         run: |
           if [[ -z "${{ inputs.pytests_dir }}" ]]; then
             echo -en "Error: inputs.pytests_dir must be provided. " ;
@@ -60,12 +59,11 @@ jobs:
           fi ;
 
   packages-location:
-    id: packages_location
     runs-on: ubuntu-latest
     steps:
 
       - name: Check Packages Modules
-        id: validate_packages
+        id: packages_location
         run: |
           if [[ -z "${{ inputs.package_path }}" ]]; then
             echo -en "Error: inputs.package_path must be provided. " ;
@@ -74,33 +72,29 @@ jobs:
           fi ;
 
   extracting-pytests:
-    id: extracting_pytests
-    needs: [pytests_location, packages_location]
+    needs: [pytests-location, packages-location]
     uses: ./.github/workflows/module.extract-pytests.yaml
     with:
       github_action: "${{ inputs.github_action }}"
 
   running-pytests:
-    id: running_pytests
-    needs: extracting_pytests
+    needs: extracting-pytests
     uses: ./.github/workflows/module.running-pytests.yaml
     with:
-      test_functions: ${{ needs.extracting_pytests.outputs.test_functions }}
+      test_functions: ${{ needs.extracting-pytests.outputs.test_functions }}
 
   aggregating-pytests:
-    id: aggregating_pytests
-    needs: running_pytests
+    needs: running-pytests
     uses: ./.github/workflows/module.aggregate-results.yaml
     with:
       github_action: "${{ inputs.github_action }}"
       artifacts_path: "${{ inputs.artifacts_path }}"
 
   workflow-completed:
-    id: workflow_completed
-    needs: aggregating_pytests
+    needs: aggregating-pytests
     runs-on: ubuntu-latest
     outputs:
-      aggregated_results: ${{ needs.aggregating_pytests.outputs.aggregated_results }}
+      aggregated_results: ${{ needs.aggregating-pytests.outputs.aggregated_results }}
     steps:
 
       - name: Workflow Completion

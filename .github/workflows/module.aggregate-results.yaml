@@ -25,7 +25,6 @@ on:
 jobs:
 
   aggregate-pytest-results:
-    id: aggregate_pytest_results
     runs-on: ubuntu-latest
     outputs:
       aggregated_results: "true"
