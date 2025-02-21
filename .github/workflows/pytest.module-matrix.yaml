@@ -22,7 +22,7 @@ on:
       github_action:
         required: false
         type: string
-        default: "${{ github.workspace }}/.github/actions/test-summary"
+        default: ".github/actions/test-summary"
 
   # push:
   #   branches:
