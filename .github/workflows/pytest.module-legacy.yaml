@@ -1,6 +1,8 @@
 ---
-name: Parallel PyTest - Dependencies (Matrix)
-run-name: ${{ github.actor }} -> Dependencies (Matrix)
+## File: pytest.module-legacy.yaml
+
+name: Parallel PyTest - Legacy Matrix
+run-name: ${{ github.actor }} -> PyTest Legacy Matrix
 
 on:
   workflow_dispatch:

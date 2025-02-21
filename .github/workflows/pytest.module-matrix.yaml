@@ -1,7 +1,7 @@
 ---
 ## File: pytest.module-matrix.yaml
 
-name: Parallel PyTest - Module (Matrix)
+name: Parallel PyTest - Module Matrix
 run-name: ${{ github.actor }} -> PyTest Module (Matrix)
 
 on:
