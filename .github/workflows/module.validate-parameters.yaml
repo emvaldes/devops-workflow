@@ -28,7 +28,7 @@ jobs:
         run: |
 
           echo -e "Validating workflow's input parameters ..." ;
-          # echo -e ${{ inputs.workflow_inputs }} ;
+          echo -e "${{ inputs.workflow_inputs }}" ;
 
           ${{ env.github_action }}/validate-input-params.shell \
-          --json=${{ inputs.workflow_inputs }} ;
+          --json="${{ inputs.workflow_inputs }}" ;
