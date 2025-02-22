@@ -1,7 +1,6 @@
 ---
-
 ## File: .github/workflows/pkgs.module-dependencies.yaml
-## Version: 0.1.0
+## Version: 0.3.0
 
 name: Requirements - Dependencies Module
 run-name: ${{ github.actor }} -> Dependencies Module
@@ -40,14 +39,6 @@ on:
       aggregated_results:
         description: "Providing PyTest Results Aggregation status"
         value: ${{ jobs.pytest-module.outputs.aggregated_results }}
-
-# push:
-#   branches:
-#     - master
-#
-# pull_request:
-#   branches:
-#     - master
 
 jobs:
 
