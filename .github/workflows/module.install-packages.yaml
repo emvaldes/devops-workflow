@@ -8,7 +8,7 @@ on:
 
     inputs:
 
-      package_path:
+      package_location:
         required: true
         type: string
 
@@ -36,7 +36,7 @@ jobs:
 
       - name: Generate requirements.txt from JSON
         run: |
-          PACKAGE_PARENT_DIR="$( dirname ${{ inputs.package_path }} )";
+          PACKAGE_PARENT_DIR="$( dirname ${{ inputs.package_location }} )";
           jq -r '
             .dependencies[] |
             if .version.target then

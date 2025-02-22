@@ -10,12 +10,12 @@ on:
 
     inputs:
 
-      pytests_dir:
+      pytests_location:
         description: 'Directory containing PyTest files'
         required: false
         default: 'tests/requirements/dependencies'
 
-      package_path:
+      package_location:
         description: 'Directory containing package files'
         required: false
         default: 'packages/requirements/dependencies'
@@ -33,21 +33,21 @@ jobs:
   install-packages:
     uses: ./.github/workflows/module.install-packages.yaml
     with:
-      package_path: ${{ inputs.package_path }}
+      package_location: ${{ inputs.package_location }}
 
   pytest-module:
     needs: install-packages
     uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
-      pytests_dir: ${{ inputs.pytests_dir }}
-      package_path: ${{ inputs.package_path }}
+      pytests_location: ${{ inputs.pytests_location }}
+      package_location: ${{ inputs.package_location }}
 
   execute-module:
     needs: pytest-module
     if: needs.pytest-module.outputs.aggregated_results
     uses: ./.github/workflows/module.execute-module.yaml
     with:
-      package_path: ${{ inputs.package_path }}
+      package_location: ${{ inputs.package_location }}
 
   workflow-completed:
     needs: execute-module

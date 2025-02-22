@@ -8,7 +8,7 @@ on:
 
     inputs:
 
-      package_path:
+      package_location:
         required: true
         type: string
 
@@ -63,6 +63,6 @@ jobs:
 
       - name: Convert Path & Execute Python Module
         run: |
-          package_module=$( echo "${{ inputs.package_path }}" | sed 's/\//./g' ) ;
+          package_module=$( echo "${{ inputs.package_location }}" | sed 's/\//./g' ) ;
           echo "Executing Python module: ${package_module}" ;
           python -m $package_module ;

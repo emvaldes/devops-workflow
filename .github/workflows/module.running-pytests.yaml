@@ -65,7 +65,7 @@ jobs:
       - name: Run Pytest Function
         run: |
           pytest -v --junitxml=pytest-results.xml \
-          "${{ inputs.pytests_dir }}/test_dependencies.py::${{ matrix.test_function }}" ;
+          "${{ inputs.pytests_location }}/test_dependencies.py::${{ matrix.test_function }}" ;
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4

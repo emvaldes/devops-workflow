@@ -12,7 +12,7 @@ on:
         required: true
         type: string
 
-      artifacts_path:
+      artifacts_location:
         required: true
         type: string
 
@@ -54,7 +54,7 @@ jobs:
         id: downloading_artifacts
         uses: actions/download-artifact@v4
         with:
-          path: ${{ inputs.artifacts_path }}/
+          path: ${{ inputs.artifacts_location }}/
 
       - name: Verify Downloaded Artifacts
         id: verifying_artifacts
