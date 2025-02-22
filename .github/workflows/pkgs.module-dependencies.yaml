@@ -11,18 +11,19 @@ on:
     inputs:
 
       pytests_location:
-        description: 'Directory containing PyTest files'
+        description: "PyTest files Directory"
         required: false
         type: string
-        default: 'tests/requirements/dependencies'
+        default: "tests/requirements/dependencies"
 
       package_location:
-        description: 'Directory containing package files'
+        description: "Packages/Modules Directory"
         required: false
         type: string
-        default: 'packages/requirements/dependencies'
+        default: "packages/requirements/dependencies"
 
       github_action:
+        description: "Target GitHub-Actions Path"
         required: false
         type: string
         default: ".github/actions/test-summary"
