@@ -11,6 +11,7 @@ on:
       package_location:
         required: true
         type: string
+        default: ''
 
 jobs:
 
@@ -22,7 +23,7 @@ jobs:
         id: validate_parameters
         run: |
 
-          params=false ;
+          invalid_params=false ;
           error_header="Workflow: 'module.execute-module' cannot proceed without" ;
 
           [[ -z "${{ inputs.package_location }}" ]] && {

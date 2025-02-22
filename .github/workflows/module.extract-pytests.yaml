@@ -11,6 +11,7 @@ on:
       github_action:
         required: true
         type: string
+        default: ''
 
     outputs:
 
@@ -28,7 +29,7 @@ jobs:
         id: validate_parameters
         run: |
 
-          params=false ;
+          invalid_params=false ;
           error_header="Workflow: 'module.extract-pytests' cannot proceed without" ;
 
           [[ -z "${{ inputs.github_action }}" ]] && {

@@ -13,11 +13,13 @@ on:
       pytests_location:
         description: 'Directory containing PyTest files'
         required: false
+        type: string
         default: 'tests/requirements/dependencies'
 
       package_location:
         description: 'Directory containing package files'
         required: false
+        type: string
         default: 'packages/requirements/dependencies'
 
 # push:
@@ -38,7 +40,7 @@ jobs:
         id: validate_parameters
         run: |
 
-          params=false ;
+          invalid_params=false ;
           error_header="Workflow: 'pytest.module-dependencies' cannot proceed without" ;
 
           [[ -z "${{ inputs.pytests_location }}" ]] && {

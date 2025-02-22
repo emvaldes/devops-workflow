@@ -11,9 +11,10 @@ on:
       github_action:
         required: true
         type: string
+        default: ''
 
       artifacts_location:
-        required: true
+        required: false
         type: string
         default: "artifacts"
 
@@ -33,7 +34,7 @@ jobs:
         id: validate_parameters
         run: |
 
-          params=false ;
+          invalid_params=false ;
           error_header="Workflow: 'module.aggregate-results' cannot proceed without" ;
 
           [[ -z "${{ inputs.github_action }}" ]] && {

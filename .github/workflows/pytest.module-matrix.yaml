@@ -13,12 +13,12 @@ on:
       pytests_location:
         required: true
         type: string
-        default: false
+        default: ''
 
       package_location:
         required: true
         type: string
-        default: false
+        default: ''
 
       github_action:
         required: false
@@ -53,7 +53,7 @@ jobs:
         id: validate_parameters
         run: |
 
-          params=false ;
+          invalid_params=false ;
           error_header="Workflow: 'pytest.module-matrix' cannot proceed without" ;
 
           [[ -z "${{ inputs.pytests_location }}" ]] && {
