@@ -60,7 +60,7 @@ jobs:
 
           echo -e "Invalid Params: ${invalid_params}";
           # Exit with error if any input is invalid.
-          if [[ "${invalid_params}" == "true" ]]; then exit 1; fi;
+          if [[ ${invalid_params} == true ]]; then exit 1; fi;
 
   install-packages:
     needs: validate-parameters
