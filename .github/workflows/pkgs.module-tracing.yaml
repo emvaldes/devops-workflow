@@ -67,7 +67,7 @@ jobs:
       package_location: ${{ inputs.package_location }}
 
   pytest-module:
-    needs: dependencies
+    needs: install-packages
     uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
       pytests_location: ${{ inputs.pytests_location }}
