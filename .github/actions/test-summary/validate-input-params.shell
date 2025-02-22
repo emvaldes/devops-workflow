@@ -65,24 +65,27 @@ function validate_input_parameters() {
     fi;
 
     local invalid_params=false;
-    local error_header="Error: ${workflow_name} cannot proceed without a valid";
+    local error_header="cannot proceed without a valid";
 
     echo -e "\nCompressed JSON (${workflow_name}):\n${compressed_json}\n";
 
     # Directly iterate over parameters in "params" for validation.
     local invalid_params=false;
-    while IFS=$'\t' read -r header value; do
-      echo "Input Parameter [${header}]: ${value}";
-      if [[ -z "${value}" ]]; then
-        echo -e "\n${error_header} ${header}.";
-        invalid_params=true;
-      fi;
+    # Iterate over parameters in "params" key/value pairs and extract them.
+    #  - id (the internal key, e.g., "pytests_location")
+    #  - header (the human-readable label, e.g., "PyTests Location")
+    #  - value (the actual input value)
+    while IFS=$'\t' read -r id header value; do
+      if [[ -z "$value" ]]; then
+              echo -e "\nInvalid Input-Parameter:\n${workflow_name}[${id}] ${error_header} ${header}.";
+              invalid_params=true;
+        else  echo -e "${workflow_name}[${id}]\t= ${value}"
+      fi
     done < <(
-      echo "${compressed_json}" | jq -r '.params | to_entries[] | "\(.key)\t\(.value)"'
+      echo "${compressed_json}" | jq -r '.params | to_entries[] | "\(.key)\t\(.value | to_entries[0].key)\t\(.value | to_entries[0].value)"';
     );
 
     if [[ ${invalid_params} == true ]]; then
-      echo -e "Invalid Params: ${invalid_params}";
       return 1;
     fi;
     echo -e;
