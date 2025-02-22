@@ -22,7 +22,8 @@ function validate_input_parameters() {
 
     # Combine all arguments into a single string by removing any extra whitespace
     local arguments
-    arguments=$( echo -e "${@}" | tr -d '[[:blank:]]' | sed 's/  */ /g' );
+    # arguments=$( echo -e "${@}" | tr -d '[[:blank:]]' | sed 's/  */ /g' );
+    arguments=$( echo -e "$@" | sed 's/  */ /g' );
 
     oIFS="${IFS}";
     # for xitem in "${@}"; do
