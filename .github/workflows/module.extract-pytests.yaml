@@ -16,6 +16,11 @@ on:
         required: true
         type: string
 
+      output_filename:
+        required: false
+        type: string
+        default: "test_functions.json"
+
     outputs:
 
       test_functions:
@@ -67,11 +72,22 @@ jobs:
       - name: Extract Test Functions
         id: extract
         run: |
-          "${{ inputs.github_action }}/extract-pytest-functions.shell" ;
-          if ! jq -e . test_functions.json > /dev/null 2>&1; then
-            echo -e "ERROR: test_functions.json is not valid JSON!" ;
-            cat test_functions.json ;
+
+          ${{ inputs.github_action }}/extract-pytest-functions.shell \
+            --pytests-location="${{ inputs.pytests_location }}" \
+            --output-filename="${{ inputs.output_filename }}" \
+            --scripts-location="${{ inputs.github_action }}" ;
+
+          # if ! jq -e . test_functions.json > /dev/null 2>&1; then
+          #   echo -e "ERROR: test_functions.json is not valid JSON!" ;
+          #   cat test_functions.json ;
+          #   exit 1 ;
+          # fi ;
+          if ! jq -e . ${{ inputs.output_filename }} > /dev/null 2>&1; then
+            echo -e "ERROR: ${{ inputs.output_filename }} is not valid JSON!" ;
+            cat ${{ inputs.output_filename }} ;
             exit 1 ;
           fi ;
-          TESTS=$( jq -c '.test_functions' test_functions.json ) ;
+
+          TESTS=$( jq -c '.test_functions' ${{ inputs.output_filename }} ) ;
           echo -e "tests=$TESTS" >> "$GITHUB_OUTPUT" ;
