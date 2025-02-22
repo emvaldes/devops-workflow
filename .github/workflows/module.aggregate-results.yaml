@@ -27,7 +27,7 @@ on:
 jobs:
 
   validate-parameters:
-    uses: ./.github/workflows/module.validate-parameters.yml
+    uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: >-
         {
