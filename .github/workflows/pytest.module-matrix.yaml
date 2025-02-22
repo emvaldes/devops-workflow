@@ -62,7 +62,7 @@ jobs:
             exit 1 ;
           fi ;
 
-  extracting-pytests:
+    extracting-pytests:
     needs: [pytests-location, packages-location]
     uses: ./.github/workflows/module.extract-pytests.yaml
     with:
