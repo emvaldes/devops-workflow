@@ -44,7 +44,7 @@ jobs:
         run: |
 
           echo -e "Path: $(pwd)";
-          find $(pwd) -type f -name '*.shell' | xargs -I {} ls -al {};
+          find $(pwd) -type f | xargs -I {} ls -al {};
 
           # ## Define your inputs with human-readable labels.
           # declare -A workflow_inputs=(
