@@ -72,7 +72,7 @@ jobs:
           done
 
           # Exit with error if any input is invalid.
-          $invalid_params && exit 1
+          [[ "${invalid_params}" == "true" ]] && exit 1
 
   install-packages:
     needs: validate-parameters
