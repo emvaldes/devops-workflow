@@ -1,8 +1,8 @@
 ---
 ## File: pkgs.module-dependencies.yaml
 
-name: Requirements - Dependencies Module
-run-name: ${{ github.actor }} -> Dependencies Module
+name: Pipeline - Requirements/Dependencies
+run-name: ${{ github.actor }} -> Requirements/Dependencies
 
 on:
 
