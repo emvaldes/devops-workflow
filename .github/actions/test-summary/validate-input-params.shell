@@ -67,7 +67,7 @@ function validate_input_parameters() {
     local invalid_params=false;
     local error_header="cannot proceed without a valid";
 
-    echo -e "\nCompressed JSON (${workflow_name}):\n${compressed_json}\n";
+    echo -e "Compressed JSON (${workflow_name}):\n${compressed_json}\n";
 
     # We'll get all parameter data into an array.
     local lines
