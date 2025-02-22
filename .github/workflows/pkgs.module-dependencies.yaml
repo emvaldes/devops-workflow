@@ -36,7 +36,7 @@ on:
 #     - master
 
 env:
-  github_action: "${{ github.workspace }}/.github/actions/test-summary"
+  github_actions: "${{ github.workspace }}/.github/actions"
 
 jobs:
 
@@ -44,8 +44,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
       - name: Validate Input Parameters
         id: validate_parameters
+        env:
+          github_action: "${{ env.github_actions }}/test-summary"
         run: |
 
           ## Define your inputs with human-readable labels.
