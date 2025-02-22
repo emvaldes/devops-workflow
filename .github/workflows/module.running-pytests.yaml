@@ -1,5 +1,7 @@
 ---
-## File: module.running-pytests.yaml
+
+## File: .github/workflows/module.running-pytests.yaml
+## Version: 0.1.0
 
 name: Running PyTests Test Functions
 on:
@@ -26,15 +28,6 @@ jobs:
             echo -e  "The workflow cannot proceed without a valid Test Functions." ;
             exit 1 ;
           fi ;
-
-      # - name: Check PyTest Functions
-      #   id: test_functions
-      #   run: |
-      #     echo "Received Test Functions Input: '${{ inputs.test_functions }}'" ;
-      #     if [[ -z "${{ inputs.test_functions }}" || "${{ inputs.test_functions }}" == "[]" ]]; then
-      #       echo -e "ERROR: inputs.test_functions is empty!" ;
-      #       exit 1 ;
-      #     fi ;
 
   running-pytests:
     needs: test-functions

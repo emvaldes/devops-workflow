@@ -1,5 +1,7 @@
 ---
-## File: module.execute-module.yaml
+
+## File: .github/workflows/module.execute-module.yaml
+## Version: 0.1.0
 
 name: Execute Target Package Module
 on:

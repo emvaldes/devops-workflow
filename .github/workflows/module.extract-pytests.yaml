@@ -1,5 +1,7 @@
 ---
-## File: module.extract-pytests.yaml
+
+## File: .github/workflows/module.extract-pytests.yaml
+## Version: 0.1.0
 
 name: Extract PyTest Test-Functions
 on:
@@ -78,11 +80,6 @@ jobs:
             --output-filename="${{ inputs.output_filename }}" \
             --scripts-location="${{ inputs.github_action }}" ;
 
-          # if ! jq -e . test_functions.json > /dev/null 2>&1; then
-          #   echo -e "ERROR: test_functions.json is not valid JSON!" ;
-          #   cat test_functions.json ;
-          #   exit 1 ;
-          # fi ;
           if ! jq -e . ${{ inputs.output_filename }} > /dev/null 2>&1; then
             echo -e "ERROR: ${{ inputs.output_filename }} is not valid JSON!" ;
             cat ${{ inputs.output_filename }} ;

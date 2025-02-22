@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+## File: .github/action/test-summary/aggregate-pytest-results.shell
+## Version: 0.1.0
+
 # set -x ;
 # pwd ;
 # tree artifacts/ ;

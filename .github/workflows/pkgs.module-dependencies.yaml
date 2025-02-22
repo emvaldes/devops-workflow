@@ -1,5 +1,7 @@
 ---
-## File: pkgs.module-dependencies.yaml
+
+## File: .github/workflows/pkgs.module-dependencies.yaml
+## Version: 0.1.0
 
 name: Requirements - Dependencies Module
 run-name: ${{ github.actor }} -> Dependencies Module

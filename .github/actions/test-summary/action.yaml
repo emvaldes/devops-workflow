@@ -1,3 +1,6 @@
+---
+## File: .github/actions/test-summary/action.yaml
+
 name: "Aggregate Pytest Results"
 description: "Parses and summarizes pytest results into a structured JSON file"
 author: "Eduardo Valdes"

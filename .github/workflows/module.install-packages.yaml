@@ -1,5 +1,7 @@
 ---
-## File: module.install-packages.yaml
+
+## File: .github/workflows/module.install-packages.yaml
+## Version: 0.1.0
 
 name: Install Packages/Dependencies
 on:

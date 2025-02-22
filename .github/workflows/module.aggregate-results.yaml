@@ -1,5 +1,7 @@
 ---
-## File: module.aggregate-results.yaml
+
+## File: .github/workflows/module.aggregate-results.yaml
+## Version: 0.1.0
 
 name: Aggregate PyTests Results
 on:

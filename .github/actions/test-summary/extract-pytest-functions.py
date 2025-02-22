@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+## File: .github/action/test-summary/aggregate-pytest-results.py
+## Version: 0.1.0
+
 import re
 import json
 import sys

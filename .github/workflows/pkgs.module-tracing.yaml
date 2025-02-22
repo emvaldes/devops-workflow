@@ -1,5 +1,7 @@
 ---
-## File: pkgs.module-tracing.yaml
+
+## File: .github/workflows/pkgs.module-tracing.yaml
+## Version: 0.1.0
 
 name: AppFlow-Tracer - Tracing Module
 run-name: ${{ github.actor }} -> Tracing Module
