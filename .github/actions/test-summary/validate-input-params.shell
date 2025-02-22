@@ -93,16 +93,6 @@ function validate_input_parameters() {
     #  - header (the human-readable label, e.g., "PyTests Location")
     #  - value (the actual input value)
 
-    # while IFS=$'\t' read -r id header value; do
-    #   if [[ -z "$value" ]]; then
-    #           echo -e "\nInvalid Input-Parameter:\n${workflow_name}[${id}] ${error_header} ${header}.";
-    #           invalid_params=true;
-    #     else  echo -e "${workflow_name}[${id}] = ${value}"
-    #   fi
-    # done < <(
-    #   echo "${compressed_json}" | jq -r '.params | to_entries[] | "\(.key)\t\(.value | to_entries[0].key)\t\(.value | to_entries[0].value)"';
-    # );
-
     # Second pass: print each parameter using the calculated width.
     for line in "${lines[@]}"; do
       IFS=$'\t' read -r id header value <<< "$line";
