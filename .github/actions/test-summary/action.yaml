@@ -11,7 +11,7 @@ inputs:
 outputs:
   summary_json:
     description: "Path to the generated JSON summary file"
-    value: "./test_results.json"
+    value: "test_results.json"
 
 env:
   GITHUB_ACTION: ${{ github.workspace }}/.github/actions/test-summary
@@ -42,15 +42,15 @@ runs:
     - name: Verify JSON Output
       shell: bash
       run: |
-        if [[ ! -f test_results.json ]]; then
+        if [[ ! -f ./${{ env.summary_json }} ]]; then
           echo -e "ERROR: No test results JSON generated!" ;
           exit 1 ;
         fi ;
         echo -e "Generated Test Summary JSON: " ;
-        cat test_results.json | jq . ;
+        cat ./${{ env.summary_json }} | jq . ;
 
     - name: Upload JSON Summary
       uses: actions/upload-artifact@v4
       with:
         name: test-results-summary
-        path: test_results.json
+        path: ${{ env.summary_json }}
