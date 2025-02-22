@@ -25,7 +25,7 @@ jobs:
           params=false ;
           error_header="Workflow: 'module.install-packages' cannot proceed without" ;
 
-          [[ "${{ inputs.package_location }}" == '' ]] && {
+          [[ -z "${{ inputs.package_location }}" ]] && {
             echo -e "${error_header} a valid Package Location." ;
             invalid_params=true ;
           } ;

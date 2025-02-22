@@ -36,11 +36,11 @@ jobs:
           params=false ;
           error_header="Workflow: 'module.aggregate-results' cannot proceed without" ;
 
-          [[ "${{ inputs.github_action }}" == '' ]] && {
+          [[ -z "${{ inputs.github_action }}" ]] && {
             echo -e "${error_header} a valid GitHub Action." ;
             invalid_params=true ;
           } ;
-          [[ "${{ inputs.artifacts_location }}" == '' ]] && {
+          [[ -z "${{ inputs.artifacts_location }}" ]] && {
             echo -e "${error_header} a valid Artifacts Location." ;
             invalid_params=true ;
           } ;

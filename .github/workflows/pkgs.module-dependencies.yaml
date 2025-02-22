@@ -41,20 +41,12 @@ jobs:
           params=false ;
           error_header="Workflow: 'pytest.module-dependencies' cannot proceed without" ;
 
-          [[ "${{ inputs.pytests_location }}" == '' ]] && {
+          [[ -z "${{ inputs.pytests_location }}" ]] && {
             echo -e "${error_header} a valid PyTest Location." ;
             invalid_params=true ;
           } ;
-          [[ "${{ inputs.package_location }}" == '' ]] && {
+          [[ -z "${{ inputs.package_location }}" ]] && {
             echo -e "${error_header} a valid Package Location." ;
-            invalid_params=true ;
-          } ;
-          [[ "${{ inputs.github_action }}" == '' ]] && {
-            echo -e "${error_header} a valid GitHub Action." ;
-            invalid_params=true ;
-          } ;
-          [[ "${{ inputs.artifacts_location }}" == '' ]] && {
-            echo -e "${error_header} a valid Artifacts Location." ;
             invalid_params=true ;
           } ;
 

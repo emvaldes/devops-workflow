@@ -31,7 +31,7 @@ jobs:
           params=false ;
           error_header="Workflow: 'module.extract-pytests' cannot proceed without" ;
 
-          [[ "${{ inputs.github_action }}" == '' ]] && {
+          [[ -z "${{ inputs.github_action }}" ]] && {
             echo -e "${error_header} a valid GitHub Action." ;
             invalid_params=true ;
           } ;

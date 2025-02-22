@@ -25,7 +25,7 @@ jobs:
           params=false ;
           error_header="Workflow: 'pytest.running-pytests' cannot proceed without" ;
 
-          [[ "${{ inputs.test_functions }}" == '' ]] && {
+          [[ -z "${{ inputs.test_functions }}" ]] && {
             echo -e "${error_header} valid PyTest Functions." ;
             invalid_params=true ;
           } ;
