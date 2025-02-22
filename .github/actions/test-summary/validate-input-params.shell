@@ -3,7 +3,7 @@
 ## File: .github/actions/test-summary/validate-input-params.shell
 ## Version: 0.0.1
 
-set -x ;
+# set -x ;
 set -e ;           # Exit on error
 set -o pipefail ;  # Fail if any piped command fails
 
@@ -21,7 +21,7 @@ set -o pipefail ;  # Fail if any piped command fails
 function validate_input_parameters() {
 
     # Combine all arguments into a single string by removing any extra whitespace
-    local arguments
+    local arguments;
     # arguments=$( echo -e "${@}" | tr -d '[[:blank:]]' | sed 's/  */ /g' );
     arguments=$( echo -e "$@" | sed 's/  */ /g' );
 
@@ -42,7 +42,7 @@ function validate_input_parameters() {
     local warning_message="is missing or invalid!";
 
     ## Create a nameref to the associative array.
-    if [[ -z "${#json_object}" ]]; then
+    if [[ -z "${json_object}" ]]; then
       echo -e "Input Params: ${warning_message}";
       return 1;
     fi;
@@ -79,7 +79,7 @@ function validate_input_parameters() {
       echo "${compressed_json}" | jq -r '.params | to_entries[] | "\(.key)\t\(.value)"'
     );
 
-    if [[ "${invalid_params}" == true ]]; then
+    if [[ ${invalid_params} == true ]]; then
       echo -e "Invalid Params: ${invalid_params}";
       return 1;
     fi;
@@ -87,4 +87,4 @@ function validate_input_parameters() {
     return 0;
   }; alias validate-parameters='validate_parameters';
 
-validate_input_parameters "${@}";
+validate_input_parameters ${@};

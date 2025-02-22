@@ -24,7 +24,7 @@ jobs:
   workflow-parameters:
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
-      workflow_inputs: >-
+      workflow_inputs: |
         {
           "workflow": "module.extract-pytests",
           "params": {

@@ -30,4 +30,4 @@ jobs:
           echo -e "Validating workflow's input parameters ..." ;
 
           ${{ env.github_action }}/validate-input-params.shell \
-          --json="${{ inputs.workflow_inputs }}" ;
+          --json="${{ toJson( inputs.workflow_inputs ) }}" ;
