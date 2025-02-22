@@ -47,6 +47,8 @@ function validate_input_parameters() {
       return 1;
     fi;
 
+    # echo -e "Original JSON:\n${json_object}";
+
     # Normalize JSON: remove newlines and extra spaces
     local compressed_json;
     compressed_json=$(
