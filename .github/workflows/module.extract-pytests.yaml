@@ -25,12 +25,12 @@ jobs:
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: >-
-        {
+        '{
           "workflow": "module.extract-pytests",
           "params": {
               "GitHub Action": "${{ github.event.inputs.github_action }}"
             }
-        }
+        }'
 
   extract-pytests:
     needs: workflow-parameters

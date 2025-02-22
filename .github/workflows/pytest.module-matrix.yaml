@@ -49,7 +49,7 @@ jobs:
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: >-
-        {
+        '{
           "workflow": "pytest.module-matrix",
           "params": {
               "PyTest Location": "${{ github.event.inputs.pytests_location }}",
@@ -57,7 +57,7 @@ jobs:
               "GitHub Action": "${{ github.event.inputs.github_action }}",
               "Artifacts Location": "${{ github.event.inputs.artifacts_location }}"
             }
-        }
+        }'
 
   extracting-pytests:
     needs: workflow-parameters

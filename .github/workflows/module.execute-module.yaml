@@ -19,12 +19,12 @@ jobs:
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: >-
-        {
+        '{
           "workflow": "module.exectute-module",
           "params": {
               "Package Location": "${{ github.event.inputs.package_location }}"
             }
-        }
+        }'
 
   execute-module:
     needs: workflow-parameters
