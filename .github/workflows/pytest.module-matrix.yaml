@@ -62,7 +62,7 @@ jobs:
               "GitHub Action": "${{ github.event.inputs.github_action }}"
             },
             "artifacts_location": {
-              "Artifacts Location": "${{ github.event.inputs.artifacts_location }}"
+              "Artifacts Location": "${{ inputs.artifacts_location }}"
             }
           }
         }
