@@ -1,6 +1,6 @@
 ---
 ## File: .github/workflows/module.running-pytests.yaml
-## Version: 0.2.1
+## Version: 0.2.2
 
 name: Running PyTests Test Modules
 on:
@@ -13,10 +13,17 @@ on:
         required: true
         type: string
 
+    outputs:
+      pytest_modules:
+        description: "List of pytest modules extracted"
+        value: ${{ jobs.test-functions.outputs.pytest_modules }}
+
 jobs:
 
   test-functions:
     runs-on: ubuntu-latest
+    outputs:
+      pytest_modules: ${{ steps.extract_modules.outputs.modules }}
     steps:
 
       - name: Check PyTest Functions
@@ -32,11 +39,11 @@ jobs:
         id: extract_modules
         run: |
           echo '${{ inputs.test_functions }}' | jq -c '.test_functions | keys' > pytest_modules.json
-          echo "pytest_modules=$(cat pytest_modules.json)" >> $GITHUB_ENV
+          echo "modules=$(cat pytest_modules.json)" >> $GITHUB_OUTPUT
 
       - name: Debug - Extracted Pytest Modules
         run: |
-          echo "Extracted Pytest Modules: ${{ env.pytest_modules }}"
+          echo "Extracted Pytest Modules: ${{ steps.extract_modules.outputs.modules }}"
 
   running-pytests:
     needs: test-functions
@@ -44,7 +51,7 @@ jobs:
     strategy:
       matrix:
         python-version: ${{ fromJson(vars.PYTHON_VERSIONS).python }}
-        pytest_module: ${{ fromJson(env.pytest_modules) }}
+        pytest_module: ${{ fromJson(needs.test-functions.outputs.pytest_modules) }}
     steps:
 
       - name: Install System Packages

@@ -1,6 +1,6 @@
 ---
 ## File: .github/workflows/pytest.module-matrix.yaml
-## Version: 0.2.1
+## Version: 0.2.2
 
 name: PyTest - Package Module Matrix
 run-name: ${{ github.actor }} -> Package Module Matrix
