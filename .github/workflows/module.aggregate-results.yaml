@@ -34,13 +34,13 @@ jobs:
         run: |
 
           params=false ;
-          error_header="Error: '${{ env.GITHUB_WORKFLOW }}' cannot proceed without" ;
+          error_header="Workflow: 'module.aggregate-results' cannot proceed without" ;
 
-          [[ -z "${{ inputs.github_action }}" ]] && {
+          [[ "${{ inputs.github_action }}" == '' ]] && {
             echo -e "${error_header} a valid GitHub Action." ;
             invalid_params=true ;
           } ;
-          [[ -z "${{ inputs.artifacts_location }}" ]] && {
+          [[ "${{ inputs.artifacts_location }}" == '' ]] && {
             echo -e "${error_header} a valid Artifacts Location." ;
             invalid_params=true ;
           } ;

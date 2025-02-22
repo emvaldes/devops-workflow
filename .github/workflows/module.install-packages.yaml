@@ -23,9 +23,9 @@ jobs:
         run: |
 
           params=false ;
-          error_header="Error: '${{ env.GITHUB_WORKFLOW }}' cannot proceed without" ;
+          error_header="Workflow: 'module.install-packages' cannot proceed without" ;
 
-          [[ -z "${{ inputs.package_location }}" ]] && {
+          [[ "${{ inputs.package_location }}" == '' ]] && {
             echo -e "${error_header} a valid Package Location." ;
             invalid_params=true ;
           } ;

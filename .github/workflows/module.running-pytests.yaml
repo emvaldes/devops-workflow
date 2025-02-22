@@ -23,9 +23,9 @@ jobs:
         run: |
 
           params=false ;
-          error_header="Error: '${{ env.GITHUB_WORKFLOW }}' cannot proceed without" ;
+          error_header="Workflow: 'pytest.running-pytests' cannot proceed without" ;
 
-          [[ -z "${{ inputs.test_functions }}" ]] && {
+          [[ "${{ inputs.test_functions }}" == '' ]] && {
             echo -e "${error_header} valid PyTest Functions." ;
             invalid_params=true ;
           } ;
