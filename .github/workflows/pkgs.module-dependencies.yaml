@@ -58,6 +58,7 @@ jobs:
             fi;
           done;
 
+          echo -e "Invalid Params: ${invalid_params}";
           # Exit with error if any input is invalid.
           [[ "${invalid_params}" == "true" ]] && exit 1;
 
