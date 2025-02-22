@@ -44,6 +44,7 @@ jobs:
         run: |
 
           echo -e "Path: $(pwd)";
+          ls -al ${{ env.github_action }}/validate-input-params.shell;
 
           ## Define your inputs with human-readable labels.
           declare -A workflow_inputs=(
