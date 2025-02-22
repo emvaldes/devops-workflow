@@ -56,24 +56,24 @@ jobs:
           invalid_params=false ;
           error_header="Workflow: 'pytest.module-matrix' cannot proceed without" ;
 
-          [[ -z "${{ inputs.pytests_location }}" ]] && {
+          [[ -z "${{ github.event.inputs.pytests_location }}" ]] && {
             echo -e "${error_header} a valid PyTest Location." ;
             invalid_params=true ;
           } ;
-          [[ -z "${{ inputs.package_location }}" ]] && {
+          [[ -z "${{ github.event.inputs.package_location }}" ]] && {
             echo -e "${error_header} a valid Package Location." ;
             invalid_params=true ;
           } ;
-          [[ -z "${{ inputs.github_action }}" ]] && {
+          [[ -z "${{ github.event.inputs.github_action }}" ]] && {
             echo -e "${error_header} a valid GitHub Action." ;
             invalid_params=true ;
           } ;
-          [[ -z "${{ inputs.artifacts_location }}" ]] && {
+          [[ -z "${{ github.event.inputs.artifacts_location }}" ]] && {
             echo -e "${error_header} a valid Artifacts Location." ;
             invalid_params=true ;
           } ;
 
-          [[ ${invalid_params} == true ]] && exit -1 ;
+          [[ ${invalid_params} == true ]] && exit 1 ;
 
   extracting-pytests:
     needs: validate-parameters

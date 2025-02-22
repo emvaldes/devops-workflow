@@ -37,16 +37,16 @@ jobs:
           invalid_params=false ;
           error_header="Workflow: 'module.aggregate-results' cannot proceed without" ;
 
-          [[ -z "${{ inputs.github_action }}" ]] && {
+          [[ -z "${{ github.event.inputs.github_action }}" ]] && {
             echo -e "${error_header} a valid GitHub Action." ;
             invalid_params=true ;
           } ;
-          [[ -z "${{ inputs.artifacts_location }}" ]] && {
+          [[ -z "${{ github.event.inputs.artifacts_location }}" ]] && {
             echo -e "${error_header} a valid Artifacts Location." ;
             invalid_params=true ;
           } ;
 
-          [[ ${invalid_params} == true ]] && exit -1 ;
+          [[ ${invalid_params} == true ]] && exit 1 ;
 
   aggregate-pytest-results:
     needs: validate-parameters
