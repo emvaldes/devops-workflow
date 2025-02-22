@@ -15,7 +15,7 @@ on:
 
 jobs:
 
-  validate-parameters:
+  workflow-parameters:
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: >-
@@ -25,7 +25,7 @@ jobs:
       workflow_name: "module.install-packages"
 
   install-packages:
-    needs: validate-parameters
+    needs: workflow-parameters
     runs-on: ubuntu-latest
     strategy:
       matrix:

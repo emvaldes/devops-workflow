@@ -45,7 +45,7 @@ on:
 
 jobs:
 
-  validate-parameters:
+  workflow-parameters:
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: >-
@@ -58,7 +58,7 @@ jobs:
       workflow_name: "pytest.module-matrix"
 
   extracting-pytests:
-    needs: validate-parameters
+    needs: workflow-parameters
     uses: ./.github/workflows/module.extract-pytests.yaml
     with:
       github_action: "${{ inputs.github_action }}"

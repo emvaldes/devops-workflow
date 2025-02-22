@@ -40,7 +40,7 @@ env:
 
 jobs:
 
-  validate-parameters:
+  workflow-parameters:
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: >-
@@ -52,7 +52,7 @@ jobs:
       workflow_name: "pkgs.module-dependencies"
 
   install-packages:
-    needs: validate-parameters
+    needs: workflow-parameters
     uses: ./.github/workflows/module.install-packages.yaml
     with:
       package_location: ${{ inputs.package_location }}

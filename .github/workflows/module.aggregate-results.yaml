@@ -26,7 +26,7 @@ on:
 
 jobs:
 
-  validate-parameters:
+  workflow-parameters:
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: >-
@@ -37,7 +37,7 @@ jobs:
       workflow_name: "module.aggregate-results"
 
   aggregate-pytest-results:
-    needs: validate-parameters
+    needs: workflow-parameters
     runs-on: ubuntu-latest
     outputs:
       aggregated_results: "true"
