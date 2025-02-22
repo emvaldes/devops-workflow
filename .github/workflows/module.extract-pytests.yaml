@@ -28,10 +28,10 @@ jobs:
         {
           "workflow": "module.extract-pytests",
           "params": {
-              "github_action": {
-                  "GitHub Action": "${{ github.event.inputs.github_action }}"
-                }
+            "github_action": {
+              "GitHub Action": "${{ github.event.inputs.github_action }}"
             }
+          }
         }
 
   extract-pytests:

@@ -47,16 +47,16 @@ jobs:
         {
           "workflow": "pkgs.module-dependencies",
           "params": {
-              "pytests_location": {
-                  "PyTest Location": "${{ github.event.inputs.pytests_location }}"
-                },
-              "package_location": {
-                  "Package Location": "${{ github.event.inputs.package_location }}"
-                },
-              "github_action": {
-                  "GitHub Action": "${{ github.event.inputs.github_action }}"
-                }
+            "pytests_location": {
+              "PyTest Location": "${{ github.event.inputs.pytests_location }}"
+            },
+            "package_location": {
+              "Package Location": "${{ github.event.inputs.package_location }}"
+            },
+            "github_action": {
+              "GitHub Action": "${{ github.event.inputs.github_action }}"
             }
+          }
         }
 
   install-packages:

@@ -22,10 +22,10 @@ jobs:
         {
           "workflow": "module.install-packages",
           "params": {
-              "package_location": {
-                  "Package Location": "${{ github.event.inputs.package_location }}"
-                }
+            "package_location": {
+              "Package Location": "${{ github.event.inputs.package_location }}"
             }
+          }
         }
 
   install-packages:

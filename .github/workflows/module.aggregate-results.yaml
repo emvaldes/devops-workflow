@@ -33,9 +33,9 @@ jobs:
         {
           "workflow": "module.aggregate-results",
           "params": {
-              "GitHub Action": "${{ github.event.inputs.github_action }}",
-              "Artifacts Location": "${{ github.event.inputs.artifacts_location }}"
-            }
+            "GitHub Action": "${{ github.event.inputs.github_action }}",
+            "Artifacts Location": "${{ github.event.inputs.artifacts_location }}"
+          }
         }
 
   aggregate-pytest-results:

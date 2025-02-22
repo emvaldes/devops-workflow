@@ -22,10 +22,10 @@ jobs:
         {
           "workflow": "module.running-pytests",
           "params": {
-              "pytests_location": {
-                  "PyTest Location": "${{ github.event.inputs.pytests_location }}"
-                }
+            "pytests_location": {
+              "PyTest Location": "${{ github.event.inputs.pytests_location }}"
             }
+          }
         }
 
   running-pytests:
