@@ -19,12 +19,12 @@ jobs:
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: >-
-        '{
+        {
           "workflow": "module.running-pytests",
           "params": {
               "PyTest Functions": "${{ github.event.inputs.test_functions }}"
             }
-        }'
+        }
 
   running-pytests:
     needs: workflow-parameters

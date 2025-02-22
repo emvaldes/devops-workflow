@@ -30,13 +30,13 @@ jobs:
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: >-
-        '{
+        {
           "workflow": "module.aggregate-results",
           "params": {
               "GitHub Action": "${{ github.event.inputs.github_action }}",
               "Artifacts Location": "${{ github.event.inputs.artifacts_location }}"
             }
-        }'
+        }
 
   aggregate-pytest-results:
     needs: workflow-parameters
