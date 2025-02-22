@@ -36,7 +36,7 @@ on:
 #     - master
 
 env:
-  github_action: ".github/actions/test-summary"
+  github_action: "${{ github.workspace }}/.github/actions/test-summary"
 
 jobs:
 
@@ -54,9 +54,8 @@ jobs:
             ["Package Location"]="${{ github.event.inputs.package_location }}"
           );
           workflow_name='pytest.module-dependencies';
-          echo -e "GitHub Workspace: ${{ github.workspace }}";
 
-          ./validate-input-params.shell \
+          ${{ env.github_action }}/validate-input-params.shell \
           workflow_inputs "${workflow_name}";
 
   install-packages:
