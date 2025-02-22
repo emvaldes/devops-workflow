@@ -26,8 +26,8 @@ function validate_input_parameters() {
     arguments=$( echo -e "$@" | sed 's/  */ /g' );
 
     oIFS="${IFS}";
-    # for xitem in "${arguments}"; do
-    for xitem in "${@}"; do
+    # for xitem in "${@}"; do
+    for xitem in "${arguments}"; do
       IFS='='; set `echo -e "${xitem}" | sed -e '1s|^\(-\)\{1,\}||'`
       [[ ${1#*\--} = "json" ]] && local json_object="${2}";
       #### ---------------------------------------------------------------------
