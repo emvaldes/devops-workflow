@@ -40,19 +40,39 @@ jobs:
         id: validate_parameters
         run: |
 
-          invalid_params=false ;
-          error_header="Workflow: 'pytest.module-dependencies' cannot proceed without" ;
+          # invalid_params=false ;
+          # error_header="Workflow: 'pytest.module-dependencies' cannot proceed without" ;
+          #
+          # [[ -z "${{ github.event.inputs.pytests_location }}" ]] && {
+          #   echo -e "${error_header} a valid PyTest Location." ;
+          #   invalid_params=true ;
+          # } ;
+          # [[ -z "${{ github.event.inputs.package_location }}" ]] && {
+          #   echo -e "${error_header} a valid Package Location." ;
+          #   invalid_params=true ;
+          # } ;
+          #
+          # [[ ${invalid_params} == true ]] && exit 1 ;
 
-          [[ -z "${{ github.event.inputs.pytests_location }}" ]] && {
-            echo -e "${error_header} a valid PyTest Location." ;
-            invalid_params=true ;
-          } ;
-          [[ -z "${{ github.event.inputs.package_location }}" ]] && {
-            echo -e "${error_header} a valid Package Location." ;
-            invalid_params=true ;
-          } ;
+          invalid_params=false
+          error_header="Workflow: 'pytest.module-dependencies' cannot proceed without a valid"
 
-          [[ ${invalid_params} == true ]] && exit 1 ;
+          # Define your inputs with human-readable labels.
+          declare -A inputs=(
+            ["PyTest Location"]="${{ github.event.inputs.pytests_location }}"
+            ["Package Location"]="${{ github.event.inputs.package_location }}"
+          )
+
+          # Iterate over the inputs.
+          for label in "${!inputs[@]}"; do
+            if [[ -z "${inputs[$label]}" ]]; then
+              echo -e "${error_header} ${label}."
+              invalid_params=true
+            fi
+          done
+
+          # Exit with error if any input is invalid.
+          $invalid_params && exit 1
 
   install-packages:
     needs: validate-parameters
