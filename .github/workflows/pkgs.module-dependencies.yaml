@@ -30,6 +30,9 @@ on:
 #   branches:
 #     - master
 
+env:
+  github_action: ".github/actions/test-summary"
+
 jobs:
 
   validate-parameters:
@@ -40,27 +43,15 @@ jobs:
         id: validate_parameters
         run: |
 
-          invalid_params=false;
-          error_header="Error: 'pytest.module-dependencies' cannot proceed without a valid";
-
-          # Define your inputs with human-readable labels.
-          declare -A inputs=(
+          ## Define your inputs with human-readable labels.
+          declare -A workflow_inputs=(
             ["PyTest Location"]="${{ github.event.inputs.pytests_location }}"
             ["Package Location"]="${{ github.event.inputs.package_location }}"
           );
+          workflow_name='pytest.module-dependencies';
 
-          # Iterate over the inputs.
-          for label in "${!inputs[@]}"; do
-            echo -e "Input: ${inputs[$label]}";
-            if [[ "${inputs[$label]}" == '' ]]; then
-              echo -e "${error_header} ${label}.";
-              invalid_params=true;
-            fi;
-          done;
-
-          echo -e "Invalid Params: ${invalid_params}";
-          # Exit with error if any input is invalid.
-          if [[ ${invalid_params} == true ]]; then exit 1; fi;
+          ${{ env.github_action }}/validate-input-parameters.shell \
+          workflow_inputs "${workflow_name}";
 
   install-packages:
     needs: validate-parameters
