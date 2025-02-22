@@ -1,9 +1,8 @@
 ---
-
 ## File: .github/workflows/module.running-pytests.yaml
-## Version: 0.1.0
+## Version: 0.2.0
 
-name: Running PyTests Test Functions
+name: Running PyTests Test Modules
 on:
 
   workflow_call:
@@ -25,7 +24,7 @@ jobs:
         run: |
           if [[ -z "${{ inputs.test_functions }}" ]]; then
             echo -en "Error: inputs.test_functions must be provided. " ;
-            echo -e  "The workflow cannot proceed without a valid Test Functions." ;
+            echo -e  "The workflow cannot proceed without valid Test Functions." ;
             exit 1 ;
           fi ;
 
@@ -34,8 +33,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
-        test_function: ${{ fromJson( inputs.test_functions ) }}
+        python-version: ${{ fromJson(vars.PYTHON_VERSIONS).python }}
+        pytest_module: ${{ fromJson(inputs.test_functions).test_functions | keys }}
     steps:
 
       - name: Install System Packages
@@ -55,8 +54,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: pip-${{ matrix.python-version }}-${{ matrix.test_function }}-${{ hashFiles('requirements.txt') }}
-          restore-keys: pip-${{ matrix.python-version }}-${{ matrix.test_function }}-
+          key: pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: pip-${{ matrix.python-version }}-
 
       - name: Download requirements.txt
         uses: actions/download-artifact@v4
@@ -78,19 +77,17 @@ jobs:
           python -m pip install --upgrade pip ;
           python -m pip install -r requirements.txt ;
 
-      - name: Run Pytest Function
+      - name: Debug - Extracted Pytest Modules
+        run: |
+          echo "Pytest Modules to Run: ${{ matrix.pytest_module }}"
+
+      - name: Run Pytest for Entire Module
         run: |
           pytest -v --junitxml=pytest-results.xml \
-          "${{ inputs.pytests_location }}/test_dependencies.py::${{ matrix.test_function }}" ;
+          "${{ matrix.pytest_module }}" ;
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
         with:
-          name: pytest-results-${{ matrix.python-version }}-${{ matrix.test_function }}
+          name: pytest-results-${{ matrix.python-version }}-${{ matrix.pytest_module }}
           path: pytest-results.xml
-
-      - name: Debug - List Uploaded Artifacts
-        run: |
-          echo -e "Listing uploaded artifacts..." ;
-          find $GITHUB_WORKSPACE -type f -name "*.xml" || echo -e "No test result files found." ;
-          echo -e "Checking artifact storage location..." ;

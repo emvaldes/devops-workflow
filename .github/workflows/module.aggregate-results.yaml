@@ -1,7 +1,6 @@
 ---
-
 ## File: .github/workflows/module.aggregate-results.yaml
-## Version: 0.1.0
+## Version: 0.2.0
 
 name: Aggregate PyTests Results
 on:
@@ -77,7 +76,7 @@ jobs:
         id: verifying_artifacts
         run: |
           echo -e "Listing downloaded artifacts..." ;
-          tree -FCla --prune -I .git ./artifacts 2>/dev/null ;
+          tree -FCla --prune -I .git ${{ inputs.artifacts_location }} 2>/dev/null ;
 
       - name: Aggregate Pytest Results
         id: aggregating_results

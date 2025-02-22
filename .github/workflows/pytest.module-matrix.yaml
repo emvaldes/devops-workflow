@@ -1,7 +1,6 @@
 ---
-
 ## File: .github/workflows/pytest.module-matrix.yaml
-## Version: 0.1.0
+## Version: 0.2.0
 
 name: PyTest - Package Module Matrix
 run-name: ${{ github.actor }} -> Package Module Matrix
@@ -34,14 +33,6 @@ on:
       aggregated_results:
         description: "Providing PyTest Results Aggregation status"
         value: ${{ jobs.workflow-completed.outputs.aggregated_results }}
-
-# push:
-#   branches:
-#     - master
-#
-# pull_request:
-#   branches:
-#     - master
 
 jobs:
 
