@@ -34,5 +34,5 @@ jobs:
 
           echo -e "Validating parameters for workflow: ${{ inputs.workflow_name }}"
 
-          ${{ env.github_action }}/validate-input-params.shell" \
+          ${{ env.github_action }}/validate-input-params.shell \
           "${{ inputs.workflow_inputs }}" "${{ inputs.workflow_name }}"
