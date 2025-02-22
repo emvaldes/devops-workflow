@@ -52,11 +52,10 @@ function validate_input_parameters() {
       echo "${json_object}" | tr -d '\n' | sed 's/  */ /g'
     )
 
-    echo -e "\nCompressed JSON:\n${compressed_json}\n";
-
     # Extract workflow name.
     local workflow_name;
-    workflow_name=$( echo "${compressed_json}" | jq -r '.workflow // empty' );
+    # workflow_name=$( echo "${compressed_json}" | jq -r '.workflow // empty' );
+    workflow_name=$( echo "${compressed_json}" | jq --raw-output '.workflow' );
     if [[ -z "${workflow_name}" ]]; then
       echo -e "Warning: Workflow ${warning_message}";
       exit 1;
@@ -64,6 +63,8 @@ function validate_input_parameters() {
 
     local invalid_params=false;
     local error_header="Error: ${workflow_name} cannot proceed without a valid";
+
+    echo -e "\nCompressed JSON (${workflow_name}):\n${compressed_json}\n";
 
     # Directly iterate over parameters in "params" for validation.
     local invalid_params=false;
