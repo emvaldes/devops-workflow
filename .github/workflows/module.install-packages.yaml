@@ -8,13 +8,27 @@ on:
 
     inputs:
 
-      package_path:
+      packages_location:
         required: true
         type: string
 
 jobs:
 
+  packages-location:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check Packages Location
+        id: packages_location
+        run: |
+          if [[ -z "${{ inputs.packages_location }}" ]]; then
+            echo -en "Error: inputs.packages_location must be provided. " ;
+            echo -e  "The workflow cannot proceed without a valid Package Location." ;
+            exit 1 ;
+          fi ;
+
   install-packages:
+    needs: packages-location
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -36,7 +50,7 @@ jobs:
 
       - name: Generate requirements.txt from JSON
         run: |
-          PACKAGE_PARENT_DIR="$( dirname ${{ inputs.package_path }} )";
+          PACKAGE_PARENT_DIR="$( dirname ${{ inputs.packages_location }} )";
           jq -r '
             .dependencies[] |
             if .version.target then

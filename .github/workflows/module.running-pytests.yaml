@@ -14,7 +14,30 @@ on:
 
 jobs:
 
+  test-functions:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check PyTest Functions
+        id: test_functions
+        run: |
+          if [[ -z "${{ inputs.test_functions }}" ]]; then
+            echo -en "Error: inputs.test_functions must be provided. " ;
+            echo -e  "The workflow cannot proceed without a valid Test Functions." ;
+            exit 1 ;
+          fi ;
+
+      # - name: Check PyTest Functions
+      #   id: test_functions
+      #   run: |
+      #     echo "Received Test Functions Input: '${{ inputs.test_functions }}'" ;
+      #     if [[ -z "${{ inputs.test_functions }}" || "${{ inputs.test_functions }}" == "[]" ]]; then
+      #       echo -e "ERROR: inputs.test_functions is empty!" ;
+      #       exit 1 ;
+      #     fi ;
+
   running-pytests:
+    needs: test-functions
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -65,7 +88,7 @@ jobs:
       - name: Run Pytest Function
         run: |
           pytest -v --junitxml=pytest-results.xml \
-          "${{ inputs.pytests_dir }}/test_dependencies.py::${{ matrix.test_function }}" ;
+          "${{ inputs.pytests_location }}/test_dependencies.py::${{ matrix.test_function }}" ;
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4

@@ -10,15 +10,34 @@ on:
 
     inputs:
 
-      pytests_dir:
+      pytests_location:
         description: 'Directory containing PyTest files'
         required: false
         default: 'tests/requirements/dependencies'
 
-      package_path:
+      packages_location:
         description: 'Directory containing package files'
         required: false
         default: 'packages/requirements/dependencies'
+
+  workflow_call:
+
+    inputs:
+
+      pytests_location:
+        required: false
+        type: string
+        default: 'tests/requirements/dependencies'
+
+      packages_location:
+        required: false
+        type: string
+        default: 'packages/requirements/dependencies'
+
+    outputs:
+      aggregated_results:
+        description: "Providing PyTest Results Aggregation status"
+        value: ${{ jobs.pytest-module.outputs.aggregated_results }}
 
 # push:
 #   branches:
@@ -33,21 +52,21 @@ jobs:
   install-packages:
     uses: ./.github/workflows/module.install-packages.yaml
     with:
-      package_path: ${{ inputs.package_path }}
+      packages_location: ${{ inputs.packages_location }}
 
   pytest-module:
     needs: install-packages
     uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
-      pytests_dir: ${{ inputs.pytests_dir }}
-      package_path: ${{ inputs.package_path }}
+      pytests_location: ${{ inputs.pytests_location }}
+      packages_location: ${{ inputs.packages_location }}
 
   execute-module:
     needs: pytest-module
     if: needs.pytest-module.outputs.aggregated_results
     uses: ./.github/workflows/module.execute-module.yaml
     with:
-      package_path: ${{ inputs.package_path }}
+      packages_location: ${{ inputs.packages_location }}
 
   workflow-completed:
     needs: execute-module

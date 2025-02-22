@@ -8,6 +8,10 @@ on:
 
     inputs:
 
+      pytests_location:
+        required: true
+        type: string
+
       github_action:
         required: true
         type: string
@@ -20,7 +24,34 @@ on:
 
 jobs:
 
+  pytests-location:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check PyTests Location
+        id: pytests_location
+        run: |
+          if [[ -z "${{ inputs.pytests_location }}" ]]; then
+            echo -en "Error: inputs.pytests_location must be provided. " ;
+            echo -e  "The workflow cannot proceed without a valid PyTests Location." ;
+            exit 1 ;
+          fi ;
+
+  github-action:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check GitHub Action
+        id: github_action
+        run: |
+          if [[ -z "${{ inputs.github_action }}" ]]; then
+            echo -en "Error: inputs.github_action must be provided. " ;
+            echo -e  "The workflow cannot proceed without a valid GitHub Action." ;
+            exit 1 ;
+          fi ;
+
   extract-pytests:
+    needs: [pytests-location, github-action]
     runs-on: ubuntu-latest
     outputs:
       test_functions: ${{ steps.extract.outputs.tests }}
