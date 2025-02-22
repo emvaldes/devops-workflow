@@ -27,36 +27,14 @@ on:
 jobs:
 
   validate-parameters:
-    runs-on: ubuntu-latest
-    steps:
-
-      - name: Validate Input Parameters
-        id: validate_parameters
-        run: |
-
-          invalid_params=false;
-          error_header="Error: 'pytest.module-dependencies' cannot proceed without a valid";
-
-          # Define your inputs with human-readable labels.
-          declare -A inputs=(
-            ["GitHub Action"]="${{ github.event.inputs.github_action }}"
-            ["Artifacts Location"]="${{ github.event.inputs.artifacts_location }}"
-          );
-
-          # Iterate over the inputs.
-          for label in "${!inputs[@]}"; do
-            echo -e "Input: ${inputs[$label]}";
-            if [[ "${inputs[$label]}" == '' ]]; then
-              echo -e "${error_header} ${label}.";
-              invalid_params=true;
-            fi;
-          done;
-
-          # Exit with error if any input is invalid.
-          if [[ ${invalid_params} == true ]]; then
-            echo -e "Invalid Params: ${invalid_params}";
-            exit 1;
-          fi;
+    uses: ./.github/workflows/module.validate-parameters.yml
+    with:
+      workflow_inputs: >-
+        {
+          "GitHub Action": "${{ github.event.inputs.github_action }}",
+          "Artifacts Location": "${{ github.event.inputs.artifacts_location }}"
+        }
+      workflow_name: "module.aggregate-results"
 
   aggregate-pytest-results:
     needs: validate-parameters

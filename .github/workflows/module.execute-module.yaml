@@ -16,22 +16,13 @@ on:
 jobs:
 
   validate-parameters:
-    runs-on: ubuntu-latest
-    steps:
-
-      - name: Validate Input Parameters
-        id: validate_parameters
-        run: |
-
-          invalid_params=false ;
-          error_header="Workflow: 'module.execute-module' cannot proceed without" ;
-
-          [[ -z "${{ github.event.inputs.package_location }}" ]] && {
-            echo -e "${error_header} a valid Package Location." ;
-            invalid_params=true ;
-          } ;
-
-          [[ ${invalid_params} == true ]] && exit 1 ;
+    uses: ./.github/workflows/module.validate-parameters.yml
+    with:
+      workflow_inputs: >-
+        {
+          "Package Location": "${{ github.event.inputs.package_location }}"
+        }
+      workflow_name: "module.exectute-module"
 
   execute-module:
     needs: validate-parameters

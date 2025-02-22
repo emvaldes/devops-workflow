@@ -6,11 +6,14 @@
 ## This function expects the name of an associative array as its first argument.
 function validate_input_parameters() {
 
+    ## Description: This script expects two runtime-parameters:
+    ##              $1: A JSON string (input-parameters).
+    ##              $2: The workflow name.
     local warning_message="Are missing or invalid!";
 
     ## Create a nameref to the associative array.
     if [[ "${#1}" -gt 0 ]]; then
-            local -n input_params="$1";
+            local -n workflow_inputs_json="$1";
       else  echo -e "Input Params: ${warning_message}";
             return 1;
     fi;
@@ -23,12 +26,21 @@ function validate_input_parameters() {
     local invalid_params=false;
     local error_header="Error: ${workflow_name} cannot proceed without a valid";
 
-    ## Iterate over the input_params.
-    for label in "${!input_params[@]}"; do
-      echo "Input: ${input_params[$label]}";
-      if [[ -z "${input_params[$label]}" ]]; then
+    # Convert JSON string into an associative array.
+    declare -A workflow_inputs;
+    while IFS="=" read -r key value; do
+      workflow_inputs["$key"]="$value";
+    done < <(
+      echo "${workflow_inputs_json}" \
+      | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]'
+    );
+
+    ## Iterate over the workflow_inputs.
+    for label in "${!workflow_inputs[@]}"; do
+      echo "Input Parameter [$label]: ${workflow_inputs[$label]}";
+      if [[ -z "${workflow_inputs[$label]}" ]]; then
         echo "${error_header} ${label}.";
-        invalid_params=true;
+        exit 1;
       fi;
     done;
 

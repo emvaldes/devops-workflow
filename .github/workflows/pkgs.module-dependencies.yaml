@@ -41,27 +41,15 @@ env:
 jobs:
 
   validate-parameters:
-    runs-on: ubuntu-latest
-    steps:
-
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Validate Input Parameters
-        id: validate_parameters
-        env:
-          github_action: "${{ env.github_actions }}/test-summary"
-        run: |
-
-          ## Define your inputs with human-readable labels.
-          declare -A workflow_inputs=(
-            ["PyTest Location"]="${{ github.event.inputs.pytests_location }}"
-            ["Package Location"]="${{ github.event.inputs.package_location }}"
-          );
-          workflow_name='pytest.module-dependencies';
-
-          ${{ env.github_action }}/validate-input-params.shell \
-          workflow_inputs "${workflow_name}";
+    uses: ./.github/workflows/module.validate-parameters.yml
+    with:
+      workflow_inputs: >-
+        {
+          "PyTest Location": "${{ github.event.inputs.pytests_location }}",
+          "Package Location": "${{ github.event.inputs.package_location }}",
+          "GitHub Action": "${{ github.event.inputs.github_action }}"
+        }
+      workflow_name: "pkgs.module-dependencies"
 
   install-packages:
     needs: validate-parameters

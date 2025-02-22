@@ -1,0 +1,38 @@
+name: Validate Parameters
+on:
+
+  workflow_call:
+
+    inputs:
+
+      workflow_inputs:
+        description: "Workflow's input-parameters (JSON string)."
+        required: true
+        type: string
+
+      workflow_name:
+        description: "Workflow's file-name getting validated."
+        required: true
+        type: string
+
+env:
+  github_actions: "${{ github.workspace }}/.github/actions"
+
+jobs:
+
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Validate Input Parameters
+        env:
+          github_action: "${{ env.github_actions }}/test-summary"
+        shell: bash
+        run: |
+
+          echo -e "Validating parameters for workflow: ${{ inputs.workflow_name }}"
+
+          ${{ env.github_action }}/validate-input-params.shell" \
+          "${{ inputs.workflow_inputs }}" "${{ inputs.workflow_name }}"
