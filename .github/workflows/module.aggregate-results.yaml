@@ -31,10 +31,12 @@ jobs:
     with:
       workflow_inputs: >-
         {
-          "GitHub Action": "${{ github.event.inputs.github_action }}",
-          "Artifacts Location": "${{ github.event.inputs.artifacts_location }}"
+          "workflow": "module.aggregate-results",
+          "params": {
+              "GitHub Action": "${{ github.event.inputs.github_action }}",
+              "Artifacts Location": "${{ github.event.inputs.artifacts_location }}"
+            }
         }
-      workflow_name: "module.aggregate-results"
 
   aggregate-pytest-results:
     needs: workflow-parameters

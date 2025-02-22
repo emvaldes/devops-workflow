@@ -45,11 +45,13 @@ jobs:
     with:
       workflow_inputs: >-
         {
-          "PyTest Location": "${{ github.event.inputs.pytests_location }}",
-          "Package Location": "${{ github.event.inputs.package_location }}",
-          "GitHub Action": "${{ github.event.inputs.github_action }}"
+          "workflow": "pkgs.module-dependencies",
+          "params": {
+              "PyTest Location": "${{ github.event.inputs.pytests_location }}",
+              "Package Location": "${{ github.event.inputs.package_location }}",
+              "GitHub Action": "${{ github.event.inputs.github_action }}"
+            }
         }
-      workflow_name: "pkgs.module-dependencies"
 
   install-packages:
     needs: workflow-parameters

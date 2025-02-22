@@ -20,9 +20,11 @@ jobs:
     with:
       workflow_inputs: >-
         {
-          "Package Location": "${{ github.event.inputs.package_location }}"
+          "workflow": "module.exectute-module",
+          "params": {
+              "Package Location": "${{ github.event.inputs.package_location }}"
+            }
         }
-      workflow_name: "module.exectute-module"
 
   execute-module:
     needs: workflow-parameters

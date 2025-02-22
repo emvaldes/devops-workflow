@@ -20,9 +20,11 @@ jobs:
     with:
       workflow_inputs: >-
         {
-          "Package Location": "${{ github.event.inputs.package_location }}"
+          "workflow": "module.install-packages",
+          "params": {
+              "Package Location": "${{ github.event.inputs.package_location }}"
+            }
         }
-      workflow_name: "module.install-packages"
 
   install-packages:
     needs: workflow-parameters

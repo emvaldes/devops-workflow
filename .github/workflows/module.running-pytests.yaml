@@ -20,9 +20,11 @@ jobs:
     with:
       workflow_inputs: >-
         {
-          "PyTest Functions": "${{ github.event.inputs.test_functions }}"
+          "workflow": "module.running-pytests",
+          "params": {
+              "PyTest Functions": "${{ github.event.inputs.test_functions }}"
+            }
         }
-      workflow_name: "module.running-pytests"
 
   running-pytests:
     needs: workflow-parameters

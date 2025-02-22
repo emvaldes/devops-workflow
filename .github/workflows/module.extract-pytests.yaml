@@ -26,9 +26,11 @@ jobs:
     with:
       workflow_inputs: >-
         {
-          "GitHub Action": "${{ github.event.inputs.github_action }}"
+          "workflow": "module.extract-pytests",
+          "params": {
+              "GitHub Action": "${{ github.event.inputs.github_action }}"
+            }
         }
-      workflow_name: "module.extract-pytests"
 
   extract-pytests:
     needs: workflow-parameters

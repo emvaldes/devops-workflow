@@ -10,11 +10,6 @@ on:
         required: true
         type: string
 
-      workflow_name:
-        description: "Workflow's file-name getting validated."
-        required: true
-        type: string
-
 env:
   github_actions: "${{ github.workspace }}/.github/actions"
 
@@ -35,4 +30,4 @@ jobs:
           echo -e "Validating parameters for workflow: ${{ inputs.workflow_name }}"
 
           ${{ env.github_action }}/validate-input-params.shell \
-          "${{ inputs.workflow_inputs }}" "${{ inputs.workflow_name }}"
+          --json="${{ inputs.workflow_inputs }}"
