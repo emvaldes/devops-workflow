@@ -50,7 +50,7 @@ jobs:
           );
           workflow_name='pytest.module-dependencies';
 
-          ${{ env.github_action }}/validate-input-parameters.shell \
+          ${{ env.github_action }}/validate-input-params.shell \
           workflow_inputs "${workflow_name}";
 
   install-packages:
