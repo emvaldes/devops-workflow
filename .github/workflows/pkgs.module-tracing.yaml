@@ -10,6 +10,12 @@ on:
 
     inputs:
 
+      required_packages:
+        description: "Requirements/Dependencies Module"
+        required: false
+        type: string
+        default: "packages/requirements/dependencies"
+
       pytests_location:
         description: "PyTest files Directory"
         required: false
@@ -64,7 +70,7 @@ jobs:
     needs: workflow-parameters
     uses: ./.github/workflows/module.install-packages.yaml
     with:
-      package_location: ${{ inputs.package_location }}
+      package_location: ${{ inputs.required_packages }}
 
   pytest-module:
     needs: install-packages
