@@ -8,6 +8,11 @@ on:
 
     inputs:
 
+      pytests_location:
+        required: true
+        type: string
+        default: ''
+
       github_action:
         required: true
         type: string
@@ -28,6 +33,9 @@ jobs:
         {
           "workflow": "module.extract-pytests",
           "params": {
+            "pytests_location": {
+              "PyTest Location": "${{ inputs.pytests_location }}"
+            },
             "github_action": {
               "GitHub Action": "${{ inputs.github_action }}"
             }

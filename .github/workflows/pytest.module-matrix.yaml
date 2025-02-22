@@ -72,6 +72,7 @@ jobs:
     uses: ./.github/workflows/module.extract-pytests.yaml
     with:
       github_action: "${{ inputs.github_action }}"
+      pytests_location: "${{ inputs.pytests_location }}"
 
   running-pytests:
     needs: extracting-pytests
