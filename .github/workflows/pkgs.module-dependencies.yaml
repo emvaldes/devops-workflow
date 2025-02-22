@@ -43,6 +43,8 @@ jobs:
         id: validate_parameters
         run: |
 
+          echo -e "Path: $(pwd)";
+
           ## Define your inputs with human-readable labels.
           declare -A workflow_inputs=(
             ["PyTest Location"]="${{ github.event.inputs.pytests_location }}"
