@@ -22,6 +22,11 @@ on:
         type: string
         default: 'packages/requirements/dependencies'
 
+      github_action:
+        required: false
+        type: string
+        default: ".github/actions/test-summary"
+
 # push:
 #   branches:
 #     - master
@@ -43,18 +48,15 @@ jobs:
         id: validate_parameters
         run: |
 
-          echo -e "Path: $(pwd)";
-          find $(pwd) -type f | xargs -I {} ls -al {};
+          ## Define your inputs with human-readable labels.
+          declare -A workflow_inputs=(
+            ["PyTest Location"]="${{ github.event.inputs.pytests_location }}"
+            ["Package Location"]="${{ github.event.inputs.package_location }}"
+          );
+          workflow_name='pytest.module-dependencies';
 
-          # ## Define your inputs with human-readable labels.
-          # declare -A workflow_inputs=(
-          #   ["PyTest Location"]="${{ github.event.inputs.pytests_location }}"
-          #   ["Package Location"]="${{ github.event.inputs.package_location }}"
-          # );
-          # workflow_name='pytest.module-dependencies';
-          #
-          # "$(pwd)/${{ env.github_action }}/validate-input-params.shell" \
-          # workflow_inputs "${workflow_name}";
+          ${{ env.github_action }}/validate-input-params.shell \
+          workflow_inputs "${workflow_name}";
 
   install-packages:
     needs: validate-parameters
