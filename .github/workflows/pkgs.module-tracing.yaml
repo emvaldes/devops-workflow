@@ -60,8 +60,11 @@ jobs:
           }
         }
 
-  dependencies:
-    uses: ./.github/workflows/pkgs.module-dependencies.yaml
+  install-packages:
+    needs: workflow-parameters
+    uses: ./.github/workflows/module.install-packages.yaml
+    with:
+      package_location: ${{ inputs.package_location }}
 
   pytest-module:
     needs: dependencies
