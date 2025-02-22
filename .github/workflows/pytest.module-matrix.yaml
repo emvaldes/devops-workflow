@@ -1,6 +1,6 @@
 ---
 ## File: .github/workflows/pytest.module-matrix.yaml
-## Version: 0.2.0
+## Version: 0.2.1
 
 name: PyTest - Package Module Matrix
 run-name: ${{ github.actor }} -> Package Module Matrix
@@ -93,6 +93,10 @@ jobs:
         id: listing_project
         run: |
           tree -FCla --prune -I .git ${{ github.workspace }} ;
+
+      - name: Debug - Extracted Test Functions
+        run: |
+          echo "Extracted Test Functions JSON: ${{ needs.extracting-pytests.outputs.test_functions }}"
 
       - name: Workflow Completion
         id: workflow_status
