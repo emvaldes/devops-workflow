@@ -28,24 +28,24 @@ on:
         type: string
         default: ".github/actions/test-summary"
 
-  workflow_call:
-
-    inputs:
-
-      pytests_location:
-        required: false
-        type: string
-        default: 'tests/requirements/dependencies'
-
-      package_location:
-        required: false
-        type: string
-        default: 'packages/requirements/dependencies'
-
-    outputs:
-      aggregated_results:
-        description: "Providing PyTest Results Aggregation status"
-        value: ${{ jobs.pytest-module.outputs.aggregated_results }}
+  # workflow_call:
+  #
+  #   inputs:
+  #
+  #     pytests_location:
+  #       required: false
+  #       type: string
+  #       default: 'tests/requirements/dependencies'
+  #
+  #     package_location:
+  #       required: false
+  #       type: string
+  #       default: 'packages/requirements/dependencies'
+  #
+  #   outputs:
+  #     aggregated_results:
+  #       description: "Providing PyTest Results Aggregation status"
+  #       value: ${{ jobs.pytest-module.outputs.aggregated_results }}
 
 # push:
 #   branches:
