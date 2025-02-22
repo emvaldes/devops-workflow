@@ -44,7 +44,6 @@ jobs:
         run: |
 
           echo -e "Path: $(pwd)";
-          ls -al ${{ env.github_action }}/validate-input-params.shell;
 
           ## Define your inputs with human-readable labels.
           declare -A workflow_inputs=(
@@ -53,7 +52,7 @@ jobs:
           );
           workflow_name='pytest.module-dependencies';
 
-          ${{ env.github_action }}/validate-input-params.shell \
+          "$(pwd)/${{ env.github_action }}/validate-input-params.shell" \
           workflow_inputs "${workflow_name}";
 
   install-packages:
