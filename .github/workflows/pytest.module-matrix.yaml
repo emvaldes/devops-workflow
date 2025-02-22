@@ -45,20 +45,36 @@ on:
 
 jobs:
 
-  pytests-location:
+  validate-parameters:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Check PyTest Modules
-        id: pytests_location
+      - name: Validate Input Parameters
+        id: validate_parameters
         run: |
+
           if [[ -z "${{ inputs.pytests_location }}" ]]; then
-            echo -en "Error: inputs.pytests_location must be provided. " ;
-            echo -e  "The workflow cannot proceed without a valid target." ;
+            echo -e  "Error: '${{ env.GITHUB_WORKFLOW }}' cannot proceed without a valid PyTest Location." ;
+            exit 1 ;
+          fi ;
+
+          if [[ -z "${{ inputs.package_location }}" ]]; then
+            echo -e  "Error: '${{ env.GITHUB_WORKFLOW }}' cannot proceed without a valid Package Location." ;
+            exit 1 ;
+          fi ;
+
+          if [[ -z "${{ inputs.github_action }}" ]]; then
+            echo -e  "Error: '${{ env.GITHUB_WORKFLOW }}' cannot proceed without a valid GitHub Action." ;
+            exit 1 ;
+          fi ;
+
+          if [[ -z "${{ inputs.artifacts_location }}" ]]; then
+            echo -e  "Error: '${{ env.GITHUB_WORKFLOW }}' cannot proceed without a valid Artifacts Location." ;
             exit 1 ;
           fi ;
 
   packages-location:
+    needs: validate-parameters
     runs-on: ubuntu-latest
     steps:
 

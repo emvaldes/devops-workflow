@@ -15,6 +15,7 @@ on:
       artifacts_location:
         required: true
         type: string
+        default: "artifacts"
 
     outputs:
 
@@ -24,7 +25,26 @@ on:
 
 jobs:
 
+  validate-parameters:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Validate Input Parameters
+        id: validate_parameters
+        run: |
+
+          if [[ -z "${{ inputs.github_action }}" ]]; then
+            echo -e  "Error: '${{ env.GITHUB_WORKFLOW }}' cannot proceed without a valid GitHub Action." ;
+            exit 1 ;
+          fi ;
+
+          if [[ -z "${{ inputs.artifacts_location }}" ]]; then
+            echo -e  "Error: '${{ env.GITHUB_WORKFLOW }}' cannot proceed without a valid Artifacts Location." ;
+            exit 1 ;
+          fi ;
+
   aggregate-pytest-results:
+    needs: valdiate-parameters
     runs-on: ubuntu-latest
     outputs:
       aggregated_results: "true"

@@ -14,7 +14,21 @@ on:
 
 jobs:
 
+  validate-parameters:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Validate Input Parameters
+        id: validate_parameters
+        run: |
+
+          if [[ -z "${{ inputs.test_functions }}" ]]; then
+            echo -e  "Error: '${{ env.GITHUB_WORKFLOW }}' cannot proceed without valid PyTest Functions." ;
+            exit 1 ;
+          fi ;
+
   running-pytests:
+    needs: validate-parameters
     runs-on: ubuntu-latest
     strategy:
       matrix:

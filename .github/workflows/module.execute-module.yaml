@@ -14,7 +14,21 @@ on:
 
 jobs:
 
+  validate-parameters:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Validate Input Parameters
+        id: validate_parameters
+        run: |
+
+          if [[ -z "${{ inputs.package_location }}" ]]; then
+            echo -e  "Error: '${{ env.GITHUB_WORKFLOW }}' cannot proceed without a valid Package Location." ;
+            exit 1 ;
+          fi ;
+
   execute-module:
+    needs: validate-parameters
     runs-on: ubuntu-latest
     strategy:
       matrix:

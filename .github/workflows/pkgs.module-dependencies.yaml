@@ -30,7 +30,26 @@ on:
 
 jobs:
 
+  validate-parameters:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Validate Input Parameters
+        id: validate_parameters
+        run: |
+
+          if [[ -z "${{ inputs.pytests_location }}" ]]; then
+            echo -e  "Error: '${{ env.GITHUB_WORKFLOW }}' cannot proceed without a valid PyTest Location." ;
+            exit 1 ;
+          fi ;
+
+          if [[ -z "${{ inputs.package_location }}" ]]; then
+            echo -e  "Error: '${{ env.GITHUB_WORKFLOW }}' cannot proceed without a valid Package Location." ;
+            exit 1 ;
+          fi ;
+
   install-packages:
+    needs: validate-parameters
     uses: ./.github/workflows/module.install-packages.yaml
     with:
       package_location: ${{ inputs.package_location }}
