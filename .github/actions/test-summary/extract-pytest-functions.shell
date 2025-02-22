@@ -73,9 +73,9 @@ function extract_pytests_functions () {
     echo -e "\nExtracted test functions saved to: ${output_filename}";
     ls -al ${output_filename};
 
-    ## Flatten JSON: Extract functions into a single list
-    jq '[.test_functions | to_entries[] | .value[]]' ${output_filename} > test_functions_flat.json;
-    mv test_functions_flat.json ${output_filename};
+    # ## Flatten JSON: Extract functions into a single list
+    # jq '[.test_functions | to_entries[] | .value[]]' ${output_filename} > test_functions_flat.json;
+    # mv test_functions_flat.json ${output_filename};
 
     # Validate JSON before proceeding
     if ! jq -e . ${output_filename} > /dev/null 2>&1; then
