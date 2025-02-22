@@ -33,18 +33,22 @@ jobs:
         id: validate_parameters
         run: |
 
-          if [[ -z "${{ inputs.github_action }}" ]]; then
-            echo -e  "Error: '${{ env.GITHUB_WORKFLOW }}' cannot proceed without a valid GitHub Action." ;
-            exit 1 ;
-          fi ;
+          params=false ;
+          error_header="Error: '${{ env.GITHUB_WORKFLOW }}' cannot proceed without" ;
 
-          if [[ -z "${{ inputs.artifacts_location }}" ]]; then
-            echo -e  "Error: '${{ env.GITHUB_WORKFLOW }}' cannot proceed without a valid Artifacts Location." ;
-            exit 1 ;
-          fi ;
+          [[ -z "${{ inputs.github_action }}" ]] && {
+            echo -e "${error_header} a valid GitHub Action." ;
+            invalid_params=true ;
+          } ;
+          [[ -z "${{ inputs.artifacts_location }}" ]] && {
+            echo -e "${error_header} a valid Artifacts Location." ;
+            invalid_params=true ;
+          } ;
+
+          [[ ${invalid_params} == true ]] && exit -1 ;
 
   aggregate-pytest-results:
-    needs: valdiate-parameters
+    needs: validate-parameters
     runs-on: ubuntu-latest
     outputs:
       aggregated_results: "true"

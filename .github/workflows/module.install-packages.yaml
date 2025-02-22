@@ -22,10 +22,15 @@ jobs:
         id: validate_parameters
         run: |
 
-          if [[ -z "${{ inputs.package_location }}" ]]; then
-            echo -e  "Error: '${{ env.GITHUB_WORKFLOW }}' cannot proceed without a valid Package Location." ;
-            exit 1 ;
-          fi ;
+          params=false ;
+          error_header="Error: '${{ env.GITHUB_WORKFLOW }}' cannot proceed without" ;
+
+          [[ -z "${{ inputs.package_location }}" ]] && {
+            echo -e "${error_header} a valid Package Location." ;
+            invalid_params=true ;
+          } ;
+
+          [[ ${invalid_params} == true ]] && exit -1 ;
 
   install-packages:
     needs: validate-parameters
