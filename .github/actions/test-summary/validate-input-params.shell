@@ -20,8 +20,13 @@ set -o pipefail ;  # Fail if any piped command fails
 ## This function expects the name of an associative array as its first argument.
 function validate_input_parameters() {
 
+    # Combine all arguments into a single string by removing any extra whitespace
+    local arguments
+    arguments=$( echo -e "${@}" | tr -d '[[:blank:]]' | sed 's/  */ /g' );
+
     oIFS="${IFS}";
-    for xitem in "${@}"; do
+    # for xitem in "${@}"; do
+    for xitem in "${arguments}"; do
       IFS='='; set `echo -e "${xitem}" | sed -e '1s|^\(-\)\{1,\}||'`
       [[ ${1#*\--} = "json" ]] && local json_object="${2}";
       #### ---------------------------------------------------------------------
@@ -41,38 +46,35 @@ function validate_input_parameters() {
       return 1;
     fi;
 
+    # Normalize JSON: remove newlines and extra spaces
+    local compressed_json;
+    compressed_json=$(
+      echo "${json_object}" | tr -d '\n' | sed 's/  */ /g'
+    )
+
+    echo -e "\nCompressed JSON:\n${compressed_json}\n";
+
     # Extract workflow name.
     local workflow_name;
-    workflow_name=$( echo "${json_object}" | jq -r '.workflow // empty' );
+    workflow_name=$( echo "${compressed_json}" | jq -r '.workflow // empty' );
     if [[ -z "${workflow_name}" ]]; then
-        echo -e "Warning: Workflow ${warning_message}";
-        exit 1;
+      echo -e "Warning: Workflow ${warning_message}";
+      exit 1;
     fi;
 
     local invalid_params=false;
     local error_header="Error: ${workflow_name} cannot proceed without a valid";
 
-    echo -e "\nJSON Object:\n${json_object}\n";
-
-    # Convert JSON string into an associative array.
-    declare -A workflow_inputs;
-    while IFS="=" read -r key value; do
-      workflow_inputs["$key"]="$value";
-    done < <(
-      echo "${json_object}" \
-      | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]'
-    );
-
-    # Iterate over parameters in "params".
+    # Directly iterate over parameters in "params" for validation.
+    local invalid_params=false;
     while IFS=$'\t' read -r header value; do
-        echo "Input Parameter [${header}]: ${value}";
-        if [[ -z "${value}" ]]; then
-            echo -e "\n${error_header} ${header}."
-            invalid_params=1
-        fi
+      echo "Input Parameter [${header}]: ${value}";
+      if [[ -z "${value}" ]]; then
+        echo -e "\n${error_header} ${header}.";
+        invalid_params=true;
+      fi;
     done < <(
-      echo "${json_object}" \
-      | jq -r '.params | to_entries[] | "\(.key)\t\(.value)"'
+      echo "${compressed_json}" | jq -r '.params | to_entries[] | "\(.key)\t\(.value)"'
     );
 
     if [[ "${invalid_params}" == true ]]; then
@@ -84,12 +86,3 @@ function validate_input_parameters() {
   }; alias validate-parameters='validate_parameters';
 
 validate_input_parameters "${@}";
-
-# ## Iterate over the workflow_inputs.
-# for label in "${!workflow_inputs[@]}"; do
-#   echo "Input Parameter [$label]: ${workflow_inputs[$label]}";
-#   if [[ -z "${workflow_inputs[$label]}" ]]; then
-#     echo "${error_header} ${label}.";
-#     exit 1;
-#   fi;
-# done;
