@@ -54,8 +54,9 @@ jobs:
             ["Package Location"]="${{ github.event.inputs.package_location }}"
           );
           workflow_name='pytest.module-dependencies';
+          echo -e "GitHub Workspace: ${{ github.workspace }}";
 
-          ./${{ env.github_action }}/validate-input-params.shell \
+          ./validate-input-params.shell \
           workflow_inputs "${workflow_name}";
 
   install-packages:
