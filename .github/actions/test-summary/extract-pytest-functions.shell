@@ -89,7 +89,9 @@ function extract_pytest_functions () {
             if [[ ${status} -gt 0 ]]; then
                     echo -e "Configuration: '${output_filename}' is not valid JSON object!";
                     exit 1 ;
-              # else  jq . ${output_filename}; echo -e;
+              else  jq . ${output_filename} > ./pytest_modules.json;
+                    cat ./pytest_modules.json;
+                    echo -e;
             fi ;
 
             # ## Flatten JSON: Extract functions into a single list
@@ -99,7 +101,8 @@ function extract_pytest_functions () {
                ${output_filename} > temp.json && mv temp.json ${output_filename};
 
             echo -e "Extracted test functions saved to: ${output_filename}" ;
-            # echo -e "Final JSON Output: $( jq . ${output_filename} )" ;
+            echo -e "Final JSON Output: ";
+            jq . ${output_filename};
 
       else  echo -e "Warning: ${output_filename} is not avilable/missing!";
             exit 1;
