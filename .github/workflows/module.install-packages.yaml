@@ -1,5 +1,5 @@
 ---
-## File: module.install-packages.yaml
+## File: .github/workflows/module.install-packages.yaml
 
 name: Install Packages/Dependencies
 on:
@@ -36,6 +36,11 @@ jobs:
         python-version: ${{ fromJson(vars.PYTHON_VERSIONS).python }}
         # Default value: { "python": [ "3.9", "3.10", "3.11" ] }
     steps:
+
+      - name: Manage System Update (latest)
+        run: |
+          sudo apt-get update --yes ;
+          # sudo apt-get install tree jq --yes ;
 
       - name: Checkout Repository
         uses: actions/checkout@v4

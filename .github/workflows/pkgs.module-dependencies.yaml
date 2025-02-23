@@ -1,5 +1,5 @@
 ---
-## File: pkgs.module-dependencies.yaml
+## File: .github/workflows/pkgs.module-dependencies.yaml
 
 name: Pipeline - Requirements/Dependencies
 run-name: ${{ github.actor }} -> Requirements/Dependencies

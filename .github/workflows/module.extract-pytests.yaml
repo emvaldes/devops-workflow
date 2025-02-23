@@ -1,5 +1,5 @@
 ---
-## File: module.extract-pytests.yaml
+## File: .github/workflows/module.extract-pytests.yaml
 
 name: Extract PyTest Test-Functions
 on:
@@ -43,6 +43,9 @@ jobs:
             },
             "github_action": {
               "GitHub Action": "${{ inputs.github_action }}"
+            },
+            "output_filename": {
+              "Output Filename": "${{ inputs.output_filename }}"
             }
           }
         }

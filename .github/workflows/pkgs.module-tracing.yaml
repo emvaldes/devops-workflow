@@ -1,5 +1,5 @@
 ---
-## File: pkgs.module-dependencies.yaml
+## File: .github/workflows/pkgs.module-dependencies.yaml
 
 name: Pipeline - AppFlow Tracer/Tracing
 run-name: ${{ github.actor }} -> AppFlow Tracer/Tracing
@@ -54,6 +54,9 @@ jobs:
         {
           "workflow": "pkgs.module-dependencies",
           "params": {
+            "required_packages": {
+              "Required Packages": "${{ inputs.required_packages }}"
+            },
             "pytests_location": {
               "PyTest Location": "${{ inputs.pytests_location }}"
             },

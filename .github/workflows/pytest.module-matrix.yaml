@@ -1,5 +1,5 @@
 ---
-## File: pytest.module-matrix.yaml
+## File: .github/workflows/pytest.module-matrix.yaml
 
 name: PyTest - Package Module Matrix
 run-name: ${{ github.actor }} -> Package Module Matrix
@@ -93,11 +93,6 @@ jobs:
     outputs:
       aggregated_results: ${{ needs.aggregating-pytests.outputs.aggregated_results }}
     steps:
-
-      - name: Listing Entire Project
-        id: listing_project
-        run: |
-          tree -FCla --prune -I .git ${{ github.workspace }} ;
 
       - name: Workflow Completion
         id: workflow_status

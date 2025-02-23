@@ -1,5 +1,5 @@
 ---
-## File: module.execute-module.yaml
+## File: .github/workflows/module.execute-module.yaml
 
 name: Execute Target Package Module
 on:

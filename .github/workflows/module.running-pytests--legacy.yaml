@@ -45,19 +45,12 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # - name: Restore Cached Dependencies
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ~/.cache/pip
-      #     key: pip-${{ matrix.python-version }}-${{ matrix.test_function }}-${{ hashFiles('requirements.txt') }}
-      #     restore-keys: pip-${{ matrix.python-version }}-${{ matrix.test_function }}-
-
       - name: Restore Cached Dependencies
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: pip-${{ matrix.python-version }}-${{ matrix.test_function.key }}-${{ hashFiles('requirements.txt') }}
-          restore-keys: pip-${{ matrix.python-version }}-${{ matrix.test_function.key }}-
+          key: pip-${{ matrix.python-version }}-${{ matrix.test_function }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: pip-${{ matrix.python-version }}-${{ matrix.test_function }}-
 
       - name: Download requirements.txt
         uses: actions/download-artifact@v4
@@ -79,27 +72,15 @@ jobs:
           python -m pip install --upgrade pip ;
           python -m pip install -r requirements.txt ;
 
-      # - name: Run Pytest Function
-      #   run: |
-      #     pytest -v --junitxml=pytest-results.xml \
-      #     "${{ inputs.pytests_location }}/test_dependencies.py::${{ matrix.test_function }}" ;
-
       - name: Run Pytest Function
         run: |
-          FILE="${{ matrix.test_function.key }}"
-          TEST_FUNCTION="${{ matrix.test_function.value }}"
-          pytest -v --junitxml=pytest-results.xml "${FILE}::${TEST_FUNCTION}"
-
-      # - name: Upload Test Results
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: pytest-results-${{ matrix.python-version }}-${{ matrix.test_function }}
-      #     path: pytest-results.xml
+          pytest -v --junitxml=pytest-results.xml \
+          "${{ inputs.pytests_location }}/test_dependencies.py::${{ matrix.test_function }}" ;
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
         with:
-          name: pytest-results-${{ matrix.python-version }}-${{ matrix.test_function.value }}
+          name: pytest-results-${{ matrix.python-version }}-${{ matrix.test_function }}
           path: pytest-results.xml
 
       - name: Debug - List Uploaded Artifacts

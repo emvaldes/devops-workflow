@@ -1,5 +1,5 @@
 ---
-## File: module.aggregate-results.yaml
+## File: .github/workflows/module.aggregate-results.yaml
 
 name: Aggregate PyTests Results
 on:
@@ -87,3 +87,8 @@ jobs:
         run: |
           echo "aggregated_results=true" >> $GITHUB_ENV
           echo "Aggregate Results - GitHub Environment:\n${GITHUB_ENV}" ;
+
+      - name: Listing Entire Project
+        id: listing_project
+        run: |
+          tree -FCla --prune -I .git ${{ github.workspace }} ;

@@ -56,7 +56,7 @@ function extract_pytest_functions () {
     fi;
 
     # pytests_location="tests/requirements/dependencies/test_dependencies.py" ;
-    echo -e "\nExtracting test functions from: ${pytests_location}";
+    echo -e "\nExtracting test functions from: ${pytests_location}\n";
 
     ## Find all test_*.py files recursively
     test_files=($(
@@ -81,73 +81,31 @@ function extract_pytest_functions () {
     python3 ${scripts_location}/extract-pytest-functions.py \
         "${json_list}" "${output_filename}";
 
-#
-# TEST_FILE="tests/requirements/dependencies/test_dependencies.py" ;
-# OUTPUT_FILE="test_functions.json" ;
-#
-# echo -e "Extracting test functions from: ${TEST_FILE}" ;
-#
-# # Ensure the file exists before proceeding
-# if [[ ! -f "${TEST_FILE}" ]]; then
-#     echo -e "ERROR: Test file not found: ${TEST_FILE}" ;
-#     echo -e '{"test_functions": ["dummy_test_function"]}' > "${OUTPUT_FILE}" ;
-#     exit 1 ;
-# fi ;
-#
-# # Run Python script separately and output to JSON file
-# python3 <<EOF > "$OUTPUT_FILE"
-# import re, json, sys
-#
-# output_file = "$OUTPUT_FILE"
-# test_file = "$TEST_FILE"
-#
-# try:
-#     with open(test_file, "r", encoding="utf-8") as f:
-#         content = f.read()
-#         test_functions = re.findall(r'^def (test_[a-zA-Z0-9_]+)', content, re.MULTILINE)
-#
-#     test_functions = test_functions if test_functions else ["dummy_test_function"]
-#     json_output = {"test_functions": test_functions}
-#
-#     with open(output_file, "w", encoding="utf-8") as out_f:
-#         json.dump(json_output, out_f, indent=2, ensure_ascii=False, sort_keys=True)
-#
-#     # Print JSON only (No extra text)
-#     print(json.dumps(json_output, indent=2, ensure_ascii=False, sort_keys=True))
-# except Exception as e:
-#     json_output = {"test_functions": ["dummy_test_function"]}
-#
-#     with open(output_file, "w", encoding="utf-8") as out_f:
-#         json.dump(json_output, out_f, indent=2, ensure_ascii=False, sort_keys=True)
-#
-#     # Print fallback JSON only
-#     print(json.dumps(json_output, indent=2, ensure_ascii=False, sort_keys=True))
-# EOF
+    if [[ -e ${output_filename} ]]; then
 
-    ## Validate JSON before proceeding
-    jq -e . ${output_filename} 2>&1>/dev/null;
-    status=$?; #echo -e "Status: ${status}";
-    if [[ ${status} -gt 0 ]]; then
-            echo -e "Configuration: '${output_filename}' is not valid JSON object!";
-            exit 1 ;
-      else  jq . ${output_filename}; echo -e;
-    fi ;
+            ## Validate JSON before proceeding
+            jq -e . ${output_filename} 2>&1>/dev/null;
+            status=$?; #echo -e "Status: ${status}";
+            if [[ ${status} -gt 0 ]]; then
+                    echo -e "Configuration: '${output_filename}' is not valid JSON object!";
+                    exit 1 ;
+              else  jq . ${output_filename}; echo -e;
+            fi ;
 
-    # ## Flatten JSON: Extract functions into a single list
-    # jq '[.test_functions | to_entries[] | .value[]]' \
-    #    ${output_filename} > temp.json && mv temp.json ${output_filename};
-    jq '{"test_functions": ( .test_functions | map(.[]) | flatten )}' \
-       ${output_filename} > temp.json && mv temp.json ${output_filename};
+            # # ## Flatten JSON: Extract functions into a single list
+            # # jq '[.test_functions | to_entries[] | .value[]]' \
+            # #    ${output_filename} > temp.json && mv temp.json ${output_filename};
+            # jq '{"test_functions": ( .test_functions | map(.[]) | flatten )}' \
+            #    ${output_filename} > temp.json && mv temp.json ${output_filename};
+            #
+            # echo -e "Extracted test functions saved to: ${output_filename}" ;
+            # # echo -e "Final JSON Output: $( jq . ${output_filename} )" ;
 
-    jq . ${output_filename};
+      else  echo -e "Warning: ${output_filename} is not avilable/missing!";
+            exit 1;
+    fi;
 
-return 0;
-
-    echo -e "Extracted test functions saved to: ${OUTPUT_FILE}" ;
-    echo -e "Final JSON Output:" ;
-    cat "${OUTPUT_FILE}" ;
-
-    echo -e;
+    # echo -e;
     return 0;
 }; alias extract-pytest-functions='extract_pytest_functions';
 
