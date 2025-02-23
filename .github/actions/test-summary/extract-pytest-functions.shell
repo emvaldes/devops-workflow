@@ -43,20 +43,20 @@ function extract_pytest_functions () {
             exit 1;
             # Ensure the file exists before proceeding
       else  if [[ ! -e "${pytests_location}" ]]; then
-              echo -e "ERROR: Target location was not found: ${pytests_location}";
-              echo -e '{"test_functions": ["dummy_test_function"]}' > "${output_filename}";
+              echo -e "Error: Target location was not found: ${pytests_location}";
+              # echo -e '{"test_functions": ["dummy_test_function"]}' > "${output_filename}";
               exit 1;
             fi;
     fi;
-    if [[ ${#scripts_location} -eq 0 ]]; then
+    if [[ -z ${scripts_location} ]]; then
       scripts_location="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
     fi;
-    if [[ ${#pytests_location} -eq 0 ]]; then
+    if [[ -z ${pytests_location} ]]; then
       local output_filename="test_functions.json";
     fi;
 
     # pytests_location="tests/requirements/dependencies/test_dependencies.py" ;
-    echo -e "\nExtracting test functions from: ${pytests_location}\n";
+    # echo -e "\nExtracting test functions from: ${pytests_location}\n";
 
     ## Find all test_*.py files recursively
     test_files=($(
@@ -90,9 +90,9 @@ function extract_pytest_functions () {
                     echo -e "Configuration: '${output_filename}' is not valid JSON object!";
                     exit 1 ;
               else  pytest_modules="pytest_modules.json";
-                    jq . ${output_filename} > ./${pytest_modules};
-                    # ls -al ./${pytest_modules};
-                    # cat ./${pytest_modules};
+                    jq . ${output_filename} > ${pytest_modules};
+                    # ls -al ${pytest_modules};
+                    # cat ${pytest_modules};
                     # echo -e;
             fi ;
 

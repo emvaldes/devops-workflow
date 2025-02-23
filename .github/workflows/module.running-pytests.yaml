@@ -90,26 +90,25 @@ jobs:
           echo -e "Checking artifact storage location..." ;
 
 
-  # Experimental Outter Matrix Using pytest_modules.json
+  # Experimental Cutter Matrix Using pytest_modules.json
   pytest-modules:
     needs: workflow-parameters
     runs-on: ubuntu-latest
     outputs:
-      test_files: ${{ steps.extract.outputs.test_files }}
+      pytest_modules: ${{ steps.extract.outputs.pytest_modules }}
     steps:
-      - name: Extract Test Files from pytest_modules.json
+      - name: Extract Test Files from GITHUB_OUTPUT
         id: extract
         run: |
-          echo "Extracting test files from pytest_modules.json..."
-          TEST_FILES=$( jq -c 'keys' ./pytest_modules.json )
-          echo "test_files=$TEST_FILES" >> $GITHUB_OUTPUT
+          echo "Extracting test files from GITHUB_OUTPUT..."
+          echo "pytest_modules=${{ needs.extract-pytests.outputs.pytest_modules }}" >> $GITHUB_OUTPUT
 
-  outter-matrix:
+  cutter-matrix:
     needs: pytest-modules
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        test_file: ${{ fromJson(needs.pytest-modules.outputs.test_files) }}
+        test_file: ${{ fromJson(needs.pytest-modules.outputs.pytest_modules) }}
     steps:
       - name: Debug - Test File Being Processed
         run: |

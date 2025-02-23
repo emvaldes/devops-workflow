@@ -54,6 +54,7 @@ jobs:
     needs: workflow-parameters
     runs-on: ubuntu-latest
     outputs:
+      pytest_modules: ${{ steps.extract.outputs.pytest_modules }}
       test_functions: ${{ steps.extract.outputs.tests }}
     steps:
 
@@ -72,12 +73,6 @@ jobs:
             --pytests-location="${{ inputs.pytests_location }}" \
             --scripts-location="${{ inputs.github_action }}" \
             --output-filename="${{ inputs.output_filename }}" ;
-
-          # if ! jq -e . ${{ inputs.output_filename }} > /dev/null 2>&1; then
-          #         echo -e "ERROR: ${{ inputs.output_filename }} is not valid JSON!" ;
-          #         exit 1 ;
-          #   # else  cat ${{ inputs.output_filename }} ;
-          # fi ;
 
           ## Validate Test-Functions JSON before proceeding
           jq -e . ${{ inputs.output_filename }} 2>&1>/dev/null;
@@ -103,5 +98,5 @@ jobs:
                   cat ${pytest_modules};
           fi ;
 
-          TEST_FILES=$( jq -c 'keys' ${pytest_modules} )
-          echo "test_files=$TEST_FILES" >> $GITHUB_OUTPUT
+          PYTEST_MODULES=$( jq -c 'keys' ${pytest_modules} )
+          echo "pytest_modules=$PYTEST_MODULES" >> $GITHUB_OUTPUT
