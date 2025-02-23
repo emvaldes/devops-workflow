@@ -18,6 +18,11 @@ on:
         type: string
         default: ''
 
+      output_filename:
+        required: false
+        type: string
+        default: 'test_functions.json'
+
     outputs:
 
       test_functions:
@@ -54,7 +59,7 @@ jobs:
 
       - name: Ensure Shell Script is Executable
         run: |
-          chmod +x "${{ inputs.github_action }}/extract-pytest-functions.shell" ;
+          chmod +x ${{ inputs.github_action }}/extract-pytest-functions.shell ;
 
       - name: Extract Test Functions
         id: extract
@@ -62,8 +67,8 @@ jobs:
 
           ${{ inputs.github_action }}/extract-pytest-functions.shell \
             --pytests-location="${{ inputs.pytests_location }}" \
-            --output-filename="${{ inputs.output_filename }}" \
-            --scripts-location="${{ inputs.github_action }}" ;
+            --scripts-location="${{ inputs.github_action }}" \
+            --output-filename="${{ inputs.output_filename }}" ;
 
           if ! jq -e . ${{ inputs.output_filename }} > /dev/null 2>&1; then
                   echo -e "ERROR: ${{ inputs.output_filename }} is not valid JSON!" ;
