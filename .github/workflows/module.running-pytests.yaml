@@ -28,6 +28,41 @@ jobs:
           }
         }
 
+  # Experimental Cutter Matrix Using pytest_files.json
+  pytest-files:
+    needs: workflow-parameters
+    runs-on: ubuntu-latest
+    outputs:
+      pytest_files: ${{ steps.extract.outputs.pytest_files }}
+    steps:
+
+      - name: Listing Current Environment Variables
+        id: environment_variables
+        run: |
+          env | sort ;
+
+      - name: Listing Shell/Environment Variables
+        id: shell_variables
+        run: |
+          set ;
+
+      - name: Extract Test Files from GITHUB_OUTPUT
+        id: extract
+        run: |
+          echo "Extracting test files from GITHUB_OUTPUT..." ;
+          echo "pytest_files=${{ needs.extract-pytests.outputs.pytest_files }}" >> $GITHUB_OUTPUT ;
+
+  # outter-matrix:
+  #   needs: pytest-files
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       pytest_file: ${{ fromJson( needs.pytest-files.outputs.pytest_files ) }}
+  #   steps:
+  #     - name: Debug - Test File Being Processed
+  #       run: |
+  #         echo "Processing test file: ${{ matrix.pytest_file }}" ;
+
   running-pytests:
     needs: workflow-parameters
     runs-on: ubuntu-latest
@@ -88,38 +123,3 @@ jobs:
           echo -e "Listing uploaded artifacts..." ;
           find $GITHUB_WORKSPACE -type f -name "*.xml" || echo -e "No test result files found." ;
           echo -e "Checking artifact storage location..." ;
-
-  # Experimental Cutter Matrix Using pytest_files.json
-  pytest-files:
-    needs: running-pytests
-    runs-on: ubuntu-latest
-    outputs:
-      pytest_files: ${{ steps.extract.outputs.pytest_files }}
-    steps:
-
-      - name: Listing Current Environment Variables
-        id: environment_variables
-        run: |
-          env | sort ;
-
-      - name: Listing Shell/Environment Variables
-        id: shell_variables
-        run: |
-          set ;
-
-      - name: Extract Test Files from GITHUB_OUTPUT
-        id: extract
-        run: |
-          echo "Extracting test files from GITHUB_OUTPUT..." ;
-          echo "pytest_files=${{ needs.extract-pytests.outputs.pytest_files }}" >> $GITHUB_OUTPUT ;
-
-  # outter-matrix:
-  #   needs: pytest-files
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       pytest_file: ${{ fromJson( needs.pytest-files.outputs.pytest_files ) }}
-  #   steps:
-  #     - name: Debug - Test File Being Processed
-  #       run: |
-  #         echo "Processing test file: ${{ matrix.pytest_file }}" ;
