@@ -46,22 +46,37 @@ jobs:
         run: |
           set ;
 
+      - name: Listing GitHub Environment Variables
+        id: github_environment
+        run: |
+          echo "GitHub Environment: ${GITHUB_ENV}" ;
+
+      - name: Listing GitHub Output Variables
+        id: shell_variables
+        run: |
+          echo "GitHub Environment: ${GITHUB_OUTPUT}" ;
+
       - name: Extract Test Files from GITHUB_OUTPUT
         id: extract
         run: |
-          echo "Extracting test files from GITHUB_OUTPUT..." ;
-          echo "pytest_files=${{ needs.extract-pytests.outputs.pytest_files }}" >> $GITHUB_OUTPUT ;
+          echo "Extracting test files from GITHUB_OUTPUT..."
+          if [[ -z "${{ needs.extract-pytests.outputs.pytest_files }}" ]]; then
+            echo "pytest_files=[]" >> $GITHUB_OUTPUT
+          else
+            echo "pytest_files=${{ needs.extract-pytests.outputs.pytest_files }}" >> $GITHUB_OUTPUT
+          fi
 
-  # outter-matrix:
-  #   needs: pytest-files
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       pytest_file: ${{ fromJson( needs.pytest-files.outputs.pytest_files ) }}
-  #   steps:
-  #     - name: Debug - Test File Being Processed
-  #       run: |
-  #         echo "Processing test file: ${{ matrix.pytest_file }}" ;
+  outter-matrix:
+    needs: pytest-files
+    runs-on: ubuntu-latest
+    if: ${{ needs.pytest-files.outputs.pytest_files != '[]' }}  # Prevents running if empty
+    strategy:
+      matrix:
+        pytest_file: ${{ fromJson( needs.pytest-files.outputs.pytest_files ) }}
+    steps:
+      - name: Debug - Test File Being Processed
+        run: |
+          echo "Processing test file: ${{ matrix.pytest_file }}"
 
   running-pytests:
     needs: workflow-parameters
