@@ -34,7 +34,8 @@ jobs:
     strategy:
       matrix:
         python-version: ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
-        test_function: ${{ fromJson( inputs.test_functions ) }}
+        # test_function: ${{ fromJson( inputs.test_functions ) }}
+        test_function: ${{ fromJson(inputs.test_functions).test_functions | toJSON }}
     steps:
 
       - name: Checkout Repository
