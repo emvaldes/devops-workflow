@@ -36,7 +36,7 @@ jobs:
         python-version: ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
         # test_function: ${{ fromJson( inputs.test_functions ) }}
         # test_function: ${{ fromJson( inputs.test_functions ).test_functions | toJSON }}
-        test_file: ${{ fromJson( inputs.test_functions ).test_functions | keys }}
+        test_file: ${{ toJson( keys( fromJson( inputs.test_functions ).test_functions ) ) }}
     steps:
 
       - name: Checkout Repository
@@ -95,7 +95,7 @@ jobs:
       - name: Run Pytest Functions for Each File
         run: |
           FILE="${{ matrix.test_file }}"
-          TEST_FUNCTIONS=$(echo '${{ toJson(fromJson(inputs.test_functions).test_functions[matrix.test_file]) }}' | jq -r '.[]' | tr '\n' ' ')
+          TEST_FUNCTIONS=$(jq -r --arg FILE "$FILE" '.test_functions[$FILE][]' <<< '${{ inputs.test_functions }}')
 
           echo "Running tests in: $FILE"
           echo "Test functions: $TEST_FUNCTIONS"
