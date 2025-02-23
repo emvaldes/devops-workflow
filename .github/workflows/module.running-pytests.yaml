@@ -34,7 +34,9 @@ jobs:
     strategy:
       matrix:
         python-version: ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
-        test_function: ${{ inputs.test_functions }}
+        # test_function: ${{ inputs.test_functions }}
+        test_files: ${{ toJson( keys( fromJson( inputs.test_functions ) ) ) }}
+        test_functions: ${{ toJson( fromJson( inputs.test_functions )[matrix.test_file] ) }}
     steps:
 
       - name: Checkout Repository
@@ -84,47 +86,64 @@ jobs:
       #     pytest -v --junitxml=pytest-results.xml \
       #     "${{ inputs.pytests_location }}/test_dependencies.py::${{ matrix.test_function }}" ;
 
-      - name: Run Pytest Functions for Each File
+      # - name: Run Pytest Function (2nd. iteration)
+      #   run: |
+      #     set -x  # Enable debugging
+      #
+      #     FILE="${{ matrix.test_file }}"
+      #     FUNCTION="${{ matrix.test_function }}"
+      #
+      #     echo "DEBUG: Running test file: $FILE"
+      #     echo "DEBUG: Running test function: $FUNCTION"
+      #
+      #     # Run only the specified function
+      #     pytest -v --junitxml=pytest-results.xml "$FILE::$FUNCTION"
+
+      - name: Run Pytest Function
         run: |
-          # Enable Bash debugging
+          # Enable debugging
           set -x
 
-          # Extract the raw JSON from the matrix (stringified JSON)
-          RAW_JSON='${{ matrix.test_function }}'
+          # Extract test file and function from matrix
+          FILE="${{ matrix.test_file }}"
+          FUNCTION="${{ matrix.test_function }}"
 
-          # Debug: Show raw JSON
-          echo "DEBUG: Raw JSON input from GitHub Actions:"
-          echo "$RAW_JSON"
-
-          # Parse JSON properly using jq
-          TEST_FILE=$(echo "$RAW_JSON" | jq -r 'keys[]')
-
-          # Debug: Show extracted test file
-          echo "DEBUG: Test file to process: $TEST_FILE"
+          # Debugging: Show the test file and function being processed
+          echo "DEBUG: Running test file: $FILE"
+          echo "DEBUG: Running test function: $FUNCTION"
 
           # Ensure FILE is not empty
-          if [[ -z "$TEST_FILE" ]]; then
+          if [[ -z "$FILE" ]]; then
             echo "ERROR: No test file found. Skipping."
-            exit 0
+            exit 1
           fi
 
-          # Extract test functions for the file
-          TEST_FUNCTIONS=$(echo "$RAW_JSON" | jq -r --arg FILE "$TEST_FILE" '.[$FILE][]')
-
-          # Debug: Show extracted test functions
-          echo "DEBUG: Extracted test functions for $TEST_FILE: $TEST_FUNCTIONS"
-
-          # Ensure there are test functions to run
-          if [[ -z "$TEST_FUNCTIONS" ]]; then
-            echo "ERROR: No test functions found in $TEST_FILE. Skipping."
-            exit 0
+          # Ensure FUNCTION is not empty
+          if [[ -z "$FUNCTION" ]]; then
+            echo "ERROR: No test function found. Skipping."
+            exit 1
           fi
 
-          # Debug: Show pytest command before execution
-          echo "DEBUG: Running command: pytest -v --junitxml=pytest-results.xml $TEST_FILE::$(echo "$TEST_FUNCTIONS" | tr ' ' '::')"
+          # Read the full JSON input to confirm correctness
+          RAW_JSON='${{ inputs.test_functions }}'
+
+          # Debugging: Show full JSON input
+          echo "DEBUG: Full JSON input from GitHub Actions:"
+          echo "$RAW_JSON" | jq .
+
+          # Validate if the function exists in the given file
+          FUNCTION_EXISTS=$(echo "$RAW_JSON" | jq -r --arg FILE "$FILE" --arg FUNCTION "$FUNCTION" 'if .[$FILE] | index($FUNCTION) then "yes" else "no" end')
+
+          if [[ "$FUNCTION_EXISTS" != "yes" ]]; then
+            echo "ERROR: Function $FUNCTION not found in file $FILE. Skipping."
+            exit 1
+          fi
+
+          # Debugging: Show pytest command before execution
+          echo "DEBUG: Running pytest: pytest -v --junitxml=pytest-results.xml $FILE::$FUNCTION"
 
           # Run pytest
-          pytest -v --junitxml=pytest-results.xml "$TEST_FILE"::$(echo "$TEST_FUNCTIONS" | tr ' ' '::')
+          pytest -v --junitxml=pytest-results.xml "$FILE::$FUNCTION"
 
       # - name: Upload Test Results (1st. iteration)
       #   uses: actions/upload-artifact@v4
