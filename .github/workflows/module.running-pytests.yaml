@@ -87,18 +87,43 @@ jobs:
 
       - name: Run Pytest Functions for Each File
         run: |
-          FILE="${{ matrix.test_function }}"
-          TEST_FUNCTIONS=$(jq -r --arg FILE "$FILE" '.test_functions[$FILE][]' <<< '${{ inputs.test_functions }}')
 
-          if [[ -z "$TEST_FUNCTIONS" ]]; then
-            echo "No test functions found in $FILE. Skipping."
+          # Enable Bash debugging (prints every command before execution)
+          set -x
+
+          # Extract the test file from the matrix
+          FILE="${{ matrix.test_function }}"
+
+          # Debugging: Print the test file name
+          echo "DEBUG: Test file to process: $FILE"
+
+          # Ensure FILE is not empty
+          if [[ -z "$FILE" ]]; then
+            echo "ERROR: No test file found. Skipping."
             exit 0
           fi
 
-          echo "Running tests in: $FILE"
-          echo "Test functions: $TEST_FUNCTIONS"
+          # Debugging: Print the raw JSON input
+          echo "DEBUG: Raw JSON input from GitHub Actions:"
+          echo '${{ inputs.test_functions }}'
 
-          pytest -v --junitxml=pytest-results.xml $FILE::$(echo $TEST_FUNCTIONS | sed 's/ / ::/g')
+          # Extract test functions using jq, ensuring valid JSON
+          TEST_FUNCTIONS=$(jq -r --arg FILE "$FILE" '.test_functions[$FILE] // [] | @sh' <<< '${{ inputs.test_functions }}')
+
+          # Debugging: Print extracted test functions
+          echo "DEBUG: Extracted test functions for $FILE: $TEST_FUNCTIONS"
+
+          # Ensure there are test functions to run
+          if [[ -z "$TEST_FUNCTIONS" ]]; then
+            echo "ERROR: No test functions found in $FILE. Skipping."
+            exit 0
+          fi
+
+          # Debugging: Print formatted pytest command before execution
+          echo "DEBUG: Running command: pytest -v --junitxml=pytest-results.xml $FILE::$(echo "$TEST_FUNCTIONS" | tr ' ' '::')"
+
+          # Run pytest on all functions found in the test file
+          pytest -v --junitxml=pytest-results.xml "$FILE"::$(echo "$TEST_FUNCTIONS" | tr ' ' '::')
 
       # - name: Upload Test Results (1st. iteration)
       #   uses: actions/upload-artifact@v4
