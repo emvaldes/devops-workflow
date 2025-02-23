@@ -81,7 +81,8 @@ jobs:
                 if [[ ${status} -gt 0 ]]; then
                         echo -e "Configuration: '${{ inputs.output_filename }}' is not valid JSON object!";
                         exit 1 ;
-                  else  ls -al ${{ inputs.output_filename }} ;
+                  else  echo -e "PyTest Functions JSON configuration";
+                        ls -al ${{ inputs.output_filename }} ;
                         cat ${{ inputs.output_filename }} ;
                         TESTS=$( jq -c '.test_functions' ${{ inputs.output_filename }} ) ;
                         echo -e "tests=$TESTS" >> "$GITHUB_OUTPUT" ;
@@ -97,7 +98,8 @@ jobs:
                   if [[ ${status} -gt 0 ]]; then
                           echo -e "Configuration: '${pytest_files}' is not valid JSON object!";
                           exit 1 ;
-                    else  ls -al ${pytest_files};
+                    else  echo -e "PyTest Files JSON configuration";
+                          ls -al ${pytest_files};
                           cat ${pytest_files};
                           PYTEST_FILES=$( jq -c 'keys' ${pytest_files} )
                           echo "pytest_files=$PYTEST_FILES" >> $GITHUB_OUTPUT
