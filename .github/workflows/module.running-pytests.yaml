@@ -88,3 +88,29 @@ jobs:
           echo -e "Listing uploaded artifacts..." ;
           find $GITHUB_WORKSPACE -type f -name "*.xml" || echo -e "No test result files found." ;
           echo -e "Checking artifact storage location..." ;
+
+
+  # Experimental Outter Matrix Using pytest_modules.json
+  pytest-modules:
+    needs: workflow-parameters
+    runs-on: ubuntu-latest
+    outputs:
+      test_files: ${{ steps.extract.outputs.test_files }}
+    steps:
+      - name: Extract Test Files from pytest_modules.json
+        id: extract
+        run: |
+          echo "Extracting test files from pytest_modules.json..."
+          TEST_FILES=$( jq -c 'keys' ./pytest_modules.json )
+          echo "test_files=$TEST_FILES" >> $GITHUB_OUTPUT
+
+  outter-matrix:
+    needs: pytest-modules
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test_file: ${{ fromJson(needs.pytest-modules.outputs.test_files) }}
+    steps:
+      - name: Debug - Test File Being Processed
+        run: |
+          echo "Processing test file: ${{ matrix.test_file }}"
