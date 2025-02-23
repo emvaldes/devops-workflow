@@ -65,11 +65,11 @@ jobs:
             --output-filename="${{ inputs.output_filename }}" \
             --scripts-location="${{ inputs.github_action }}" ;
 
-          if ! jq -e . test_functions.json > /dev/null 2>&1; then
-            echo -e "ERROR: test_functions.json is not valid JSON!" ;
-            cat test_functions.json ;
-            exit 1 ;
+          if ! jq -e . ${{ inputs.output_filename }} > /dev/null 2>&1; then
+                  echo -e "ERROR: ${{ inputs.output_filename }} is not valid JSON!" ;
+                  exit 1 ;
+            else  cat ${{ inputs.output_filename }} ;
           fi ;
 
-          TESTS=$( jq -c '.test_functions' test_functions.json ) ;
+          TESTS=$( jq -c '.test_functions' ${{ inputs.output_filename }} ) ;
           echo -e "tests=$TESTS" >> "$GITHUB_OUTPUT" ;
