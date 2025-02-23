@@ -97,13 +97,28 @@ jobs:
           FILE="${{ matrix.test_file }}"
           RAW_JSON='${{ needs.extract-test-files.outputs.test_functions_map }}'
           TEST_FUNCTIONS=$(echo "$RAW_JSON" | jq -r --arg FILE "$FILE" '.[$FILE][]')
-          echo "test_functions=$TEST_FUNCTIONS" >> $GITHUB_ENV
+
+          echo "DEBUG: Extracted test functions for $FILE:"
+          echo "$TEST_FUNCTIONS"
+
+          {
+            echo "test_functions<<EOF"
+            echo "$TEST_FUNCTIONS"
+            echo "EOF"
+          } >> $GITHUB_ENV
 
       - name: Run Pytest Functions in Parallel
         run: |
           set -x
           FILE="${{ matrix.test_file }}"
-          echo "$test_functions" | xargs -I {} -P 4 pytest -v --junitxml=pytest-results-{}.xml "$FILE::{}"
+          echo "DEBUG: Running tests for file: $FILE"
+          echo "DEBUG: Test functions extracted:"
+          echo "$test_functions"
+
+          echo "$test_functions" | while read -r FUNCTION; do
+            echo "Executing pytest for function: $FUNCTION"
+            pytest -v --junitxml=pytest-results-$FUNCTION.xml "$FILE::$FUNCTION"
+          done
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
