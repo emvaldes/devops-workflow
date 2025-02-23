@@ -35,7 +35,7 @@ jobs:
       matrix:
         python-version: ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
         # test_function: ${{ fromJson( inputs.test_functions ) }}
-        test_file: ${{ toJson( fromJson( inputs.test_functions ).test_functions ) }}
+        test_function: ${{ toJson( fromJson( inputs.test_functions ).test_functions ) }}
     steps:
 
       - name: Checkout Repository
@@ -46,7 +46,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # - name: Restore Cached Dependencies
+      # - name: Restore Cached Dependencies (1st. iteration)
       #   uses: actions/cache@v3
       #   with:
       #     path: ~/.cache/pip
@@ -57,8 +57,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: pip-${{ matrix.python-version }}-${{ matrix.test_function.key }}-${{ hashFiles('requirements.txt') }}
-          restore-keys: pip-${{ matrix.python-version }}-${{ matrix.test_function.key }}-
+          key: pip-${{ matrix.python-version }}-${{ matrix.test_function }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: pip-${{ matrix.python-version }}-${{ matrix.test_function }}-
 
       - name: Download requirements.txt
         uses: actions/download-artifact@v4
@@ -85,29 +85,22 @@ jobs:
       #     pytest -v --junitxml=pytest-results.xml \
       #     "${{ inputs.pytests_location }}/test_dependencies.py::${{ matrix.test_function }}" ;
 
-      # - name: Run Pytest Function (2nd. iteration)
-      #   run: |
-      #     FILE="${{ matrix.test_function.key }}"
-      #     TEST_FUNCTION="${{ matrix.test_function.value }}"
-      #     pytest -v --junitxml=pytest-results.xml "${FILE}::${TEST_FUNCTION}"
-
-      - name: Extract Test File
-        id: extract_test_file
-        run: |
-          echo "Extracting test file..."
-          FILES=$(echo '${{ inputs.test_functions }}' | jq -r '.test_functions | keys[]')
-          echo "files=$FILES" >> $GITHUB_ENV
-
       - name: Run Pytest Functions for Each File
         run: |
-          for FILE in $FILES; do
-            TEST_FUNCTIONS=$(echo '${{ inputs.test_functions }}' | jq -r --arg FILE "$FILE" '.test_functions[$FILE][]' | tr '\n' ' ')
-            echo "Running tests in: $FILE"
-            echo "Test functions: $TEST_FUNCTIONS"
-            pytest -v --junitxml=pytest-results.xml $FILE::$(echo $TEST_FUNCTIONS | sed 's/ / ::/g')
-          done
+          FILE="${{ matrix.test_function }}"
+          TEST_FUNCTIONS=$(jq -r --arg FILE "$FILE" '.test_functions[$FILE][]' <<< '${{ inputs.test_functions }}')
 
-      # - name: Upload Test Results
+          if [[ -z "$TEST_FUNCTIONS" ]]; then
+            echo "No test functions found in $FILE. Skipping."
+            exit 0
+          fi
+
+          echo "Running tests in: $FILE"
+          echo "Test functions: $TEST_FUNCTIONS"
+
+          pytest -v --junitxml=pytest-results.xml $FILE::$(echo $TEST_FUNCTIONS | sed 's/ / ::/g')
+
+      # - name: Upload Test Results (1st. iteration)
       #   uses: actions/upload-artifact@v4
       #   with:
       #     name: pytest-results-${{ matrix.python-version }}-${{ matrix.test_function }}
@@ -116,8 +109,14 @@ jobs:
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
         with:
-          name: pytest-results-${{ matrix.python-version }}-${{ matrix.test_function.value }}
+          name: pytest-results-${{ matrix.python-version }}-${{ matrix.test_function }}
           path: pytest-results.xml
+
+      # - name: Debug - List Uploaded Artifacts (1st. iteration)
+      #   run: |
+      #     echo -e "Listing uploaded artifacts..." ;
+      #     find $GITHUB_WORKSPACE -type f -name "*.xml" || echo -e "No test result files found." ;
+      #     echo -e "Checking artifact storage location..." ;
 
       - name: Debug - List Uploaded Artifacts
         run: |

@@ -89,7 +89,7 @@ function extract_pytest_functions () {
             if [[ ${status} -gt 0 ]]; then
                     echo -e "Configuration: '${output_filename}' is not valid JSON object!";
                     exit 1 ;
-              else  jq . ${output_filename}; echo -e;
+              # else  jq . ${output_filename}; echo -e;
             fi ;
 
             # # ## Flatten JSON: Extract functions into a single list
