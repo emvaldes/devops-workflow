@@ -89,10 +89,10 @@ function extract_pytest_functions () {
             if [[ ${status} -gt 0 ]]; then
                     echo -e "Configuration: '${output_filename}' is not valid JSON object!";
                     exit 1 ;
-              else  pytest_modules="pytest_modules.json";
-                    jq . ${output_filename} > ${pytest_modules};
-                    # ls -al ${pytest_modules};
-                    # cat ${pytest_modules};
+              else  pytest_files="pytest_files.json";
+                    jq . ${output_filename} > ${pytest_files};
+                    # ls -al ${pytest_files};
+                    # cat ${pytest>files};
                     # echo -e;
             fi ;
 
