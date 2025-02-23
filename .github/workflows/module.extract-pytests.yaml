@@ -59,11 +59,17 @@ jobs:
       - name: Extract Test Functions
         id: extract
         run: |
-          "${{ inputs.github_action }}/extract-pytest-functions.shell" ;
+
+          ${{ inputs.github_action }}/extract-pytest-functions.shell \
+            --pytests-location="${{ inputs.pytests_location }}" \
+            --output-filename="${{ inputs.output_filename }}" \
+            --scripts-location="${{ inputs.github_action }}" ;
+
           if ! jq -e . test_functions.json > /dev/null 2>&1; then
             echo -e "ERROR: test_functions.json is not valid JSON!" ;
             cat test_functions.json ;
             exit 1 ;
           fi ;
+
           TESTS=$( jq -c '.test_functions' test_functions.json ) ;
           echo -e "tests=$TESTS" >> "$GITHUB_OUTPUT" ;

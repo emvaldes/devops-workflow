@@ -19,8 +19,9 @@ set -o pipefail ;  # Fail if any piped command fails
 
 ## This function expects the name of an associative array as its first argument.
 function validate_input_parameters() {
+    ## tracking_process ${FUNCNAME} "${@}";
 
-    # Combine all arguments into a single string by removing any extra whitespace
+    ## Combine all arguments into a single string by removing any extra whitespace
     local arguments;
     # arguments=$( echo -e "${@}" | tr -d '[[:blank:]]' | sed 's/  */ /g' );
     arguments=$( echo -e "$@" | sed 's/  */ /g' );

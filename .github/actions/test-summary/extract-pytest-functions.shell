@@ -1,7 +1,62 @@
 #!/usr/bin/env bash
 
+## File: .github/actions/test-summary/validate-input-params.shell
+## Version: 0.0.1
+
+# set -x ;
 set -e ;           # Exit on error
 set -o pipefail ;  # Fail if any piped command fails
+
+## extract-pytest-functions \
+##   --pytests-location="tests/package/module" \
+##   --scripts-location=".github/actions/action" \
+##   --output-filename="test_functions.json" \
+##   --dry-run \
+##   --verbose ;
+
+function extract_pytest_functions () {
+    ## tracking_process ${FUNCNAME} "${@}";
+
+    ## Combine all arguments into a single string by removing any extra whitespace
+    local arguments;
+    # arguments=$( echo -e "${@}" | tr -d '[[:blank:]]' | sed 's/  */ /g' );
+    arguments=$( echo -e "$@" | sed 's/  */ /g' );
+
+    oIFS="${IFS}";
+    for xitem in "${@}"; do
+      IFS='='; set `echo -e "${xitem}" | sed -e '1s|^\(-\)\{1,\}||'`
+      [[ ${1#*\--} = "pytests-location" ]] && local pytests_location="${2}";
+      [[ ${1#*\--} = "output-filename" ]] && local output_filename="${2}";
+      [[ ${1#*\--} = "scripts-location" ]] && local scripts_location="${2}";
+      #### ---------------------------------------------------------------------
+      ## [[ ${1#*\--} = "dry-run" ]] && local dry_run="${2}";
+      [[ ${1#*\--} = "verbose" ]] && local verbose='true';
+    done; IFS="${oIFS}";
+    #### -----------------------------------------------------------------------
+    ## [[ ${#dry_run} -eq 0 ]] && local dry_run='false';
+    [[ ${#verbose} -eq 0 ]] && local verbose='false';
+    #### -----------------------------------------------------------------------
+
+    ## Define custom-parameter(s):
+    if [[ ${#pytests_location} -eq 0 ]]; then
+            echo -e "Error: PyTests Location is invalid or not provided!";
+            exit 1;
+            # Ensure the file exists before proceeding
+      else  if [[ ! -e "${pytests_location}" ]]; then
+              echo -e "ERROR: Target location was not found: ${pytests_location}";
+              echo -e '{"test_functions": ["dummy_test_function"]}' > "${output_filename}";
+              exit 1;
+            fi;
+    fi;
+    if [[ ${#scripts_location} -eq 0 ]]; then
+      scripts_location="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
+    fi;
+    if [[ ${#pytests_location} -eq 0 ]]; then
+      local output_filename="test_functions.json";
+    fi;
+
+    # pytests_location="tests/requirements/dependencies/test_dependencies.py" ;
+    echo -e "\nExtracting test functions from: ${pytests_location}";
 
 TEST_FILE="tests/requirements/dependencies/test_dependencies.py" ;
 OUTPUT_FILE="test_functions.json" ;
@@ -55,3 +110,9 @@ fi ;
 echo -e "Extracted test functions saved to: ${OUTPUT_FILE}" ;
 echo -e "Final JSON Output:" ;
 cat "${OUTPUT_FILE}" ;
+
+  echo -e;
+  return 0;
+}; alias extract-pytest-functions='extract_pytest_functions';
+
+extract_pytest_functions ${@};
