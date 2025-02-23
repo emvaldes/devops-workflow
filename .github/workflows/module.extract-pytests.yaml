@@ -85,7 +85,8 @@ jobs:
           if [[ ${status} -gt 0 ]]; then
                   echo -e "Configuration: '${{ inputs.output_filename }}' is not valid JSON object!";
                   exit 1 ;
-            else  cat ${{ inputs.output_filename }} ;
+            else  ls -al ${{ inputs.output_filename }} ;
+                  cat ${{ inputs.output_filename }} ;
           fi ;
 
           TESTS=$( jq -c '.test_functions' ${{ inputs.output_filename }} ) ;

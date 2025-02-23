@@ -91,9 +91,9 @@ function extract_pytest_functions () {
                     exit 1 ;
               else  pytest_modules="pytest_modules.json";
                     jq . ${output_filename} > ./${pytest_modules};
-                    ls -al ./${pytest_modules};
-                    cat ./${pytest_modules};
-                    echo -e;
+                    # ls -al ./${pytest_modules};
+                    # cat ./${pytest_modules};
+                    # echo -e;
             fi ;
 
             # ## Flatten JSON: Extract functions into a single list
@@ -102,9 +102,9 @@ function extract_pytest_functions () {
             jq '{"test_functions": ( .test_functions | map(.[]) | flatten )}' \
                ${output_filename} > temp.json && mv temp.json ${output_filename};
 
-            echo -e "Extracted test functions saved to: ${output_filename}" ;
-            echo -e "Final JSON Output: ";
-            jq . ${output_filename};
+            # echo -e "Extracted test functions saved to: ${output_filename}" ;
+            # echo -e "Final JSON Output: ";
+            # jq . ${output_filename};
 
       else  echo -e "Warning: ${output_filename} is not avilable/missing!";
             exit 1;
