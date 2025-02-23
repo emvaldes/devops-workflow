@@ -98,12 +98,12 @@ jobs:
     steps:
 
       - name: Listing Current Environment Variables
-        id: display_environment
+        id: environment_variables
         run: |
           env | sort ;
 
       - name: Listing Shell/Environment Variables
-        id: display_environment
+        id: shell_variables
         run: |
           set ;
 
