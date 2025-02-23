@@ -65,7 +65,7 @@ function extract_pytest_functions () {
 
     if [[ ${#test_files[@]} -eq 0 ]]; then
             echo -e "ERROR: No test files found in '${pytests_location}'!";
-            echo -e '{"test_functions": ["dummy_test_function"]}' > "${output_filename}";
+            # echo -e '{"test_functions": ["dummy_test_function"]}' > "${output_filename}";
             exit 1;
       # else  for file in ${test_files[@]}; do echo -e "Test File: ${file}"; done;
     fi;
