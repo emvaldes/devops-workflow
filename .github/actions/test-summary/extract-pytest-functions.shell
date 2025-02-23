@@ -3,14 +3,14 @@
 ## File: .github/actions/test-summary/validate-input-params.shell
 ## Version: 0.0.1
 
-set -x ;
+# set -x ;
 set -e ;           # Exit on error
 set -o pipefail ;  # Fail if any piped command fails
 
 ## extract-pytest-functions \
 ##   --pytests-location="tests/package/module" \
-##   --scripts-location=".github/actions/action" \
 ##   --output-filename="test_functions.json" \
+##   --scripts-location=".github/actions/action" \
 ##   --dry-run \
 ##   --verbose ;
 
@@ -58,61 +58,97 @@ function extract_pytest_functions () {
     # pytests_location="tests/requirements/dependencies/test_dependencies.py" ;
     echo -e "\nExtracting test functions from: ${pytests_location}";
 
-TEST_FILE="tests/requirements/dependencies/test_dependencies.py" ;
-OUTPUT_FILE="test_functions.json" ;
+    ## Find all test_*.py files recursively
+    test_files=($(
+      find "${pytests_location}" -type f -name "test_*.py"
+    ));
 
-echo -e "Extracting test functions from: ${TEST_FILE}" ;
+    if [[ ${#test_files[@]} -eq 0 ]]; then
+            echo -e "ERROR: No test files found in '${pytests_location}'!";
+            echo -e '{"test_functions": ["dummy_test_function"]}' > "${output_filename}";
+            exit 1;
+      # else  for file in ${test_files[@]}; do echo -e "Test File: ${file}"; done;
+    fi;
 
-# Ensure the file exists before proceeding
-if [[ ! -f "${TEST_FILE}" ]]; then
-    echo -e "ERROR: Test file not found: ${TEST_FILE}" ;
-    echo -e '{"test_functions": ["dummy_test_function"]}' > "${OUTPUT_FILE}" ;
-    exit 1 ;
-fi ;
+    ## Convert Bash array to a properly formatted JSON array
+    json_list=$( printf '%s\n' "${test_files[@]}" | jq -R . | jq -s . );
+    # echo -e "PyTest files JSON:\n${json_list}\n";
 
-# Run Python script separately and output to JSON file
-python3 <<EOF > "$OUTPUT_FILE"
-import re, json, sys
+    # echo -en "python3 ${scripts_location}/extract-pytest-functions.py ";
+    # echo -e  ${json_list} ${output_filename};
 
-output_file = "$OUTPUT_FILE"
-test_file = "$TEST_FILE"
+    ## Call the external Python script instead of using here-doc
+    python3 ${scripts_location}/extract-pytest-functions.py \
+        "${json_list}" "${output_filename}";
 
-try:
-    with open(test_file, "r", encoding="utf-8") as f:
-        content = f.read()
-        test_functions = re.findall(r'^def (test_[a-zA-Z0-9_]+)', content, re.MULTILINE)
+#
+# TEST_FILE="tests/requirements/dependencies/test_dependencies.py" ;
+# OUTPUT_FILE="test_functions.json" ;
+#
+# echo -e "Extracting test functions from: ${TEST_FILE}" ;
+#
+# # Ensure the file exists before proceeding
+# if [[ ! -f "${TEST_FILE}" ]]; then
+#     echo -e "ERROR: Test file not found: ${TEST_FILE}" ;
+#     echo -e '{"test_functions": ["dummy_test_function"]}' > "${OUTPUT_FILE}" ;
+#     exit 1 ;
+# fi ;
+#
+# # Run Python script separately and output to JSON file
+# python3 <<EOF > "$OUTPUT_FILE"
+# import re, json, sys
+#
+# output_file = "$OUTPUT_FILE"
+# test_file = "$TEST_FILE"
+#
+# try:
+#     with open(test_file, "r", encoding="utf-8") as f:
+#         content = f.read()
+#         test_functions = re.findall(r'^def (test_[a-zA-Z0-9_]+)', content, re.MULTILINE)
+#
+#     test_functions = test_functions if test_functions else ["dummy_test_function"]
+#     json_output = {"test_functions": test_functions}
+#
+#     with open(output_file, "w", encoding="utf-8") as out_f:
+#         json.dump(json_output, out_f, indent=2, ensure_ascii=False, sort_keys=True)
+#
+#     # Print JSON only (No extra text)
+#     print(json.dumps(json_output, indent=2, ensure_ascii=False, sort_keys=True))
+# except Exception as e:
+#     json_output = {"test_functions": ["dummy_test_function"]}
+#
+#     with open(output_file, "w", encoding="utf-8") as out_f:
+#         json.dump(json_output, out_f, indent=2, ensure_ascii=False, sort_keys=True)
+#
+#     # Print fallback JSON only
+#     print(json.dumps(json_output, indent=2, ensure_ascii=False, sort_keys=True))
+# EOF
 
-    test_functions = test_functions if test_functions else ["dummy_test_function"]
-    json_output = {"test_functions": test_functions}
+    ## Validate JSON before proceeding
+    jq -e . ${output_filename} 2>&1>/dev/null;
+    status=$?; #echo -e "Status: ${status}";
+    if [[ ${status} -gt 0 ]]; then
+            echo -e "Configuration: '${output_filename}' is not valid JSON object!";
+            exit 1 ;
+      else  jq . ${output_filename}; echo -e;
+    fi ;
 
-    with open(output_file, "w", encoding="utf-8") as out_f:
-        json.dump(json_output, out_f, indent=2, ensure_ascii=False, sort_keys=True)
+    # ## Flatten JSON: Extract functions into a single list
+    # jq '[.test_functions | to_entries[] | .value[]]' \
+    #    ${output_filename} > temp.json && mv temp.json ${output_filename};
+    jq '{"test_functions": ( .test_functions | map(.[]) | flatten )}' \
+       ${output_filename} > temp.json && mv temp.json ${output_filename};
 
-    # Print JSON only (No extra text)
-    print(json.dumps(json_output, indent=2, ensure_ascii=False, sort_keys=True))
-except Exception as e:
-    json_output = {"test_functions": ["dummy_test_function"]}
+    jq . ${output_filename};
 
-    with open(output_file, "w", encoding="utf-8") as out_f:
-        json.dump(json_output, out_f, indent=2, ensure_ascii=False, sort_keys=True)
+return 0;
 
-    # Print fallback JSON only
-    print(json.dumps(json_output, indent=2, ensure_ascii=False, sort_keys=True))
-EOF
-
-# Validate JSON before proceeding
-if ! jq -e . "$OUTPUT_FILE" > /dev/null 2>&1; then
-    echo -e "ERROR: test_functions.json is not valid JSON!" ;
+    echo -e "Extracted test functions saved to: ${OUTPUT_FILE}" ;
+    echo -e "Final JSON Output:" ;
     cat "${OUTPUT_FILE}" ;
-    exit 1 ;
-fi ;
 
-echo -e "Extracted test functions saved to: ${OUTPUT_FILE}" ;
-echo -e "Final JSON Output:" ;
-cat "${OUTPUT_FILE}" ;
-
-  echo -e;
-  return 0;
+    echo -e;
+    return 0;
 }; alias extract-pytest-functions='extract_pytest_functions';
 
 extract_pytest_functions ${@};

@@ -108,10 +108,9 @@ function validate_input_parameters() {
       fi;
     done;
 
-    if [[ ${invalid_params} == true ]]; then
-      return 1;
-    fi;
+    if [[ ${invalid_params} == true ]]; then return 1; fi;
     echo -e;
+
     return 0;
   }; alias validate-parameters='validate_parameters';
 
