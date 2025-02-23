@@ -37,7 +37,7 @@ jobs:
     steps:
 
       - name: Listing Current Environment Variables
-        id: environment_variables
+        id: current_variables
         run: |
           env | sort ;
 
@@ -52,7 +52,7 @@ jobs:
           echo "GitHub Environment: ${GITHUB_ENV}" ;
 
       - name: Listing GitHub Output Variables
-        id: shell_variables
+        id: github_output
         run: |
           echo "GitHub Environment: ${GITHUB_OUTPUT}" ;
 
