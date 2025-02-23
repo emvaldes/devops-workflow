@@ -34,8 +34,8 @@ jobs:
     strategy:
       matrix:
         python-version: ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
-        # test_function: ${{ fromJson( inputs.test_functions ) }}
-        test_function: ${{ toJson( fromJson( inputs.test_functions ).test_functions ) }}
+        test_function: ${{ fromJson( inputs.test_functions ) }}
+        # test_function: ${{ toJson( fromJson( inputs.test_functions ).test_functions ) }}
     steps:
 
       - name: Checkout Repository
@@ -87,14 +87,20 @@ jobs:
 
       - name: Run Pytest Functions for Each File
         run: |
-
           # Enable Bash debugging (prints every command before execution)
           set -x
 
-          # Extract the test file from the matrix
-          FILE="${{ matrix.test_function }}"
+          # Extract the full JSON object (raw input)
+          RAW_JSON='${{ inputs.test_functions }}'
 
-          # Debugging: Print the test file name
+          # Debug: Show the full JSON input
+          echo "DEBUG: Full JSON input from GitHub Actions:"
+          echo "$RAW_JSON" | jq .
+
+          # Extract test file name from matrix
+          FILE=$(echo "$RAW_JSON" | jq -r 'keys[]')
+
+          # Debug: Show the extracted test file
           echo "DEBUG: Test file to process: $FILE"
 
           # Ensure FILE is not empty
@@ -103,14 +109,10 @@ jobs:
             exit 0
           fi
 
-          # Debugging: Print the raw JSON input
-          echo "DEBUG: Raw JSON input from GitHub Actions:"
-          echo '${{ inputs.test_functions }}'
+          # Extract test functions from JSON using jq
+          TEST_FUNCTIONS=$(echo "$RAW_JSON" | jq -r --arg FILE "$FILE" '.[$FILE] // [] | @sh')
 
-          # Extract test functions using jq, ensuring valid JSON
-          TEST_FUNCTIONS=$(jq -r --arg FILE "$FILE" '.test_functions[$FILE] // [] | @sh' <<< '${{ inputs.test_functions }}')
-
-          # Debugging: Print extracted test functions
+          # Debug: Show extracted test functions
           echo "DEBUG: Extracted test functions for $FILE: $TEST_FUNCTIONS"
 
           # Ensure there are test functions to run
@@ -119,11 +121,12 @@ jobs:
             exit 0
           fi
 
-          # Debugging: Print formatted pytest command before execution
+          # Debug: Show pytest command before execution
           echo "DEBUG: Running command: pytest -v --junitxml=pytest-results.xml $FILE::$(echo "$TEST_FUNCTIONS" | tr ' ' '::')"
 
           # Run pytest on all functions found in the test file
           pytest -v --junitxml=pytest-results.xml "$FILE"::$(echo "$TEST_FUNCTIONS" | tr ' ' '::')
+
 
       # - name: Upload Test Results (1st. iteration)
       #   uses: actions/upload-artifact@v4
