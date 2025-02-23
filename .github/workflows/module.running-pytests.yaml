@@ -23,7 +23,7 @@ jobs:
           "workflow": "module.running-pytests",
           "params": {
             "test_functions": {
-              "PyTest Functions": ${{ inputs.test_functions | toJson }}
+              "PyTest Functions": ${{ toJson( fromJson( inputs.test_functions ) ) }}
             }
           }
         }
