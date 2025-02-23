@@ -25,6 +25,10 @@ on:
 
     outputs:
 
+      pytest_files:
+        description: "Extracted PyTest Modules"
+        value: ${{ jobs.extract-pytests.outputs.pytest_files }}
+
       test_functions:
         description: "Extracted PyTest Functions"
         value: ${{ jobs.extract-pytests.outputs.test_functions }}
