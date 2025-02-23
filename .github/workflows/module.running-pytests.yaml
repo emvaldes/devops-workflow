@@ -50,11 +50,13 @@ jobs:
         id: github_environment
         run: |
           echo "GitHub Environment: ${GITHUB_ENV}" ;
+          cat ${GITHUB_ENV} ;
 
       - name: Listing GitHub Output Variables
         id: github_output
         run: |
           echo "GitHub Environment: ${GITHUB_OUTPUT}" ;
+          cat ${GITHUB_OUTPUT} ;
 
       - name: Extract Test Files from GITHUB_OUTPUT
         id: extract
