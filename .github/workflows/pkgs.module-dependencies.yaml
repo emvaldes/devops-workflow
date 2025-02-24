@@ -40,6 +40,11 @@ on:
       branches:
         - master
 
+env:
+  pytests_location: "${{ github.event.inputs.pytests_location || 'tests/requirements/dependencies' }}"
+  package_location: "${{ github.event.inputs.package_location || 'packages/requirements/dependencies' }}"
+  github_action: "${{ github.event.inputs.github_action || '.github/actions/test-summary' }}"
+
 jobs:
 
   workflow-parameters:
@@ -50,10 +55,7 @@ jobs:
           "workflow": "pkgs.module-dependencies",
           "params": {
             "pytests_location": {
-              "PyTest Location": {
-                  "event": "${{ github.event.inputs.pytests_location }}",
-                  "inputs": "tests/requirements/dependencies"
-                }
+              "PyTest Location": "${{ env.pytests_location }}"
             },
             "package_location": {
               "Package Location": {
