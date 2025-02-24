@@ -14,19 +14,19 @@ on:
         description: "PyTest files Directory"
         required: false
         type: string
-        default: "tests/requirements/dependencies"
+        # default: "tests/requirements/dependencies"
 
       package_location:
         description: "Packages/Modules Directory"
         required: false
         type: string
-        default: "packages/requirements/dependencies"
+        # default: "packages/requirements/dependencies"
 
       github_action:
         description: "Target GitHub-Actions Path"
         required: false
         type: string
-        default: ".github/actions/test-summary"
+        # default: ".github/actions/test-summary"
 
   push:
     branches:
@@ -40,11 +40,6 @@ on:
       branches:
         - master
 
-env:
-  pytests_location: "${{ github.event.inputs.pytests_location || 'tests/requirements/dependencies' }}"
-  package_location: "${{ github.event.inputs.package_location || 'packages/requirements/dependencies' }}"
-  github_action: "${{ github.event.inputs.github_action || '.github/actions/test-summary' }}"
-
 jobs:
 
   workflow-parameters:
@@ -55,18 +50,21 @@ jobs:
           "workflow": "pkgs.module-dependencies",
           "params": {
             "pytests_location": {
-              "PyTest Location": "${{ env.pytests_location }}"
+              "PyTest Location": {
+                  "event": "${{ github.event.inputs.pytests_location }}",
+                  "value": "tests/requirements/dependencies"
+                }
             },
             "package_location": {
               "Package Location": {
                   "event": "${{ github.event.inputs.package_location }}",
-                  "inputs": "packages/requirements/dependencies"
+                  "value": "packages/requirements/dependencies"
                 }
             },
             "github_action": {
               "GitHub Action": {
                   "event": "${{ github.event.inputs.github_action }}",
-                  "inputs": ".github/actions/test-summary"
+                  "value": ".github/actions/test-summary"
                 }
             }
           }

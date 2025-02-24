@@ -7,15 +7,30 @@
 set -e ;           # Exit on error
 set -o pipefail ;  # Fail if any piped command fails
 
-## validate-input-parameters.shell \
-##   --json="{
-##       "workflow": "module.action-target",
-##       "params": {
-##           "title": "github.event.inputs.variable"
-##       }
-##   }" \
-##   --dry-run \
-##   --verbose ;
+## validate-input-parameters.shell --json="{
+##     "workflow": "pkgs.module-dependencies",
+##     "params": {
+##         "param": {
+##             "key": "value"
+##         }
+##     }
+## }" \
+## --dry-run \
+## --verbose ;
+
+## validate-input-parameters.shell --json="{
+##     "workflow": "pkgs.module-dependencies",
+##     "params": {
+##         "param": {
+##             "key": {
+##                 "event": "${{ github.event.inputs.github_action }}",
+##                 "value": ".github/actions/test-summary"
+##             }
+##         }
+##     }
+## }" \
+## --dry-run \
+## --verbose ;
 
 ## This function expects the name of an associative array as its first argument.
 function validate_input_parameters() {
@@ -84,8 +99,8 @@ function validate_input_parameters() {
           # Nested structure: extract the inner object from the single outer key.
           ( .value | to_entries | .[0] ) as $outer |
           ( $outer.value ) as $inner |
-          # If the inner "event" is non-empty, choose it; otherwise, choose "inputs".
-          "\(.key)\t\($outer.key)\t\((if $inner.event != "" then $inner.event else $inner.inputs end))"
+          # If the inner "event" is non-empty, choose it; otherwise, choose "value".
+          "\(.key)\t\($outer.key)\t\((if $inner.event != "" then $inner.event else $inner.value end))"
         else
           "\(.key)\tLiteral\t\(.value)"
         end
