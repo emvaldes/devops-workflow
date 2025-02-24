@@ -92,18 +92,40 @@ function validate_input_parameters() {
     #   | jq -r '.params | to_entries[] | "\(.key)\t\(.value | to_entries[0].key)\t\(.value | to_entries[0].value)"'
     # );
 
+    # mapfile -t lines < <(
+    #   echo "${compressed_json}" | jq -r '
+    #     .params | to_entries[] |
+    #     if (.value | type) == "object" and ((.value | to_entries)[0].value | type) == "object" then
+    #       # Nested structure: extract the inner object from the single outer key.
+    #       ( .value | to_entries | .[0] ) as $outer |
+    #       ( $outer.value ) as $inner |
+    #       # If the inner "event" is non-empty, choose it; otherwise, choose "value".
+    #       "\(.key)\t\($outer.key)\t\((if $inner.event != "" then $inner.event else $inner.value end))"
+    #     else
+    #       "\(.key)\tLiteral\t\(.value)"
+    #     end
+    #   '
+    # )
+
     mapfile -t lines < <(
       echo "${compressed_json}" | jq -r '
         .params | to_entries[] |
-        if (.value | type) == "object" and ((.value | to_entries)[0].value | type) == "object" then
-          # Nested structure: extract the inner object from the single outer key.
-          ( .value | to_entries | .[0] ) as $outer |
-          ( $outer.value ) as $inner |
-          # If the inner "event" is non-empty, choose it; otherwise, choose "value".
-          "\(.key)\t\($outer.key)\t\((if $inner.event != "" then $inner.event else $inner.value end))"
-        else
-          "\(.key)\tLiteral\t\(.value)"
-        end
+        (. as $entry |
+          ($entry.value | to_entries | .[0]) as $temp |
+          $temp.key as $header |
+          $temp.value as $inner |
+          "\($entry.key)\t\($header)\t" +
+          (if ($inner | type) == "object" then
+              (if ($inner | has("event") and $inner.event != "")
+               then $inner.event
+               elif ($inner | has("inputs") and $inner.inputs != "")
+               then $inner.inputs
+               else ""
+               end)
+           else
+              $temp.value
+           end)
+        )
       '
     )
 
