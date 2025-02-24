@@ -52,19 +52,19 @@ jobs:
             "pytests_location": {
               "PyTest Location": {
                   "event": "${{ github.event.inputs.pytests_location }}",
-                  "inputs": "${{ inputs.pytests_location }}"
+                  "inputs": "tests/requirements/dependencies"
                 }
             },
             "package_location": {
               "Package Location": {
                   "event": "${{ github.event.inputs.package_location }}",
-                  "inputs": "${{ inputs.package_location }}"
+                  "inputs": "packages/requirements/dependencies"
                 }
             },
             "github_action": {
               "GitHub Action": {
                   "event": "${{ github.event.inputs.github_action }}",
-                  "inputs": "${{ inputs.github_action }}"
+                  "inputs": ".github/actions/test-summary"
                 }
             }
           }
