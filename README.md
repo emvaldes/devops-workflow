@@ -1,49 +1,84 @@
 # Project Documentation
 
-[![Parallel PyTest - Dependencies (Matrix)](https://github.com/emvaldes/devops-workflow/actions/workflows/pytest.module-matrix.yaml/badge.svg)](https://github.com/emvaldes/devops-workflow/actions/workflows/pytest.module-matrix.yaml)
-
+[![Pipeline - Requirements/Dependencies](https://github.com/emvaldes/devops-workflow/actions/workflows/pkgs.module-dependencies.yaml/badge.svg)](https://github.com/emvaldes/devops-workflow/actions/workflows/pkgs.module-dependencies.yaml)
 ## Project Structure
 
 ```console
 $ ctree ;
-
 ./
-├── .env
+├── .github/
+│   ├── actions/
+│   │   └── test-summary/
+│   │       ├── README.md
+│   │       ├── action.yaml
+│   │       ├── aggregate-pytest-results.shell*
+│   │       ├── extract-pytest-functions.py
+│   │       ├── extract-pytest-functions.shell*
+│   │       ├── inspect-artifacts-state.shell*
+│   │       └── validate-input-params.shell*
+│   ├── legacy/
+│   │   └── module.running-pytests--prototype.yaml
+│   └── workflows/
+│       ├── debug-extracted-pytests.log
+│       ├── extract-pytests.log
+│       ├── module.aggregate-results.yaml
+│       ├── module.execute-module.yaml
+│       ├── module.extract-pytests.yaml
+│       ├── module.install-packages.yaml
+│       ├── module.running-pytests.yaml
+│       ├── module.validate-parameters.yaml
+│       ├── pkgs.module-dependencies.yaml
+│       ├── pkgs.module-tracing.yaml
+│       ├── pytest.module-matrix.yaml
+│       ├── pytest_files.log
+│       └── running-pytests.log
 ├── .gitignore
-├── .outputs/
-│   ├── output-console.log
-│   └── output-logfile.log
-├── .project/
-│   ├── chatgpt-requests.log
-│   ├── project-instructions.log
-│   └── project-objectives.log
 ├── .pytest_cache/
 │   ├── .gitignore
 │   ├── CACHEDIR.TAG
 │   ├── README.md
 │   └── v/
 │       └── cache/
-│           ├── lastfailed
 │           ├── nodeids
 │           └── stepwise
+├── .vars
 ├── LICENSE
 ├── README.md
 ├── configs/
-│   ├── .env.header
 │   ├── default-params.json
 │   ├── project-params.json
 │   └── runtime-params.json
+├── docs/
+│   ├── appflow_tracer/
+│   │   ├── tracer.console
+│   │   └── tracing/
+│   │       ├── test_file_utils.console
+│   │       ├── test_log_utils.console
+│   │       ├── test_serialize_utils.console
+│   │       ├── test_trace_utils.console
+│   │       ├── test_tracing.console
+│   │       └── tracing.console
+│   ├── requirements/
+│   │   └── dependencies/
+│   │       ├── dependencies.console
+│   │       └── test_dependencies.console
+│   ├── scripts/
+│   │   ├── devops-workflow.console
+│   │   └── testing.console
+│   ├── test_appflow_tracer.console
+│   └── test_packages.console
 ├── lib/
 │   ├── __init__.py
-│   ├── accesstoken_expiration.py
-│   ├── argument_parser.py
-│   ├── configure_params.py
-│   ├── manage_accesstoken.py
-│   ├── parsing_userinput.py
-│   ├── pkgconfig_loader.py
-│   ├── system_params.py
-│   ├── system_variables.py
-│   └── timezone_localoffset.py
+│   ├── accesstoken_expiration.py*
+│   ├── argument_parser.py*
+│   ├── configure_params.py*
+│   ├── manage_accesstoken.py*
+│   ├── module.extract-pytests--prototype.yaml
+│   ├── parsing_userinput.py*
+│   ├── pkgconfig_loader.py*
+│   ├── system_params.py*
+│   ├── system_variables.py*
+│   └── timezone_localoffset.py*
 ├── packages/
 │   ├── __init__.py
 │   ├── appflow_tracer/
@@ -53,62 +88,56 @@ $ ctree ;
 │   │   ├── __main__.py
 │   │   ├── lib/
 │   │   │   ├── __init__.py
-│   │   │   ├── file_utils.py
-│   │   │   ├── log_utils.py
-│   │   │   ├── serialize_utils.py
-│   │   │   └── trace_utils.py
+│   │   │   ├── file_utils.py*
+│   │   │   ├── log_utils.py*
+│   │   │   ├── serialize_utils.py*
+│   │   │   └── trace_utils.py*
 │   │   ├── pyproject.toml
-│   │   ├── setup.py
-│   │   ├── tracer.console
-│   │   ├── tracing.console
+│   │   ├── setup.py*
 │   │   ├── tracing.json
-│   │   └── tracing.py
+│   │   └── tracing.py*
 │   └── requirements/
 │       ├── README.md
 │       ├── __init__.py
 │       ├── __main__.py
-│       ├── dependencies.console
+│       ├── dependencies.doc
 │       ├── dependencies.json
-│       ├── dependencies.py
+│       ├── dependencies.py*
 │       ├── installed.json
 │       └── requirements.json
-├── run.py
+├── run.py*
 ├── scripts/
-│   ├── devops-workflow.log
 │   ├── devops-workflow.py*
-│   ├── testing.console
 │   ├── testing.json
-│   └── testing.py
+│   └── testing.py*
 └── tests/
     ├── __init__.py
-    └── appflow_tracer/
-        ├── __init__.py
-        ├── test_appflow_tracer.output
-        └── tracing/
-            ├── __init__.py
-            ├── file_utils/
-            │   ├── __init__.py
-            │   ├── test_file_utils.json
-            │   ├── test_file_utils.output
-            │   └── test_file_utils.py
-            ├── log_utils/
-            │   ├── __init__.py
-            │   ├── test_log_utils.json
-            │   ├── test_log_utils.output
-            │   └── test_log_utils.py
-            ├── serialize_utils/
-            │   ├── test_serialize_utils.json
-            │   ├── test_serialize_utils.output
-            │   └── test_serialize_utils.py
-            ├── test_tracing.json
-            ├── test_tracing.output
-            ├── test_tracing.py
-            └── trace_utils/
-                ├── test_trace_utils.json
-                ├── test_trace_utils.output
-                └── test_trace_utils.py
+    ├── appflow_tracer/
+    │   ├── __init__.py
+    │   └── tracing/
+    │       ├── __init__.py
+    │       ├── file_utils/
+    │       │   ├── __init__.py
+    │       │   ├── test_file_utils.json
+    │       │   └── test_file_utils.py*
+    │       ├── log_utils/
+    │       │   ├── __init__.py
+    │       │   ├── test_log_utils.json
+    │       │   └── test_log_utils.py*
+    │       ├── serialize_utils/
+    │       │   ├── test_serialize_utils.json
+    │       │   └── test_serialize_utils.py*
+    │       ├── test_tracing.json
+    │       ├── test_tracing.py*
+    │       └── trace_utils/
+    │           ├── test_trace_utils.json
+    │           └── test_trace_utils.py*
+    └── requirements/
+        └── dependencies/
+            ├── test_dependencies.json
+            └── test_dependencies.py*
 
-20 directories, 80 files
+31 directories, 100 files
 ```
 
 ## Overview
