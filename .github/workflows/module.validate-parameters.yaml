@@ -44,5 +44,5 @@ jobs:
 
           echo -e ${{ toJson( inputs.workflow_inputs ) }} ;
 
-          ${{ env.github_action }}/validate-input-params.shell \
+          ${{ env.github_action }}/validate-input-parameters.shell \
           --json=${{ toJson( inputs.workflow_inputs ) }} ;

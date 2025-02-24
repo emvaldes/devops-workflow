@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-## File: .github/actions/test-summary/validate-input-params.shell
+## File: .github/actions/test-summary/validate-input-parameters.shell
 ## Version: 0.0.1
 
 # set -x ;
 set -e ;           # Exit on error
 set -o pipefail ;  # Fail if any piped command fails
 
-## validate_input_parameters \
+## validate-input-parameters.shell \
 ##   --json="{
 ##       "workflow": "module.action-target",
 ##       "params": {
@@ -72,10 +72,25 @@ function validate_input_parameters() {
 
     # We'll get all parameter data into an array.
     local lines
+    # mapfile -t lines < <(
+    #   echo "${compressed_json}" \
+    #   | jq -r '.params | to_entries[] | "\(.key)\t\(.value | to_entries[0].key)\t\(.value | to_entries[0].value)"'
+    # );
+
     mapfile -t lines < <(
-      echo "${compressed_json}" \
-      | jq -r '.params | to_entries[] | "\(.key)\t\(.value | to_entries[0].key)\t\(.value | to_entries[0].value)"'
-    );
+      echo "${compressed_json}" | jq -r '
+        .params | to_entries[] |
+        if (.value | type) == "object" and ((.value | to_entries)[0].value | type) == "object" then
+          # Nested structure: extract the inner object from the single outer key.
+          ( .value | to_entries | .[0] ) as $outer |
+          ( $outer.value ) as $inner |
+          # If the inner "event" is non-empty, choose it; otherwise, choose "inputs".
+          "\(.key)\t\($outer.key)\t\((if $inner.event != "" then $inner.event else $inner.inputs end))"
+        else
+          "\(.key)\tLiteral\t\(.value)"
+        end
+      '
+    )
 
     # First pass: determine the maximum length of the left-hand side, i.e. "workflow[id]".
     local max_len=0;
