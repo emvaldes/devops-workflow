@@ -28,14 +28,17 @@ on:
         type: string
         default: ".github/actions/test-summary"
 
-push:
-  branches:
-    - master
-    - functional
+  push:
+    branches:
+      - master
+      - functional
+    paths:
+      - .github/workflows/**
+      - .github/actions/**
 
-pull_request:
-  branches:
-    - master
+    pull_request:
+      branches:
+        - master
 
 env:
   github_actions: "${{ github.workspace }}/.github/actions"

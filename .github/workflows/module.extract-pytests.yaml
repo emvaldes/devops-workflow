@@ -33,14 +33,17 @@ on:
         description: "Extracted PyTest Functions"
         value: ${{ jobs.extract-pytests.outputs.test_functions }}
 
-push:
-  branches:
-    - master
-    - functional
+  push:
+    branches:
+      - master
+      - functional
+    paths:
+      - .github/workflows/**
+      - .github/actions/**
 
-pull_request:
-  branches:
-    - master
+    pull_request:
+      branches:
+        - master
 
 jobs:
 

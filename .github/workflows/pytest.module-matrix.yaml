@@ -35,14 +35,17 @@ on:
         description: "Providing PyTest Results Aggregation status"
         value: ${{ jobs.workflow-completed.outputs.aggregated_results }}
 
-push:
-  branches:
-    - master
-    - functional
+  push:
+    branches:
+      - master
+      - functional
+    paths:
+      - .github/workflows/**
+      - .github/actions/**
 
-pull_request:
-  branches:
-    - master
+    pull_request:
+      branches:
+        - master
 
 jobs:
 
