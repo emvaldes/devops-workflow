@@ -45,24 +45,24 @@ on:
 
 jobs:
 
-  # workflow-parameters:
-  #   uses: ./.github/workflows/module.validate-parameters.yaml
-  #   with:
-  #     workflow_inputs: |
-  #       {
-  #         "workflow": "pkgs.module-dependencies",
-  #         "params": {
-  #           "pytests_location": {
-  #             "PyTest Location": "${{ inputs.pytests_location }}"
-  #           },
-  #           "package_location": {
-  #             "Package Location": "${{ inputs.package_location }}"
-  #           },
-  #           "github_action": {
-  #             "GitHub Action": "${{ inputs.github_action }}"
-  #           }
-  #         }
-  #       }
+  workflow-parameters:
+    uses: ./.github/workflows/module.validate-parameters.yaml
+    with:
+      workflow_inputs: |
+        {
+          "workflow": "pkgs.module-dependencies",
+          "params": {
+            "pytests_location": {
+              "PyTest Location": "${{ inputs.pytests_location }}"
+            },
+            "package_location": {
+              "Package Location": "${{ inputs.package_location }}"
+            },
+            "github_action": {
+              "GitHub Action": "${{ inputs.github_action }}"
+            }
+          }
+        }
 
   install-packages:
     needs: workflow-parameters
