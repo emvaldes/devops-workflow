@@ -34,13 +34,14 @@ on:
         type: string
         default: ".github/actions/test-summary"
 
-# push:
-#   branches:
-#     - master
-#
-# pull_request:
-#   branches:
-#     - master
+push:
+  branches:
+    - master
+    - functional
+
+pull_request:
+  branches:
+    - master
 
 env:
   github_actions: "${{ github.workspace }}/.github/actions"

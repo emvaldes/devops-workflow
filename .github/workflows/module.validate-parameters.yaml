@@ -13,6 +13,15 @@ on:
         required: true
         type: string
 
+push:
+  branches:
+    - master
+    - functional
+
+pull_request:
+  branches:
+    - master
+
 env:
   github_actions: "${{ github.workspace }}/.github/actions"
 
