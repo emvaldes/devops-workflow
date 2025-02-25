@@ -168,15 +168,16 @@ function validate_input_parameters() {
       done; echo -e;
     fi;
 
-    # **Construct JSON Output**
-    json_output="{\"workflow\":\"${workflow_name}\",\"params\":{";
+    ## **Construct JSON Output**
+    # json_output="{\"workflow\":\"${workflow_name}\",\"params\":{";
+    json_output="{"
     first=true;
     for key in "${!report_json[@]}"; do
       [[ $first == false ]] && json_output+=",";
       json_output+="\"$key\":\"${report_json[$key]}\"";
       first=false;
     done;
-    json_output+="}}";
+    json_output+="}";
 
     # Output transformed JSON
     jq . <<< "${json_output}";
