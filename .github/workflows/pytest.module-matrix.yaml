@@ -30,10 +30,11 @@ on:
         type: string
         default: "artifacts"
 
-    outputs:
-      aggregated_results:
-        description: "Providing PyTest Results Aggregation status"
-        value: ${{ needs.aggregating-pytests.outputs.aggregated_results }}
+    # outputs:
+    #   aggregated_results:
+    #     description: "Providing PyTest Results Aggregation status"
+    #     value: ${{ needs.aggregating-pytests.outputs.aggregated_results }}
+
   # push:
   #   branches:
   #     - master
