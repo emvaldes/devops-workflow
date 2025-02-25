@@ -26,7 +26,7 @@ on:
 
 jobs:
 
-  workflow-parameters:
+  workflow:
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: |
@@ -40,8 +40,21 @@ jobs:
           }
         }
 
+  testing:
+    needs: workflow
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Testing Workflow Parameters
+        id: workflow_parameters
+        run: |
+
+          echo "From JSON: ${{ fromJson( needs.workflow.outputs.validated ).package_location }}"
+          echo "Parsed: $( echo '${{ needs.workflow.outputs.validated }}' | jq .package_location )"
+          echo "Extracted: $( echo '${{ needs.workflow.outputs.validated }}' | jq .package_location )"
+
   install-packages:
-    needs: workflow-parameters
+    needs: workflow
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -68,7 +81,9 @@ jobs:
 
       - name: Generate requirements.txt from JSON
         run: |
-          PACKAGE_PARENT_DIR="$( dirname ${{ inputs.package_location }} )";
+          PACKAGE_PARENT_DIR="$(
+            dirname ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
+          )";
           jq -r '
             .dependencies[] |
             if .version.target then

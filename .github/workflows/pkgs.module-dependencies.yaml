@@ -76,18 +76,16 @@ jobs:
         id: workflow_parameters
         run: |
 
-          echo "From JSON: ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}"
+          echo "From JSON: ${{ fromJson( needs.workflow.outputs.validated ).package_location }}"
           echo "Parsed: $( echo '${{ needs.workflow.outputs.validated }}' | jq .package_location )"
           echo "Extracted: $( echo '${{ needs.workflow.outputs.validated }}' | jq .package_location )"
-
-          exit 1 ;
 
   install-packages:
     needs: workflow
     uses: ./.github/workflows/module.install-packages.yaml
     with:
       package_location: >
-        ${{ needs.workflow.outputs.validated.package_location }}
+        ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
 
   pytest-module:
     needs: install-packages
