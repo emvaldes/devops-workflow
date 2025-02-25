@@ -30,7 +30,7 @@ jobs:
   validate-parameters:
     runs-on: ubuntu-latest
     outputs:
-      validated: ${{ steps.set-params.outputs.validate_parameters }}
+      validated: ${{ steps.validate_parameters.outputs.validated }}
     steps:
 
       - name: Checkout Repository
@@ -46,10 +46,10 @@ jobs:
 
           set -x ;
 
-          echo -e ${{ toJson( inputs.workflow_inputs ) }} ;
           validated_parameters=$(
             ${{ env.github_action }}/validate-input-parameters.shell \
             --json='${{ inputs.workflow_inputs }}'
           ) ;
-          echo "Validated Params:\n${validated_parameters}" ;
-          echo "validated_params=$( jq -c . <<< "${validated_parameters}" )" >> "$GITHUB_OUTPUT" ;
+          validated="$( jq -c . <<< "${validated_parameters}" )"
+          echo "Validated Params:\n${validated}" ;
+          echo "validated=$validated" >> "$GITHUB_OUTPUT" ;
