@@ -76,9 +76,10 @@ jobs:
         id: workflow_parameters
         run: |
 
-          set -x ;
-          echo -e "First: ${{ needs.workflow.outputs.validated.package_location }}" ;
-          echo -e "Second: ${{ toJson( needs.workflow.outputs.validated ).package_location }}" ;
+          echo "From JSON: ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}"
+          echo "Parsed: $( echo '${{ needs.workflow.outputs.validated }}' | jq .package_location )"
+          echo "Extracted: $( echo '${{ needs.workflow.outputs.validated }}' | jq .package_location )"
+
           exit 1 ;
 
   install-packages:
