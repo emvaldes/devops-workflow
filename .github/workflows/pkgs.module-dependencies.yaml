@@ -74,7 +74,10 @@ jobs:
       - name: Debug Validated Params
         run: |
 
-          echo "VALIDATED PARAMS: ${{ needs.workflow-parameters.outputs.validated }}"
+          # echo "VALIDATED PARAMS: ${{ needs.workflow-parameters.outputs.validated }}"
+          echo "DEBUGGING VALIDATED PARAMS:"
+          echo "Raw: ${{ needs.workflow-parameters.outputs.validated }}"
+          echo "Parsed: $(echo '${{ needs.workflow-parameters.outputs.validated }}' | jq .)"
 
   install-packages:
     needs: workflow-parameters
