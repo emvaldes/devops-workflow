@@ -50,8 +50,6 @@ jobs:
         shell: bash
         run: |
 
-          set -x ;
-
           validated=$(
             ${{ env.github_action }}/validate-parameters.shell \
             --json='${{ inputs.workflow_inputs }}'
