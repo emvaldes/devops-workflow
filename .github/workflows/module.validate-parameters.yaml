@@ -44,6 +44,8 @@ jobs:
         shell: bash
         run: |
 
+          set -x ;
+
           echo -e ${{ toJson( inputs.workflow_inputs ) }} ;
           validated_parameters=$(
             ${{ env.github_action }}/validate-input-parameters.shell \
