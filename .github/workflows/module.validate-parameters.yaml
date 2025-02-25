@@ -17,7 +17,7 @@ on:
 
       params:
         description: "Validated JSON parameters"
-        value: ${{ jobs.validate-parameters.outputs.validated }}
+        value: ${{ fromJson( jobs.validate-parameters.outputs.validated ) }}
 
   # push:
   #   branches:
