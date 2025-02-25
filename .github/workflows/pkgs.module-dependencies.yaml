@@ -86,8 +86,8 @@ jobs:
           echo "To/From JSON: ${{ toJson( fromJson( needs.workflow-parameters.outputs.validated ) ).pytests_location }}"
           echo "From/To JSON: ${{ fromJson( toJson( needs.workflow-parameters.outputs.validated ) ).pytests_location }}"
 
-          echo "Parsed: $( echo '${{ needs.workflow-parameters.outputs.validated }}' | jq .params.package_location )"
-          echo "Extracted: $( echo '${{ needs.workflow-parameters.outputs.validated }}' | jq .params.package_location )"
+          echo "Parsed: $( echo '${{ needs.workflow-parameters.outputs.validated }}' | jq .package_location )"
+          echo "Extracted: $( echo '${{ needs.workflow-parameters.outputs.validated }}' | jq .package_location )"
 
   install-packages:
     needs: workflow-parameters
