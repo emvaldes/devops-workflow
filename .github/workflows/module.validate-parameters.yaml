@@ -30,7 +30,7 @@ jobs:
   validate-parameters:
     runs-on: ubuntu-latest
     outputs:
-      validated_params: ${{ steps.set-params.outputs.validated_params }}
+      validated: ${{ steps.set-params.outputs.validate_parameters }}
     steps:
 
       - name: Checkout Repository

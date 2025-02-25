@@ -72,7 +72,7 @@ jobs:
     uses: ./.github/workflows/module.install-packages.yaml
     with:
       # package_location: ${{ inputs.package_location }}
-      package_location: ${{ fromJson( needs.workflow-parameters.outputs.validated_params ).package_location }}
+      package_location: ${{ fromJson( needs.workflow-parameters.outputs.validated ).package_location }}
 
   pytest-module:
     needs: install-packages
@@ -80,8 +80,8 @@ jobs:
     with:
       # pytests_location: ${{ inputs.pytests_location }}
       # package_location: ${{ inputs.package_location }}
-      pytests_location: ${{ fromJson( needs.workflow-parameters.outputs.validated_params ).pytests_location }}
-      package_location: ${{ fromJson( needs.workflow-parameters.outputs.validated_params ).package_location }}
+      pytests_location: ${{ fromJson( needs.workflow-parameters.outputs.validated ).pytests_location }}
+      package_location: ${{ fromJson( needs.workflow-parameters.outputs.validated ).package_location }}
 
   execute-module:
     needs: pytest-module
@@ -89,7 +89,7 @@ jobs:
     uses: ./.github/workflows/module.execute-module.yaml
     with:
       # package_location: ${{ inputs.package_location }}
-      package_location: ${{ fromJson( needs.workflow-parameters.outputs.validated_params ).package_location }}
+      package_location: ${{ fromJson( needs.workflow-parameters.outputs.validated ).package_location }}
 
   workflow-completed:
     needs: execute-module
