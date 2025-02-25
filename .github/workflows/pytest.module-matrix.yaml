@@ -78,8 +78,21 @@ jobs:
           }
         }
 
-  extracting-pytests:
+  testing:
     needs: workflow
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Testing Workflow Parameters
+        id: workflow_parameters
+        run: |
+
+          echo "From JSON: ${{ fromJson( needs.workflow.outputs.validated ).package_location }}"
+          echo "Parsed: $( echo '${{ needs.workflow.outputs.validated }}' | jq .package_location )"
+          echo "Extracted: $( echo '${{ needs.workflow.outputs.validated }}' | jq .package_location )"
+
+  extracting-pytests:
+    needs: [workflow, testing]
     uses: ./.github/workflows/module.extract-pytests.yaml
     with:
       github_action: >

@@ -81,7 +81,7 @@ jobs:
           echo "Extracted: $( echo '${{ needs.workflow.outputs.validated }}' | jq .package_location )"
 
   install-packages:
-    needs: workflow
+    needs: [workflow, testing]
     uses: ./.github/workflows/module.install-packages.yaml
     with:
       package_location: >

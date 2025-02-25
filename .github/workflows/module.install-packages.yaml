@@ -54,7 +54,7 @@ jobs:
           echo "Extracted: $( echo '${{ needs.workflow.outputs.validated }}' | jq .package_location )"
 
   install-packages:
-    needs: workflow
+    needs: [workflow, testing]
     runs-on: ubuntu-latest
     strategy:
       matrix:
