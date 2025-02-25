@@ -49,7 +49,8 @@ function validate_input_parameters() {
               key="${arg%%=*}"; value="${arg#*=}";
               if [[ "${key}" != "${value}" ]]; then
                       if jq -e . <<< "${value}" &>/dev/null; then
-                        value=$(jq -c . <<< "$value");
+                              value=$( jq -c . <<< "${value}" );
+                        else  echo -e "Invalid JSON:\n${value}";
                       fi;
                 else  value='';
               fi;
@@ -64,7 +65,13 @@ function validate_input_parameters() {
       IFS='=' read -r key value <<< "$(
         echo -e "${xitem}" | sed -e '1s|^\(-\)\{1,\}||'
       )"; #echo -e "\nxitem: '${xitem}'\nkey: '${key}'\t->\tvalue: '${value}'";
-      [[ $key == "json" ]] && local json_object="${value}"
+      if [[ $key == "json" ]]; then
+        local json_object="$(
+          echo -e "${value}" \
+          | sed 's/^[ \t]*//;s/[ \t]*$//' \
+          | tr -d '\n\r' | jq -c .
+        )";
+      fi;
       #### ---------------------------------------------------------------------
       ## $key == "dry-run" ]] && local dry_run=true;
       [[ $key == "verbose" ]] && local verbose=true
