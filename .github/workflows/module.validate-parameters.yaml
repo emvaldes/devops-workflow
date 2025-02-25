@@ -13,10 +13,11 @@ on:
         required: true
         type: string
 
-      outputs:
-        validated:
-          description: "Validated JSON parameters"
-          value: ${{ jobs.validate-parameters.outputs.validated }}
+    outputs:
+
+      validated:
+        description: "Validated JSON parameters"
+        value: ${{ jobs.validate-parameters.outputs.validated }}
 
   # push:
   #   branches:
