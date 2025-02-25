@@ -84,7 +84,7 @@ jobs:
     uses: ./.github/workflows/module.install-packages.yaml
     with:
       # package_location: ${{ inputs.package_location }}
-      package_location: ${{ fromJson( needs.workflow-parameters.outputs.validated ).package_location }}
+      package_location: ${{ fromJson( toJson( needs.workflow-parameters.outputs.validated ) ).package_location }}
 
   pytest-module:
     needs: install-packages
