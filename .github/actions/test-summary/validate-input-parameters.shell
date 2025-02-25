@@ -171,7 +171,8 @@ function validate_input_parameters() {
       [[ $first == false ]] && json_output+=",";
       ## **Trim spaces from param_value**
       value=$(
-        echo "${report_json[$key]}" | sed 's/^ *//;s/ *$//' | tr -d '\n\r'
+        echo -e "${report_json[$key]}" \
+        | sed 's/^ *//;s/ *$//' | tr -d '\n\r'
       );
       json_output+="\"$key\":\"${value}\"";
       first=false;
