@@ -74,10 +74,10 @@ jobs:
       - name: Debug Validated Params
         run: |
 
-          # echo "VALIDATED PARAMS: ${{ needs.workflow-parameters.outputs.validated }}"
           echo "DEBUGGING VALIDATED PARAMS:"
           echo "Raw: ${{ needs.workflow-parameters.outputs.validated }}"
           echo "Property: ${{ needs.workflow-parameters.outputs.validated.package_location }}"
+          echo "To JSON: ${{ toJson( needs.workflow-parameters.outputs.validated ).pytests_location }}"
           echo "Parsed: $(echo '${{ needs.workflow-parameters.outputs.validated }}' | jq .)"
 
   install-packages:
