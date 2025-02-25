@@ -54,12 +54,33 @@ jobs:
             ${{ env.github_action }}/validate-input-parameters.shell \
             --json='${{ inputs.workflow_inputs }}'
           ) ;
-          echo -e "Validated Parameters:\n${validated_parameters}" ;
-          jq -e . <<< "${validated_parameters}" ;
-          jq -c . <<< "${validated_parameters}" ;
 
-          if jq -e . <<< "${validated_parameters}" &>/dev/null; then
-                  validated="$( jq -c . <<< "${validated_parameters}" )" ;
-                  echo "validated=$validated" >> "$GITHUB_OUTPUT" ;
-            else  echo -e "Warning: Invalid JSON Parameters" ;
-          fi;
+          ## 🔍 Debug - Print Exactly What is Stored
+          echo "Raw Validated Parameters:"
+          echo "$validated_parameters" | cat -A  # Shows hidden characters like \r or \n
+          echo "--------------------------------"
+
+          ## 🛠 Ensure JSON is Valid BEFORE Processing
+          if ! jq -e . <<< "$validated_parameters" &>/dev/null; then
+            echo "ERROR: JSON is invalid!"
+            exit 1
+          fi
+
+          ## ✅ If JSON is Valid, Store Processed Output
+          validated="$( jq -c . <<< "$validated_parameters" )"
+
+          ## 🔍 Print Parsed JSON
+          echo "Processed JSON: $validated"
+
+          ## ✅ Save Output to GITHUB_OUTPUT
+          echo "validated=$validated" >> "$GITHUB_OUTPUT"
+
+          # echo -e "Validated Parameters:\n${validated_parameters}" ;
+          # jq -e . <<< "${validated_parameters}" ;
+          # jq -c . <<< "${validated_parameters}" ;
+          #
+          # if jq -e . <<< "${validated_parameters}" &>/dev/null; then
+          #         validated="$( jq -c . <<< "${validated_parameters}" )" ;
+          #         echo "validated=$validated" >> "$GITHUB_OUTPUT" ;
+          #   else  echo -e "Warning: Invalid JSON Parameters" ;
+          # fi;
