@@ -82,12 +82,10 @@ jobs:
     needs: workflow
     uses: ./.github/workflows/module.extract-pytests.yaml
     with:
-      github_action: ${{
-        fromJson( needs.workflow.outputs.validated ).github_action
-      }}
-      pytests_location: ${{
-        fromJson( needs.workflow.outputs.validated ).pytests_location
-      }}
+      github_action: >
+        ${{ fromJson( needs.workflow.outputs.validated ).github_action }}
+      pytests_location: >
+        ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
 
   running-pytests:
     needs: extracting-pytests
