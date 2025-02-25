@@ -51,7 +51,8 @@ jobs:
             --json='${{ inputs.workflow_inputs }}'
           ) ;
 
-          validated="$( jq -c . <<< "${validated_parameters}" )" ;
-          echo "Validated Params:\n${validated}" ;
-
-          echo "validated=$validated" | tee -a "$GITHUB_OUTPUT" ;
+          if jq -e . <<< "${validated_parameters}" &>/dev/null; then
+            validated="$( jq -c . <<< "${validated_parameters}" )" ;
+            echo "Validated Params:\n${validated}" ;
+            echo "validated=$validated" >> "$GITHUB_OUTPUT" ;
+          fi;
