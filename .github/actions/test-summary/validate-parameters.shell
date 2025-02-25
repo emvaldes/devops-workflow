@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-## File: .github/actions/test-summary/validate-input-parameters.shell
+## File: .github/actions/test-summary/validate-parameters.shell
 ## Version: 0.0.1
 
 # set -x ;
 set -e ;           # Exit on error
 set -o pipefail ;  # Fail if any piped command fails
 
-## validate-input-parameters.shell --json="{
+## validate-parameters.shell --json="{
 ##     "workflow": "pkgs.module-dependencies",
 ##     "params": {
 ##         "param": {
@@ -19,7 +19,7 @@ set -o pipefail ;  # Fail if any piped command fails
 ## --verbose \
 ## --debug ;
 
-## validate-input-parameters.shell --json="{
+## validate-parameters.shell --json="{
 ##     "workflow": "pkgs.module-dependencies",
 ##     "params": {
 ##         "param": {
@@ -36,28 +36,14 @@ set -o pipefail ;  # Fail if any piped command fails
 ## --debug ;
 
 ## This function expects the name of an associative array as its first argument.
-function validate_input_parameters() {
+function validate_parameters() {
     ## tracking_process ${FUNCNAME} "${@}";
 
-    ## Handling JSON parameters (agnostic implementation)
-    declare -a parameters=();
-    local current="";
-    local regex='^-{1,}[A-Za-z0-9_-]+(=.*)?$';
-    for arg in "$@"; do
-      if [[ "${arg}" =~ ${regex} ]]; then
-              [[ -n "${current}" ]] && parameters+=( "${current}" );
-              key="${arg%%=*}"; value="${arg#*=}";
-              if [[ "${key}" != "${value}" ]]; then
-                      if jq -e . <<< "${value}" &>/dev/null; then
-                        value=$(jq -c . <<< "$value");
-                      fi;
-                else  value='';
-              fi;
-              key="$( sed -e '1s|^\(-\)\{1,\}||' <<< "${arg%%=*}" )";
-              current="${key}=${value}";
-        else  current+=" ${arg}";
-      fi;
-    done; [[ -n "${current}" ]] && parameters+=( "${current}" );
+    script_dirname="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
+    # read -ra parameters <<< "$( sanitize_parameters "${@}" )";
+    # ✅ Capture output of sanitize_parameters as an array (preserving spaces)
+    mapfile -t parameters < <( ${script_dirname}/sanitize-parameters.shell "${@}" );
+    # echo -e; for param in "${parameters[@]}"; do echo -e "Parameter: ${param}"; done;
 
     oIFS="${IFS}";
     for xitem in "${parameters[@]}"; do
@@ -185,4 +171,4 @@ function validate_input_parameters() {
     return 0;
   }; alias validate-parameters='validate_parameters';
 
-validate_input_parameters "${@}";
+validate_parameters "${@}";

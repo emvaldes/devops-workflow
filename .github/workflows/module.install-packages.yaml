@@ -35,7 +35,7 @@ jobs:
           "params": {
             "package_location": {
               "id": "Package Location",
-              "value": "${{ inputs.package_location }}"
+              "value": "${{inputs.package_location}}"
             }
           }
         }
