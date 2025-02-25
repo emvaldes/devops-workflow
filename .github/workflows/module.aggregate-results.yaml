@@ -38,7 +38,7 @@ on:
 
 jobs:
 
-  workflow-parameters:
+  workflow:
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: |
@@ -49,15 +49,27 @@ jobs:
               "id": "GitHub Action",
               "value": "${{ inputs.github_action }}"
             },
-            "github_action": {
+            "artifacts_location": {
               "id": "Artifacts Location",
               "value": "${{ inputs.artifacts_location }}"
             }
           }
         }
 
+  testing:
+    needs: workflow
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Testing Workflow Parameters
+        id: workflow_parameters
+        run: |
+
+          echo "GitHub Action: ${{ fromJson( needs.workflow.outputs.validated ).github_action }}"
+          echo "Artifacts Location: ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}"
+
   aggregate-pytest-results:
-    needs: workflow-parameters
+    needs: [workflow, testing]
     runs-on: ubuntu-latest
     outputs:
       aggregated_results: "true"
@@ -73,21 +85,17 @@ jobs:
         id: checkout_repository
         uses: actions/checkout@v4
 
-      - name: Ensure Script is Executable
-        id: executable_script
-        run: |
-          chmod +x ${{ inputs.github_action }}/inspect-artifacts-state.shell ;
-
       - name: Locating Artifacts
         id: locating_artifacts
         run: |
-          ${{ inputs.github_action }}/inspect-artifacts-state.shell ;
+
+          ${{ fromJson( needs.workflow.outputs.validated ).github_action }}/inspect-artifacts-state.shell ;
 
       - name: Download All Test Artifacts
         id: downloading_artifacts
         uses: actions/download-artifact@v4
         with:
-          path: ${{ inputs.artifacts_location }}/
+          path: ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}/
 
       - name: Verify Downloaded Artifacts
         id: verifying_artifacts
@@ -98,7 +106,8 @@ jobs:
       - name: Aggregate Pytest Results
         id: aggregating_results
         run: |
-          ${{ inputs.github_action }}/aggregate-pytest-results.shell ;
+
+          ${{ fromJson( needs.workflow.outputs.validated ).github_action }}/aggregate-pytest-results.shell ;
 
       - name: Configure Workflow Status
         id: workflow_status

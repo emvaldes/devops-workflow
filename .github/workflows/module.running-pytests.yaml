@@ -8,6 +8,11 @@ on:
 
     inputs:
 
+      pytests_location:
+        required: true
+        type: string
+        default: ''
+
       test_functions:
         required: true
         type: string
@@ -27,13 +32,17 @@ on:
 
 jobs:
 
-  workflow-parameters:
+  workflow:
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: |
         {
           "workflow": "module.running-pytests",
           "params": {
+            "pytests_location": {
+              "id": "PyTest Location",
+              "value": "${{ inputs.pytests_location }}"
+            },
             "test_functions": {
               "id": "PyTest Functions",
               "value": ${{ toJson( fromJson( inputs.test_functions ) ) }}
@@ -41,9 +50,21 @@ jobs:
           }
         }
 
+  testing:
+    needs: workflow
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Testing Workflow Parameters
+        id: workflow_parameters
+        run: |
+
+          echo "PyTests Location: ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}"
+          echo "Test Functions: ${{ fromJson( needs.workflow.outputs.validated ).test_functions }}"
+
   # Experimental Cutter Matrix Using pytest_files.json
   pytest-files:
-    needs: workflow-parameters
+    needs: [workflow, testing]
     runs-on: ubuntu-latest
     outputs:
       pytest_files: ${{ steps.extract.outputs.pytest_files }}
@@ -68,30 +89,32 @@ jobs:
       - name: Listing GitHub Output Variables
         id: github_output
         run: |
+
           echo "GitHub Environment: ${GITHUB_OUTPUT}" ;
           cat ${GITHUB_OUTPUT} ;
 
       - name: Extract Test Files from GITHUB_OUTPUT
         id: extract
         run: |
-          echo "Extracting test files from GITHUB_OUTPUT..."
+
+          echo "Extracting test files from GITHUB_OUTPUT..." ;
           if [[ -z "${{ needs.extract-pytests.outputs.pytest_files }}" ]]; then
-            echo "pytest_files=[]" >> $GITHUB_OUTPUT
+            echo "pytest_files=[]" >> $GITHUB_OUTPUT ;
           else
             echo "pytest_files=${{ needs.extract-pytests.outputs.pytest_files }}" >> $GITHUB_OUTPUT
-          fi
+          fi ;
 
-  outter-matrix:
-    needs: pytest-files
-    runs-on: ubuntu-latest
-    if: ${{ needs.pytest-files.outputs.pytest_files != '[]' }}  # Prevents running if empty
-    strategy:
-      matrix:
-        pytest_file: ${{ fromJson( needs.pytest-files.outputs.pytest_files ) }}
-    steps:
-      - name: Debug - Test File Being Processed
-        run: |
-          echo "Processing test file: ${{ matrix.pytest_file }}"
+  # outter-matrix:
+  #   needs: pytest-files
+  #   runs-on: ubuntu-latest
+  #   if: ${{ needs.pytest-files.outputs.pytest_files != '[]' }}  # Prevents running if empty
+  #   strategy:
+  #     matrix:
+  #       pytest_file: ${{ fromJson( needs.pytest-files.outputs.pytest_files ) }}
+  #   steps:
+  #     - name: Debug - Test File Being Processed
+  #       run: |
+  #         echo "Processing test file: ${{ matrix.pytest_file }}"
 
   running-pytests:
     needs: workflow-parameters
@@ -99,7 +122,7 @@ jobs:
     strategy:
       matrix:
         python-version: ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
-        test_function: ${{ fromJson( inputs.test_functions ) }}
+        test_function: ${{ fromJson( needs.workflow.outputs.validated ).test_functions }}
     steps:
 
       - name: Checkout Repository
@@ -125,6 +148,7 @@ jobs:
 
       - name: Verify requirements.txt Exists
         run: |
+
           if [[ ! -f requirements.txt ]]; then
             echo -e "ERROR: requirements.txt is missing!" ;
             exit 1 ;
@@ -134,13 +158,16 @@ jobs:
 
       - name: Reinstall Dependencies from Cache
         run: |
+
           python -m pip install --upgrade pip ;
           python -m pip install -r requirements.txt ;
 
       - name: Run Pytest Function
         run: |
+
+          pytests_location="${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}" ;
           pytest -v --junitxml=pytest-results.xml \
-          "${{ inputs.pytests_location }}/test_dependencies.py::${{ matrix.test_function }}" ;
+          "${pytests_location}/test_dependencies.py::${{ matrix.test_function }}" ;
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
@@ -150,6 +177,7 @@ jobs:
 
       - name: Debug - List Uploaded Artifacts
         run: |
+
           echo -e "Listing uploaded artifacts..." ;
           find $GITHUB_WORKSPACE -type f -name "*.xml" || echo -e "No test result files found." ;
           echo -e "Checking artifact storage location..." ;

@@ -35,7 +35,7 @@ jobs:
           "params": {
             "package_location": {
               "id": "Package Location",
-              "value": "${{inputs.package_location}}"
+              "value": "${{ inputs.package_location }}"
             }
           }
         }
@@ -49,9 +49,7 @@ jobs:
         id: workflow_parameters
         run: |
 
-          echo "From JSON: ${{ fromJson( needs.workflow.outputs.validated ).package_location }}"
-          echo "Parsed: $( echo '${{ needs.workflow.outputs.validated }}' | jq .package_location )"
-          echo "Extracted: $( echo '${{ needs.workflow.outputs.validated }}' | jq .package_location )"
+          echo "Package Location: ${{ fromJson( needs.workflow.outputs.validated ).package_location }}"
 
   install-packages:
     needs: [workflow, testing]
