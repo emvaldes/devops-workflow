@@ -141,6 +141,8 @@ function validate_input_parameters() {
               param_value="${event}";
         else  param_value="${value}";
       fi;
+      ## **Trim spaces from param_value**
+      param_value=$( echo "${param_value}" | sed 's/^ *//;s/ *$//' );
       if [[ -z "$param_value" ]]; then
               warnings+=("$(
                 printf "\nInvalid Input-Parameter:\n%s %s %s.\n" \
@@ -163,21 +165,15 @@ function validate_input_parameters() {
 
     ## Display only if --debug is requested
     if [[ ${debug} == true ]]; then echo -e;
-      for valid in "${reporting[@]}"; do
-        echo -e "${valid}";
-      done; echo -e;
+      for valid in "${reporting[@]}"; do echo -e "${valid}"; done; echo -e;
     fi;
 
-    ## **Construct JSON Output**
-    # json_output="{\"workflow\":\"${workflow_name}\",\"params\":{";
-    json_output="{"
-    first=true;
+    first=true; json_output="{";
     for key in "${!report_json[@]}"; do
       [[ $first == false ]] && json_output+=",";
       json_output+="\"$key\":\"${report_json[$key]}\"";
       first=false;
-    done;
-    json_output+="}";
+    done; json_output+="}";
 
     # Output transformed JSON
     jq . <<< "${json_output}";
