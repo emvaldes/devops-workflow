@@ -115,7 +115,7 @@ jobs:
   #         echo "Processing test file: ${{ matrix.pytest_file }}"
 
   running-pytests:
-    needs: workflow-parameters
+    needs: pytest-files
     runs-on: ubuntu-latest
     strategy:
       matrix:

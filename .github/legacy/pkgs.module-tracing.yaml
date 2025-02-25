@@ -51,7 +51,7 @@ on:
 
 jobs:
 
-  workflow-parameters:
+  workflow:
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: |
@@ -80,25 +80,39 @@ jobs:
           }
         }
 
+  testing:
+    needs: workflow
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Testing Workflow Parameters
+        id: workflow_parameters
+        run: |
+
+          echo "Required Packages: ${{ fromJson( needs.workflow.outputs.validated ).required_packages }}"
+          echo "PyTests Location: ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}"
+          echo "Package Location: ${{ fromJson( needs.workflow.outputs.validated ).package_location }}"
+          echo "GitHub Action: ${{ fromJson( needs.workflow.outputs.validated ).github_action }}"
+
   install-packages:
-    needs: workflow-parameters
+    needs: [workflow, testing]
     uses: ./.github/workflows/module.install-packages.yaml
     with:
-      package_location: ${{ inputs.required_packages }}
+      package_location: ${{ fromJson( needs.workflow.outputs.validated ).required_packages }}
 
   pytest-module:
     needs: install-packages
     uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
-      pytests_location: ${{ inputs.pytests_location }}
-      package_location: ${{ inputs.package_location }}
+      pytests_location: ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
+      package_location: ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
 
   execute-module:
     needs: pytest-module
     if: needs.pytest-module.outputs.aggregated_results
     uses: ./.github/workflows/module.execute-module.yaml
     with:
-      package_location: ${{ inputs.package_location }}
+      package_location: ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
 
   workflow-completed:
     needs: execute-module
