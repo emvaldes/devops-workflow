@@ -81,7 +81,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Testing Workflow Parameters
+      - name: PyTest - Module-Matrix (Parameters)
         id: workflow_parameters
         run: |
 

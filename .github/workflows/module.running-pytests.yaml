@@ -53,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Testing Workflow Parameters
+      - name: Module - Runnint-PyTests (Parameters)
         id: workflow_parameters
         run: |
 

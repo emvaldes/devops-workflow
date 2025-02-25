@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Testing Workflow Parameters
+      - name: Module - Install Packages (Parameters)
         id: workflow_parameters
         run: |
 
