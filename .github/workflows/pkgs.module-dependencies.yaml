@@ -67,6 +67,15 @@ jobs:
           }
         }
 
+  debug-validations:
+    needs: workflow-parameters
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug Validated Params
+        run: |
+
+          echo "VALIDATED PARAMS: ${{ needs.workflow-parameters.outputs.validated }}"
+
   install-packages:
     needs: workflow-parameters
     uses: ./.github/workflows/module.install-packages.yaml
