@@ -50,7 +50,7 @@ function validate_input_parameters() {
               if [[ "${key}" != "${value}" ]]; then
                       if jq -e . <<< "${value}" &>/dev/null; then
                               value=$( jq -c . <<< "${value}" );
-                        else  echo -e "Invalid JSON:\n${value}";
+                        # else  echo -e "Invalid JSON:\n${value}";
                       fi;
                 else  value='';
               fi;
