@@ -52,10 +52,13 @@ jobs:
 
           set -x ;
 
+          echo -e "module.validate-parameters.yaml: start" ;
           validated=$(
             ${{ env.github_action }}/validate-input-parameters.shell \
             --json='${{ inputs.workflow_inputs }}'
           ) ;
+          echo -e "module.validate-parameters.yaml: stop" ;
+
           echo -e "Validated Parameters:\n'${validated}'" ;
 
           if jq -e . <<< "${validated}" &>/dev/null; then
