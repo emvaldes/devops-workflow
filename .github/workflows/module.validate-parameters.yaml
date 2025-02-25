@@ -52,10 +52,9 @@ jobs:
 
           set -x ;
 
-          compressed="$( jq -c . <<< ${{ inputs.workflow_inputs }} )" ;
           validated=$(
             ${{ env.github_action }}/validate-input-parameters.shell \
-            --json="'$( echo ${compressed[*]} )'"
+            --json=$( jq -c . <<< "${{ inputs.workflow_inputs }}" )
           ) ;
           echo -e "Validated Parameters:\n'${validated}'" ;
 
