@@ -63,8 +63,15 @@ jobs:
           ) ;
           echo -e "Validated Parameters:\n'${validated}'" ;
 
-          if jq -e . <<< "${validated}" &>/dev/null; then
-                  echo "validated=$validated" >> "$GITHUB_OUTPUT" ;
-            else  echo -e "Warning: Invalid JSON Parameters" ;
-                  echo -e "${validated}" ;
-          fi;
+          # if jq -e . <<< "${validated}" &>/dev/null; then
+          #         echo "validated=$validated" >> "$GITHUB_OUTPUT" ;
+          #   else  echo -e "Warning: Invalid JSON Parameters" ;
+          #         echo -e "${validated}" ;
+          # fi;
+
+          echo -e "Checking JSON format..." ;
+          if ! jq -e . <<< "$validated" &>/dev/null; then
+              echo "🚨 ERROR: JSON is malformed!" ;
+              echo "Raw JSON: $validated" ;
+              exit 1 ;
+          fi ;
