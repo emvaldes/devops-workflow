@@ -33,8 +33,7 @@ on:
     outputs:
       aggregated_results:
         description: "Providing PyTest Results Aggregation status"
-        value: ${{ jobs.workflow-completed.outputs.aggregated_results }}
-
+        value: ${{ needs.aggregating-pytests.outputs.aggregated_results }}
   # push:
   #   branches:
   #     - master
@@ -49,7 +48,7 @@ on:
 
 jobs:
 
-  workflow-parameters:
+  workflow-params:
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: |
@@ -77,35 +76,25 @@ jobs:
             }
           }
         }
+    outputs:
+      items: ${{ fromJson( needs.workflow-params.outputs.validated ) }}
 
   extracting-pytests:
     needs: workflow-parameters
     uses: ./.github/workflows/module.extract-pytests.yaml
     with:
-      github_action: "${{ inputs.github_action }}"
-      pytests_location: "${{ inputs.pytests_location }}"
+      github_action: ${{ needs.workflow-parameters.outputs.items.github_action }}
+      pytests_location: ${{ needs.workflow-parameters.outputs.items.pytests_location }}
 
   running-pytests:
     needs: extracting-pytests
     uses: ./.github/workflows/module.running-pytests.yaml
     with:
-      test_functions: ${{ needs.extracting-pytests.outputs.test_functions }}
+      test_functions: ${{ needs.workflow-parameters.outputs.items.test_functions }}
 
   aggregating-pytests:
     needs: running-pytests
     uses: ./.github/workflows/module.aggregate-results.yaml
     with:
-      github_action: "${{ inputs.github_action }}"
-      artifacts_location: "${{ inputs.artifacts_location }}"
-
-  workflow-completed:
-    needs: aggregating-pytests
-    runs-on: ubuntu-latest
-    outputs:
-      aggregated_results: ${{ needs.aggregating-pytests.outputs.aggregated_results }}
-    steps:
-
-      - name: Workflow Completion
-        id: workflow_status
-        run: |
-          echo "Dependencies Matrix - GitHub Environment:\n${GITHUB_ENV}" ;
+      github_action: ${{ needs.workflow-parameters.outputs.items.github_action }}
+      artifacts_location: ${{ needs.workflow-parameters.outputs.items.artifacts_location }}
