@@ -11,12 +11,10 @@ on:
       pytests_location:
         required: true
         type: string
-        default: ''
 
       github_action:
         required: true
         type: string
-        default: ''
 
       output_filename:
         required: false

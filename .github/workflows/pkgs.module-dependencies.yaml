@@ -76,7 +76,9 @@ jobs:
         id: workflow_parameters
         run: |
 
-          echo "From JSON: ${{ fromJson( needs.workflow.outputs.validated ).package_location }}"
+          echo "PyTests Location: ${{ fromJson( needs.workflow.outputs.validated ).pytest_location }}"
+          echo "Package Location: ${{ fromJson( needs.workflow.outputs.validated ).package_location }}"
+          echo "GitHub Action: ${{ fromJson( needs.workflow.outputs.validated ).github_action }}"
 
   install-packages:
     needs: [workflow, testing]

@@ -11,12 +11,10 @@ on:
       pytests_location:
         required: true
         type: string
-        default: ''
 
       test_functions:
         required: true
         type: string
-        default: ''
 
   # push:
   #   branches:

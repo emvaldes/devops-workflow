@@ -13,12 +13,10 @@ on:
       pytests_location:
         required: true
         type: string
-        default: ''
 
       package_location:
         required: true
         type: string
-        default: ''
 
       github_action:
         required: false
@@ -30,10 +28,10 @@ on:
         type: string
         default: "artifacts"
 
-    # outputs:
-    #   aggregated_results:
-    #     description: "Providing PyTest Results Aggregation status"
-    #     value: ${{ needs.aggregating-pytests.outputs.aggregated_results }}
+    outputs:
+      aggregated_results:
+        description: "Providing PyTest Results Aggregation status"
+        value: ${{ needs.aggregating-pytests.outputs.aggregated_results }}
 
   # push:
   #   branches:
@@ -87,7 +85,10 @@ jobs:
         id: workflow_parameters
         run: |
 
-          echo "From JSON: ${{ fromJson( needs.workflow.outputs.validated ).package_location }}"
+          echo "PyTests Location: ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}"
+          echo "Package Location: ${{ fromJson( needs.workflow.outputs.validated ).package_location }}"
+          echo "GitHub Action: ${{ fromJson( needs.workflow.outputs.validated ).github_action }}"
+          echo "Artifacts Location: ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}"
 
   extracting-pytests:
     needs: [workflow, testing]
@@ -112,3 +113,15 @@ jobs:
         ${{ fromJson( needs.workflow.outputs.validated ).github_action }}
       artifacts_location: >
         ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}
+
+  workflow-completed:
+    needs: aggregating-pytests
+    runs-on: ubuntu-latest
+    outputs:
+      aggregated_results: ${{ needs.aggregating-pytests.outputs.aggregated_results }}
+    steps:
+
+      - name: Workflow Completion
+        id: workflow_status
+        run: |
+          echo "Dependencies Matrix - GitHub Environment:\n${GITHUB_ENV}" ;
