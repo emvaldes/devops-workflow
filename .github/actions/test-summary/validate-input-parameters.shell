@@ -3,7 +3,7 @@
 ## File: .github/actions/test-summary/validate-input-parameters.shell
 ## Version: 0.0.1
 
-set -x ;
+# set -x ;
 set -e ;           # Exit on error
 set -o pipefail ;  # Fail if any piped command fails
 
