@@ -67,6 +67,19 @@ jobs:
           }
         }
 
+  testing:
+    needs: workflow
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Testing Workflow Parameters
+        id: workflow_parameters
+        run: |
+
+          echo -e "First: ${{ needs.workflow.outputs.validated.package_location }}" ;
+          echo -e "Second: fromJson( needs.workflow.outputs.validated ).package_location" ;
+          exit 1 ;
+
   install-packages:
     needs: workflow
     uses: ./.github/workflows/module.install-packages.yaml
