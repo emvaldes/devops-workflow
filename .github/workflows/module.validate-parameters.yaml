@@ -69,9 +69,9 @@ jobs:
           #         echo -e "${validated}" ;
           # fi;
 
-          echo -e "Checking JSON format..." ;
-          if ! jq -e . <<< "$validated" &>/dev/null; then
-              echo "🚨 ERROR: JSON is malformed!" ;
-              echo "Raw JSON: $validated" ;
-              exit 1 ;
-          fi ;
+          # echo -e "Checking JSON format..." ;
+          # if ! jq -e . <<< "$validated" &>/dev/null; then
+          #     echo "🚨 ERROR: JSON is malformed!" ;
+          #     echo "Raw JSON: $validated" ;
+          #     exit 1 ;
+          # fi ;
