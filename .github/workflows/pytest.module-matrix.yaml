@@ -102,8 +102,7 @@ jobs:
     needs: extracting-pytests
     uses: ./.github/workflows/module.running-pytests.yaml
     with:
-      test_functions: >
-        ${{ fromJson( needs.workflow.outputs.validated ).test_functions }}
+      test_functions: ${{ needs.extracting-pytests.outputs.test_functions }}
 
   aggregating-pytests:
     needs: running-pytests
