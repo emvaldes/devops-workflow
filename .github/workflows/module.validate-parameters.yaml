@@ -15,7 +15,7 @@ on:
 
     outputs:
 
-      validated:
+      params:
         description: "Validated JSON parameters"
         value: ${{ jobs.validate-parameters.outputs.validated }}
 

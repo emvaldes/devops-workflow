@@ -42,7 +42,7 @@ on:
 
 jobs:
 
-  workflow-params:
+  workflow:
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: |
@@ -66,28 +66,26 @@ jobs:
             }
           }
         }
-    outputs:
-      items: ${{ fromJson( needs.workflow-params.outputs.validated ) }}
 
   install-packages:
-    needs: workflow-parameters
+    needs: workflow
     uses: ./.github/workflows/module.install-packages.yaml
     with:
-      package_location: ${{ needs.workflow-params.outputs.items.package_location }}
+      package_location: ${{ needs.workflow.outputs.params.package_location }}
 
   pytest-module:
     needs: install-packages
     uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
-      pytests_location: ${{ needs.workflow-params.outputs.items.pytests_location }}
-      package_location: ${{ needs.workflow-parameters.outputs.items.package_location }}
+      pytests_location: ${{ needs.workflow.outputs.params.pytests_location }}
+      package_location: ${{ needs.workflow.outputs.params.package_location }}
 
   execute-module:
     needs: pytest-module
     if: needs.pytest-module.outputs.aggregated_results
     uses: ./.github/workflows/module.execute-module.yaml
     with:
-      package_location: ${{ needs.workflow-parameters.outputs.items.package_location }}
+      package_location: ${{ needs.workflow.outputs.params.package_location }}
 
   workflow-completed:
     needs: execute-module

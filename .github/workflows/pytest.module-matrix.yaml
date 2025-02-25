@@ -48,7 +48,7 @@ on:
 
 jobs:
 
-  workflow-params:
+  workflow:
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: |
@@ -76,25 +76,23 @@ jobs:
             }
           }
         }
-    outputs:
-      items: ${{ fromJson( needs.workflow-params.outputs.validated ) }}
 
   extracting-pytests:
-    needs: workflow-parameters
+    needs: workflow
     uses: ./.github/workflows/module.extract-pytests.yaml
     with:
-      github_action: ${{ needs.workflow-parameters.outputs.items.github_action }}
-      pytests_location: ${{ needs.workflow-parameters.outputs.items.pytests_location }}
+      github_action: ${{ needs.workflow.outputs.parameters.github_action }}
+      pytests_location: ${{ needs.workflow.outputs.parameters.pytests_location }}
 
   running-pytests:
     needs: extracting-pytests
     uses: ./.github/workflows/module.running-pytests.yaml
     with:
-      test_functions: ${{ needs.workflow-parameters.outputs.items.test_functions }}
+      test_functions: ${{ needs.workflow.outputs.parameters.test_functions }}
 
   aggregating-pytests:
     needs: running-pytests
     uses: ./.github/workflows/module.aggregate-results.yaml
     with:
-      github_action: ${{ needs.workflow-parameters.outputs.items.github_action }}
-      artifacts_location: ${{ needs.workflow-parameters.outputs.items.artifacts_location }}
+      github_action: ${{ needs.workflow.outputs.parameters.github_action }}
+      artifacts_location: ${{ needs.workflow.outputs.parameters.artifacts_location }}
