@@ -51,7 +51,7 @@ jobs:
 
           if jq -e . <<< "${validated_parameters}" &>/dev/null; then
                   validated="$( jq -c . <<< "${validated_parameters}" )" ;
-                  echo "Validated Params:\n${validated}" ;
+                  echo -e "Validated Params:\n${validated}" ;
                   echo "validated=$validated" >> "$GITHUB_OUTPUT" ;
-            else  "Warning: Invalid JSON Parameters" ;
+            else  echo -e "Warning: Invalid JSON Parameters" ;
           fi;
