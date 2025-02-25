@@ -76,8 +76,9 @@ jobs:
         id: workflow_parameters
         run: |
 
+          set -x ;
           echo -e "First: ${{ needs.workflow.outputs.validated.package_location }}" ;
-          echo -e "Second: ${{ fromJson( needs.workflow.outputs.validated ).package_location }}" ;
+          echo -e "Second: ${{ toJson( needs.workflow.outputs.validated ).package_location }}" ;
           exit 1 ;
 
   install-packages:
