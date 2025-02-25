@@ -11,7 +11,6 @@ on:
       package_location:
         required: true
         type: string
-        default: ''
 
   # push:
   #   branches:
