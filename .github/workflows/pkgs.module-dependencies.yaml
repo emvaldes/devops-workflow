@@ -71,29 +71,25 @@ jobs:
     needs: workflow
     uses: ./.github/workflows/module.install-packages.yaml
     with:
-      package_location: ${{
-        fromJson( needs.workflow.outputs.validated ).package_location
-      }}
+      package_location: >
+        ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
 
   pytest-module:
     needs: install-packages
     uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
-      pytests_location: ${{
-        fromJson( needs.workflow.outputs.validated ).pytests_location
-      }}
-      package_location: ${{
-        fromJson( needs.workflow.outputs.validated ).package_location
-      }}
+      pytests_location: >
+        ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
+      package_location: >
+        ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
 
   execute-module:
     needs: pytest-module
     if: needs.pytest-module.outputs.aggregated_results
     uses: ./.github/workflows/module.execute-module.yaml
     with:
-      package_location: ${{
-        fromJson( needs.workflow.outputs.validated ).package_location
-      }}
+      package_location: >
+        ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
 
   workflow-completed:
     needs: execute-module
