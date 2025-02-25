@@ -141,8 +141,6 @@ function validate_input_parameters() {
               param_value="${event}";
         else  param_value="${value}";
       fi;
-      ## **Trim spaces from param_value**
-      param_value=$( echo "${param_value}" | sed 's/^ *//;s/ *$//' );
       if [[ -z "$param_value" ]]; then
               warnings+=("$(
                 printf "\nInvalid Input-Parameter:\n%s %s %s.\n" \
@@ -171,9 +169,14 @@ function validate_input_parameters() {
     first=true; json_output="{";
     for key in "${!report_json[@]}"; do
       [[ $first == false ]] && json_output+=",";
-      json_output+="\"$key\":\"${report_json[$key]}\"";
+      ## **Trim spaces from param_value**
+      value=$(
+        echo "${report_json[$key]}" | sed 's/^ *//;s/ *$//' | tr -d '\n\r'
+      );
+      json_output+="\"$key\":\"${value}\"";
       first=false;
     done; json_output+="}";
+    echo -e "JSON Output: '${json_output}'"
 
     # Output transformed JSON
     jq . <<< "${json_output}";
