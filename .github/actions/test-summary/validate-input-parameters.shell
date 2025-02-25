@@ -177,7 +177,7 @@ function validate_input_parameters() {
       json_output+="\"$key\":\"${value}\"";
       first=false;
     done; json_output+="}";
-    echo -e "JSON Output: '${json_output}'"
+    # echo -e "JSON Output: '${json_output}'"
 
     # Output transformed JSON
     jq . <<< "${json_output}";
