@@ -151,23 +151,9 @@ function validate_parameters() {
     ## Display only if --debug is requested
     if [[ ${debug} == true ]]; then echo -e;
       for valid in "${reporting[@]}"; do echo -e "${valid}"; done; echo -e;
+      # Output Original JSON
+      jq . <<< "${json_object}";
     fi;
-
-    # Output Original JSON
-    jq . <<< "${json_object}";
-
-    # first=true; json_output="{";
-    # for key in "${!report_json[@]}"; do
-    #   [[ $first == false ]] && json_output+=",";
-    #   ## **Trim spaces from param_value**
-    #   value=$(
-    #     echo "${report_json[$key]}" \
-    #     | sed -E 's/^[[:space:]]+|[[:space:]]+$//g'
-    #   )
-    #   json_output+="\"$key\":\"${value}\"";
-    #   first=false;
-    # done; json_output+="}";
-    # echo -e "JSON Output: '${json_output}'"
 
     json_output=$(
       printf '{' &&
