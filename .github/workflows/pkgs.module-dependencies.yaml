@@ -91,8 +91,9 @@ jobs:
     needs: install-packages
     uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
-      pytests_location: >
-        ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
+      # pytests_location: >
+      #   ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
+      pytests_location: 'tests/requirements/dependencies'
       package_location: >
         ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
 
