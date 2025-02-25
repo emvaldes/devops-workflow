@@ -78,6 +78,7 @@ jobs:
           echo "Raw: ${{ needs.workflow-parameters.outputs.validated }}"
           echo "Property: ${{ needs.workflow-parameters.outputs.validated.package_location }}"
           echo "To JSON: ${{ toJson( needs.workflow-parameters.outputs.validated ).pytests_location }}"
+          echo "From JSON: ${{ fromJson( needs.workflow-parameters.outputs.validated ).pytests_location }}"
           echo "Parsed: $(echo '${{ needs.workflow-parameters.outputs.validated }}' | jq .)"
 
   install-packages:
