@@ -54,7 +54,7 @@ jobs:
 
           validated=$(
             ${{ env.github_action }}/validate-input-parameters.shell \
-            --json='${{ inputs.workflow_inputs }}'
+            --json='${{ inputs.workflow_inputs }}' | jq -c .
           ) ;
           echo -e "Validated Parameters:\n'${validated}'" ;
 

@@ -49,8 +49,7 @@ function validate_input_parameters() {
               key="${arg%%=*}"; value="${arg#*=}";
               if [[ "${key}" != "${value}" ]]; then
                       if jq -e . <<< "${value}" &>/dev/null; then
-                              value=$( jq -c . <<< "${value}" );
-                        # else  echo -e "Invalid JSON:\n${value}";
+                        value=$(jq -c . <<< "$value");
                       fi;
                 else  value='';
               fi;
@@ -65,13 +64,7 @@ function validate_input_parameters() {
       IFS='=' read -r key value <<< "$(
         echo -e "${xitem}" | sed -e '1s|^\(-\)\{1,\}||'
       )"; #echo -e "\nxitem: '${xitem}'\nkey: '${key}'\t->\tvalue: '${value}'";
-      if [[ $key == "json" ]]; then
-        local json_object="$(
-          echo -e "${value}" \
-          | sed 's/^[ \t]*//;s/[ \t]*$//' \
-          | tr -d '\n\r' | jq -c .
-        )";
-      fi;
+      [[ $key == "json" ]] && local json_object="${value}"
       #### ---------------------------------------------------------------------
       ## $key == "dry-run" ]] && local dry_run=true;
       [[ $key == "verbose" ]] && local verbose=true
@@ -187,7 +180,7 @@ function validate_input_parameters() {
     # echo -e "JSON Output: '${json_output}'"
 
     # Output transformed JSON
-    jq . <<< "${json_output}";
+    jq -c . <<< "${json_output}";
 
     return 0;
   }; alias validate-parameters='validate_parameters';
