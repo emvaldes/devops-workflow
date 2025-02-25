@@ -16,154 +16,172 @@ set -o pipefail ;  # Fail if any piped command fails
 ##     }
 ## }" \
 ## --dry-run \
-## --verbose ;
+## --verbose \
+## --debug ;
 
 ## validate-input-parameters.shell --json="{
 ##     "workflow": "pkgs.module-dependencies",
 ##     "params": {
 ##         "param": {
 ##             "key": {
-##                 "event": "${{ github.event.inputs.github_action }}",
-##                 "value": ".github/actions/test-summary"
+##                 "id": "description"
+##                 "event": "github.event.inputs.variable",
+##                 "value": "inputs.variable"
 ##             }
 ##         }
 ##     }
 ## }" \
 ## --dry-run \
-## --verbose ;
+## --verbose \
+## --debug ;
 
 ## This function expects the name of an associative array as its first argument.
 function validate_input_parameters() {
     ## tracking_process ${FUNCNAME} "${@}";
 
-    ## Combine all arguments into a single string by removing any extra whitespace
-    local arguments;
-    # arguments=$( echo -e "${@}" | tr -d '[[:blank:]]' | sed 's/  */ /g' );
-    arguments=$( echo -e "$@" | sed 's/  */ /g' );
+    ## Handling JSON parameters (agnostic implementation)
+    declare -a parameters=();
+    local current="";
+    local regex='^-{1,}[A-Za-z0-9_-]+(=.*)?$';
+    for arg in "$@"; do
+      if [[ "${arg}" =~ ${regex} ]]; then
+              [[ -n "${current}" ]] && parameters+=( "${current}" );
+              key="${arg%%=*}"; value="${arg#*=}";
+              if [[ "${key}" != "${value}" ]]; then
+                      if jq -e . <<< "${value}" &>/dev/null; then
+                        value=$(jq -c . <<< "$value");
+                      fi;
+                else  value='';
+              fi;
+              key="$( sed -e '1s|^\(-\)\{1,\}||' <<< "${arg%%=*}" )";
+              current="${key}=${value}";
+        else  current+=" ${arg}";
+      fi;
+    done; [[ -n "${current}" ]] && parameters+=( "${current}" );
 
     oIFS="${IFS}";
-    # for xitem in "${@}"; do
-    for xitem in "${arguments}"; do
-      IFS='='; set `echo -e "${xitem}" | sed -e '1s|^\(-\)\{1,\}||'`
-      [[ ${1#*\--} = "json" ]] && local json_object="${2}";
+    for xitem in "${parameters[@]}"; do
+      IFS='=' read -r key value <<< "$(
+        echo -e "${xitem}" | sed -e '1s|^\(-\)\{1,\}||'
+      )"; #echo -e "\nxitem: '${xitem}'\nkey: '${key}'\t->\tvalue: '${value}'";
+      [[ $key == "json" ]] && local json_object="${value}"
       #### ---------------------------------------------------------------------
-      ## [[ ${1#*\--} = "dry-run" ]] && local dry_run="${2}";
-      [[ ${1#*\--} = "verbose" ]] && local verbose='true';
+      ## $key == "dry-run" ]] && local dry_run=true;
+      [[ $key == "verbose" ]] && local verbose=true
+      [[ $key == "debug" ]] && local debug=true
     done; IFS="${oIFS}";
     #### -----------------------------------------------------------------------
-    ## [[ ${#dry_run} -eq 0 ]] && local dry_run='false';
-    [[ ${#verbose} -eq 0 ]] && local verbose='false';
+    ## [[ -z ${dry_run} ]] && local dry_run=false;
+    [[ -z ${debug} ]] && local debug=false;
+    [[ -z ${verbose} ]] && local verbose=false;
     #### -----------------------------------------------------------------------
 
     local warning_message="is missing or invalid!";
+    # echo -e "Original JSON:\n${json_object}";
 
     ## Create a nameref to the associative array.
     if [[ -z "${json_object}" ]]; then
-      echo -e "Input Params: ${warning_message}";
+      [[ ${debug} == true ]] && \
+        echo -e "Input Params: ${warning_message}";
       return 1;
     fi;
 
-    # echo -e "Original JSON:\n${json_object}";
-
-    # Normalize JSON: remove newlines and extra spaces
-    local compressed_json;
-    compressed_json=$(
-      echo "${json_object}" | tr -d '\n' | sed 's/  */ /g'
-    )
-
-    # Extract workflow name.
+    ## Extract workflow name.
     local workflow_name;
-    # workflow_name=$( echo "${compressed_json}" | jq -r '.workflow // empty' );
-    workflow_name=$( echo "${compressed_json}" | jq --raw-output '.workflow' );
+    # workflow_name=$( echo "${json_object}" | jq -r '.workflow // empty' );
+    workflow_name=$( echo "${json_object}" | jq --raw-output '.workflow' );
     if [[ -z "${workflow_name}" ]]; then
-      echo -e "Warning: Workflow ${warning_message}";
+      [[ ${debug} == true ]] && \
+        echo -e "Warning: Workflow ${warning_message}";
       exit 1;
     fi;
 
-    local invalid_params=false;
-    local error_header="cannot proceed without a valid";
-
-    echo -e "Compressed JSON (${workflow_name}):\n${compressed_json}\n";
-
-    # We'll get all parameter data into an array.
-    local lines
-    # mapfile -t lines < <(
-    #   echo "${compressed_json}" \
-    #   | jq -r '.params | to_entries[] | "\(.key)\t\(.value | to_entries[0].key)\t\(.value | to_entries[0].value)"'
-    # );
-
-    # mapfile -t lines < <(
-    #   echo "${compressed_json}" | jq -r '
-    #     .params | to_entries[] |
-    #     if (.value | type) == "object" and ((.value | to_entries)[0].value | type) == "object" then
-    #       # Nested structure: extract the inner object from the single outer key.
-    #       ( .value | to_entries | .[0] ) as $outer |
-    #       ( $outer.value ) as $inner |
-    #       # If the inner "event" is non-empty, choose it; otherwise, choose "value".
-    #       "\(.key)\t\($outer.key)\t\((if $inner.event != "" then $inner.event else $inner.value end))"
-    #     else
-    #       "\(.key)\tLiteral\t\(.value)"
-    #     end
-    #   '
-    # )
-
-    mapfile -t lines < <(
-      echo "${compressed_json}" | jq -r '
-        .params | to_entries[] |
-        (. as $entry |
-          ($entry.value | to_entries | .[0]) as $temp |
-          $temp.key as $header |
-          $temp.value as $inner |
-          "\($entry.key)\t\($header)\t" +
-          (if ($inner | type) == "object" then
-              (if ($inner | has("event") and $inner.event != "")
-               then $inner.event
-               elif ($inner | has("inputs") and $inner.inputs != "")
-               then $inner.inputs
-               else ""
-               end)
-           else
-              $temp.value
-           end)
-        )
-      '
+    ## Fix JSON structure: Ensure "event" always exists
+    json_object=$(echo "${json_object}" | jq -c '
+      .params |= with_entries(
+        if .value | has("event") then .
+        else .value.event = .value.value end
+      )'
     )
+
+    ## We'll get all parameter data into an array.
+    local lines
+    mapfile -t lines < <(
+      echo "${json_object}" \
+      | jq -r '.params | to_entries[] |
+        "\(.key)\t\(.value.id)\t\(.value.event // "")\t\(.value.value // "")"'
+    );
 
     # First pass: determine the maximum length of the left-hand side, i.e. "workflow[id]".
     local max_len=0;
     local line left len;
     for line in "${lines[@]}"; do
-      IFS=$'\t' read -r id header value <<< "$line";
+      IFS=$'\t' read -r id header event <<< "$line";
       left="${workflow_name}[${id}]";
       len=$( echo -n "$left" | wc -c );
       if (( len > max_len )); then max_len=$len; fi;
     done;
 
     # Directly iterate over parameters in "params" for validation.
-    local invalid_params=false;
-    # Iterate over parameters in "params" key/value pairs and extract them.
-    #  - id (the internal key, e.g., "pytests_location")
-    #  - header (the human-readable label, e.g., "PyTests Location")
-    #  - value (the actual input value)
+    local invalid=false;
+
+    declare -a warnings=();
+    declare -a reporting=();
+    declare -A report_json=();
+
+    local error_header="cannot proceed without a valid";
 
     # Second pass: print each parameter using the calculated width.
     for line in "${lines[@]}"; do
-      IFS=$'\t' read -r id header value <<< "$line";
+      # echo -e "${line}";
+      IFS=$'\t' read -r id title event value <<< "${line}";
       left="${workflow_name}[${id}]";
-      if [[ -z "$value" ]]; then
-          printf "\nInvalid Input-Parameter:\n%s %s %s.\n" \
-                 "$left" "$error_header" "$header";
-          invalid_params=true;
-      else
-          # Use left-aligned field of width max_len
-          printf "%-${max_len}s = %s\n" "$left" "$value";
+      # Use "event" if available; otherwise, use "value"
+      if [[ -n "${event}" && "${event}" != "null" ]]; then
+              param_value="${event}";
+        else  param_value="${value}";
+      fi;
+      if [[ -z "$param_value" ]]; then
+              warnings+=("$(
+                printf "\nInvalid Input-Parameter:\n%s %s %s.\n" \
+                       "${left}" "${error_header}" "${title}"
+              )");
+              invalid=true;
+        else  # Use left-aligned field of width max_len
+              reporting+=("$(
+                printf "%-${max_len}s = %s\n" "${left}" "${param_value}";
+              )");
+              report_json["${id}"]="${param_value}";
       fi;
     done;
 
-    if [[ ${invalid_params} == true ]]; then return 1; fi;
-    echo -e;
+    ## Display if invalid parameters exist.
+    if [[ ${invalid} == true ]]; then echo -e;
+      for error in "${warnings[@]}"; do echo -e "${error}\n"; done;
+      return 1;
+    fi;
+
+    ## Display only if --debug is requested
+    if [[ ${debug} == true ]]; then echo -e;
+      for valid in "${reporting[@]}"; do
+        echo -e "${valid}";
+      done; echo -e;
+    fi;
+
+    # **Construct JSON Output**
+    json_output="{\"workflow\":\"${workflow_name}\",\"params\":{";
+    first=true;
+    for key in "${!report_json[@]}"; do
+      [[ $first == false ]] && json_output+=",";
+      json_output+="\"$key\":\"${report_json[$key]}\"";
+      first=false;
+    done;
+    json_output+="}}";
+
+    # Output transformed JSON
+    jq . <<< "${json_output}";
 
     return 0;
   }; alias validate-parameters='validate_parameters';
 
-validate_input_parameters ${@};
+validate_input_parameters "${@}";

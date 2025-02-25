@@ -55,13 +55,16 @@ jobs:
           "workflow": "module.extract-pytests",
           "params": {
             "pytests_location": {
-              "PyTest Location": "${{ inputs.pytests_location }}"
+              "id": "PyTest Location",
+              "value": "${{ inputs.pytests_location }}"
             },
             "github_action": {
-              "GitHub Action": "${{ inputs.github_action }}"
+              "id": "GitHub Action",
+              "value": "${{ inputs.github_action }}"
             },
             "output_filename": {
-              "Output Filename": "${{ inputs.output_filename }}"
+              "id": "Output Filename",
+              "value": "${{ inputs.output_filename }}"
             }
           }
         }

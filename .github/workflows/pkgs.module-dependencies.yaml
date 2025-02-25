@@ -50,22 +50,19 @@ jobs:
           "workflow": "pkgs.module-dependencies",
           "params": {
             "pytests_location": {
-              "PyTest Location": {
-                  "event": "${{ github.event.inputs.pytests_location }}",
-                  "value": "tests/requirements/dependencies"
-                }
+              "id": "PyTest Location",
+              "event": "${{ github.event.inputs.pytests_location }}",
+              "value": "tests/requirements/dependencies"
             },
             "package_location": {
-              "Package Location": {
-                  "event": "${{ github.event.inputs.package_location }}",
-                  "value": "packages/requirements/dependencies"
-                }
+              "id": "Package Location",
+              "event": "${{ github.event.inputs.package_location }}",
+              "value": "packages/requirements/dependencies"
             },
             "github_action": {
-              "GitHub Action": {
-                  "event": "${{ github.event.inputs.github_action }}",
-                  "value": ".github/actions/test-summary"
-                }
+              "id": "GitHub Action",
+              "event": "${{ github.event.inputs.github_action }}",
+              "value": ".github/actions/test-summary"
             }
           }
         }
@@ -74,21 +71,25 @@ jobs:
     needs: workflow-parameters
     uses: ./.github/workflows/module.install-packages.yaml
     with:
-      package_location: ${{ inputs.package_location }}
+      # package_location: ${{ inputs.package_location }}
+      package_location: ${{ fromJson( needs.workflow-parameters.outputs.validated_params ).package_location }}
 
   pytest-module:
     needs: install-packages
     uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
-      pytests_location: ${{ inputs.pytests_location }}
-      package_location: ${{ inputs.package_location }}
+      # pytests_location: ${{ inputs.pytests_location }}
+      # package_location: ${{ inputs.package_location }}
+      pytests_location: ${{ fromJson( needs.workflow-parameters.outputs.validated_params ).pytests_location }}
+      package_location: ${{ fromJson( needs.workflow-parameters.outputs.validated_params ).package_location }}
 
   execute-module:
     needs: pytest-module
     if: needs.pytest-module.outputs.aggregated_results
     uses: ./.github/workflows/module.execute-module.yaml
     with:
-      package_location: ${{ inputs.package_location }}
+      # package_location: ${{ inputs.package_location }}
+      package_location: ${{ fromJson( needs.workflow-parameters.outputs.validated_params ).package_location }}
 
   workflow-completed:
     needs: execute-module

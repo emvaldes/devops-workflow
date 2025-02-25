@@ -35,7 +35,8 @@ jobs:
           "workflow": "module.install-packages",
           "params": {
             "package_location": {
-              "Package Location": "${{ inputs.package_location }}"
+              "id": "Package Location",
+              "value": "${{ inputs.package_location }}"
             }
           }
         }

@@ -17,28 +17,45 @@ set -o pipefail ;  # Fail if any piped command fails
 function extract_pytest_functions () {
     ## tracking_process ${FUNCNAME} "${@}";
 
-    ## Combine all arguments into a single string by removing any extra whitespace
-    local arguments;
-    # arguments=$( echo -e "${@}" | tr -d '[[:blank:]]' | sed 's/  */ /g' );
-    arguments=$( echo -e "$@" | sed 's/  */ /g' );
+    ## Handling JSON parameters (agnostic implementation)
+    declare -a parameters=();
+    local current="";
+    local regex='^-{1,}[A-Za-z0-9_-]+(=.*)?$';
+    for arg in "$@"; do
+      if [[ "${arg}" =~ ${regex} ]]; then
+              [[ -n "${current}" ]] && parameters+=( "${current}" );
+              key="${arg%%=*}"; value="${arg#*=}";
+              if [[ "${key}" != "${value}" ]]; then
+                      if jq -e . <<< "${value}" &>/dev/null; then
+                        value=$(jq -c . <<< "$value");
+                      fi;
+                else  value='';
+              fi;
+              key="$( sed -e '1s|^\(-\)\{1,\}||' <<< "${arg%%=*}" )";
+              current="${key}=${value}";
+        else  current+=" ${arg}";
+      fi;
+    done; [[ -n "${current}" ]] && parameters+=( "${current}" );
 
     oIFS="${IFS}";
-    for xitem in "${@}"; do
-      IFS='='; set `echo -e "${xitem}" | sed -e '1s|^\(-\)\{1,\}||'`
-      [[ ${1#*\--} = "pytests-location" ]] && local pytests_location="${2}";
-      [[ ${1#*\--} = "output-filename" ]] && local output_filename="${2}";
-      [[ ${1#*\--} = "scripts-location" ]] && local scripts_location="${2}";
+    for xitem in "${parameters[@]}"; do
+      IFS='=' read -r key value <<< "$(
+        echo -e "${xitem}" | sed -e '1s|^\(-\)\{1,\}||'
+      )"; #echo -e "\nxitem: '${xitem}'\nkey: '${key}'\t->\tvalue: '${value}'";
+      [[ $key == "pytests-location" ]] && local pytests_location="${value}";
+      [[ $key = "output-filename" ]] && local output_filename="${value}";
+      [[ $key = "scripts-location" ]] && local scripts_location="${value}";
       #### ---------------------------------------------------------------------
-      ## [[ ${1#*\--} = "dry-run" ]] && local dry_run="${2}";
-      [[ ${1#*\--} = "verbose" ]] && local verbose='true';
+      ## [[ $key = "dry-run" ]] && local dry_run=true;
+      [[ $key = "verbose" ]] && local verbose=true
     done; IFS="${oIFS}";
     #### -----------------------------------------------------------------------
-    ## [[ ${#dry_run} -eq 0 ]] && local dry_run='false';
-    [[ ${#verbose} -eq 0 ]] && local verbose='false';
+    ## [[ -z ${dry_run} ]] && local dry_run=false;
+    [[ -z ${verbose} ]] && local verbose=false;
     #### -----------------------------------------------------------------------
 
     ## Define custom-parameter(s):
-    if [[ ${#pytests_location} -eq 0 ]]; then
+    if [[ -z ${pytests_location} ]]; then
             echo -e "Error: PyTests Location is invalid or not provided!";
             exit 1;
             # Ensure the file exists before proceeding
@@ -114,4 +131,4 @@ function extract_pytest_functions () {
     return 0;
 }; alias extract-pytest-functions='extract_pytest_functions';
 
-extract_pytest_functions ${@};
+extract_pytest_functions "${@}";

@@ -59,16 +59,23 @@ jobs:
           "workflow": "pkgs.module-dependencies",
           "params": {
             "required_packages": {
-              "Required Packages": "${{ inputs.required_packages }}"
+              "id": "Required Packages",
+              "value": "${{ inputs.required_packages }}"
             },
             "pytests_location": {
-              "PyTest Location": "${{ inputs.pytests_location }}"
+              "id": "PyTest Location",
+              "event": "${{ github.event.inputs.pytests_location }}",
+              "value": "tests/requirements/dependencies"
             },
             "package_location": {
-              "Package Location": "${{ inputs.package_location }}"
+              "id": "Package Location",
+              "event": "${{ github.event.inputs.package_location }}",
+              "value": "packages/requirements/dependencies"
             },
             "github_action": {
-              "GitHub Action": "${{ inputs.github_action }}"
+              "id": "GitHub Action",
+              "event": "${{ github.event.inputs.github_action }}",
+              "value": ".github/actions/test-summary"
             }
           }
         }

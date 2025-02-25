@@ -57,16 +57,23 @@ jobs:
           "workflow": "pytest.module-matrix",
           "params": {
             "pytests_location": {
-              "PyTest Location": "${{ inputs.pytests_location }}"
+              "id": "PyTest Location",
+              "event": "${{ github.event.inputs.pytests_location }}",
+              "value": "tests/requirements/dependencies"
             },
             "package_location": {
-              "Package Location": "${{ inputs.package_location }}"
+              "id": "Package Location",
+              "event": "${{ github.event.inputs.package_location }}",
+              "value": "packages/requirements/dependencies"
             },
             "github_action": {
-              "GitHub Action": "${{ inputs.github_action }}"
+              "id": "GitHub Action",
+              "event": "${{ github.event.inputs.github_action }}",
+              "value": ".github/actions/test-summary"
             },
             "artifacts_location": {
-              "Artifacts Location": "${{ inputs.artifacts_location }}"
+              "id": "Artifacts Location",
+              "value": "${{ inputs.artifacts_location }}"
             }
           }
         }

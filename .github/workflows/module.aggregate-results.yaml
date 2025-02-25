@@ -45,8 +45,14 @@ jobs:
         {
           "workflow": "module.aggregate-results",
           "params": {
-            "GitHub Action": "${{ inputs.github_action }}",
-            "Artifacts Location": "${{ inputs.artifacts_location }}"
+            "github_action": {
+              "id": "GitHub Action",
+              "value": "${{ inputs.github_action }}"
+            },
+            "github_action": {
+              "id": "Artifacts Location",
+              "value": "${{ inputs.artifacts_location }}"
+            }
           }
         }
 

@@ -25,24 +25,28 @@ on:
   #     branches:
   #       - master
 
-env:
-  github_actions: "${{ github.workspace }}/.github/actions"
-
 jobs:
 
   validate-parameters:
     runs-on: ubuntu-latest
+    outputs:
+      validated_params: ${{ steps.set-params.outputs.validated_params }}
     steps:
+
       - name: Checkout Repository
+        id: checkout_repository
         uses: actions/checkout@v4
 
       - name: Validate Input Parameters
+        id: validate_parameters
         env:
-          github_action: "${{ env.github_actions }}/test-summary"
+          github_action: "${{ github.workspace }}/.github/actions/test-summary"
         shell: bash
         run: |
 
           echo -e ${{ toJson( inputs.workflow_inputs ) }} ;
-
-          ${{ env.github_action }}/validate-input-parameters.shell \
-          --json=${{ toJson( inputs.workflow_inputs ) }} ;
+          validated_parameters=$(
+            ${{ env.github_action }}/validate-input-parameters.shell \
+            --json='${{ toJson( inputs.workflow_inputs ) }}'
+          )
+          echo "validated_params=$validated_parameters" >> "$GITHUB_OUTPUT"
