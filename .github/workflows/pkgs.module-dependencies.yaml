@@ -67,34 +67,24 @@ jobs:
           }
         }
 
-  debug-validations:
-    needs: workflow-parameters
-    runs-on: ubuntu-latest
-    steps:
-
-      - name: Debug Validated Params
-        id: debugging_parameters
-        run: |
-
-          echo "DEBUGGING VALIDATED PARAMS:"
-
-          echo "Raw: ${{ needs.workflow-parameters.outputs.validated }}"
-          echo "Property: ${{ needs.workflow-parameters.outputs.validated.package_location }}"
-
-          echo "To JSON: ${{ toJson( needs.workflow-parameters.outputs.validated ).pytests_location }}"
-          echo "From JSON: ${{ fromJson( needs.workflow-parameters.outputs.validated ).pytests_location }}"
-          echo "To/From JSON: ${{ toJson( fromJson( needs.workflow-parameters.outputs.validated ) ).pytests_location }}"
-          echo "From/To JSON: ${{ fromJson( toJson( needs.workflow-parameters.outputs.validated ) ).pytests_location }}"
-
-          echo "Parsed: $( echo '${{ needs.workflow-parameters.outputs.validated }}' | jq .package_location )"
-          echo "Extracted: $( echo '${{ needs.workflow-parameters.outputs.validated }}' | jq .package_location )"
+  # debug-validations:
+  #   needs: workflow-parameters
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #
+  #     - name: Debug Validated Params
+  #       id: debugging_parameters
+  #       run: |
+  #
+  #         echo "Raw: ${{ needs.workflow-parameters.outputs.validated }}"
+  #         echo "From JSON: ${{ fromJson( needs.workflow-parameters.outputs.validated ).pytests_location }}"
 
   install-packages:
     needs: workflow-parameters
     uses: ./.github/workflows/module.install-packages.yaml
     with:
       # package_location: ${{ inputs.package_location }}
-      package_location: ${{ needs.workflow-parameters.outputs.validated.package_location }}
+      package_location: ${{ fromJson( needs.workflow-parameters.outputs.validated).package_location }}
 
   pytest-module:
     needs: install-packages
