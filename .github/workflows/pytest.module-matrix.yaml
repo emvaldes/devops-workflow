@@ -56,22 +56,23 @@ jobs:
           "params": {
             "pytests_location": {
               "id": "PyTest Location",
-              "event": "${{ github.event.inputs.pytests_location }}",
-              "value": "tests/requirements/dependencies"
+              "value": "${{ github.event.inputs.pytests_location }}",
+              "default": "tests/requirements/dependencies"
             },
             "package_location": {
               "id": "Package Location",
-              "event": "${{ github.event.inputs.package_location }}",
-              "value": "packages/requirements/dependencies"
+              "value": "${{ github.event.inputs.package_location }}",
+              "default": "packages/requirements/dependencies"
             },
             "github_action": {
               "id": "GitHub Action",
-              "event": "${{ github.event.inputs.github_action }}",
-              "value": ".github/actions/test-summary"
+              "value": "${{ github.event.inputs.github_action }}",
+              "default": ".github/actions/test-summary"
             },
             "artifacts_location": {
               "id": "Artifacts Location",
-              "value": "${{ inputs.artifacts_location }}"
+              "value": "${{ github.event.inputs.artifacts_location }}",
+              "default": "artifacts"
             }
           }
         }

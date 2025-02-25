@@ -11,7 +11,8 @@ set -o pipefail ;  # Fail if any piped command fails
 ##     "workflow": "pkgs.module-dependencies",
 ##     "params": {
 ##         "param": {
-##             "key": "value"
+##             "id": "description"
+##             "value": "inputs.variable"
 ##         }
 ##     }
 ## }" \
@@ -25,8 +26,8 @@ set -o pipefail ;  # Fail if any piped command fails
 ##         "param": {
 ##             "key": {
 ##                 "id": "description"
-##                 "event": "github.event.inputs.variable",
-##                 "value": "inputs.variable"
+##                 "value": "github.event.inputs.variable",
+##                 "default": "inputs.variable"
 ##             }
 ##         }
 ##     }
@@ -82,27 +83,27 @@ function validate_parameters() {
       exit 1;
     fi;
 
-    ## Fix JSON structure: Ensure "event" always exists
-    json_object=$(echo "${json_object}" | jq -c '
-      .params |= with_entries(
-        if .value | has("event") then .
-        else .value.event = .value.value end
-      )'
-    )
+    # ## Fix JSON structure: Ensure "value" always exists
+    # json_object=$(echo "${json_object}" | jq -c '
+    #   .params |= with_entries(
+    #     if .value | has("value") then .
+    #     else .value.value = .value.default end
+    #   )'
+    # );
 
     ## We'll get all parameter data into an array.
     local lines
     mapfile -t lines < <(
       echo "${json_object}" \
       | jq -r '.params | to_entries[] |
-        "\(.key)\t\(.value.id)\t\(.value.event // "")\t\(.value.value // "")"'
+        "\(.key)\t\(.value.id)\t\(.value.value // "")\t\(.value.default // "")"'
     );
 
     # First pass: determine the maximum length of the left-hand side, i.e. "workflow[id]".
     local max_len=0;
     local line left len;
     for line in "${lines[@]}"; do
-      IFS=$'\t' read -r id header event <<< "$line";
+      IFS=$'\t' read -r id header value <<< "$line";
       left="${workflow_name}[${id}]";
       len=$( echo -n "$left" | wc -c );
       if (( len > max_len )); then max_len=$len; fi;
@@ -120,12 +121,12 @@ function validate_parameters() {
     # Second pass: print each parameter using the calculated width.
     for line in "${lines[@]}"; do
       # echo -e "${line}";
-      IFS=$'\t' read -r id title event value <<< "${line}";
+      IFS=$'\t' read -r id title value default <<< "${line}";
       left="${workflow_name}[${id}]";
-      # Use "event" if available; otherwise, use "value"
-      if [[ -n "${event}" && "${event}" != "null" ]]; then
-              param_value="${event}";
-        else  param_value="${value}";
+      # Use "value" if available; otherwise, use "default"
+      if [[ -n "${value}" && "${value}" != "null" ]]; then
+              param_value="${value}";
+        else  param_value="${default}";
       fi;
       if [[ -z "$param_value" ]]; then
               warnings+=("$(
@@ -152,21 +153,43 @@ function validate_parameters() {
       for valid in "${reporting[@]}"; do echo -e "${valid}"; done; echo -e;
     fi;
 
-    first=true; json_output="{";
-    for key in "${!report_json[@]}"; do
-      [[ $first == false ]] && json_output+=",";
-      ## **Trim spaces from param_value**
-      value=$(
-        echo "${report_json[$key]}" \
-        | sed -E 's/^[[:space:]]+|[[:space:]]+$//g'
-      )
-      json_output+="\"$key\":\"${value}\"";
-      first=false;
-    done; json_output+="}";
+    # Output Original JSON
+    jq . <<< "${json_object}";
+
+    # first=true; json_output="{";
+    # for key in "${!report_json[@]}"; do
+    #   [[ $first == false ]] && json_output+=",";
+    #   ## **Trim spaces from param_value**
+    #   value=$(
+    #     echo "${report_json[$key]}" \
+    #     | sed -E 's/^[[:space:]]+|[[:space:]]+$//g'
+    #   )
+    #   json_output+="\"$key\":\"${value}\"";
+    #   first=false;
+    # done; json_output+="}";
     # echo -e "JSON Output: '${json_output}'"
 
+    json_output=$(
+      printf '{' &&
+      first=true
+      for key in "${!report_json[@]}"; do
+        [[ $first == false ]] && printf ','
+        value="${report_json[$key]}"
+
+        # Ensure arrays remain arrays, not strings
+        if jq -e . <<< "$value" &>/dev/null; then
+          printf '"%s":%s' "$key" "$value"
+        else
+          printf '"%s":"%s"' "$key" "$value"
+        fi
+
+        first=false
+      done
+      printf '}'
+    )
+
     # Output transformed JSON
-    jq -c . <<< "${json_output}";
+    jq . <<< "${json_output}";
 
     return 0;
   }; alias validate-parameters='validate_parameters';

@@ -43,7 +43,7 @@ jobs:
             },
             "test_functions": {
               "id": "PyTest Functions",
-              "value": ${{ toJson( fromJson( inputs.test_functions ) ) }}
+              "value": ${{ toJson( inputs.test_functions ) }}
             }
           }
         }
@@ -120,7 +120,8 @@ jobs:
     strategy:
       matrix:
         python-version: ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
-        test_function: ${{ fromJson( needs.workflow.outputs.validated ).test_functions }}
+        # test_function: ${{ fromJson( needs.workflow.outputs.validated ).test_functions }}
+        test_function: ${{ fromJson( inputs.test_functions ) }}
     steps:
 
       - name: Checkout Repository
