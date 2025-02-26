@@ -152,6 +152,7 @@ jobs:
 
           ## Warning: Needs to be fixed
           pytests_location="tests/requirements/dependencies" ;
+
           pytest -v --junitxml=pytest-results.xml \
           "${pytests_location}/test_dependencies.py::${{ matrix.test_function }}" ;
 
