@@ -26,6 +26,7 @@ on:
 jobs:
 
   workflow:
+
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: |
@@ -44,6 +45,7 @@ jobs:
         }
 
   parameters:
+
     needs: workflow
     runs-on: ubuntu-latest
     steps:
@@ -52,15 +54,13 @@ jobs:
         id: workflow_parameters
         run: |
 
-          echo -n "GitHub Action: " ;
-          echo -e "${{ fromJson( needs.workflow.outputs.validated
-          ).github_action }}"
-
-          echo -n "Artifacts Location: " ;
-          echo -e "${{ fromJson( needs.workflow.outputs.validated
-          ).artifacts_location }}"
+          echo -e "GitHub Action: ${{ fromJson(
+            needs.workflow.outputs.validated ).github_action }}" ;
+          echo -e "Artifacts Location: ${{ fromJson(
+            needs.workflow.outputs.validated ).artifacts_location }}" ;
 
   aggregate-pytest-results:
+
     needs: [workflow, parameters]
     runs-on: ubuntu-latest
     outputs:
@@ -95,7 +95,7 @@ jobs:
         with:
           path: >
             ${{ fromJson( needs.workflow.outputs.validated
-            ).artifacts_location }}/
+          ).artifacts_location }}/
 
       - name: Verify Downloaded Artifacts
         id: verifying_artifacts
@@ -113,10 +113,12 @@ jobs:
       - name: Configure Workflow Status
         id: workflow_status
         run: |
+
           echo "aggregated_results=true" >> $GITHUB_ENV
           echo "Aggregate Results - GitHub Environment:\n${GITHUB_ENV}" ;
 
       - name: Listing Entire Project
         id: listing_project
         run: |
+
           tree -FCla --prune -I .git ${{ github.workspace }} ;

@@ -15,6 +15,7 @@ on:
 jobs:
 
   workflow:
+
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: |
@@ -28,7 +29,8 @@ jobs:
           }
         }
 
-  testing:
+  parameters:
+
     needs: workflow
     runs-on: ubuntu-latest
     steps:
@@ -37,15 +39,20 @@ jobs:
         id: workflow_parameters
         run: |
 
-          echo "Package Location: ${{ fromJson( needs.workflow.outputs.validated ).package_location }}"
+          echo -e "Package Location: ${{ fromJson(
+            needs.workflow.outputs.validated ).package_location }}" ;
 
   install-packages:
-    needs: [workflow, testing]
+
+    needs: [workflow, parameters]
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ${{ fromJson(vars.PYTHON_VERSIONS).python }}
         # Default value: { "python": [ "3.9", "3.10", "3.11" ] }
+    env:
+      package_location: >
+        ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
     steps:
 
       - name: Manage System Update (latest)
@@ -67,16 +74,12 @@ jobs:
 
       - name: Generate requirements.txt from JSON
         run: |
-          PACKAGE_PARENT_DIR="$(
-            dirname ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
-          )";
-          jq -r '
-            .dependencies[] |
-            if .version.target then
-              "\(.package)==\(.version.target)"
-            else
-              .package
-            end' "${PACKAGE_PARENT_DIR}/requirements.json" > requirements.txt ;
+
+          PACKAGE_PARENT_DIR="$( dirname ${{ env.package_location }} )";
+          jq -r '.dependencies[] |
+            if .version.target then "\(.package)==\(.version.target)"
+            else .package end' \
+          "${PACKAGE_PARENT_DIR}/requirements.json" > requirements.txt ;
           echo -e "Generated requirements.txt:" ;
           cat requirements.txt ;
 
@@ -89,11 +92,13 @@ jobs:
 
       - name: Install Dependencies
         run: |
+
           python -m pip install --upgrade pip ;
           python -m pip install -r requirements.txt ;
 
       - name: Generate Final requirements.txt
         run: |
+
           pip freeze > final-requirements.txt ;
           echo -e "Generated final-requirements.txt: " ;
           cat final-requirements.txt ;

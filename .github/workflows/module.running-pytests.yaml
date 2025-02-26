@@ -19,6 +19,7 @@ on:
 jobs:
 
   workflow:
+
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: |
@@ -31,12 +32,13 @@ jobs:
             },
             "test_functions": {
               "id": "PyTest Functions",
-              "value": ${{ toJson( inputs.test_functions ) }}
+              "value": ${{ toJson( fromJson( inputs.test_functions ) ) }}
             }
           }
         }
 
-  testing:
+  parameters:
+
     needs: workflow
     runs-on: ubuntu-latest
     steps:
@@ -45,12 +47,15 @@ jobs:
         id: workflow_parameters
         run: |
 
-          echo "PyTests Location: ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}"
-          echo "Test Functions: ${{ fromJson( needs.workflow.outputs.validated ).test_functions }}"
+          echo -e "PyTests Location: ${{ fromJson(
+            needs.workflow.outputs.validated ).pytests_location }}" ;
+          echo -e "Test Functions: ${{ fromJson(
+            needs.workflow.outputs.validated ).test_functions }}" ;
 
   # Experimental Cutter Matrix Using pytest_files.json
   pytest-files:
-    needs: [workflow, testing]
+
+    needs: [workflow, parameters]
     runs-on: ubuntu-latest
     outputs:
       pytest_files: ${{ steps.extract.outputs.pytest_files }}
@@ -66,16 +71,16 @@ jobs:
         run: |
           set ;
 
-      # - name: Extract Test Files from GITHUB_OUTPUT
-      #   id: extract
-      #   run: |
-      #
-      #     echo "Extracting test files from GITHUB_OUTPUT..." ;
-      #     if [[ -z "${{ needs.extract-pytests.outputs.pytest_files }}" ]]; then
-      #       echo "pytest_files=[]" >> $GITHUB_OUTPUT ;
-      #     else
-      #       echo "pytest_files=${{ needs.extract-pytests.outputs.pytest_files }}" >> $GITHUB_OUTPUT
-      #     fi ;
+      - name: Extract Test Files from GITHUB_OUTPUT
+        id: extract
+        run: |
+
+          echo "Extracting test files from GITHUB_OUTPUT..." ;
+          if [[ -z "${{ needs.extract-pytests.outputs.pytest_files }}" ]]; then
+            echo "pytest_files=[]" >> $GITHUB_OUTPUT ;
+          else
+            echo "pytest_files=${{ needs.extract-pytests.outputs.pytest_files }}" >> $GITHUB_OUTPUT ;
+          fi ;
 
   # outter-matrix:
   #   needs: pytest-files
@@ -90,18 +95,24 @@ jobs:
   #         echo "Processing test file: ${{ matrix.pytest_file }}"
 
   running-pytests:
+
     needs: pytest-files
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
-        # test_function: ${{ fromJson( needs.workflow.outputs.validated ).test_functions }}
-        test_function: ${{ fromJson( inputs.test_functions ) }}
+        python-version: >
+          ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
+        test_function: >
+          ${{ fromJson( needs.workflow.outputs.validated ).test_functions }}
+    env:
+      pytests_location: >
+        "${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}" ;
     steps:
 
       - name: Install System Packages
         id: installing_system_packages
         run: |
+
           sudo apt-get update --yes ;
           sudo apt-get install tree jq --yes ;
 
@@ -136,28 +147,11 @@ jobs:
         run: |
 
           if [[ ! -f requirements.txt ]]; then
-                  echo "ERROR: requirements.txt was not found!"
-                  exit 1
+              echo -e "ERROR: requirements.txt was not found!" ;
+              exit 1 ;
             else  echo -e "requirements.txt found!" ;
-                  cat requirements.txt ;
-          fi
-
-          # if [[ -f requirements.txt ]]; then
-          #   echo "Uploading requirements.txt"
-          #   actions/upload-artifact@v4 --name requirements-${{ matrix.python-version }} \
-          #                              --path requirements.txt ;
-          # else
-          #   echo "ERROR: requirements.txt is missing before upload!" ;
-          #   exit 1 ;
-          # fi ;
-
-      - name: Upload requirements.txt
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: requirements-${{ matrix.python-version }}
-          path: requirements.txt
-          overwrite: true
+              cat requirements.txt ;
+          fi ;
 
       - name: Reinstall Dependencies from Cache
         run: |
@@ -168,9 +162,7 @@ jobs:
       - name: Run Pytest Function
         run: |
 
-          # pytests_location="${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}" ;
           pytests_location="tests/requirements/dependencies" ;  ## Warning: Needs to be fixed
-
           pytest -v --junitxml=pytest-results.xml \
           "${pytests_location}/test_dependencies.py::${{ matrix.test_function }}" ;
 
