@@ -30,8 +30,7 @@ function sanitize_parameters() {
                             echo -e "${value}" \
                             | tr -d '\n\t' \
                             | sed -e 's/  */ /g' -e 's|\ *$||g' \
-                            | sed -e 's|\ \"|"|g' -e 's|\"\ |"|g' \
-                            | jq -c .
+                            | sed -e 's|\ \"|"|g' -e 's|\"\ |"|g'
                           );
                           if jq empty <<< "${fixed_value}" >/dev/null 2>&1; then
                                     value=$( echo "$fixed_value" | jq -c . );

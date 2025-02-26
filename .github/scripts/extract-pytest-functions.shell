@@ -21,7 +21,7 @@ function extract_pytest_functions () {
     # read -ra parameters <<< "$( sanitize_parameters "${@}" )";
     # ✅ Capture output of sanitize_parameters as an array (preserving spaces)
     mapfile -t parameters < <( ${script_dirname}/sanitize-parameters.shell "${@}" );
-    # echo -e; for param in "${parameters[@]}"; do echo -e "Parameter: '${param}'"; done;
+    echo -e; for param in "${parameters[@]}"; do echo -e "Parameter: '${param}'"; done;
 
     oIFS="${IFS}";
     for xitem in "${parameters[@]}"; do
