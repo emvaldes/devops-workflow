@@ -106,10 +106,14 @@ jobs:
     needs: running-pytests
     uses: ./.github/workflows/module.aggregate-results.yaml
     with:
-      github_scripts: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}
-      artifacts_location: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}
+      # github_scripts: >-
+      #   ${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}
+      ## Warning: Needs to be fixed
+      github_scripts: ".github/scripts"
+      # artifacts_location: >-
+      #   ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}
+      ## Warning: Needs to be fixed
+      artifacts_location: "artifacts"
 
   workflow-completed:
     needs: aggregating-pytests
