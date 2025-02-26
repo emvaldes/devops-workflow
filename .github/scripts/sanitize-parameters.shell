@@ -7,8 +7,9 @@
 set -e ;           # Exit on error
 set -o pipefail ;  # Fail if any piped command fails
 
+## Handling JSON parameters (agnostic implementation)
 function sanitize_parameters() {
-    ## Handling JSON parameters (agnostic implementation)
+
     declare -a parameters=();
     local current="";
     local regex='^-{1,}[A-Za-z0-9_-]+(=.*)?$';
@@ -16,21 +17,28 @@ function sanitize_parameters() {
       if [[ "${arg}" =~ ${regex} ]]; then
               [[ -n "${current}" ]] && parameters+=( "${current}" );
               key="${arg%%=*}"; value="${arg#*=}";
+              # echo -e "Key: '${key}'\nValue: '${value}'";
               if [[ "${key}" != "${value}" ]]; then
                       # echo -e "\nEvaluating Content: ${value}";
                       if jq empty <<< "${value}" >/dev/null 2>&1; then
-                          # echo -e "Found Valid JSON"
-                          value=$(echo "$value" | jq -c .)
+                          # echo -e "Found Valid JSON";
+                          value=$( echo "$value" | jq -c . );
                           # echo -e "Compressed JSON:\n${value}"
                       else
-                          # echo -e "Possible Malformed JSON. Attempting Fix..."
-                          fixed_value=$( echo "${value}" | tr -d '\n' | sed 's/  */ /g' );
+                          # echo -e "Possible Malformed JSON. Attempting to fix it..."
+                          fixed_value=$(
+                            echo -e "${value}" \
+                            | tr -d '\n\t' \
+                            | sed -e 's/  */ /g' -e 's|\ *$||g' \
+                            | sed -e 's|\ \"|"|g' -e 's|\"\ |"|g' \
+                            | jq -c .
+                          );
                           if jq empty <<< "${fixed_value}" >/dev/null 2>&1; then
-                                    value=$(echo "$fixed_value" | jq -c .)
-                                    # echo -e "Fixed and Compressed JSON:\n${value}"
+                                    value=$( echo "$fixed_value" | jq -c . );
+                            #         echo -e "Fixed and Compressed JSON:\n${value}"
                             # else  echo -e "Non-JSON Content or Unfixable JSON:\n${value}"
-                          fi
-                      fi
+                          fi;
+                      fi;
                 else  value='';
               fi;
               key="$( sed -e '1s|^\(-\)\{1,\}||' <<< "${arg%%=*}" )";
@@ -38,8 +46,12 @@ function sanitize_parameters() {
         else  current+=" ${arg}";
       fi;
     done; [[ -n "${current}" ]] && parameters+=( "${current}" );
+    # echo -e; for param in "${parameters[@]}"; do echo -e "Parameter: '${param}'"; done;
+
     ## Correct way to return an array: Print each element space-separated
-    printf "%s\n" "${parameters[@]}"
+    echo -e;
+    printf "%s\n" "${parameters[@]}";
+
 }; alias sanitize-parameters='sanitize_parameters';
 
 sanitize_parameters "${@}";

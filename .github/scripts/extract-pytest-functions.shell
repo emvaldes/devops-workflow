@@ -21,7 +21,7 @@ function extract_pytest_functions () {
     # read -ra parameters <<< "$( sanitize_parameters "${@}" )";
     # ✅ Capture output of sanitize_parameters as an array (preserving spaces)
     mapfile -t parameters < <( ${script_dirname}/sanitize-parameters.shell "${@}" );
-    # echo -e; for param in "${parameters[@]}"; do echo -e "Parameter: ${param}"; done;
+    # echo -e; for param in "${parameters[@]}"; do echo -e "Parameter: '${param}'"; done;
 
     oIFS="${IFS}";
     for xitem in "${parameters[@]}"; do
@@ -32,11 +32,13 @@ function extract_pytest_functions () {
       [[ $key = "output-filename" ]] && local output_filename="${value}";
       [[ $key = "scripts-location" ]] && local scripts_location="${value}";
       #### ---------------------------------------------------------------------
-      ## [[ $key = "dry-run" ]] && local dry_run=true;
-      [[ $key = "verbose" ]] && local verbose=true
+      ## $key == "dry-run" ]] && local dry_run=true;
+      [[ $key == "verbose" ]] && local verbose=true
+      [[ $key == "debug" ]] && local debug=true
     done; IFS="${oIFS}";
     #### -----------------------------------------------------------------------
     ## [[ -z ${dry_run} ]] && local dry_run=false;
+    [[ -z ${debug} ]] && local debug=false;
     [[ -z ${verbose} ]] && local verbose=false;
     #### -----------------------------------------------------------------------
 

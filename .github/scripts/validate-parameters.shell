@@ -44,7 +44,7 @@ function validate_parameters() {
     # read -ra parameters <<< "$( sanitize_parameters "${@}" )";
     # ✅ Capture output of sanitize_parameters as an array (preserving spaces)
     mapfile -t parameters < <( ${script_dirname}/sanitize-parameters.shell "${@}" );
-    # echo -e; for param in "${parameters[@]}"; do echo -e "Parameter: ${param}"; done;
+    echo -e; for param in "${parameters[@]}"; do echo -e "Parameter: ${param}"; done;
 
     oIFS="${IFS}";
     for xitem in "${parameters[@]}"; do
@@ -82,14 +82,6 @@ function validate_parameters() {
         echo -e "Warning: Workflow ${warning_message}";
       exit 1;
     fi;
-
-    # ## Fix JSON structure: Ensure "value" always exists
-    # json_object=$(echo "${json_object}" | jq -c '
-    #   .params |= with_entries(
-    #     if .value | has("value") then .
-    #     else .value.value = .value.default end
-    #   )'
-    # );
 
     ## We'll get all parameter data into an array.
     local lines
@@ -136,7 +128,7 @@ function validate_parameters() {
               invalid=true;
         else  # Use left-aligned field of width max_len
               reporting+=("$(
-                printf "%-${max_len}s = %s\n" "${left}" "${param_value}";
+                printf "%-${max_len}s = %s\n" "${left}" "'${param_value}'";
               )");
               report_json["${id}"]="${param_value}";
       fi;
@@ -156,23 +148,18 @@ function validate_parameters() {
     fi;
 
     json_output=$(
-      printf '{' &&
-      first=true
+      printf '{' &&   first=true;
       for key in "${!report_json[@]}"; do
-        [[ $first == false ]] && printf ','
-        value="${report_json[$key]}"
-
+        [[ $first == false ]] && printf ',';
+        value="${report_json[$key]}";
         # Ensure arrays remain arrays, not strings
         if jq -e . <<< "$value" &>/dev/null; then
-          printf '"%s":%s' "$key" "$value"
-        else
-          printf '"%s":"%s"' "$key" "$value"
-        fi
-
-        first=false
-      done
-      printf '}'
-    )
+                printf '"%s":%s' "$key" "$value";
+          else  printf '"%s":"%s"' "$key" "$value";
+        fi;
+        first=false;
+      done; printf '}';
+    );
 
     # Output transformed JSON
     jq . <<< "${json_output}";
