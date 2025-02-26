@@ -96,9 +96,9 @@ jobs:
         id: extract
         run: |
 
-        extracted=$(
-          ${{ env.github_scripts }}/extract-pytest-functions.shell --pytests-location="${{ env.pytests_location }}" --scripts-location="${{ env.github_scripts }}" --output-filename="${{ env.output_filename }}"
-        ) ; # echo -e "Extracted Parameters:\n${extracted}" ;
+          extracted=$(
+            ${{ env.github_scripts }}/extract-pytest-functions.shell --pytests-location="${{ env.pytests_location }}" --scripts-location="${{ env.github_scripts }}" --output-filename="${{ env.output_filename }}"
+          ) ; # echo -e "Extracted Parameters:\n${extracted}" ;
 
           ## Validate Test-Functions JSON before proceeding
           if [[ -e ${{ env.output_filename }} ]]; then
