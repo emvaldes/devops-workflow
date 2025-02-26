@@ -81,10 +81,11 @@ jobs:
       pytest_files: ${{ steps.extract.outputs.pytest_files }}
       test_functions: ${{ steps.extract.outputs.test_functions }}
     env:
-      github_scripts: ${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}
-      pytests_location: |
+      github_scripts: >-
+        ${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}
+      pytests_location: >-
         ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
-      output_filename: >
+      output_filename: >-
         ${{ fromJson( needs.workflow.outputs.validated ).output_filename }}
     steps:
 
