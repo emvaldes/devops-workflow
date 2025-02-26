@@ -45,25 +45,23 @@ jobs:
 
           ## Ensure the variable is set
           if [[ -z "${validated}" ]]; then
-              echo "🚨 ERROR: validated variable is empty!" ;
-              exit 1 ;
+                  echo "🚨 ERROR: the validated response is empty!" ;
+                  exit 1 ;
+            else  ## Validate JSON and capture errors
+                  echo "${validated}" | jq . > /dev/null 2>&1 ;
+                  if [[ $? -ne 0 ]]; then
+                      echo "🚨 ERROR: JSON is malformed!" ;
+                      echo "Raw JSON received:" ;
+                      echo "${validated}" ;
+                      exit 1 ;
+                  fi ;
           fi ;
 
-          ## Validate JSON and capture errors
-          echo "${validated}" | jq . > /dev/null 2>&1 ;
-          if [[ $? -ne 0 ]]; then
-              echo "🚨 ERROR: JSON is malformed!" ;
-              echo "Raw JSON received:" ;
-              echo "${validated}" ;
-              exit 1 ;
-          fi ;
+          # Ensure JSON is formatted as a single line
+          validated_compact=$(echo "$validated" | jq -c .)
 
-          ## Convert JSON to a single-line format
-          validated_compact=$(echo "${validated}" | jq -c . ) ;
+          # Debugging: Print the formatted JSON before setting it as output
+          echo "Validated JSON Output: ${validated_compact}"
 
-          ## Confirm final JSON format
-          echo "✅ Valid JSON:" ;
-          echo "${validated_compact}" | jq . ;
-
-          ## Write to GitHub output
-          echo "validated=$validated_compact" >> "$GITHUB_OUTPUT" ;
+          # Set the validated parameters to GitHub output
+          echo "validated=$validated_compact" >> "$GITHUB_OUTPUT"

@@ -99,6 +99,12 @@ jobs:
         test_function: ${{ fromJson( inputs.test_functions ) }}
     steps:
 
+      - name: Install System Packages
+        id: installing_system_packages
+        run: |
+          sudo apt-get update --yes ;
+          sudo apt-get install tree jq --yes ;
+
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -120,19 +126,22 @@ jobs:
           name: requirements-${{ matrix.python-version }}
           path: .
 
+      - name: Listing Entire Project
+        id: listing_project
+        run: |
+
+          tree -FCla --prune -I .git ${{ github.workspace }} ;
+
       - name: Verify requirements.txt Exists
         run: |
 
-          # ls -shal . ;
-          find . ;
+          if [[ ! -f requirements.txt ]]; then
+                  echo "ERROR: requirements.txt was not found!"
+                  exit 1
+            else  echo -e "requirements.txt found!" ;
+                  cat requirements.txt ;
+          fi
 
-          # # if [[ ! -f requirements.txt ]]; then
-          # #   echo -e "ERROR: requirements.txt is missing!" ;
-          # #   exit 1 ;
-          # # fi ;
-          # # echo -e "requirements.txt found!" ;
-          # # cat requirements.txt ;
-          #
           # if [[ -f requirements.txt ]]; then
           #   echo "Uploading requirements.txt"
           #   actions/upload-artifact@v4 --name requirements-${{ matrix.python-version }} \
@@ -142,17 +151,13 @@ jobs:
           #   exit 1 ;
           # fi ;
 
-          if [[ ! -f requirements.txt ]]; then
-            echo "ERROR: requirements.txt was not found!"
-            exit 1
-          fi
-
       - name: Upload requirements.txt
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: requirements-${{ matrix.python-version }}
           path: requirements.txt
+          overwrite: true
 
       - name: Reinstall Dependencies from Cache
         run: |
