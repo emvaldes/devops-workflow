@@ -38,7 +38,7 @@ jobs:
   workflow:
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
-      workflow_inputs: |
+      workflow_inputs: >-
         {
           "workflow": "pytest.module-matrix",
           "params": {
@@ -87,9 +87,9 @@ jobs:
     needs: [workflow, parameters]
     uses: ./.github/workflows/module.extract-pytests.yaml
     with:
-      github_scripts: |
+      github_scripts: >-
         ${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}
-      pytests_location: |
+      pytests_location: >-
         ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
 
   running-pytests:
@@ -97,17 +97,18 @@ jobs:
     uses: ./.github/workflows/module.running-pytests.yaml
     with:
       test_functions: ${{ needs.extracting-pytests.outputs.test_functions }}
-      # pytests_location: |
+      # pytests_location: >-
       #   ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
-      pytests_location: 'tests/requirements/dependencies'  ## Warning: Needs to be fixed
+      pytests_location: >-
+        'tests/requirements/dependencies'  ## Warning: Needs to be fixed
 
   aggregating-pytests:
     needs: running-pytests
     uses: ./.github/workflows/module.aggregate-results.yaml
     with:
-      github_scripts: |
+      github_scripts: >-
         ${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}
-      artifacts_location: |
+      artifacts_location: >-
         ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}
 
   workflow-completed:
@@ -120,4 +121,5 @@ jobs:
       - name: Workflow Completion
         id: workflow_status
         run: |
+
           echo "Dependencies Matrix - GitHub Environment:\n${GITHUB_ENV}" ;

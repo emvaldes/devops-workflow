@@ -29,7 +29,7 @@ jobs:
 
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
-      workflow_inputs: |
+      workflow_inputs: >-
         {
           "workflow": "module.aggregate-results",
           "params": {
@@ -66,9 +66,9 @@ jobs:
     outputs:
       aggregated_results: "true"
     env:
-      github_scripts: |
+      github_scripts: >-
         ${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}
-      artifacts_location: |
+      artifacts_location: >-
         ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}
     steps:
 
@@ -93,7 +93,7 @@ jobs:
         id: downloading_artifacts
         uses: actions/download-artifact@v4
         with:
-          path: |
+          path: >-
             ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}/
 
       - name: Verify Downloaded Artifacts

@@ -22,7 +22,7 @@ jobs:
 
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
-      workflow_inputs: |
+      workflow_inputs: >-
         {
           "workflow": "module.running-pytests",
           "params": {
@@ -100,12 +100,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: |
+        python-version: >-
           ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
-        test_function: |
+        test_function: >-
           ${{ fromJson( needs.workflow.outputs.validated ).test_functions }}
     env:
-      pytests_location: |
+      pytests_location: >-
         ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
     steps:
 

@@ -18,7 +18,7 @@ jobs:
 
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
-      workflow_inputs: |
+      workflow_inputs: >-
         {
           "workflow": "module.exectute-module",
           "params": {
@@ -50,7 +50,7 @@ jobs:
       matrix:
         python-version: ${{ fromJson(vars.PYTHON_VERSIONS).python }}
     env:
-      package_location: >
+      package_location: >-
         ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
     steps:
 
