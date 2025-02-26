@@ -126,4 +126,4 @@ jobs:
         id: workflow_status
         run: |
 
-          echo "Dependencies Matrix - GitHub Environment:\n${GITHUB_ENV}" ;
+          echo -e "Dependencies Matrix - GitHub Environment:\n${GITHUB_ENV}" ;
