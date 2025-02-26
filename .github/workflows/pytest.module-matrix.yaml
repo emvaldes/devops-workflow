@@ -99,7 +99,7 @@ jobs:
       test_functions: ${{ needs.extracting-pytests.outputs.test_functions }}
       # pytests_location: >
       #   ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
-      # pytests_location: 'tests/requirements/dependencies'  ## Warning: Needs to be fixed
+      pytests_location: 'tests/requirements/dependencies'  ## Warning: Needs to be fixed
 
   aggregating-pytests:
     needs: running-pytests
