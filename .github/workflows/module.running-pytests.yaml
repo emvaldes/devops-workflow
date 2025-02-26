@@ -106,7 +106,7 @@ jobs:
           ${{ fromJson( needs.workflow.outputs.validated ).test_functions }}
     env:
       pytests_location: >
-        "${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}" ;
+        ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
     steps:
 
       - name: Install System Packages

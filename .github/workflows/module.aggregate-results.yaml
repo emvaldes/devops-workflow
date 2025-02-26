@@ -67,7 +67,7 @@ jobs:
       aggregated_results: "true"
     env:
       github_scripts: >
-        "${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}"
+        ${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}
       artifacts_location: >
         ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}
     steps:

@@ -82,11 +82,11 @@ jobs:
       test_functions: ${{ steps.extract.outputs.test_functions }}
     env:
       github_scripts: >
-        "${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}"
+        ${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}
       pytests_location: >
-        "${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}"
+        ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
       output_filename: >
-        "${{ fromJson( needs.workflow.outputs.validated ).output_filename }}"
+        ${{ fromJson( needs.workflow.outputs.validated ).output_filename }}
     steps:
 
       - name: Checkout Repository
