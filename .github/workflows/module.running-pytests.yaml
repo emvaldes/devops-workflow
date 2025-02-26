@@ -133,7 +133,9 @@ jobs:
           path: .
 
       - name: Debug: List Files
-        run: ls -R .
+        run: |
+
+          ls -R .
 
       - name: Verify requirements.txt Exists
         run: |
