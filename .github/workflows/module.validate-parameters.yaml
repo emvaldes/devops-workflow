@@ -53,16 +53,29 @@ jobs:
           validated=$(
             ${{ env.github_action }}/validate-parameters.shell \
             --json='${{ inputs.workflow_inputs }}'
-          ) ;
-          echo -e "Validated Parameters:\n'${validated}'" ;
+          ) ; # echo -e "Validated Parameters:\n${validated}" ;
 
-          # if jq -e . <<< "${validated}" &>/dev/null; then
-          #         echo "validated=$validated" >> "$GITHUB_OUTPUT" ;
-          #   else  echo -e "Warning: Invalid JSON Parameters" ;
-          #         echo "🚨 ERROR: JSON is malformed!" ;
-          #         echo "Raw JSON: ${validated}" ;
-          #         exit 1 ;
-          # fi;
+          ## Ensure the variable is set
+          if [[ -z "${validated}" ]]; then
+              echo "🚨 ERROR: validated variable is empty!" ;
+              exit 1 ;
+          fi ;
 
-          echo "$validated" | jq . || exit 1 ;
-          echo "validated=$( echo $validated | jq -c .)" >> "$GITHUB_OUTPUT" ;
+          ## Validate JSON and capture errors
+          echo "${validated}" | jq . > /dev/null 2>&1 ;
+          if [[ $? -ne 0 ]]; then
+              echo "🚨 ERROR: JSON is malformed!" ;
+              echo "Raw JSON received:" ;
+              echo "${validated}" ;
+              exit 1 ;
+          fi ;
+
+          ## Convert JSON to a single-line format
+          validated_compact=$(echo "${validated}" | jq -c . ) ;
+
+          ## Confirm final JSON format
+          echo "✅ Valid JSON:" ;
+          echo "${validated_compact}" | jq . ;
+
+          ## Write to GitHub output
+          echo "validated=$validated_compact" >> "$GITHUB_OUTPUT" ;

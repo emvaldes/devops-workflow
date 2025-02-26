@@ -148,12 +148,21 @@ jobs:
       - name: Verify requirements.txt Exists
         run: |
 
-          if [[ ! -f requirements.txt ]]; then
-            echo -e "ERROR: requirements.txt is missing!" ;
+          # if [[ ! -f requirements.txt ]]; then
+          #   echo -e "ERROR: requirements.txt is missing!" ;
+          #   exit 1 ;
+          # fi ;
+          # echo -e "requirements.txt found!" ;
+          # cat requirements.txt ;
+
+          if [[ -f requirements.txt ]]; then
+            echo "Uploading requirements.txt"
+            actions/upload-artifact@v4 --name requirements-${{ matrix.python-version }} \
+                                       --path requirements.txt ;
+          else
+            echo "ERROR: requirements.txt is missing before upload!" ;
             exit 1 ;
           fi ;
-          echo -e "requirements.txt found!" ;
-          cat requirements.txt ;
 
       - name: Reinstall Dependencies from Cache
         run: |
@@ -164,7 +173,8 @@ jobs:
       - name: Run Pytest Function
         run: |
 
-          pytests_location="${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}" ;
+          # pytests_location="${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}" ;
+          pytests_location="tests/requirements/dependencies" ;  ## Warning: Needs to be fixed
           pytest -v --junitxml=pytest-results.xml \
           "${pytests_location}/test_dependencies.py::${{ matrix.test_function }}" ;
 
