@@ -17,25 +17,11 @@ set -o pipefail ;  # Fail if any piped command fails
 function extract_pytest_functions () {
     ## tracking_process ${FUNCNAME} "${@}";
 
-    ## Handling JSON parameters (agnostic implementation)
-    declare -a parameters=();
-    local current="";
-    local regex='^-{1,}[A-Za-z0-9_-]+(=.*)?$';
-    for arg in "$@"; do
-      if [[ "${arg}" =~ ${regex} ]]; then
-              [[ -n "${current}" ]] && parameters+=( "${current}" );
-              key="${arg%%=*}"; value="${arg#*=}";
-              if [[ "${key}" != "${value}" ]]; then
-                      if jq -e . <<< "${value}" &>/dev/null; then
-                        value=$(jq -c . <<< "$value");
-                      fi;
-                else  value='';
-              fi;
-              key="$( sed -e '1s|^\(-\)\{1,\}||' <<< "${arg%%=*}" )";
-              current="${key}=${value}";
-        else  current+=" ${arg}";
-      fi;
-    done; [[ -n "${current}" ]] && parameters+=( "${current}" );
+    script_dirname="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
+    # read -ra parameters <<< "$( sanitize_parameters "${@}" )";
+    # ✅ Capture output of sanitize_parameters as an array (preserving spaces)
+    mapfile -t parameters < <( ${script_dirname}/sanitize-parameters.shell "${@}" );
+    # echo -e; for param in "${parameters[@]}"; do echo -e "Parameter: ${param}"; done;
 
     oIFS="${IFS}";
     for xitem in "${parameters[@]}"; do
