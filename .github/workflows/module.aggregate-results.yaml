@@ -43,7 +43,7 @@ jobs:
           }
         }
 
-  testing:
+  parameters:
     needs: workflow
     runs-on: ubuntu-latest
     steps:
@@ -52,19 +52,30 @@ jobs:
         id: workflow_parameters
         run: |
 
-          echo "GitHub Action: ${{ fromJson( needs.workflow.outputs.validated ).github_action }}"
-          echo "Artifacts Location: ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}"
+          echo -n "GitHub Action: " ;
+          echo -e "${{ fromJson( needs.workflow.outputs.validated
+          ).github_action }}"
+
+          echo -n "Artifacts Location: " ;
+          echo -e "${{ fromJson( needs.workflow.outputs.validated
+          ).artifacts_location }}"
 
   aggregate-pytest-results:
-    needs: [workflow, testing]
+    needs: [workflow, parameters]
     runs-on: ubuntu-latest
     outputs:
       aggregated_results: "true"
+    env:
+      github_actions: >
+        "${{ fromJson( needs.workflow.outputs.validated ).github_action }}"
+      artifacts_location: >
+        ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}
     steps:
 
       - name: Install System Packages
         id: installing_system_packages
         run: |
+
           sudo apt-get update --yes ;
           sudo apt-get install tree jq --yes ;
 
@@ -76,17 +87,20 @@ jobs:
         id: locating_artifacts
         run: |
 
-          ${{ fromJson( needs.workflow.outputs.validated ).github_action }}/inspect-artifacts-state.shell ;
+          ${{ env.github_actions }}/inspect-artifacts-state.shell ;
 
       - name: Download All Test Artifacts
         id: downloading_artifacts
         uses: actions/download-artifact@v4
         with:
-          path: ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}/
+          path: >
+            ${{ fromJson( needs.workflow.outputs.validated
+            ).artifacts_location }}/
 
       - name: Verify Downloaded Artifacts
         id: verifying_artifacts
         run: |
+
           echo -e "Listing downloaded artifacts..." ;
           tree -FCla --prune -I .git ./artifacts 2>/dev/null ;
 
@@ -94,7 +108,7 @@ jobs:
         id: aggregating_results
         run: |
 
-          ${{ fromJson( needs.workflow.outputs.validated ).github_action }}/aggregate-pytest-results.shell ;
+          ${{ env.github_actions }}/aggregate-pytest-results.shell ;
 
       - name: Configure Workflow Status
         id: workflow_status
