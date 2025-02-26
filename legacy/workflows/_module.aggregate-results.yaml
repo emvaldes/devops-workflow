@@ -8,7 +8,7 @@ on:
 
     inputs:
 
-      github_scripts:
+      github_action:
         required: true
         type: string
 
@@ -25,51 +25,23 @@ on:
 
 jobs:
 
-  workflow:
-
+  workflow-parameters:
     uses: ./.github/workflows/module.validate-parameters.yaml
     with:
       workflow_inputs: |
         {
           "workflow": "module.aggregate-results",
           "params": {
-            "github_scripts": {
-              "id": "GitHub Scripts",
-              "value": "${{ inputs.github_scripts }}"
-            },
-            "artifacts_location": {
-              "id": "Artifacts Location",
-              "value": "${{ inputs.artifacts_location }}"
-            }
+            "GitHub Action": "${{ inputs.github_action }}",
+            "Artifacts Location": "${{ inputs.artifacts_location }}"
           }
         }
 
-  parameters:
-
-    needs: workflow
-    runs-on: ubuntu-latest
-    steps:
-
-      - name: Module - Aggregate-Results (Parameters)
-        id: workflow_parameters
-        run: |
-
-          echo -e "GitHub Action: ${{ fromJson(
-            needs.workflow.outputs.validated ).github_scripts }}" ;
-          echo -e "Artifacts Location: ${{ fromJson(
-            needs.workflow.outputs.validated ).artifacts_location }}" ;
-
   aggregate-pytest-results:
-
-    needs: [workflow, parameters]
+    needs: workflow-parameters
     runs-on: ubuntu-latest
     outputs:
       aggregated_results: "true"
-    env:
-      github_scripts: >
-        "${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}"
-      artifacts_location: >
-        ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}
     steps:
 
       - name: Install System Packages
@@ -87,14 +59,13 @@ jobs:
         id: locating_artifacts
         run: |
 
-          ${{ env.github_scripts }}/inspect-artifacts-state.shell ;
+          ${{ inputs.github_action }}/inspect-artifacts-state.shell ;
 
       - name: Download All Test Artifacts
         id: downloading_artifacts
         uses: actions/download-artifact@v4
         with:
-          path: >
-            ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}/
+          path: ${{ inputs.artifacts_location }}/
 
       - name: Verify Downloaded Artifacts
         id: verifying_artifacts
@@ -107,17 +78,15 @@ jobs:
         id: aggregating_results
         run: |
 
-          ${{ env.github_scripts }}/aggregate-pytest-results.shell ;
+          ${{ inputs.github_action }}/aggregate-pytest-results.shell ;
 
       - name: Configure Workflow Status
         id: workflow_status
         run: |
-
           echo "aggregated_results=true" >> $GITHUB_ENV
           echo "Aggregate Results - GitHub Environment:\n${GITHUB_ENV}" ;
 
       - name: Listing Entire Project
         id: listing_project
         run: |
-
           tree -FCla --prune -I .git ${{ github.workspace }} ;

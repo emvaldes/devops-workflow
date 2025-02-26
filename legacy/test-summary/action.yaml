@@ -14,7 +14,7 @@ outputs:
     value: "test_results.json"
 
 env:
-  GITHUB_SCRIPTS: ${{ github.workspace }}/.github/scripts
+  GITHUB_ACTION: ${{ github.workspace }}/.github/actions/test-summary
 
 runs:
   using: "composite"
@@ -29,10 +29,15 @@ runs:
         name: ${{ inputs.artifact_name }}
         path: artifacts/  # Ensures test results go to the correct location
 
+    - name: Ensure Shell Script is Executable
+      shell: bash
+      run: |
+        chmod +x ${{ env.GITHUB_ACTION }}/aggregate-pytest-results.shell ;
+
     - name: Run Summary Script
       shell: bash
       run: |
-        ./${{ env.GITHUB_SCRIPTS }}/aggregate-pytest-results.shell ;
+        ./${{ env.GITHUB_ACTION }}/aggregate-pytest-results.shell ;
 
     - name: Verify JSON Output
       shell: bash

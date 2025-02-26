@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+
+# set -x ;
+# pwd ;
+# tree artifacts/ ;
+
+set -e ;             # Exit on error
+set -o pipefail ;    # Fail if any piped command fails
+shopt -s nullglob ;  # Prevent errors if no files are found
+
+test_functions='artifacts/test_functions.log' ;
+test_results='artifacts/test_results.json' ;
+
+echo -e "\nAggregating test results..." ;
+find artifacts -type f -name "*.xml" > ${test_functions} ;
+
+# Initialize JSON structure
+jq -n '{test_summary: []}' > ${test_results} 2>/dev/null ;
+
+if [[ ! -s ${test_functions} ]]; then
+  echo -e "No test result files found in 'artifacts/'!" ;
+  exit 1 ;
+fi ;
+
+while read -r test_file; do
+  echo -e "\nProcessing: ${test_file}" ;
+
+  # Normalize XML (Remove new lines & extra spaces)
+  xml_content=$(
+    tr -d '\n' < "${test_file}" | sed -e 's/\([[:blank:]]\)\{2,\}/ /g'
+  ) ;
+
+  # echo -e "Normalized XML Content:" ;
+  echo -e "${xml_content}" ;
+
+  python_version=$( echo -e "${test_file}" \
+    | sed -E 's/.*pytest-results-([0-9]+\.[0-9]+)-.*/\1/' ) ;
+
+  test_name=$( basename "$(dirname "${test_file}")" \
+    | sed -E 's/pytest-results-[0-9]+\.[0-9]+-//'
+  ) ;
+
+  total_tests=$(
+      grep -Eo 'tests="[0-9]+"' <<< "${xml_content}" \
+    | grep -Eo '[0-9]+' || echo "0"
+  ) ;
+  failed_tests=$(
+      grep -Eo 'failures="[0-9]+"' <<< "${xml_content}" \
+    | grep -Eo '[0-9]+' || echo "0"
+  ) ;
+  skipped_tests=$(
+      grep -Eo 'skipped="[0-9]+"' <<< "${xml_content}" \
+    | grep -Eo '[0-9]+' || echo "0"
+  ) ;
+  passed_tests=$(( total_tests - failed_tests - skipped_tests )) ;
+
+  # Ensure all variables are numeric
+  [[ "$total_tests"   =~ ^[0-9]+$ ]] || total_tests=0 ;
+  [[ "$failed_tests"  =~ ^[0-9]+$ ]] || failed_tests=0 ;
+  [[ "$skipped_tests" =~ ^[0-9]+$ ]] || skipped_tests=0 ;
+  [[ "$passed_tests"  =~ ^[0-9]+$ ]] || passed_tests=0 ;
+
+  # Extract test case details using `grep` instead of `xmllint`
+  test_cases=$(
+    echo -e "${xml_content}" \
+    | grep -o '<testcase .*\/>' || echo ""
+  ) ;
+
+  if [[ -z "$test_cases" ]]; then
+    echo -e "ERROR: No valid test cases found in '${test_file}'" ;
+    continue ;
+  fi ;
+
+  echo -e "${test_cases}" | while read -r LINE; do
+    # echo -e "Reading line: ${LINE}" ;
+
+    actual_testname=$( echo "$LINE" | sed -E 's/.*name="([^"]+)".*/\1/' ) ;
+    class_name=$( echo "$LINE" | sed -E 's/.*classname="([^"]+)".*/\1/' ) ;
+    exec_time=$( echo "$LINE" | sed -E 's/.*time="([^"]+)".*/\1/' ) ;
+
+    failed_tests=$( [[ "$LINE" =~ "<failure" ]] && echo "1" || echo "0" ) ;
+    skipped_tests=$( [[ "$LINE" =~ "<skipped" ]] && echo "1" || echo "0" ) ;
+    passed_tests=$(( 1 - failed_tests - skipped_tests )) ;
+
+    declare -a extract_results=() ;
+    extract_results+=( "{ \"python_version\": \"${python_version}\"," )
+    extract_results+=( "\"class_name\": \"${class_name}\"," )
+    extract_results+=( "\"test_name\": \"${actual_testname}\"," )
+    extract_results+=( "\"execution_time\": \"${exec_time}\"," )
+    extract_results+=( "\"total\": ${total_tests}," )
+    extract_results+=( "\"passed\": ${passed_tests}," )
+    extract_results+=( "\"failed\": ${failed_tests}," )
+    extract_results+=( "\"skipped\": ${skipped_tests} }" )
+
+    # Ensure JSON is valid before passing to jq
+    json_structure=$( echo -e "[ ${extract_results[*]} ]" | jq -c . )
+    # echo -e "\nJSON Structure: ${json_structure}" ;
+    echo -e "${json_structure}" | jq .
+
+    # Update JSON summary safely
+    jq --argjson structure "${json_structure}" \
+    '.test_summary += $structure' \
+    ${test_results} > temp.json && mv temp.json ${test_results} ;
+
+  done ;
+
+done < ${test_functions} ;
+
+# Print JSON for debugging
+# echo -e "Final Aggregated Test Results [${test_results}]: " ;
+# cat ${test_results} | jq . ;

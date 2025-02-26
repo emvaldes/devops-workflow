@@ -1,0 +1,106 @@
+---
+## File: .github/workflows/module.extract-pytests.yaml
+
+name: Extract PyTest Test-Functions
+on:
+
+  workflow_call:
+
+    inputs:
+
+      pytests_location:
+        required: true
+        type: string
+
+      github_action:
+        required: true
+        type: string
+
+      output_filename:
+        required: false
+        type: string
+        default: 'test_functions.json'
+
+    outputs:
+
+      pytest_files:
+        description: "Extracted PyTest Modules"
+        value: ${{ jobs.extract-pytests.outputs.pytest_files }}
+
+      test_functions:
+        description: "Extracted PyTest Functions"
+        value: ${{ jobs.extract-pytests.outputs.test_functions }}
+
+jobs:
+
+  workflow-parameters:
+    uses: ./.github/workflows/module.validate-parameters.yaml
+    with:
+      workflow_inputs: |
+        {
+          "workflow": "module.extract-pytests",
+          "params": {
+            "pytests_location": {
+              "PyTest Location": "${{ inputs.pytests_location }}"
+            },
+            "github_action": {
+              "GitHub Action": "${{ inputs.github_action }}"
+            },
+            "output_filename": {
+              "Output Filename": "${{ inputs.output_filename }}"
+            }
+          }
+        }
+
+  extract-pytests:
+    needs: workflow-parameters
+    runs-on: ubuntu-latest
+    outputs:
+      pytest_files: ${{ steps.extract.outputs.pytest_files }}
+      test_functions: ${{ steps.extract.outputs.tests }}
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Extract Test Functions
+        id: extract
+        run: |
+
+          ${{ inputs.github_action }}/extract-pytest-functions.shell \
+            --pytests-location="${{ inputs.pytests_location }}" \
+            --scripts-location="${{ inputs.github_action }}" \
+            --output-filename="${{ inputs.output_filename }}" ;
+
+          ## Validate Test-Functions JSON before proceeding
+          if [[ -e ${{ inputs.output_filename }} ]]; then
+                jq -e . ${{ inputs.output_filename }} 2>&1>/dev/null;
+                status=$?; #echo -e "Status: ${status}";
+                if [[ ${status} -gt 0 ]]; then
+                        echo -e "Configuration: '${{ inputs.output_filename }}' is not valid JSON object!";
+                        exit 1 ;
+                  else  echo -e "\nPyTest Functions JSON configuration";
+                        ls -al ${{ inputs.output_filename }} ;
+                        cat ${{ inputs.output_filename }} ;
+                        TESTS=$( jq -c '.test_functions' ${{ inputs.output_filename }} ) ;
+                        echo -e "tests=$TESTS" >> "$GITHUB_OUTPUT" ;
+                fi ;
+            else  echo -e "Warning: '${{ inputs.output_filename }}' is missing/not-found!";
+          fi;
+
+          ## Validate Test-Modules JSON before proceeding
+          pytest_files="pytest_files.json";
+          if [[ -e ${pytest_files} ]]; then
+                  jq -e . ${pytest_files} 2>&1>/dev/null;
+                  status=$?; #echo -e "Status: ${status}";
+                  if [[ ${status} -gt 0 ]]; then
+                          echo -e "Configuration: '${pytest_files}' is not valid JSON object!";
+                          exit 1 ;
+                    else  echo -e "\nPyTest Files JSON configuration";
+                          ls -al ${pytest_files};
+                          cat ${pytest_files};
+                          PYTEST_FILES=$( jq -c 'keys' ${pytest_files} )
+                          echo "pytest_files=$PYTEST_FILES" >> $GITHUB_OUTPUT
+                  fi ;
+            else  echo -e "Warning: ${pytest_files} is missing/not-found!";
+          fi;

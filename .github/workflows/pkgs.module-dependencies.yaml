@@ -22,11 +22,11 @@ on:
         type: string
         default: "packages/requirements/dependencies"
 
-      github_action:
-        description: "Target GitHub-Actions Path"
+      github_scripts:
+        description: "Target GitHub Scripts Path"
         required: false
         type: string
-        default: ".github/actions/test-summary"
+        default: ".github/scripts"
 
   push:
     branches:
@@ -59,9 +59,9 @@ jobs:
               "value": "${{ github.event.inputs.package_location }}",
               "default": "packages/requirements/dependencies"
             },
-            "github_action": {
-              "id": "GitHub Action",
-              "value": "${{ github.event.inputs.github_action }}",
+            "github_scripts": {
+              "id": "GitHub Scripts",
+              "value": "${{ github.event.inputs.github_scripts }}",
               "default": ".github/actions/test-summary"
             }
           }
@@ -80,8 +80,8 @@ jobs:
             needs.workflow.outputs.validated ).pytests_location }}" ;
           echo -e "Package Location: ${{ fromJson(
             needs.workflow.outputs.validated ).package_location }}" ;
-          echo -e "GitHub Action: ${{ fromJson(
-            needs.workflow.outputs.validated ).github_action }}" ;
+          echo -e "GitHub Scripts: ${{ fromJson(
+            needs.workflow.outputs.validated ).github_scripts }}" ;
 
   install-packages:
     needs: [workflow, parameters]

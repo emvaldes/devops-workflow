@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+set -e ;           # Exit on error
+set -o pipefail ;  # Fail if any piped command fails
+
+echo -e "Debugging Artifacts Directory..." ;
+
+# Check current directory
+echo -e "Current Working Directory: $( pwd )" ;
+
+# Print all available environment variables related to artifacts
+echo -e "Environment Variables:" ;
+env | grep -i 'artifact' || echo -e "No artifact-related variables found." ;
+
+# Locate any artifacts directories
+echo -e "Searching for artifacts..." ;
+ARTIFACT_DIRS=$(
+  find "${GITHUB_WORKSPACE}" -type d -name "artifacts" 2>/dev/null \
+  || echo -e "No artifacts directory found."
+) ;
+
+if [[ -z "${ARTIFACT_DIRS}" \
+      || "${ARTIFACT_DIRS}" == "No artifacts directory found."
+   ]]; then
+        echo -e "ERROR: No artifacts directory detected!" ;
+  else  echo -e "Found artifacts directory at: ${ARTIFACT_DIRS}" ;
+fi ;
+
+# Find all XML files (expected test results)
+echo -e "Searching for test result files..." ;
+TEST_RESULTS=$(
+  find "${GITHUB_WORKSPACE}" -name "*.xml" 2>/dev/null \
+  || echo -e "No test result files found."
+) ;
+
+if [[ -z "${TEST_RESULTS}" \
+      || "${TEST_RESULTS}" == "No test result files found."
+   ]]; then
+        echo -e "ERROR: No test results found!" ;
+  else  echo -e "Found test result files:" ;
+        echo -e "${TEST_RESULTS}" ;
+fi ;
+
+# List all files in the detected artifacts directory (if found)
+if [[ -n "${ARTIFACT_DIRS}" \
+      && "${ARTIFACT_DIRS}" != "No artifacts directory found."
+   ]]; then
+    echo -e "Listing contents of artifacts directory..." ;
+    ls -R "${ARTIFACT_DIRS}" ;
+fi ;

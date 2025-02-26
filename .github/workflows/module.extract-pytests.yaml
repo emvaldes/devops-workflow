@@ -12,7 +12,7 @@ on:
         required: true
         type: string
 
-      github_action:
+      github_scripts:
         required: true
         type: string
 
@@ -45,9 +45,9 @@ jobs:
               "id": "PyTest Location",
               "value": "${{ inputs.pytests_location }}"
             },
-            "github_action": {
-              "id": "GitHub Action",
-              "value": "${{ inputs.github_action }}"
+            "github_scripts": {
+              "id": "GitHub Scripts",
+              "value": "${{ inputs.github_scripts }}"
             },
             "output_filename": {
               "id": "Output Filename",
@@ -69,7 +69,7 @@ jobs:
           echo -e "PyTests Location: ${{ fromJson(
             needs.workflow.outputs.validated ).pytests_location }}" ;
           echo -e "GitHub Action: ${{ fromJson(
-            needs.workflow.outputs.validated ).github_action }}" ;
+            needs.workflow.outputs.validated ).github_scripts }}" ;
           echo -e "Output Filename: ${{ fromJson(
             needs.workflow.outputs.validated ).output_filename }}" ;
 
@@ -81,12 +81,10 @@ jobs:
       pytest_files: ${{ steps.extract.outputs.pytest_files }}
       test_functions: ${{ steps.extract.outputs.test_functions }}
     env:
-      github_actions: >
-        "${{ fromJson( needs.workflow.outputs.validated ).github_action }}"
+      github_scripts: >
+        "${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}"
       pytests_location: >
         "${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}" ;
-      scripts_location: >
-        "${{ fromJson( needs.workflow.outputs.validated ).github_action }}" ;
       output_filename: >
         "${{ fromJson( needs.workflow.outputs.validated ).output_filename }}" ;
     steps:
@@ -98,9 +96,9 @@ jobs:
         id: extract
         run: |
 
-          ${{ env.github_action }}/extract-pytest-functions.shell \
+          ${{ env.github_scripts }}/extract-pytest-functions.shell \
           --pytests-location="${{ env.pytests_location }}" \
-          --scripts-location="${{ env.scripts_location }}" \
+          --scripts-location="${{ env.github_scripts }}" \
           --output-filename="${{ env.output_filename }}" ;
 
           ## Validate Test-Functions JSON before proceeding

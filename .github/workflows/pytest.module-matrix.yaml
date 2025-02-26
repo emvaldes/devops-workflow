@@ -18,10 +18,10 @@ on:
         required: true
         type: string
 
-      github_action:
+      github_scripts:
         required: false
         type: string
-        default: ".github/actions/test-summary"
+        default: ".github/scripts"
 
       artifacts_location:
         required: false
@@ -52,9 +52,9 @@ jobs:
               "value": "${{ github.event.inputs.package_location }}",
               "default": "packages/requirements/dependencies"
             },
-            "github_action": {
-              "id": "GitHub Action",
-              "value": "${{ github.event.inputs.github_action }}",
+            "github_scripts": {
+              "id": "GitHub Scripts",
+              "value": "${{ github.event.inputs.github_scripts }}",
               "default": ".github/actions/test-summary"
             },
             "artifacts_location": {
@@ -78,8 +78,8 @@ jobs:
             needs.workflow.outputs.validated ).pytests_location }}" ;
           echo "Package Location: ${{ fromJson(
             needs.workflow.outputs.validated ).package_location }}" ;
-          echo "GitHub Action: ${{ fromJson(
-            needs.workflow.outputs.validated ).github_action }}" ;
+          echo "GitHub Scripts: ${{ fromJson(
+            needs.workflow.outputs.validated ).github_scripts }}" ;
           echo "Artifacts Location: ${{ fromJson(
             needs.workflow.outputs.validated ).artifacts_location }}" ;
 
@@ -87,8 +87,8 @@ jobs:
     needs: [workflow, parameters]
     uses: ./.github/workflows/module.extract-pytests.yaml
     with:
-      github_action: >
-        ${{ fromJson( needs.workflow.outputs.validated ).github_action }}
+      github_scripts: >
+        ${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}
       pytests_location: >
         ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
 
@@ -105,8 +105,8 @@ jobs:
     needs: running-pytests
     uses: ./.github/workflows/module.aggregate-results.yaml
     with:
-      github_action: >
-        ${{ fromJson( needs.workflow.outputs.validated ).github_action }}
+      github_scripts: >
+        ${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}
       artifacts_location: >
         ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}
 

@@ -1,0 +1,101 @@
+---
+## File: .github/workflows/pkgs.module-dependencies.yaml
+
+name: Pipeline - Requirements/Dependencies
+run-name: ${{ github.actor }} -> Requirements/Dependencies
+
+on:
+
+  workflow_dispatch:
+
+    inputs:
+
+      pytests_location:
+        description: "PyTest files Directory"
+        required: false
+        type: string
+        default: "tests/requirements/dependencies"
+
+      package_location:
+        description: "Packages/Modules Directory"
+        required: false
+        type: string
+        default: "packages/requirements/dependencies"
+
+      github_action:
+        description: "Target GitHub-Actions Path"
+        required: false
+        type: string
+        default: ".github/actions/test-summary"
+
+  push:
+    branches:
+      - master
+      - functional
+    paths:
+      - .github/workflows/**
+      - .github/actions/**
+
+    pull_request:
+      branches:
+        - master
+
+jobs:
+
+  workflow-parameters:
+    uses: ./.github/workflows/module.validate-parameters.yaml
+    with:
+      workflow_inputs: |
+        {
+          "workflow": "pkgs.module-dependencies",
+          "params": {
+            "pytests_location": {
+              "PyTest Location": {
+                  "event": "${{ github.event.inputs.pytests_location }}",
+                  "inputs": "${{ inputs.pytests_location }}"
+                }
+            },
+            "package_location": {
+              "Package Location": {
+                  "event": "${{ github.event.inputs.package_location }}",
+                  "inputs": "${{ inputs.package_location }}"
+                }
+            },
+            "github_action": {
+              "GitHub Action": {
+                  "event": "${{ github.event.inputs.github_action }}",
+                  "inputs": "${{ inputs.github_action }}"
+                }
+            }
+          }
+        }
+
+  install-packages:
+    needs: workflow-parameters
+    uses: ./.github/workflows/module.install-packages.yaml
+    with:
+      package_location: ${{ inputs.package_location }}
+
+  pytest-module:
+    needs: install-packages
+    uses: ./.github/workflows/pytest.module-matrix.yaml
+    with:
+      pytests_location: ${{ inputs.pytests_location }}
+      package_location: ${{ inputs.package_location }}
+
+  execute-module:
+    needs: pytest-module
+    if: needs.pytest-module.outputs.aggregated_results
+    uses: ./.github/workflows/module.execute-module.yaml
+    with:
+      package_location: ${{ inputs.package_location }}
+
+  workflow-completed:
+    needs: execute-module
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Completed Dependencies Module
+        id: dependencies_module
+        run: |
+          echo -e "Completed Dependencies Workflow" ;
