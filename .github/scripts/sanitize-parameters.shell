@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-## File: .github/actions/test-summary/sanitize-parameters.shell
+## File: .github/scripts/sanitize-parameters.shell
 ## Version: 0.0.1
 
 # set -x ;

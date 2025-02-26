@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-## File: .github/actions/test-summary/extract-pytest-functions.py
+## File: .github/scripts/extract-pytest-functions.py
 ## Version: 0.0.1
 
 import re

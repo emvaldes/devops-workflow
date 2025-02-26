@@ -55,7 +55,7 @@ jobs:
             "github_scripts": {
               "id": "GitHub Scripts",
               "value": "${{ github.event.inputs.github_scripts }}",
-              "default": ".github/actions/test-summary"
+              "default": ".github/scripts"
             },
             "artifacts_location": {
               "id": "Artifacts Location",
