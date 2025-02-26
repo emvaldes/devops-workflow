@@ -30,17 +30,18 @@ runs:
         path: artifacts/  # Ensures test results go to the correct location
 
     - name: Run Summary Script
-      shell: bash
       run: |
+
         ./${{ env.GITHUB_SCRIPTS }}/aggregate-pytest-results.shell ;
 
     - name: Verify JSON Output
-      shell: bash
       run: |
+
         if [[ ! -f ./${{ env.summary_json }} ]]; then
           echo -e "ERROR: No test results JSON generated!" ;
           exit 1 ;
         fi ;
+
         echo -e "Generated Test Summary JSON: " ;
         cat ./${{ env.summary_json }} | jq . ;
 

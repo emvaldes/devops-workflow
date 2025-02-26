@@ -58,7 +58,7 @@ jobs:
           fi ;
 
           # Ensure JSON is formatted as a single line
-          validated_compact=$(echo "$validated" | jq -c .) ;
+          validated_compact=$( echo "$validated" | jq -c . ) ;
 
           # Debugging: Print the formatted JSON before setting it as output
           echo "Validated JSON Output: ${validated_compact}" ;

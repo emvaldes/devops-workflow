@@ -94,6 +94,7 @@ jobs:
 
       - name: Extract Test Functions
         id: extract
+        shell: bash
         run: |
 
           extracted=$(
@@ -101,39 +102,39 @@ jobs:
             --pytests-location="${{ env.pytests_location }}" \
             --scripts-location="${{ env.github_scripts }}" \
             --output-filename="${{ env.output_filename }}"
-          ) ; # echo -e "Extracted Parameters:\n${extracted}";
+          ) ; # echo -e "Extracted Parameters:\n${extracted}" ;
 
           ## Validate Test-Functions JSON before proceeding
           if [[ -e ${{ env.output_filename }} ]]; then
-                jq -e . ${{ env.output_filename }} 2>&1>/dev/null;
-                status=$?; #echo -e "Status: ${status}";
+                jq -e . ${{ env.output_filename }} 2>&1>/dev/null ;
+                status=$?; #echo -e "Status: ${status}" ;
                 if [[ ${status} -gt 0 ]]; then
-                    echo -e "Configuration: Invalid JSON '${{ env.output_filename }}' object!";
-                    exit 1;
-                  else  echo -e "\nPyTest Functions JSON configuration";
-                    ls -al ${{ env.output_filename }};
-                    cat ${{ env.output_filename }};
+                    echo -e "Configuration: Invalid JSON '${{ env.output_filename }}' object!" ;
+                    exit 1 ;
+                  else  echo -e "\nPyTest Functions JSON configuration" ;
+                    ls -al ${{ env.output_filename }} ;
+                    cat ${{ env.output_filename }} ;
                     TEST_FUNCTIONS=$(
                       jq -c '.test_functions' ${{ env.output_filename }}
-                    );
-                    echo -e "test_functions=$TEST_FUNCTIONS" >> "$GITHUB_OUTPUT";
-                fi;
-            else  echo -e "Warning: '${{ env.output_filename }}' is missing/not-found!";
-          fi;
+                    ) ;
+                    echo -e "test_functions=$TEST_FUNCTIONS" >> "$GITHUB_OUTPUT" ;
+                fi ;
+            else  echo -e "Warning: '${{ env.output_filename }}' is missing/not-found!" ;
+          fi ;
 
           ## Validate Test-Modules JSON before proceeding
-          pytest_files="pytest_files.json";
+          pytest_files="pytest_files.json" ;
           if [[ -e ${pytest_files} ]]; then
-                  jq -e . ${pytest_files} 2>&1>/dev/null;
-                  status=$?; #echo -e "Status: ${status}";
+                  jq -e . ${pytest_files} 2>&1>/dev/null ;
+                  status=$?; #echo -e "Status: ${status}" ;
                   if [[ ${status} -gt 0 ]]; then
-                      echo -e "Configuration: '${pytest_files}' is not valid JSON object!";
-                      exit 1;
-                    else  echo -e "\nPyTest Files JSON configuration";
-                      ls -al ${pytest_files};
-                      cat ${pytest_files};
-                      PYTEST_FILES=$( jq -c 'keys' ${pytest_files} );
-                      echo "pytest_files=$PYTEST_FILES" >> $GITHUB_OUTPUT;
-                  fi;
-            else  echo -e "Warning: ${pytest_files} is missing/not-found!";
-          fi;
+                      echo -e "Configuration: '${pytest_files}' is not valid JSON object!" ;
+                      exit 1 ;
+                    else  echo -e "\nPyTest Files JSON configuration" ;
+                      ls -al ${pytest_files} ;
+                      cat ${pytest_files} ;
+                      PYTEST_FILES=$( jq -c 'keys' ${pytest_files} ) ;
+                      echo "pytest_files=$PYTEST_FILES" >> $GITHUB_OUTPUT ;
+                  fi ;
+            else  echo -e "Warning: ${pytest_files} is missing/not-found!" ;
+          fi ;
