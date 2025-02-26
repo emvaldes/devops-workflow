@@ -100,8 +100,7 @@ jobs:
       # pytests_location: >-
       #   ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
       ## Warning: Needs to be fixed
-      pytests_location: >-
-        'tests/requirements/dependencies'
+      pytests_location: 'tests/requirements/dependencies'
 
   aggregating-pytests:
     needs: running-pytests
