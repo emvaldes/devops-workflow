@@ -49,7 +49,7 @@ jobs:
 
           echo -e "PyTests Location: ${{ fromJson(
             needs.workflow.outputs.validated ).pytests_location }}" ;
-          echo -e "Test Functions: ${{ fromJson(
+          echo -e "PyTest Functions: ${{ fromJson(
             needs.workflow.outputs.validated ).test_functions }}" ;
 
   # Experimental Cutter Matrix Using pytest_files.json
@@ -77,9 +77,10 @@ jobs:
 
           echo "Extracting test files from GITHUB_OUTPUT..." ;
           if [[ -z "${{ needs.extract-pytests.outputs.pytest_files }}" ]]; then
-            echo "pytest_files=[]" >> $GITHUB_OUTPUT ;
-          else
-            echo "pytest_files=${{ needs.extract-pytests.outputs.pytest_files }}" >> $GITHUB_OUTPUT ;
+                echo "pytest_files=[]" >> $GITHUB_OUTPUT ;
+          else  echo "pytest_files=${{
+                  needs.extract-pytests.outputs.pytest_files
+                }}" >> $GITHUB_OUTPUT ;
           fi ;
 
   running-pytests:
@@ -91,10 +92,10 @@ jobs:
         python-version: ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
         test_function: ${{ fromJson( inputs.test_functions ) }}
     env:
-      # pytests_location: >-
-      #   ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
+      pytests_location: ${{ fromJson(
+        needs.workflow.outputs.validated ).pytests_location }}
       ## Warning: Needs to be fixed
-      pytests_location: "tests/requirements/dependencies"
+      # pytests_location: "tests/requirements/dependencies"
     steps:
 
       - name: Checkout Repository
