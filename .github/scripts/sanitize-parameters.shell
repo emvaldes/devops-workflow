@@ -49,7 +49,6 @@ function sanitize_parameters() {
     # echo -e; for param in "${parameters[@]}"; do echo -e "Parameter: '${param}'"; done;
 
     ## Correct way to return an array: Print each element space-separated
-    echo -e;
     printf "%s\n" "${parameters[@]}";
 
 }; alias sanitize-parameters='sanitize_parameters';
