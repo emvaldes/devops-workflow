@@ -75,13 +75,19 @@ jobs:
         id: extract
         run: |
 
-          echo "Extracting test files from GITHUB_OUTPUT..." ;
+          echo -e "Extracting test files from GITHUB_OUTPUT..." ;
           if [[ -z "${{ needs.extract-pytests.outputs.pytest_files }}" ]]; then
                 echo "pytest_files=[]" >> $GITHUB_OUTPUT ;
           else  echo "pytest_files=${{
                   needs.extract-pytests.outputs.pytest_files
                 }}" >> $GITHUB_OUTPUT ;
           fi ;
+
+      - name: Debug Outputs
+        run: |
+
+          echo -e "Validated Output: ${{ needs.workflow.outputs.validated }}" ;
+          echo -e "FromJSON: ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}" ;
 
   running-pytests:
 
