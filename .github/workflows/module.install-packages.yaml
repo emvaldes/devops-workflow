@@ -51,7 +51,7 @@ jobs:
         python-version: ${{ fromJson(vars.PYTHON_VERSIONS).python }}
         # Default value: { "python": [ "3.9", "3.10", "3.11" ] }
     env:
-      package_location: |
+      package_location: >-
         ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
     steps:
 

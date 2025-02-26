@@ -100,10 +100,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: >-
-          ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
-        test_function: >-
-          ${{ fromJson( needs.workflow.outputs.validated ).test_functions }}
+        python-version: ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
+        test_function: ${{ fromJson( needs.workflow.outputs.validated ).test_functions }}
     env:
       pytests_location: >-
         ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
@@ -162,7 +160,8 @@ jobs:
       - name: Run Pytest Function
         run: |
 
-          pytests_location="tests/requirements/dependencies" ;  ## Warning: Needs to be fixed
+          ## Warning: Needs to be fixed
+          pytests_location="tests/requirements/dependencies" ;
           pytest -v --junitxml=pytest-results.xml \
           "${pytests_location}/test_dependencies.py::${{ matrix.test_function }}" ;
 
