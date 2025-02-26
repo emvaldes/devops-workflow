@@ -16,18 +16,6 @@ on:
         required: true
         type: string
 
-  # push:
-  #   branches:
-  #     - master
-  #     - functional
-  #   paths:
-  #     - .github/workflows/**
-  #     - .github/actions/**
-  #
-  #   pull_request:
-  #     branches:
-  #       - master
-
 jobs:
 
   workflow:
@@ -132,13 +120,11 @@ jobs:
           name: requirements-${{ matrix.python-version }}
           path: .
 
-      - name: Debug: List Files
-        run: |
-
-          ls -R .
-
       - name: Verify requirements.txt Exists
         run: |
+
+          # ls -shal . ;
+          find . ;
 
           # # if [[ ! -f requirements.txt ]]; then
           # #   echo -e "ERROR: requirements.txt is missing!" ;

@@ -12,18 +12,6 @@ on:
         required: true
         type: string
 
-  # push:
-  #   branches:
-  #     - master
-  #     - functional
-  #   paths:
-  #     - .github/workflows/**
-  #     - .github/actions/**
-  #
-  #   pull_request:
-  #     branches:
-  #       - master
-
 jobs:
 
   workflow:
