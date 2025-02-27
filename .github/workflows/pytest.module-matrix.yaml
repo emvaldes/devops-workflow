@@ -100,7 +100,7 @@ jobs:
       pytests_location: "${{ inputs.pytests_location }}"
 
   aggregating-pytests:
-    needs: running-pytests
+    needs: [ extracting-pytests, running-pytests ]
     uses: ./.github/workflows/module.aggregate-results.yaml
     with:
       # github_scripts: "${{ inputs.github_scripts }}"
