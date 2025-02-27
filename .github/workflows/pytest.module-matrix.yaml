@@ -55,20 +55,20 @@ jobs:
     needs: [ workflow, parameters ]
     uses: ./.github/workflows/module.extract-pytests.yaml
     with:
-      params: ${{ needs.workflow.outputs.validated }}
+      pytest: ${{ needs.workflow.outputs.validated }}
 
   running-pytests:
     needs: [ workflow, parameters, extracting-pytests ]
     uses: ./.github/workflows/module.running-pytests.yaml
     with:
       test_functions: ${{ needs.extracting-pytests.outputs.test_functions }}
-      params: ${{ needs.workflow.outputs.validated }}
+      pytest: ${{ needs.workflow.outputs.validated }}
 
   aggregating-pytests:
     needs: [ workflow, parameters, running-pytests ]
     uses: ./.github/workflows/module.aggregate-results.yaml
     with:
-      params: ${{ needs.workflow.outputs.validated }}
+      pytest: ${{ needs.workflow.outputs.validated }}
 
   pytests-completed:
     needs: aggregating-pytests

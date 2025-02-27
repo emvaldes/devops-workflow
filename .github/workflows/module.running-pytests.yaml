@@ -12,7 +12,7 @@ on:
         required: true
         type: string
 
-      params:
+      pytest:
         required: false
         type: string
 
@@ -30,8 +30,8 @@ jobs:
               "id": "PyTest Functions",
               "value": ${{ toJson( fromJson( inputs.test_functions ) ) }}
             },
-            "params": {
-              "id": "Workflow Parameters", "value": ${{ inputs.params }}
+            "pytest": {
+              "id": "Workflow Parameters", "value": ${{ inputs.pytest }}
             }
           }
         }
@@ -47,7 +47,9 @@ jobs:
         run: |
 
           echo -e "PyTests Location: ${{ fromJson(
-            needs.workflow.outputs.validated ).params.params.pytests_location }}" ;
+            needs.workflow.outputs.validated ).params.pytest.pytests_location }}" ;
+            echo -e "PyTests Resources: ${{ fromJson(
+              needs.workflow.outputs.validated ).params.pytest.pytests_resources }}" ;
           echo -e "PyTest Functions: ${{ fromJson(
             needs.workflow.outputs.validated ).test_functions }}" ;
 
@@ -80,9 +82,9 @@ jobs:
         test_function: ${{ fromJson( inputs.test_functions ) }}
     env:
       pytests_location: ${{ fromJson(
-        needs.workflow.outputs.validated ).params.params.pytests_location }}
+        needs.workflow.outputs.validated ).params.pytest.pytests_location }}
       pytests_resources: ${{ fromJson(
-        needs.workflow.outputs.validated ).params.params.pytests_resources }}
+        needs.workflow.outputs.validated ).params.pytest.pytests_resources }}
     steps:
 
       - name: Checkout Repository
