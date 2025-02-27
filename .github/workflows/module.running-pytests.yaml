@@ -98,7 +98,7 @@ jobs:
         python-version: ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
         test_function: ${{ fromJson( inputs.test_functions ) }}
     env:
-      pytests_location: "${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}"
+      # pytests_location: "${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}"
       ## Warning: Needs to be fixed
       # pytests_location: "tests/requirements/dependencies"
     steps:
@@ -157,7 +157,9 @@ jobs:
         run: |
 
           ## Warning: Needs to be fixed
-          pytests_location="tests/requirements/dependencies" ;
+          # pytests_location="tests/requirements/dependencies" ;
+          pytests_location="${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}"
+          echo -e "Validated Output: ${pytests_location}" ;
 
           pytest -v --junitxml=pytest-results.xml \
           "${pytests_location}/test_dependencies.py::${{ matrix.test_function }}" ;
