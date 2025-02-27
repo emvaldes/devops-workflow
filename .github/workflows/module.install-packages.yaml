@@ -12,7 +12,7 @@ on:
         required: true
         type: string
 
-      workflow_params:
+      params:
         required: true
         type: string
 
@@ -30,9 +30,9 @@ jobs:
               "id": "Package Location",
               "value": "${{ inputs.package_location }}"
             },
-            "workflow_params": {
+            "params": {
               "id": "Workflow Parameters",
-              "value": ${{ inputs.workflow_params }}
+              "value": ${{ inputs.params }}
             }
           }
         }
@@ -52,7 +52,7 @@ jobs:
 
           echo -e "Workflow Parameters: ${{ inputs.workflow_params }}" ;
           echo -e "Workflow Package: ${{ fromJson(
-            needs.workflow.outputs.validated ).workflow_params.package_location }}" ;
+            needs.workflow.outputs.validated ).params.package_location }}" ;
 
   install-packages:
 
@@ -64,7 +64,7 @@ jobs:
         # Default value: { "python": [ "3.9", "3.10", "3.11" ] }
     env:
       package_location: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
+        ${{ fromJson( needs.workflow.outputs.validated ).params.package_location }}
     steps:
 
       - name: Manage System Update (latest)
