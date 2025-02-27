@@ -73,7 +73,7 @@ jobs:
 
   running-pytests:
 
-    needs: pytest-files
+    needs: [ workflow, parameters, pytest-files ]
     runs-on: ubuntu-latest
     strategy:
 
