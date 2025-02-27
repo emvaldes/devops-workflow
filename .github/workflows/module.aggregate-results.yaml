@@ -28,7 +28,7 @@ jobs:
         {
           "workflow": "module.aggregate-results",
           "inputs": {
-            "params": {
+            "pytest": {
               "id": "Workflow Parameters", "value": ${{ inputs.pytest }}
             }
           }

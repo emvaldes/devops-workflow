@@ -41,7 +41,7 @@ jobs:
               "id": "Output Filename",
               "value": "${{ inputs.output_filename }}"
             },
-            "params": {
+            "pytest": {
               "id": "Workflow Parameters", "value": ${{ inputs.pytest }}
             }
           }

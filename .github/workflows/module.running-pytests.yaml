@@ -30,7 +30,7 @@ jobs:
               "id": "PyTest Functions",
               "value": ${{ toJson( fromJson( inputs.test_functions ) ) }}
             },
-            "params": {
+            "pytest": {
               "id": "Workflow Parameters", "value": ${{ inputs.pytest }}
             }
           }
