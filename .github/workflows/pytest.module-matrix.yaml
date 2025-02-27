@@ -104,7 +104,7 @@ jobs:
     uses: ./.github/workflows/module.aggregate-results.yaml
     with:
       github_scripts: "${{ inputs.github_scripts }}"
-      artifacts_location: "${{ inputs.artifacts }}"
+      artifacts_location: "${{ inputs.artifacts_location }}"
 
   workflow-completed:
     needs: aggregating-pytests
