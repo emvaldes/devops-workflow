@@ -1,0 +1,120 @@
+---
+## File: .github/workflows/pkgs.module-dependencies.yaml
+
+name: Pipeline - AppFlow-Tracer/Tracing
+run-name: ${{ github.actor }} -> Tracer/Tracing
+
+on:
+
+  workflow_dispatch:
+
+    inputs:
+
+      pytests_location:
+        description: "PyTests Files Directory"
+        required: false
+        type: string
+        default: "tests/appflow-tracer/tracing"
+
+      pytests_resources:
+        description: "PyTests Target Resources"
+        required: false
+        type: string
+        default: "test_tracing.py"
+
+      package_location:
+        description: "Packages/Modules Directory"
+        required: false
+        type: string
+        default: "packages/appflow-tracer/tracing"
+
+      github_scripts:
+        description: "Target GitHub Scripts Path"
+        required: false
+        type: string
+        default: ".github/scripts"
+
+  push:
+    branches:
+      - master
+      - functional
+    paths:
+      - .github/workflows/**
+      - .github/actions/**
+
+    pull_request:
+      branches:
+        - master
+
+jobs:
+
+  workflow:
+    uses: ./.github/workflows/module.validate-parameters.yaml
+    with:
+      workflow_inputs: >-
+        {
+          "workflow": "pkgs.module-dependencies",
+          "inputs": {
+            "pytests_location": {
+              "id": "PyTest Location",
+              "value": "${{ github.event.inputs.pytests_location }}",
+              "default": "tests/requirements/dependencies"
+            },
+            "pytests_resources": {
+              "id": "PyTests Resources",
+              "value": "${{ github.event.inputs.pytests_resources }}",
+              "default": "test_dependencies.py"
+            },
+            "package_location": {
+              "id": "Package Location",
+              "value": "${{ github.event.inputs.package_location }}",
+              "default": "packages/requirements/dependencies"
+            },
+            "github_scripts": {
+              "id": "GitHub Scripts",
+              "value": "${{ github.event.inputs.github_scripts }}",
+              "default": ".github/scripts"
+            }
+          }
+        }
+
+  parameters:
+    needs: workflow
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Packages - Module-Dependencies (Parameters)
+        id: workflow_parameters
+        run: |
+
+          echo -e "Workflow Parameters: ${{ needs.workflow.outputs.validated }}" ;
+
+  install-packages:
+    needs: [ workflow, parameters ]
+    uses: ./.github/workflows/module.install-packages.yaml
+    with:
+      params: ${{ needs.workflow.outputs.validated }}
+
+  pytests-module:
+    needs: [ workflow, parameters, install-packages ]
+    uses: ./.github/workflows/pytest.module-matrix.yaml
+    with:
+      params: ${{ needs.workflow.outputs.validated }}
+
+  execute-module:
+    needs: [ workflow, parameters, pytests-module ]
+    # if: needs.pytests-module.outputs.aggregated_results
+    uses: ./.github/workflows/module.execute-module.yaml
+    with:
+      params: ${{ needs.workflow.outputs.validated }}
+
+  dependencies-completed:
+    needs: execute-module
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Completed - Tracer/Tracing Workflow
+        id: dependencies_workflow
+        run: |
+
+          echo -e "Completed - Tracer/Tracing Workflow" ;
