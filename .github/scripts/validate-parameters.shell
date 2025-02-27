@@ -9,7 +9,7 @@ set -o pipefail ;  # Fail if any piped command fails
 
 ## validate-parameters.shell --json="{
 ##     "workflow": "pkgs.module-dependencies",
-##     "params": {
+##     "inputs": {
 ##         "param": {
 ##             "id": "description"
 ##             "value": "inputs.variable"
@@ -22,7 +22,7 @@ set -o pipefail ;  # Fail if any piped command fails
 
 ## validate-parameters.shell --json="{
 ##     "workflow": "pkgs.module-dependencies",
-##     "params": {
+##     "inputs": {
 ##         "param": {
 ##             "key": {
 ##                 "id": "description"
@@ -87,7 +87,7 @@ function validate_parameters() {
     local lines
     mapfile -t lines < <(
       echo "${json_object}" \
-      | jq -r '.params | to_entries[] |
+      | jq -r '.inputs | to_entries[] |
         "\(.key)\t\(.value.id)\t\(.value.value // "")\t\(.value.default // "")"'
     );
 
@@ -101,7 +101,7 @@ function validate_parameters() {
       if (( len > max_len )); then max_len=$len; fi;
     done;
 
-    # Directly iterate over parameters in "params" for validation.
+    # Directly iterate over parameters in "inputs" for validation.
     local invalid=false;
 
     declare -a warnings=();

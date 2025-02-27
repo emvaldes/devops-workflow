@@ -28,7 +28,7 @@ jobs:
       workflow_inputs: >-
         {
           "workflow": "pytest.module-matrix",
-          "params": {
+          "inputs": {
             "params": {
               "id": "Workflow Parameters",
               "value": ${{ inputs.params }}

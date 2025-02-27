@@ -27,7 +27,7 @@ jobs:
       workflow_inputs: >-
         {
           "workflow": "module.aggregate-results",
-          "params": {
+          "inputs": {
             "params": {
               "id": "Workflow Parameters",
               "value": ${{ inputs.params }}

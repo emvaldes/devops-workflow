@@ -36,7 +36,7 @@ jobs:
       workflow_inputs: >-
         {
           "workflow": "module.extract-pytests",
-          "params": {
+          "inputs": {
             "output_filename": {
               "id": "Output Filename",
               "value": "${{ inputs.output_filename }}"

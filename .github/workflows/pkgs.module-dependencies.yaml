@@ -48,7 +48,7 @@ jobs:
       workflow_inputs: >-
         {
           "workflow": "pkgs.module-dependencies",
-          "params": {
+          "inputs": {
             "pytests_location": {
               "id": "PyTest Location",
               "value": "${{ github.event.inputs.pytests_location }}",
