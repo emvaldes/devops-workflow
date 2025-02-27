@@ -79,8 +79,7 @@ jobs:
 
       matrix:
         python-version: ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
-        # test_function: ${{ fromJson( inputs.test_functions ) }}
-        test_function: ${{ fromJson( needs.workflow.outputs.validated ).test_functions }}
+        test_function: ${{ fromJson( inputs.test_functions ) }}
 
     steps:
 
