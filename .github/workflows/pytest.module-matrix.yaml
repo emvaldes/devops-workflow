@@ -123,8 +123,8 @@ jobs:
       aggregated_results: ${{ needs.aggregating-pytests.outputs.aggregated_results }}
     steps:
 
-      - name: Workflow Completion
-        id: workflow_status
+      - name: Completed - PyTests Workflow
+        id: pytests_workflow
         run: |
 
-          echo -e "Dependencies Matrix - GitHub Environment:\n${GITHUB_ENV}" ;
+          echo -e "Completed - PyTests Workflow" ;

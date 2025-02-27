@@ -122,7 +122,7 @@ jobs:
     steps:
 
       - name: Completed - Dependencies Workflow
-        id: dependencies_module
+        id: dependencies_workflow
         run: |
 
-          echo -e "Completed Dependencies Workflow" ;
+          echo -e "Completed - Dependencies Workflow" ;
