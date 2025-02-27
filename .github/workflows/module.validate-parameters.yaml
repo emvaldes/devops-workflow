@@ -65,3 +65,5 @@ jobs:
 
           # Set the validated parameters to GitHub output
           echo "validated=$validated_compact" >> "$GITHUB_OUTPUT" ;
+
+          echo "testing_something=${{ fromJson( validated_compact ).pytests_location }}" >> $GITHUB_ENV ;
