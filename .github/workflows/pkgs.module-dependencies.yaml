@@ -105,8 +105,7 @@ jobs:
     uses: ./.github/workflows/module.execute-module.yaml
     with:
       # package_location: "packages/requirements/dependencies"
-      # package_location: "${{ inputs.package_location }}"
-      package_location: "${{ fromJson( needs.workflow.outputs.validated ).package_location }}"
+      package_location: "${{ inputs.package_location.default }}"
 
   workflow-completed:
     needs: execute-module
