@@ -14,7 +14,7 @@ on:
         description: "PyTests Files Directory"
         required: false
         type: string
-        default: "tests/appflow-tracer/tracing"
+        default: "tests/appflow_tracer/tracing"
 
       pytests_resources:
         description: "PyTests Target Resources"
@@ -26,7 +26,7 @@ on:
         description: "Packages/Modules Directory"
         required: false
         type: string
-        default: "packages/appflow-tracer/tracing"
+        default: "packages/appflow_tracer/tracing"
 
       github_scripts:
         description: "Target GitHub Scripts Path"
@@ -58,7 +58,7 @@ jobs:
             "pytests_location": {
               "id": "PyTest Location",
               "value": "${{ github.event.inputs.pytests_location }}",
-              "default": "tests/appflow-tracer/tracing"
+              "default": "tests/appflow_tracer/tracing"
             },
             "pytests_resources": {
               "id": "PyTests Resources",
@@ -68,7 +68,7 @@ jobs:
             "package_location": {
               "id": "Package Location",
               "value": "${{ github.event.inputs.package_location }}",
-              "default": "packages/appflow-tracer/tracing"
+              "default": "packages/appflow_tracer/tracing"
             },
             "github_scripts": {
               "id": "GitHub Scripts",
