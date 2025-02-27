@@ -100,13 +100,11 @@ jobs:
       pytests_location: "${{ inputs.pytests_location }}"
 
   aggregating-pytests:
-    needs: [ extracting-pytests, running-pytests ]
+    needs: running-pytests
     uses: ./.github/workflows/module.aggregate-results.yaml
     with:
-      # github_scripts: "${{ inputs.github_scripts }}"
-      github_scripts: ${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}
-      # artifacts_location: "${{ inputs.artifacts_location }}"
-      artifacts_location: ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}
+      github_scripts: "${{ inputs.github_scripts }}"
+      artifacts_location: "${{ inputs.artifacts_location }}"
 
   workflow-completed:
     needs: aggregating-pytests
