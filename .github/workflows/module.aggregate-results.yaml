@@ -63,7 +63,7 @@ jobs:
           echo -e "Artifacts Location: ${{ fromJson(
             needs.workflow.outputs.validated ).artifacts_location }}" ;
 
-          workflow_params: ${{ needs.workflow.outputs.validated }}
+          echo -e "Workflow Parameters: ${{ inputs.workflow_params }}" ;
 
   aggregate-pytest-results:
 
