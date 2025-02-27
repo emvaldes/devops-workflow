@@ -108,7 +108,7 @@ jobs:
     # needs: pytest-module
     # ✅ Ensures parameters has already confirmed values exist
     needs: [ workflow, parameters, pytest-module ]
-    if: needs.pytest-module.outputs.aggregated_results
+    # if: needs.pytest-module.outputs.aggregated_results
     uses: ./.github/workflows/module.execute-module.yaml
     with:
       # package_location: >-
