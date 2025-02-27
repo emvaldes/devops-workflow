@@ -17,7 +17,7 @@ on:
         type: string
         default: "artifacts"
 
-      workflow_params:
+      params:
         required: false
         type: string
 
@@ -44,6 +44,10 @@ jobs:
             "artifacts_location": {
               "id": "Artifacts Location",
               "value": "${{ inputs.artifacts_location }}"
+            },
+            "params": {
+              "id": "Workflow Parameters",
+              "value": ${{ inputs.params }}
             }
           }
         }
@@ -59,11 +63,9 @@ jobs:
         run: |
 
           echo -e "GitHub Action: ${{ fromJson(
-            needs.workflow.outputs.validated ).github_scripts }}" ;
+            needs.workflow.outputs.validated ).params.github_scripts }}" ;
           echo -e "Artifacts Location: ${{ fromJson(
-            needs.workflow.outputs.validated ).artifacts_location }}" ;
-
-          echo -e "Workflow Parameters: ${{ inputs.workflow_params }}" ;
+            needs.workflow.outputs.validated ).params.artifacts_location }}" ;
 
   aggregate-pytest-results:
 
@@ -73,9 +75,9 @@ jobs:
       aggregated_results: "true"
     env:
       github_scripts: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}
+        ${{ fromJson( needs.workflow.outputs.validated ).params.github_scripts }}
       artifacts_location: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}
+        ${{ fromJson( needs.workflow.outputs.validated ).params.artifacts_location }}
     steps:
 
       - name: Install System Packages
@@ -100,7 +102,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: >-
-            ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}/
+            ${{ fromJson( needs.workflow.outputs.validated ).params.artifacts_location }}/
 
       - name: Verify Downloaded Artifacts
         id: verifying_artifacts
