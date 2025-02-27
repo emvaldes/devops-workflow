@@ -107,6 +107,7 @@ jobs:
     with:
       github_scripts: "${{ inputs.github_scripts }}"
       artifacts_location: "${{ inputs.artifacts_location }}"
+      workflow_params: ${{ needs.workflow.outputs.validated }}
 
   workflow-completed:
     needs: aggregating-pytests

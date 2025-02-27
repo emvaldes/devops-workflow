@@ -17,6 +17,10 @@ on:
         type: string
         default: "artifacts"
 
+      workflow_params:
+        required: false
+        type: string
+
     outputs:
 
       aggregated_results:
@@ -58,6 +62,8 @@ jobs:
             needs.workflow.outputs.validated ).github_scripts }}" ;
           echo -e "Artifacts Location: ${{ fromJson(
             needs.workflow.outputs.validated ).artifacts_location }}" ;
+
+          workflow_params: ${{ needs.workflow.outputs.validated }}
 
   aggregate-pytest-results:
 
