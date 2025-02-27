@@ -51,8 +51,8 @@ jobs:
             needs.workflow.outputs.validated ).package_location }}" ;
 
           # echo -e "Workflow Parameters: ${{ inputs.workflow_params }}" ;
-          echo -e "Workflow Parameters: ${{ fromJson(
-            needs.workflow.outputs.validated.workflow_params ).package_location }}" ;
+          echo -e "Workflow Parameters: ${{ fromJson( toJson(
+          needs.workflow.outputs.validated.workflow_params ) ).package_location }}" ;
 
   install-packages:
 
