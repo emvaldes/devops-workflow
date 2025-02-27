@@ -51,8 +51,6 @@ jobs:
             needs.workflow.outputs.validated ).params.package_location }}" ;
           echo "GitHub Scripts: ${{ fromJson(
             needs.workflow.outputs.validated ).params.github_scripts }}" ;
-          echo "Artifacts Location: ${{ fromJson(
-            needs.workflow.outputs.validated ).params.artifacts_location }}" ;
 
   extracting-pytests:
     needs: [ workflow, parameters ]

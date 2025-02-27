@@ -8,6 +8,11 @@ on:
 
     inputs:
 
+      artifacts_location:
+        required: false
+        type: string
+        default: "artifacts"
+
       params:
         required: false
         type: string
@@ -28,6 +33,10 @@ jobs:
         {
           "workflow": "module.aggregate-results",
           "params": {
+            "artifacts_location": {
+              "id": "Artifacts Location",
+              "value": "${{ inputs.artifacts_location }}"
+            },
             "params": {
               "id": "Workflow Parameters",
               "value": ${{ inputs.params }}
@@ -48,7 +57,7 @@ jobs:
           echo -e "GitHub Action: ${{ fromJson(
             needs.workflow.outputs.validated ).params.github_scripts }}" ;
           echo -e "Artifacts Location: ${{ fromJson(
-            needs.workflow.outputs.validated ).params.artifacts_location }}" ;
+            needs.workflow.outputs.validated ).artifacts_location }}" ;
 
   aggregate-pytest-results:
 
@@ -60,7 +69,7 @@ jobs:
       github_scripts: >-
         ${{ fromJson( needs.workflow.outputs.validated ).params.github_scripts }}
       artifacts_location: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).params.artifacts_location }}
+        ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}
     steps:
 
       - name: Install System Packages
