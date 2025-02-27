@@ -63,7 +63,7 @@ jobs:
             "pytests_resources": {
               "id": "PyTests Resources",
               "value": "${{ github.event.inputs.pytests_resources }}",
-              "default": "test_dependencies.py"
+              "default": "test_tracing.py"
             },
             "package_location": {
               "id": "Package Location",
@@ -83,7 +83,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Packages - Module-Dependencies (Parameters)
+      - name: Packages - Module-Tracing (Parameters)
         id: workflow_parameters
         run: |
 
@@ -114,7 +114,7 @@ jobs:
     steps:
 
       - name: Completed - Tracer/Tracing Workflow
-        id: dependencies_workflow
+        id: tracing_workflow
         run: |
 
           echo -e "Completed - Tracer/Tracing Workflow" ;
