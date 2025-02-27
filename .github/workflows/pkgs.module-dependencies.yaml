@@ -96,8 +96,9 @@ jobs:
     needs: [install-packages, parameters]
     uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
-      pytests_location: >-
-        ${{ fromJson(toJson(needs.workflow.outputs.validated)).pytests_location }}
+      # pytests_location: >-
+      #   ${{ fromJson(toJson(needs.workflow.outputs.validated)).pytests_location }}
+      pytests_location: "${{ vars.PYTESTS_DEPENDENCIES }}"
       package_location: >-
         ${{ fromJson(toJson(needs.workflow.outputs.validated)).package_location }}
 
@@ -108,8 +109,9 @@ jobs:
     if: needs.pytest-module.outputs.aggregated_results
     uses: ./.github/workflows/module.execute-module.yaml
     with:
-      package_location: >-
-        ${{ fromJson(toJson(needs.workflow.outputs.validated)).package_location }}
+      # package_location: >-
+      #   ${{ fromJson(toJson(needs.workflow.outputs.validated)).package_location }}
+      package_location: "${{ vars.PACKAGES_DEPENDENCIES }}"
 
   workflow-completed:
     needs: execute-module
