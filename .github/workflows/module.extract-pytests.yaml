@@ -21,6 +21,10 @@ on:
         type: string
         default: 'test_functions.json'
 
+      workflow_params:
+        required: false
+        type: string
+
     outputs:
 
       pytest_files:
@@ -72,6 +76,8 @@ jobs:
             needs.workflow.outputs.validated ).github_scripts }}" ;
           echo -e "Output Filename: ${{ fromJson(
             needs.workflow.outputs.validated ).output_filename }}" ;
+
+          echo -e "Workflow Parameters: ${{ inputs.workflow_params }}" ;
 
   extract-pytests:
 

@@ -91,6 +91,7 @@ jobs:
         ${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}
       pytests_location: >-
         ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
+      workflow_params: ${{ needs.workflow.outputs.validated }}
 
   running-pytests:
     needs: [ workflow, parameters, extracting-pytests ]
@@ -98,7 +99,7 @@ jobs:
     with:
       test_functions: ${{ needs.extracting-pytests.outputs.test_functions }}
       pytests_location: ${{ inputs.pytests_location }}
-      workflow_params: "${{ needs.workflow.outputs.validated }}"
+      workflow_params: ${{ needs.workflow.outputs.validated }}
 
   aggregating-pytests:
     needs: running-pytests
