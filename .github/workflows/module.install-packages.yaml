@@ -51,7 +51,7 @@ jobs:
             needs.workflow.outputs.validated ).package_location }}" ;
 
           # echo -e "Workflow Parameters: ${{ inputs.workflow_params }}" ;
-          echo -e "Workflow Parameters: ${{ fromJson(
+          echo -e "Workflow Parameters: ${{ toJson(
             needs.workflow.outputs.validated ).workflow_params }}" ;
 
   install-packages:
@@ -64,7 +64,7 @@ jobs:
         # Default value: { "python": [ "3.9", "3.10", "3.11" ] }
     env:
       package_location: >-
-        ${{ needs.workflow.outputs.validated.workflow_params.package_location }}
+        ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
     steps:
 
       - name: Manage System Update (latest)
