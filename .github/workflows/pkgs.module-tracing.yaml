@@ -1,5 +1,5 @@
 ---
-## File: .github/workflows/pkgs.module-dependencies.yaml
+## File: .github/workflows/pkgs.module-tracing.yaml
 
 name: Pipeline - AppFlow-Tracer/Tracing
 run-name: ${{ github.actor }} -> Tracer/Tracing
@@ -53,12 +53,12 @@ jobs:
     with:
       workflow_inputs: >-
         {
-          "workflow": "pkgs.module-dependencies",
+          "workflow": "pkgs.module-tracing",
           "inputs": {
             "pytests_location": {
               "id": "PyTest Location",
               "value": "${{ github.event.inputs.pytests_location }}",
-              "default": "tests/requirements/dependencies"
+              "default": "tests/appflow-tracer/tracing"
             },
             "pytests_resources": {
               "id": "PyTests Resources",
@@ -68,7 +68,7 @@ jobs:
             "package_location": {
               "id": "Package Location",
               "value": "${{ github.event.inputs.package_location }}",
-              "default": "packages/requirements/dependencies"
+              "default": "packages/appflow-tracer/tracing"
             },
             "github_scripts": {
               "id": "GitHub Scripts",
@@ -108,7 +108,7 @@ jobs:
     with:
       params: ${{ needs.workflow.outputs.validated }}
 
-  dependencies-completed:
+  tracing-completed:
     needs: execute-module
     runs-on: ubuntu-latest
     steps:
