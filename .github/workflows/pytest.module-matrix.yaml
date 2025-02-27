@@ -97,8 +97,8 @@ jobs:
     uses: ./.github/workflows/module.running-pytests.yaml
     with:
       test_functions: ${{ needs.extracting-pytests.outputs.test_functions }}
-      pytests_location: "${{ inputs.pytests_location }}"
-      workflow_params: "${{ fromJson( toJson( needs.workflow.outputs.validated ) ) }}"
+      pytests_location: ${{ inputs.pytests_location }}
+      workflow_params: ${{ needs.workflow.outputs.validated }}
 
   aggregating-pytests:
     needs: running-pytests

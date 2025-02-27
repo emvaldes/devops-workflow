@@ -57,7 +57,7 @@ jobs:
             needs.workflow.outputs.validated ).test_functions }}" ;
 
           echo -e "Workflow Parameters: ${{ fromJson(
-            inputs.worfklow_params ) }}" ;
+            inputs.workflow_params ) }}" ;
 
   # Experimental Cutter Matrix Using pytest_files.json
   pytest-files:
