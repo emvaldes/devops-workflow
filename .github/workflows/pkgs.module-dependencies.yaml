@@ -94,10 +94,12 @@ jobs:
     needs: install-packages
     uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
-      pytests_location: "tests/requirements/dependencies"
-      # pytests_location: "${{ inputs.pytests_location }}"
-      package_location: "packages/requirements/dependencies"
-      # package_location: "${{ inputs.package_location }}"
+      # pytests_location: "tests/requirements/dependencies"
+      pytests_location: "${{ vars.PYTESTS_DEPENDENCIES }}"
+      # package_location: "packages/requirements/dependencies"
+      package_location: "${{ vars.PACKAGES_DEPENDENCIES }}"
+      # package_location: >-
+      #   ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
 
   execute-module:
     needs: pytest-module
@@ -105,7 +107,6 @@ jobs:
     uses: ./.github/workflows/module.execute-module.yaml
     with:
       # package_location: "packages/requirements/dependencies"
-      # package_location: "${{ inputs.package_location.default }}"
       package_location: "${{ vars.PACKAGES_DEPENDENCIES }}"
 
   workflow-completed:
