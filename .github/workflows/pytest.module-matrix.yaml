@@ -56,7 +56,7 @@ jobs:
     needs: [ workflow, parameters ]
     uses: ./.github/workflows/module.extract-pytests.yaml
     with:
-      params: ${{ needs.workflow.outputs.validated }}
+      params: ${{ fromJson( needs.workflow.outputs.validated ).params }}
 
   running-pytests:
     needs: [ workflow, parameters, extracting-pytests ]
