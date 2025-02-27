@@ -11,10 +11,16 @@ on:
     inputs:
 
       pytests_location:
-        description: "PyTest files Directory"
+        description: "PyTests Files Directory"
         required: false
         type: string
         default: "tests/requirements/dependencies"
+
+      pytests_resources:
+        description: "PyTests Target Resources"
+        required: false
+        type: string
+        default: "dependencies.py"
 
       package_location:
         description: "Packages/Modules Directory"
@@ -53,6 +59,11 @@ jobs:
               "id": "PyTest Location",
               "value": "${{ github.event.inputs.pytests_location }}",
               "default": "tests/requirements/dependencies"
+            },
+            "pytests_resources": {
+              "id": "PyTests Resources",
+              "value": "${{ github.event.inputs.pytests_resources }}",
+              "default": "dependencies.py"
             },
             "package_location": {
               "id": "Package Location",

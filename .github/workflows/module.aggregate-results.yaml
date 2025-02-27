@@ -29,8 +29,7 @@ jobs:
           "workflow": "module.aggregate-results",
           "inputs": {
             "params": {
-              "id": "Workflow Parameters",
-              "value": ${{ inputs.params }}
+              "id": "Workflow Parameters", "value": ${{ inputs.params }}
             }
           }
         }
@@ -55,8 +54,8 @@ jobs:
     outputs:
       aggregated_results: "true"
     env:
-      github_scripts: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).params.params.github_scripts }}
+      github_scripts: ${{ fromJson( needs.workflow.outputs.validated
+        ).params.params.github_scripts }}
       artifacts_location: "artifacts"
     steps:
 
