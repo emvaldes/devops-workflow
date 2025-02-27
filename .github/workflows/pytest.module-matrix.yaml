@@ -47,26 +47,6 @@ jobs:
         {
           "workflow": "pytest.module-matrix",
           "params": {
-            "pytests_location": {
-              "id": "PyTest Location",
-              "value": "${{ github.event.inputs.pytests_location }}",
-              "default": "tests/requirements/dependencies"
-            },
-            "package_location": {
-              "id": "Package Location",
-              "value": "${{ github.event.inputs.package_location }}",
-              "default": "packages/requirements/dependencies"
-            },
-            "github_scripts": {
-              "id": "GitHub Scripts",
-              "value": "${{ github.event.inputs.github_scripts }}",
-              "default": ".github/scripts"
-            },
-            "artifacts_location": {
-              "id": "Artifacts Location",
-              "value": "${{ github.event.inputs.artifacts_location }}",
-              "default": "artifacts"
-            },
             "params": {
               "id": "Workflow Parameters",
               "value": ${{ inputs.params }}
