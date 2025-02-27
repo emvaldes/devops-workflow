@@ -40,11 +40,7 @@ jobs:
         run: |
 
           echo -e "Package Location: ${{ fromJson(
-            needs.workflow.outputs.validated ).params.package_location }}" ;
-          echo -e "PyTests Location: ${{ fromJson(
-            needs.workflow.outputs.validated ).params.pytests_location }}" ;
-          echo -e "GitHub Scripts: ${{ fromJson(
-            needs.workflow.outputs.validated ).params.github_scripts }}" ;
+            needs.workflow.outputs.validated ).params.params.package_location }}" ;
 
   install-packages:
 
@@ -56,7 +52,7 @@ jobs:
         # Default value: { "python": [ "3.9", "3.10", "3.11" ] }
     env:
       package_location: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).params.package_location }}
+        ${{ fromJson( needs.workflow.outputs.validated ).params.params.package_location }}
     steps:
 
       - name: Manage System Update (latest)

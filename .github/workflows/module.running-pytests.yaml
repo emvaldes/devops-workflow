@@ -48,7 +48,7 @@ jobs:
         run: |
 
           echo -e "PyTests Location: ${{ fromJson(
-            needs.workflow.outputs.validated ).params.pytests_location }}" ;
+            needs.workflow.outputs.validated ).params.params.pytests_location }}" ;
           echo -e "PyTest Functions: ${{ fromJson(
             needs.workflow.outputs.validated ).test_functions }}" ;
 
@@ -81,7 +81,7 @@ jobs:
         test_function: ${{ fromJson( inputs.test_functions ) }}
     env:
       pytests_location: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).params.pytests_location }}
+        ${{ fromJson( needs.workflow.outputs.validated ).params.params.pytests_location }}
     steps:
 
       - name: Checkout Repository
