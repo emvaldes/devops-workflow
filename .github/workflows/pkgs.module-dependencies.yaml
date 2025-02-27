@@ -93,7 +93,7 @@ jobs:
     needs: [ workflow, parameters ]
     uses: ./.github/workflows/module.install-packages.yaml
     with:
-      params: ${{ needs.workflow.outputs.validated }}
+      packages: "packages/requirements/dependencies"
 
   pytests-module:
     needs: [ workflow, parameters, install-packages ]
