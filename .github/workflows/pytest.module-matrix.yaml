@@ -45,11 +45,11 @@ jobs:
         id: workflow_parameters
         run: |
 
-          echo "PyTests Location: ${{ fromJson(
-            needs.workflow.outputs.validated ).params.pytests_location }}" ;
-          echo "Package Location: ${{ fromJson(
+          echo -e "Package Location: ${{ fromJson(
             needs.workflow.outputs.validated ).params.package_location }}" ;
-          echo "GitHub Scripts: ${{ fromJson(
+          echo -e "PyTests Location: ${{ fromJson(
+            needs.workflow.outputs.validated ).params.pytests_location }}" ;
+          echo -e "GitHub Scripts: ${{ fromJson(
             needs.workflow.outputs.validated ).params.github_scripts }}" ;
 
   extracting-pytests:
