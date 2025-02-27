@@ -33,9 +33,10 @@ on:
         type: string
 
     outputs:
+
       aggregated_results:
         description: "Providing PyTest Results Aggregation status"
-        value: ${{ jobs.workflow-completed.outputs.aggregated_results }}
+        value: ${{ jobs.pytests-completed.outputs.aggregated_results }}
 
 jobs:
 
@@ -115,15 +116,15 @@ jobs:
       artifacts_location: "${{ inputs.artifacts_location }}"
       workflow_params: ${{ needs.workflow.outputs.validated }}
 
-  # workflow-completed:
-  #   needs: aggregating-pytests
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     aggregated_results: ${{ needs.aggregating-pytests.outputs.aggregated_results }}
-  #   steps:
-  #
-  #     - name: Workflow Completion
-  #       id: workflow_status
-  #       run: |
-  #
-  #         echo -e "Dependencies Matrix - GitHub Environment:\n${GITHUB_ENV}" ;
+  pytests-completed:
+    needs: aggregating-pytests
+    runs-on: ubuntu-latest
+    outputs:
+      aggregated_results: ${{ needs.aggregating-pytests.outputs.aggregated_results }}
+    steps:
+
+      - name: Workflow Completion
+        id: workflow_status
+        run: |
+
+          echo -e "Dependencies Matrix - GitHub Environment:\n${GITHUB_ENV}" ;

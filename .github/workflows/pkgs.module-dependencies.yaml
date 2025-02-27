@@ -116,12 +116,12 @@ jobs:
       package_location: "${{ vars.PACKAGES_DEPENDENCIES }}"
       workflow_params: ${{ needs.workflow.outputs.validated }}
 
-  workflow-dependencies:
+  dependencies-completed:
     needs: execute-module
     runs-on: ubuntu-latest
     steps:
 
-      - name: Completed Dependencies Module
+      - name: Completed - Dependencies Workflow
         id: dependencies_module
         run: |
 
