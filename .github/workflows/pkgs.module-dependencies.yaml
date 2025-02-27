@@ -91,20 +91,23 @@ jobs:
         ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
 
   pytest-module:
-    needs: install-packages
+    # needs: install-packages
+    needs: [install-packages, parameters]  # ✅ Ensures parameters (which confirms workflow.outputs.validated) runs first
     uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
-      pytests_location: "${{ vars.PYTESTS_DEPENDENCIES }}"
+      pytests_location: >-
+        ${{ fromJson(toJson(needs.workflow.outputs.validated)).pytests_location }}
       package_location: >-
-        ${{ fromJson( toJson( needs.workflow.outputs.validated ) ).package_location }}
+        ${{ fromJson(toJson(needs.workflow.outputs.validated)).package_location }}
 
   execute-module:
-    needs: pytest-module
+    # needs: pytest-module
+    needs: [pytest-module, parameters]  # ✅ Ensures parameters has already confirmed values exist
     if: needs.pytest-module.outputs.aggregated_results
     uses: ./.github/workflows/module.execute-module.yaml
     with:
-      # package_location: "packages/requirements/dependencies"
-      package_location: "${{ vars.PACKAGES_DEPENDENCIES }}"
+      package_location: >-
+        ${{ fromJson(toJson(needs.workflow.outputs.validated)).package_location }}
 
   workflow-completed:
     needs: execute-module
