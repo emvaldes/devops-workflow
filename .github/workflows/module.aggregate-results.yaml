@@ -46,7 +46,7 @@ jobs:
         run: |
 
           echo -e "GitHub Action: ${{ fromJson(
-            needs.workflow.outputs.validated ).params.params.github_scripts }}" ;
+            needs.workflow.outputs.validated ).params.github_scripts }}" ;
 
   aggregate-pytest-results:
 
@@ -56,7 +56,7 @@ jobs:
       aggregated_results: "true"
     env:
       github_scripts: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).params.params.github_scripts }}
+        ${{ fromJson( needs.workflow.outputs.validated ).params.github_scripts }}
       artifacts_location: "artifacts"
     steps:
 
