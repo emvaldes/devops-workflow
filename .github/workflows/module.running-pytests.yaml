@@ -75,10 +75,13 @@ jobs:
 
     needs: pytest-files
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         python-version: ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
-        test_function: ${{ fromJson( inputs.test_functions ) }}
+        # test_function: ${{ fromJson( inputs.test_functions ) }}
+        test_function: ${{ fromJson( toJson( needs.workflow.outputs.validated ) ).test_functions }} ;
+
     steps:
 
       - name: Checkout Repository
