@@ -13,7 +13,7 @@ on:
         type: string
 
       workflow_params:
-        required: false
+        required: true
         type: string
 
 jobs:
@@ -29,6 +29,10 @@ jobs:
             "package_location": {
               "id": "Package Location",
               "value": "${{ inputs.package_location }}"
+            },
+            "workflow_params": {
+              "id": "Workflow Parameters",
+              "value": "${{ inputs.workflow_params }}"
             }
           }
         }
@@ -46,7 +50,9 @@ jobs:
           echo -e "Package Location: ${{ fromJson(
             needs.workflow.outputs.validated ).package_location }}" ;
 
-          echo -e "Workflow Parameters: ${{ inputs.workflow_params }}" ;
+          # echo -e "Workflow Parameters: ${{ inputs.workflow_params }}" ;
+          echo -e "Workflow Parameters: ${{ fromJson(
+            needs.workflow.outputs.validated ).workflow_params }}" ;
 
   install-packages:
 
