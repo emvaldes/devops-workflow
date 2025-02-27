@@ -93,7 +93,7 @@ jobs:
         ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
 
   running-pytests:
-    needs: extracting-pytests
+    needs: [ workflow, parameters, extracting-pytests ]
     uses: ./.github/workflows/module.running-pytests.yaml
     with:
       test_functions: ${{ needs.extracting-pytests.outputs.test_functions }}
