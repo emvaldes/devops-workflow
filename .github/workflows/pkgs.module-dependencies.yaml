@@ -102,7 +102,7 @@ jobs:
         needs.workflow.outputs.validated ) ).package_location }}
 
   execute-module:
-    needs: [workflow, parameters, install-packages, pytest-module]
+    needs: pytest-module
     if: needs.pytest-module.outputs.aggregated_results
     uses: ./.github/workflows/module.execute-module.yaml
     with:
