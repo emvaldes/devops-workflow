@@ -12,6 +12,10 @@ on:
         required: true
         type: string
 
+      workflow_params:
+        required: false
+        type: string
+
 jobs:
 
   workflow:
@@ -41,6 +45,8 @@ jobs:
 
           echo -e "Package Location: ${{ fromJson(
             needs.workflow.outputs.validated ).package_location }}" ;
+
+          echo -e "Workflow Parameters: ${{ inputs.workflow_params }}" ;
 
   install-packages:
 
