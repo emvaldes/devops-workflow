@@ -89,7 +89,7 @@ jobs:
     with:
       package_location: >-
         ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
-      workflow_params: ${{ needs.workflow.outputs.validated }}
+      params: ${{ needs.workflow.outputs.validated }}
 
   pytests-module:
     # needs: install-packages
