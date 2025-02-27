@@ -49,10 +49,8 @@ jobs:
 
           echo -e "PyTests Location: ${{ fromJson(
             needs.workflow.outputs.validated ).pytests_location }}" ;
-          echo -e "PyTest Functions: ${{ fromJson(
-            needs.workflow.outputs.validated ).test_functions }}" ;
-
-          echo -e "Something: ${{ env.testing_something }}" ;
+          echo -e "PyTest Functions: ${{ toJson( fromJson(
+            needs.workflow.outputs.validated ).test_functions ) }}" ;
 
   # Experimental Cutter Matrix Using pytest_files.json
   pytest-files:
@@ -141,7 +139,8 @@ jobs:
         run: |
 
           pytest -v --junitxml=pytest-results.xml \
-          "${{ env.pytests_location }}/test_dependencies.py::${{ matrix.test_function }}" ;
+          "${{ fromJson( needs.workflow.outputs.validated
+          ).pytests_location }}/test_dependencies.py::${{ matrix.test_function }}" ;
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4

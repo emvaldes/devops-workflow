@@ -65,5 +65,3 @@ jobs:
 
           # Set the validated parameters to GitHub output
           echo "validated=$validated_compact" >> "$GITHUB_OUTPUT" ;
-
-          echo "testing_something=$( jq .pytests_location <<< "${validated_compact}" )" >> $GITHUB_ENV ;
