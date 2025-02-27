@@ -10,24 +10,6 @@ on:
 
     inputs:
 
-      pytests_location:
-        required: true
-        type: string
-
-      package_location:
-        required: true
-        type: string
-
-      github_scripts:
-        required: false
-        type: string
-        default: ".github/scripts"
-
-      artifacts_location:
-        required: false
-        type: string
-        default: "artifacts"
-
       params:
         required: false
         type: string
@@ -47,11 +29,6 @@ jobs:
         {
           "workflow": "pytest.module-matrix",
           "params": {
-            "artifacts_location": {
-              "id": "Artifacts Location",
-              "value": "${{ github.event.inputs.artifacts_location }}",
-              "default": "artifacts"
-            },
             "params": {
               "id": "Workflow Parameters",
               "value": ${{ inputs.params }}
@@ -75,7 +52,7 @@ jobs:
           echo "GitHub Scripts: ${{ fromJson(
             needs.workflow.outputs.validated ).params.github_scripts }}" ;
           echo "Artifacts Location: ${{ fromJson(
-            needs.workflow.outputs.validated ).artifacts_location }}" ;
+            needs.workflow.outputs.validated ).params.artifacts_location }}" ;
 
   extracting-pytests:
     needs: [ workflow, parameters ]
@@ -94,7 +71,6 @@ jobs:
     needs: [ workflow, parameters, running-pytests ]
     uses: ./.github/workflows/module.aggregate-results.yaml
     with:
-      artifacts_location: "${{ inputs.artifacts_location }}"
       params: ${{ needs.workflow.outputs.validated }}
 
   pytests-completed:
