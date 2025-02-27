@@ -64,7 +64,7 @@ jobs:
         # Default value: { "python": [ "3.9", "3.10", "3.11" ] }
     env:
       package_location: >-
-        ${{ toJson( needs.workflow.outputs.validated.workflow_params ).package_location }}
+        ${{ toJson( fromJson( needs.workflow.outputs.validated.workflow_params ) ).package_location }}
     steps:
 
       - name: Manage System Update (latest)
