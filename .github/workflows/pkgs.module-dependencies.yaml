@@ -94,27 +94,18 @@ jobs:
     needs: install-packages
     uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
-      # pytests_location: >-
-      #   ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
-      ## Warning: Needs to be fixed
-      # pytests_location: "tests/requirements/dependencies"
-      pytests_location: "${{ inputs.pytests_location }}"
-      # package_location: >-
-      #   ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
-      ## Warning: Needs to be fixed
-      # package_location: "packages/requirements/dependencies"
-      package_location: "${{ inputs.package_location }}"
+      pytests_location: "tests/requirements/dependencies"
+      # pytests_location: "${{ inputs.pytests_location }}"
+      package_location: "packages/requirements/dependencies"
+      # package_location: "${{ inputs.package_location }}"
 
   execute-module:
     needs: pytest-module
     if: needs.pytest-module.outputs.aggregated_results
     uses: ./.github/workflows/module.execute-module.yaml
     with:
-      # package_location: >-
-      #   ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
-      ## Warning: Needs to be fixed
-      # package_location: "packages/requirements/dependencies"
-      package_location: "${{ inputs.package_location }}"
+      package_location: "packages/requirements/dependencies"
+      # package_location: "${{ inputs.package_location }}"
 
   workflow-completed:
     needs: execute-module
