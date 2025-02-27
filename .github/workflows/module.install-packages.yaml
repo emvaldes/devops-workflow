@@ -65,6 +65,7 @@ jobs:
     env:
       package_location: >-
         ${{ fromJson( needs.workflow.outputs.validated ).params.package_location }}
+
     steps:
 
       - name: Manage System Update (latest)
