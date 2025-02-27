@@ -32,7 +32,7 @@ jobs:
             },
             "workflow_params": {
               "id": "Workflow Parameters",
-              "value": "${{ inputs.workflow_params }}"
+              "value": ${{ inputs.workflow_params }}
             }
           }
         }
