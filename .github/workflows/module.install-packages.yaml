@@ -47,9 +47,6 @@ jobs:
         id: workflow_parameters
         run: |
 
-          # echo -e "Package Location: ${{ fromJson(
-          #   needs.workflow.outputs.validated ).package_location }}" ;
-
           echo -e "Workflow Package: ${{ fromJson(
             needs.workflow.outputs.validated ).params.package_location }}" ;
 
