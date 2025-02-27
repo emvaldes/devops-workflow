@@ -114,7 +114,7 @@ jobs:
       # package_location: >-
       #   ${{ fromJson(toJson(needs.workflow.outputs.validated)).package_location }}
       package_location: "${{ vars.PACKAGES_DEPENDENCIES }}"
-      workflow_params: ${{ needs.workflow.outputs.validated }}
+      params: ${{ needs.workflow.outputs.validated }}
 
   dependencies-completed:
     needs: execute-module

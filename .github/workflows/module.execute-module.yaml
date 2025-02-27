@@ -12,7 +12,7 @@ on:
         required: true
         type: string
 
-      workflow_params:
+      params:
         required: false
         type: string
 
@@ -29,6 +29,10 @@ jobs:
             "package_location": {
               "id": "Package Location",
               "value": "${{ inputs.package_location }}"
+            },
+            "params": {
+              "id": "Workflow Parameters",
+              "value": ${{ inputs.params }}
             }
           }
         }
@@ -44,9 +48,7 @@ jobs:
         run: |
 
           echo -e "Package Location: ${{ fromJson(
-            needs.workflow.outputs.validated ).package_location }}" ;
-
-          echo -e "Workflow Parameters: ${{ inputs.workflow_params }}" ;
+            needs.workflow.outputs.validated ).params.package_location }}" ;
 
   execute-module:
 
@@ -57,7 +59,7 @@ jobs:
         python-version: ${{ fromJson(vars.PYTHON_VERSIONS).python }}
     env:
       package_location: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
+        ${{ fromJson( needs.workflow.outputs.validated ).params.package_location }}
     steps:
 
       - name: Checkout Repository
