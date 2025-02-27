@@ -103,7 +103,7 @@ jobs:
 
   execute-module:
     needs: [install-packages, pytest-module]
-    if: needs.pytest-module.outputs.aggregated_results
+    # if: needs.pytest-module.outputs.aggregated_results
     uses: ./.github/workflows/module.execute-module.yaml
     with:
       # package_location: "packages/requirements/dependencies"
