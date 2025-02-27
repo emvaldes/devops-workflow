@@ -54,6 +54,7 @@ jobs:
 
           echo "pytests_location=${{ fromJson(
             needs.workflow.outputs.validated ).pytests_location }}" >> $GITHUB_ENV ;
+          echo -e "Location XYZ: ${{ env.pytests_location }}" ;
 
   # Experimental Cutter Matrix Using pytest_files.json
   pytest-files:
