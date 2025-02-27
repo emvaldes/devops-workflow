@@ -31,8 +31,7 @@ jobs:
               "value": ${{ toJson( fromJson( inputs.test_functions ) ) }}
             },
             "params": {
-              "id": "Workflow Parameters",
-              "value": ${{ inputs.params }}
+              "id": "Workflow Parameters", "value": ${{ inputs.params }}
             }
           }
         }
@@ -80,8 +79,8 @@ jobs:
         python-version: ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
         test_function: ${{ fromJson( inputs.test_functions ) }}
     env:
-      pytests_location: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).params.params.pytests_location }}
+      pytests_location: ${{ fromJson(
+        needs.workflow.outputs.validated ).params.params.pytests_location }}
     steps:
 
       - name: Checkout Repository

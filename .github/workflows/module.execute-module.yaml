@@ -23,8 +23,7 @@ jobs:
           "workflow": "module.exectute-module",
           "inputs": {
             "params": {
-              "id": "Workflow Parameters",
-              "value": ${{ inputs.params }}
+              "id": "Workflow Parameters", "value": ${{ inputs.params }}
             }
           }
         }
@@ -50,8 +49,8 @@ jobs:
       matrix:
         python-version: ${{ fromJson(vars.PYTHON_VERSIONS).python }}
     env:
-      package_location: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).params.package_location }}
+      package_location: ${{ fromJson(
+        needs.workflow.outputs.validated ).params.package_location }}
     steps:
 
       - name: Checkout Repository

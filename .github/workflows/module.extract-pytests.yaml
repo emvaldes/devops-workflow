@@ -42,8 +42,7 @@ jobs:
               "value": "${{ inputs.output_filename }}"
             },
             "params": {
-              "id": "Workflow Parameters",
-              "value": ${{ inputs.params }}
+              "id": "Workflow Parameters", "value": ${{ inputs.params }}
             }
           }
         }
@@ -73,12 +72,12 @@ jobs:
       pytest_files: ${{ steps.extract.outputs.pytest_files }}
       test_functions: ${{ steps.extract.outputs.test_functions }}
     env:
-      github_scripts: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).params.params.github_scripts }}
-      pytests_location: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).params.params.pytests_location }}
-      output_filename: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).output_filename }}
+      github_scripts: ${{ fromJson(
+        needs.workflow.outputs.validated ).params.params.github_scripts }}
+      pytests_location: ${{ fromJson(
+        needs.workflow.outputs.validated ).params.params.pytests_location }}
+      output_filename: ${{ fromJson(
+        needs.workflow.outputs.validated ).output_filename }}
     steps:
 
       - name: Checkout Repository
