@@ -91,7 +91,7 @@ jobs:
         ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
       workflow_params: ${{ needs.workflow.outputs.validated }}
 
-  pytest-module:
+  pytests-module:
     # needs: install-packages
     # ✅ Ensures parameters (which confirms workflow.outputs.validated) runs first
     needs: [ workflow, parameters, install-packages ]
@@ -105,10 +105,10 @@ jobs:
       workflow_params: ${{ needs.workflow.outputs.validated }}
 
   execute-module:
-    # needs: pytest-module
+    # needs: pytests-module
     # ✅ Ensures parameters has already confirmed values exist
-    needs: [ workflow, parameters, pytest-module ]
-    # if: needs.pytest-module.outputs.aggregated_results
+    needs: [ workflow, parameters, pytests-module ]
+    # if: needs.pytests-module.outputs.aggregated_results
     uses: ./.github/workflows/module.execute-module.yaml
     with:
       # package_location: >-
