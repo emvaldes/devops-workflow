@@ -67,7 +67,7 @@ jobs:
 
   aggregate-pytest-results:
 
-    needs: [workflow, parameters]
+    needs: [ workflow, parameters ]
     runs-on: ubuntu-latest
     outputs:
       aggregated_results: "true"

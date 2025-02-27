@@ -50,7 +50,7 @@ jobs:
 
   execute-module:
 
-    needs: [workflow, parameters]
+    needs: [ workflow, parameters ]
     runs-on: ubuntu-latest
     strategy:
       matrix:

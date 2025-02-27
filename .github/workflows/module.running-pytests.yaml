@@ -61,7 +61,7 @@ jobs:
   # Experimental Cutter Matrix Using pytest_files.json
   pytest-files:
 
-    needs: [workflow, parameters]
+    needs: [ workflow, parameters ]
     runs-on: ubuntu-latest
     outputs:
       pytest_files: ${{ steps.extract.outputs.pytest_files }}
