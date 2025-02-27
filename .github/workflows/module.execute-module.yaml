@@ -8,10 +8,6 @@ on:
 
     inputs:
 
-      package_location:
-        required: true
-        type: string
-
       params:
         required: false
         type: string
@@ -26,10 +22,6 @@ jobs:
         {
           "workflow": "module.exectute-module",
           "params": {
-            "package_location": {
-              "id": "Package Location",
-              "value": "${{ inputs.package_location }}"
-            },
             "params": {
               "id": "Workflow Parameters",
               "value": ${{ inputs.params }}

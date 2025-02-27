@@ -76,44 +76,25 @@ jobs:
         id: workflow_parameters
         run: |
 
-          echo -e "PyTests Location: ${{ fromJson(
-            needs.workflow.outputs.validated ).pytests_location }}" ;
-          echo -e "Package Location: ${{ fromJson(
-            needs.workflow.outputs.validated ).package_location }}" ;
-          echo -e "GitHub Scripts: ${{ fromJson(
-            needs.workflow.outputs.validated ).github_scripts }}" ;
+          echo -e "Workflow Parameters: ${{ needs.workflow.outputs.validated }}" ;
 
   install-packages:
     needs: [ workflow, parameters ]
     uses: ./.github/workflows/module.install-packages.yaml
     with:
-      package_location: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
       params: ${{ needs.workflow.outputs.validated }}
 
   pytests-module:
-    # needs: install-packages
-    # ✅ Ensures parameters (which confirms workflow.outputs.validated) runs first
     needs: [ workflow, parameters, install-packages ]
     uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
-      # pytests_location: >-
-      #   ${{ fromJson(toJson(needs.workflow.outputs.validated)).pytests_location }}
-      pytests_location: "${{ vars.PYTESTS_DEPENDENCIES }}"
-      package_location: >-
-        ${{ fromJson(toJson(needs.workflow.outputs.validated)).package_location }}
       params: ${{ needs.workflow.outputs.validated }}
 
   execute-module:
-    # needs: pytests-module
-    # ✅ Ensures parameters has already confirmed values exist
     needs: [ workflow, parameters, pytests-module ]
     # if: needs.pytests-module.outputs.aggregated_results
     uses: ./.github/workflows/module.execute-module.yaml
     with:
-      # package_location: >-
-      #   ${{ fromJson(toJson(needs.workflow.outputs.validated)).package_location }}
-      package_location: "${{ vars.PACKAGES_DEPENDENCIES }}"
       params: ${{ needs.workflow.outputs.validated }}
 
   dependencies-completed:

@@ -81,10 +81,6 @@ jobs:
     needs: [ workflow, parameters ]
     uses: ./.github/workflows/module.extract-pytests.yaml
     with:
-      github_scripts: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}
-      pytests_location: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
       params: ${{ needs.workflow.outputs.validated }}
 
   running-pytests:
@@ -92,14 +88,12 @@ jobs:
     uses: ./.github/workflows/module.running-pytests.yaml
     with:
       test_functions: ${{ needs.extracting-pytests.outputs.test_functions }}
-      pytests_location: ${{ inputs.pytests_location }}
       params: ${{ needs.workflow.outputs.validated }}
 
   aggregating-pytests:
     needs: [ workflow, parameters, running-pytests ]
     uses: ./.github/workflows/module.aggregate-results.yaml
     with:
-      github_scripts: "${{ inputs.github_scripts }}"
       artifacts_location: "${{ inputs.artifacts_location }}"
       params: ${{ needs.workflow.outputs.validated }}
 

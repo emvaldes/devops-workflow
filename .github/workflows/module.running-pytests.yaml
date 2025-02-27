@@ -8,10 +8,6 @@ on:
 
     inputs:
 
-      pytests_location:
-        required: true
-        type: string
-
       test_functions:
         required: true
         type: string
@@ -30,10 +26,6 @@ jobs:
         {
           "workflow": "module.running-pytests",
           "params": {
-            "pytests_location": {
-              "id": "PyTest Location",
-              "value": "${{ inputs.pytests_location }}"
-            },
             "test_functions": {
               "id": "PyTest Functions",
               "value": ${{ toJson( fromJson( inputs.test_functions ) ) }}
@@ -58,7 +50,7 @@ jobs:
           echo -e "PyTests Location: ${{ fromJson(
             needs.workflow.outputs.validated ).params.pytests_location }}" ;
           echo -e "PyTest Functions: ${{ fromJson(
-            needs.workflow.outputs.validated ).params.test_functions }}" ;
+            needs.workflow.outputs.validated ).test_functions }}" ;
 
   # Experimental Cutter Matrix Using pytest_files.json
   pytest-files:

@@ -8,14 +8,6 @@ on:
 
     inputs:
 
-      pytests_location:
-        required: true
-        type: string
-
-      github_scripts:
-        required: true
-        type: string
-
       output_filename:
         required: false
         type: string
@@ -45,14 +37,6 @@ jobs:
         {
           "workflow": "module.extract-pytests",
           "params": {
-            "pytests_location": {
-              "id": "PyTest Location",
-              "value": "${{ inputs.pytests_location }}"
-            },
-            "github_scripts": {
-              "id": "GitHub Scripts",
-              "value": "${{ inputs.github_scripts }}"
-            },
             "output_filename": {
               "id": "Output Filename",
               "value": "${{ inputs.output_filename }}"
@@ -79,7 +63,7 @@ jobs:
           echo -e "GitHub Action: ${{ fromJson(
             needs.workflow.outputs.validated ).params.github_scripts }}" ;
           echo -e "Output Filename: ${{ fromJson(
-            needs.workflow.outputs.validated ).params.output_filename }}" ;
+            needs.workflow.outputs.validated ).output_filename }}" ;
 
   extract-pytests:
 
@@ -94,7 +78,7 @@ jobs:
       pytests_location: >-
         ${{ fromJson( needs.workflow.outputs.validated ).params.pytests_location }}
       output_filename: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).params.output_filename }}
+        ${{ fromJson( needs.workflow.outputs.validated ).output_filename }}
     steps:
 
       - name: Checkout Repository
