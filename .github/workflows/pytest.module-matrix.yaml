@@ -97,14 +97,23 @@ jobs:
     uses: ./.github/workflows/module.running-pytests.yaml
     with:
       test_functions: ${{ needs.extracting-pytests.outputs.test_functions }}
-      pytests_location: "${{ inputs.pytests_location }}"
+      # pytests_location: >-
+      #   ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
+      ## Warning: Needs to be fixed
+      pytests_location: 'tests/requirements/dependencies'
 
   aggregating-pytests:
     needs: running-pytests
     uses: ./.github/workflows/module.aggregate-results.yaml
     with:
-      github_scripts: "${{ inputs.github_scripts }}"
-      artifacts_location: "${{ inputs.artifacts_location }}"
+      # github_scripts: >-
+      #   ${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}
+      ## Warning: Needs to be fixed
+      github_scripts: ".github/scripts"
+      # artifacts_location: >-
+      #   ${{ fromJson( needs.workflow.outputs.validated ).artifacts_location }}
+      ## Warning: Needs to be fixed
+      artifacts_location: "artifacts"
 
   workflow-completed:
     needs: aggregating-pytests
