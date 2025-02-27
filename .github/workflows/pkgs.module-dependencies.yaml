@@ -106,11 +106,8 @@ jobs:
     if: needs.pytest-module.outputs.aggregated_results
     uses: ./.github/workflows/module.execute-module.yaml
     with:
-      package_location: "packages/requirements/dependencies"
-      # package_location: "${{ vars.PACKAGES_DEPENDENCIES }}"
-      # package_location: >-
-      #   ${{ fromJson( toJson(
-      #   needs.workflow.outputs.validated ) ).package_location }}
+      # package_location: "packages/requirements/dependencies"
+      package_location: "${{ vars.PACKAGES_DEPENDENCIES }}"
 
   workflow-completed:
     needs: execute-module
