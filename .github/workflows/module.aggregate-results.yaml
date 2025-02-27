@@ -47,8 +47,6 @@ jobs:
 
           echo -e "GitHub Action: ${{ fromJson(
             needs.workflow.outputs.validated ).params.github_scripts }}" ;
-          echo -e "Artifacts Location: ${{ fromJson(
-            needs.workflow.outputs.validated ).params.artifacts_location }}" ;
 
   aggregate-pytest-results:
 
@@ -59,8 +57,7 @@ jobs:
     env:
       github_scripts: >-
         ${{ fromJson( needs.workflow.outputs.validated ).params.github_scripts }}
-      artifacts_location: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).params.artifacts_location }}
+      artifacts_location: "artifacts"
     steps:
 
       - name: Install System Packages
