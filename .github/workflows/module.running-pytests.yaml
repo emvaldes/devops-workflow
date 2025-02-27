@@ -81,6 +81,8 @@ jobs:
     env:
       pytests_location: ${{ fromJson(
         needs.workflow.outputs.validated ).params.params.pytests_location }}
+      pytests_resources: ${{ fromJson(
+        needs.workflow.outputs.validated ).params.params.pytests_resources }}
     steps:
 
       - name: Checkout Repository
@@ -137,7 +139,7 @@ jobs:
         run: |
 
           pytest -v --junitxml=pytest-results.xml \
-          "${{ env.pytests_location }}/test_dependencies.py::${{ matrix.test_function }}" ;
+          "${{ env.pytests_location }}/${{ env.pytests_resources }}::${{ matrix.test_function }}" ;
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
