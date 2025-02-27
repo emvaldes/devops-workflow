@@ -52,10 +52,6 @@ jobs:
           echo -e "PyTest Functions: ${{ fromJson(
             needs.workflow.outputs.validated ).test_functions }}" ;
 
-          pytests_location="${{ fromJson(
-            needs.workflow.outputs.validate ).pytests_location }}" ;
-          echo "pytests_location=$pytests_location" >> $GITHUB_ENV ;
-
   # Experimental Cutter Matrix Using pytest_files.json
   pytest-files:
 
@@ -91,7 +87,7 @@ jobs:
         run: |
 
           echo -e "Validated Output: ${{ needs.workflow.outputs.validated }}" ;
-          echo -e "FromJSON: ${{ env.pytests_location }}" ;
+          echo -e "FromJSON: ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}" ;
 
   running-pytests:
 
@@ -101,6 +97,10 @@ jobs:
       matrix:
         python-version: ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
         test_function: ${{ fromJson( inputs.test_functions ) }}
+    env:
+      # pytests_location: "${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}"
+      ## Warning: Needs to be fixed
+      pytests_location: "tests/requirements/dependencies"
     steps:
 
       - name: Checkout Repository
@@ -156,7 +156,6 @@ jobs:
       - name: Run Pytest Function
         run: |
 
-          echo -e "Validated Output: ${{ env.pytests_location }}" ;
           pytest -v --junitxml=pytest-results.xml \
           "${{ env.pytests_location }}/test_dependencies.py::${{ matrix.test_function }}" ;
 
