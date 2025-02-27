@@ -21,7 +21,7 @@ on:
         type: string
         default: 'test_functions.json'
 
-      workflow_params:
+      params:
         required: false
         type: string
 
@@ -56,6 +56,10 @@ jobs:
             "output_filename": {
               "id": "Output Filename",
               "value": "${{ inputs.output_filename }}"
+            },
+            "params": {
+              "id": "Workflow Parameters",
+              "value": ${{ inputs.params }}
             }
           }
         }
@@ -71,13 +75,11 @@ jobs:
         run: |
 
           echo -e "PyTests Location: ${{ fromJson(
-            needs.workflow.outputs.validated ).pytests_location }}" ;
+            needs.workflow.outputs.validated ).params.pytests_location }}" ;
           echo -e "GitHub Action: ${{ fromJson(
-            needs.workflow.outputs.validated ).github_scripts }}" ;
+            needs.workflow.outputs.validated ).params.github_scripts }}" ;
           echo -e "Output Filename: ${{ fromJson(
-            needs.workflow.outputs.validated ).output_filename }}" ;
-
-          echo -e "Workflow Parameters: ${{ inputs.workflow_params }}" ;
+            needs.workflow.outputs.validated ).params.output_filename }}" ;
 
   extract-pytests:
 
@@ -88,11 +90,11 @@ jobs:
       test_functions: ${{ steps.extract.outputs.test_functions }}
     env:
       github_scripts: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}
+        ${{ fromJson( needs.workflow.outputs.validated ).params.github_scripts }}
       pytests_location: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
+        ${{ fromJson( needs.workflow.outputs.validated ).params.pytests_location }}
       output_filename: >-
-        ${{ fromJson( needs.workflow.outputs.validated ).output_filename }}
+        ${{ fromJson( needs.workflow.outputs.validated ).params.output_filename }}
     steps:
 
       - name: Checkout Repository

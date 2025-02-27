@@ -9,7 +9,7 @@ on:
     inputs:
 
       package_location:
-        required: true
+        required: false
         type: string
 
       params:
@@ -47,10 +47,9 @@ jobs:
         id: workflow_parameters
         run: |
 
-          echo -e "Package Location: ${{ fromJson(
-            needs.workflow.outputs.validated ).package_location }}" ;
+          # echo -e "Package Location: ${{ fromJson(
+          #   needs.workflow.outputs.validated ).package_location }}" ;
 
-          echo -e "Workflow Parameters: ${{ inputs.params }}" ;
           echo -e "Workflow Package: ${{ fromJson(
             needs.workflow.outputs.validated ).params.package_location }}" ;
 

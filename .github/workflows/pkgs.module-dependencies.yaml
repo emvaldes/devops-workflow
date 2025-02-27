@@ -102,7 +102,7 @@ jobs:
       pytests_location: "${{ vars.PYTESTS_DEPENDENCIES }}"
       package_location: >-
         ${{ fromJson(toJson(needs.workflow.outputs.validated)).package_location }}
-      workflow_params: ${{ needs.workflow.outputs.validated }}
+      params: ${{ needs.workflow.outputs.validated }}
 
   execute-module:
     # needs: pytests-module

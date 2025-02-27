@@ -28,7 +28,7 @@ on:
         type: string
         default: "artifacts"
 
-      workflow_params:
+      params:
         required: false
         type: string
 
@@ -66,6 +66,10 @@ jobs:
               "id": "Artifacts Location",
               "value": "${{ github.event.inputs.artifacts_location }}",
               "default": "artifacts"
+            },
+            "params": {
+              "id": "Workflow Parameters",
+              "value": ${{ inputs.params }}
             }
           }
         }
@@ -80,15 +84,13 @@ jobs:
         run: |
 
           echo "PyTests Location: ${{ fromJson(
-            needs.workflow.outputs.validated ).pytests_location }}" ;
+            needs.workflow.outputs.validated ).params.pytests_location }}" ;
           echo "Package Location: ${{ fromJson(
-            needs.workflow.outputs.validated ).package_location }}" ;
+            needs.workflow.outputs.validated ).params.package_location }}" ;
           echo "GitHub Scripts: ${{ fromJson(
-            needs.workflow.outputs.validated ).github_scripts }}" ;
+            needs.workflow.outputs.validated ).params.github_scripts }}" ;
           echo "Artifacts Location: ${{ fromJson(
-            needs.workflow.outputs.validated ).artifacts_location }}" ;
-
-          echo -e "Workflow Parameters: ${{ inputs.workflow_params }}" ;
+            needs.workflow.outputs.validated ).params.artifacts_location }}" ;
 
   extracting-pytests:
     needs: [ workflow, parameters ]
@@ -98,7 +100,7 @@ jobs:
         ${{ fromJson( needs.workflow.outputs.validated ).github_scripts }}
       pytests_location: >-
         ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
-      workflow_params: ${{ needs.workflow.outputs.validated }}
+      params: ${{ needs.workflow.outputs.validated }}
 
   running-pytests:
     needs: [ workflow, parameters, extracting-pytests ]
@@ -106,7 +108,7 @@ jobs:
     with:
       test_functions: ${{ needs.extracting-pytests.outputs.test_functions }}
       pytests_location: ${{ inputs.pytests_location }}
-      workflow_params: ${{ needs.workflow.outputs.validated }}
+      params: ${{ needs.workflow.outputs.validated }}
 
   aggregating-pytests:
     needs: [ workflow, parameters, running-pytests ]
@@ -114,7 +116,7 @@ jobs:
     with:
       github_scripts: "${{ inputs.github_scripts }}"
       artifacts_location: "${{ inputs.artifacts_location }}"
-      workflow_params: ${{ needs.workflow.outputs.validated }}
+      params: ${{ needs.workflow.outputs.validated }}
 
   pytests-completed:
     needs: aggregating-pytests
