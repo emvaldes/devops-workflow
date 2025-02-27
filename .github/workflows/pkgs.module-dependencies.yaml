@@ -97,9 +97,10 @@ jobs:
       # pytests_location: "tests/requirements/dependencies"
       pytests_location: "${{ vars.PYTESTS_DEPENDENCIES }}"
       # package_location: "packages/requirements/dependencies"
-      package_location: "${{ vars.PACKAGES_DEPENDENCIES }}"
-      # package_location: >-
-      #   ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
+      # package_location: "${{ vars.PACKAGES_DEPENDENCIES }}"
+      # package_location: "${{ inputs.PACKAGES_DEPENDENCIES }}"
+      package_location: >-
+        ${{ fromJson( toJson( needs.workflow.outputs.validated ) ).package_location }}
 
   execute-module:
     needs: pytest-module
