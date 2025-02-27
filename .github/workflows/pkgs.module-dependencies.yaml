@@ -97,11 +97,13 @@ jobs:
       # pytests_location: >-
       #   ${{ fromJson( needs.workflow.outputs.validated ).pytests_location }}
       ## Warning: Needs to be fixed
-      pytests_location: "tests/requirements/dependencies"
+      # pytests_location: "tests/requirements/dependencies"
+      pytests_location: "${{ inputs.pytests_location }}"
       # package_location: >-
       #   ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
       ## Warning: Needs to be fixed
-      package_location: "packages/requirements/dependencies"
+      # package_location: "packages/requirements/dependencies"
+      package_location: "${{ inputs.package_location }}"
 
   execute-module:
     needs: pytest-module
@@ -111,7 +113,8 @@ jobs:
       # package_location: >-
       #   ${{ fromJson( needs.workflow.outputs.validated ).package_location }}
       ## Warning: Needs to be fixed
-      package_location: "packages/requirements/dependencies"
+      # package_location: "packages/requirements/dependencies"
+      package_location: "${{ inputs.package_location }}"
 
   workflow-completed:
     needs: execute-module
