@@ -95,7 +95,8 @@ jobs:
     uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
       # pytests_location: "tests/requirements/dependencies"
-      pytests_location: "${{ vars.PYTESTS_DEPENDENCIES }}"
+      # pytests_location: "${{ vars.PYTESTS_DEPENDENCIES }}"
+      pytests_location: ${{ fromJson( toJson( needs.workflow.outputs.validated ) ).pytests_location }}
       package_location: >-
         ${{ fromJson( toJson( needs.workflow.outputs.validated ) ).package_location }}
 
