@@ -90,7 +90,7 @@ jobs:
           echo -e "Workflow Parameters: ${{ inputs.workflow_params }}" ;
 
   extracting-pytests:
-    needs: [workflow, parameters]
+    needs: [ workflow, parameters ]
     uses: ./.github/workflows/module.extract-pytests.yaml
     with:
       github_scripts: >-
@@ -108,22 +108,22 @@ jobs:
       workflow_params: ${{ needs.workflow.outputs.validated }}
 
   aggregating-pytests:
-    needs: running-pytests
+    needs: [ workflow, parameters, running-pytests ]
     uses: ./.github/workflows/module.aggregate-results.yaml
     with:
       github_scripts: "${{ inputs.github_scripts }}"
       artifacts_location: "${{ inputs.artifacts_location }}"
       workflow_params: ${{ needs.workflow.outputs.validated }}
 
-  workflow-completed:
-    needs: aggregating-pytests
-    runs-on: ubuntu-latest
-    outputs:
-      aggregated_results: ${{ needs.aggregating-pytests.outputs.aggregated_results }}
-    steps:
-
-      - name: Workflow Completion
-        id: workflow_status
-        run: |
-
-          echo -e "Dependencies Matrix - GitHub Environment:\n${GITHUB_ENV}" ;
+  # workflow-completed:
+  #   needs: aggregating-pytests
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     aggregated_results: ${{ needs.aggregating-pytests.outputs.aggregated_results }}
+  #   steps:
+  #
+  #     - name: Workflow Completion
+  #       id: workflow_status
+  #       run: |
+  #
+  #         echo -e "Dependencies Matrix - GitHub Environment:\n${GITHUB_ENV}" ;

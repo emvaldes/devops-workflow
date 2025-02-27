@@ -84,7 +84,7 @@ jobs:
             needs.workflow.outputs.validated ).github_scripts }}" ;
 
   install-packages:
-    needs: [workflow, parameters]
+    needs: [ workflow, parameters ]
     uses: ./.github/workflows/module.install-packages.yaml
     with:
       package_location: >-
@@ -94,7 +94,7 @@ jobs:
   pytest-module:
     # needs: install-packages
     # ✅ Ensures parameters (which confirms workflow.outputs.validated) runs first
-    needs: [install-packages, parameters]
+    needs: [ workflow, parameters, install-packages ]
     uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
       # pytests_location: >-
@@ -107,7 +107,7 @@ jobs:
   execute-module:
     # needs: pytest-module
     # ✅ Ensures parameters has already confirmed values exist
-    needs: [pytest-module, parameters]
+    needs: [ workflow, parameters, pytest-module ]
     if: needs.pytest-module.outputs.aggregated_results
     uses: ./.github/workflows/module.execute-module.yaml
     with:
@@ -116,7 +116,7 @@ jobs:
       package_location: "${{ vars.PACKAGES_DEPENDENCIES }}"
       workflow_params: ${{ needs.workflow.outputs.validated }}
 
-  workflow-completed:
+  workflow-dependencies:
     needs: execute-module
     runs-on: ubuntu-latest
     steps:
