@@ -48,8 +48,8 @@ jobs:
             needs.workflow.outputs.validated ).params.pytests_location }}" ;
           echo "Package Location: ${{ fromJson(
             needs.workflow.outputs.validated ).params.package_location }}" ;
-          echo "GitHub Scripts: ${{ fromJson(
-            needs.workflow.outputs.validated ).params.github_scripts }}" ;
+          echo "Project Scripts: ${{ fromJson(
+            needs.workflow.outputs.validated ).params.project_scripts }}" ;
 
   extracting-pytests:
     needs: [ workflow, parameters ]

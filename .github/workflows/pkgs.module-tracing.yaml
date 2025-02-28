@@ -28,8 +28,8 @@ on:
         type: string
         default: "packages/appflow_tracer/tracing"
 
-      github_scripts:
-        description: "Target GitHub Scripts Path"
+      project_scripts:
+        description: "Target Project Scripts Path"
         required: false
         type: string
         default: ".github/scripts"
@@ -41,6 +41,7 @@ on:
     paths:
       - .github/workflows/**
       - .github/actions/**
+      - .github/scripts/**
 
     pull_request:
       branches:
@@ -70,9 +71,9 @@ jobs:
               "value": "${{ github.event.inputs.package_location }}",
               "default": "packages/appflow_tracer/tracing"
             },
-            "github_scripts": {
-              "id": "GitHub Scripts",
-              "value": "${{ github.event.inputs.github_scripts }}",
+            "project_scripts": {
+              "id": "Project Scripts",
+              "value": "${{ github.event.inputs.project_scripts }}",
               "default": ".github/scripts"
             }
           }

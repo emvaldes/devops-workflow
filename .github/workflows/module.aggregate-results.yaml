@@ -44,8 +44,8 @@ jobs:
         id: workflow_parameters
         run: |
 
-          echo -e "GitHub Action: ${{ fromJson(
-            needs.workflow.outputs.validated ).pytest.params.github_scripts }}" ;
+          echo -e "Project Scripts: ${{ fromJson(
+            needs.workflow.outputs.validated ).pytest.params.project_scripts }}" ;
 
   aggregate-pytest-results:
 
@@ -54,8 +54,8 @@ jobs:
     outputs:
       aggregated_results: "true"
     env:
-      github_scripts: ${{ fromJson( needs.workflow.outputs.validated
-        ).pytest.params.github_scripts }}
+      project_scripts: ${{ fromJson( needs.workflow.outputs.validated
+        ).pytest.params.project_scripts }}
       artifacts_location: "artifacts"
     steps:
 
@@ -74,7 +74,7 @@ jobs:
         id: locating_artifacts
         run: |
 
-          ${{ env.github_scripts }}/inspect-artifacts-state.shell ;
+          ${{ env.project_scripts }}/inspect-artifacts-state.shell ;
 
       - name: Download All Test Artifacts
         id: downloading_artifacts
@@ -94,7 +94,7 @@ jobs:
         id: aggregating_results
         run: |
 
-          ${{ env.github_scripts }}/aggregate-pytest-results.shell ;
+          ${{ env.project_scripts }}/aggregate-pytest-results.shell ;
 
       - name: Configure Workflow Status
         id: workflow_status

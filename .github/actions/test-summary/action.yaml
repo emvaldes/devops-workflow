@@ -14,7 +14,7 @@ outputs:
     value: "test_results.json"
 
 env:
-  GITHUB_SCRIPTS: ${{ github.workspace }}/.github/scripts
+  PROJECT_SCRIPTS: ${{ github.workspace }}/.github/scripts
 
 runs:
   using: "composite"
@@ -32,7 +32,7 @@ runs:
     - name: Run Summary Script
       run: |
 
-        ./${{ env.GITHUB_SCRIPTS }}/aggregate-pytest-results.shell ;
+        ./${{ env.PROJECT_SCRIPTS }}/aggregate-pytest-results.shell ;
 
     - name: Verify JSON Output
       run: |

@@ -59,8 +59,8 @@ jobs:
 
           echo -e "PyTests Location: ${{ fromJson(
             needs.workflow.outputs.validated ).pytest.params.pytests_location }}" ;
-          echo -e "GitHub Action: ${{ fromJson(
-            needs.workflow.outputs.validated ).pytest.params.github_scripts }}" ;
+          echo -e "Project Scripts: ${{ fromJson(
+            needs.workflow.outputs.validated ).pytest.params.project_scripts }}" ;
           echo -e "Output Filename: ${{ fromJson(
             needs.workflow.outputs.validated ).output_filename }}" ;
 
@@ -72,8 +72,8 @@ jobs:
       pytest_files: ${{ steps.extract.outputs.pytest_files }}
       test_functions: ${{ steps.extract.outputs.test_functions }}
     env:
-      github_scripts: ${{ fromJson(
-        needs.workflow.outputs.validated ).pytest.params.github_scripts }}
+      project_scripts: ${{ fromJson(
+        needs.workflow.outputs.validated ).pytest.params.project_scripts }}
       pytests_location: ${{ fromJson(
         needs.workflow.outputs.validated ).pytest.params.pytests_location }}
       output_filename: ${{ fromJson(
@@ -89,9 +89,9 @@ jobs:
         run: |
 
           extracted=$(
-            ${{ env.github_scripts }}/extract-pytest-functions.shell \
+            ${{ env.project_scripts }}/extract-pytest-functions.shell \
             --pytests-location="${{ env.pytests_location }}" \
-            --scripts-location="${{ env.github_scripts }}" \
+            --scripts-location="${{ env.project_scripts }}" \
             --output-filename="${{ env.output_filename }}"
           ) ; # echo -e "Extracted Parameters:\n${extracted}" ;
 

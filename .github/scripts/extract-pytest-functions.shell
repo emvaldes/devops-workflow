@@ -10,7 +10,7 @@ set -o pipefail ;  # Fail if any piped command fails
 ## extract-pytest-functions \
 ##   --pytests-location="tests/package/module" \
 ##   --output-filename="test_functions.json" \
-##   --scripts-location=".github/actions/action" \
+##   --scripts-location=".github/scripts" \
 ##   --dry-run \
 ##   --verbose ;
 
