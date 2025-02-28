@@ -76,7 +76,7 @@ jobs:
         id: importing_resources
         run:
 
-          cat ./tests_files.json ;
+          cat ./pytest_files.json ;
 
   running-pytests:
 
