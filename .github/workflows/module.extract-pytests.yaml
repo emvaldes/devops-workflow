@@ -103,7 +103,7 @@ jobs:
           ## Validate Test-Functions JSON before proceeding
           if [[ -e ${{ env.pytest_mapping }} ]]; then
                   PYTEST_FUNCTIONS=$(
-                    jq -c '.test_functions' ${{ env.pytest_mapping }}
+                    jq -c '.pytest_functions' ${{ env.pytest_mapping }}
                   ) ;
                   echo -e "pytest_functions=$PYTEST_FUNCTIONS" >> "$GITHUB_OUTPUT" ;
             else  echo -e "Warning: '${{ env.pytest_mapping }}' is missing/not-found!" ;
