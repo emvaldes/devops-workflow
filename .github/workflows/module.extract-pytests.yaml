@@ -91,6 +91,8 @@ jobs:
         shell: bash
         run: |
 
+          set -x ;
+
           extracted=$(
             ${{ env.project_scripts }}/extract-pytest-functions.shell \
             --pytests-location="${{ env.pytests_location }}" \
@@ -127,7 +129,8 @@ jobs:
                     else  echo -e "\nPyTest Files JSON configuration" ;
                       ls -al ${pytest_files} ;
                       cat ${pytest_files} ;
-                      PYTEST_FILES=$( jq -c 'keys' ${pytest_files} ) ;
+                      # PYTEST_FILES=$( jq -c 'keys' ${pytest_files} ) ;
+                      PYTEST_FILES=$( jq -c . ${pytest_files} ) ;
                       echo "pytest_files=$PYTEST_FILES" >> $GITHUB_OUTPUT ;
                   fi ;
             else  echo -e "Warning: ${pytest_files} is missing/not-found!" ;
