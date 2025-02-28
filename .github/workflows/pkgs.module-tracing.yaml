@@ -59,7 +59,7 @@ jobs:
             "pytests_location": {
               "id": "PyTest Location",
               "value": "${{ github.event.inputs.pytests_location }}",
-              "default": "${{ vars.TRACING_PYTESTS }}"
+              "default": "${{ vars.PYTESTS_TRACING }}"
             },
             "pytests_resources": {
               "id": "PyTests Resources",
@@ -78,7 +78,6 @@ jobs:
             }
           }
         }
-    env:
 
   parameters:
     needs: workflow
