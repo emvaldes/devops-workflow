@@ -59,7 +59,7 @@ jobs:
             "pytests_location": {
               "id": "PyTest Location",
               "value": "${{ github.event.inputs.pytests_location }}",
-              "default": "${{ vars.DEPENDENCIES_PYTESTS }}"
+              "default": "${{ vars.PYTESTS_DEPENDENCIES }}"
             },
             "pytests_resources": {
               "id": "PyTests Resources",
