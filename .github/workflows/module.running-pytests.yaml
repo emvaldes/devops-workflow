@@ -8,6 +8,10 @@ on:
 
     inputs:
 
+      pytest_files:
+        required: true
+        type: string
+
       test_functions:
         required: true
         type: string
@@ -26,6 +30,10 @@ jobs:
         {
           "workflow": "module.running-pytests",
           "inputs": {
+            "pytest_files": {
+              "id": "PyTest Files",
+              "value": ${{ toJson( fromJson( inputs.pytest_files ) ) }}
+            },
             "test_functions": {
               "id": "PyTest Functions",
               "value": ${{ toJson( fromJson( inputs.test_functions ) ) }}
@@ -48,8 +56,11 @@ jobs:
 
           echo -e "PyTests Location: ${{ fromJson(
             needs.workflow.outputs.validated ).pytest.params.pytests_location }}" ;
-            echo -e "PyTests Resources: ${{ fromJson(
-              needs.workflow.outputs.validated ).pytest.params.pytests_resources }}" ;
+          echo -e "PyTests Resources: ${{ fromJson(
+            needs.workflow.outputs.validated ).pytest.params.pytests_resources }}" ;
+
+          echo -e "PyTest Files: ${{ fromJson(
+            needs.workflow.outputs.validated ).test_files }}" ;
           echo -e "PyTest Functions: ${{ fromJson(
             needs.workflow.outputs.validated ).test_functions }}" ;
 
