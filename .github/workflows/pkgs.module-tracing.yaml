@@ -94,7 +94,6 @@ jobs:
     needs: [ workflow, parameters ]
     uses: ./.github/workflows/module.install-packages.yaml
     with:
-      # packages: "packages/requirements/dependencies"
       packages: "${{
           github.event.inputs.package_location || vars.DEPENDENCIES_PACKAGE
         }}"
