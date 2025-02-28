@@ -59,30 +59,25 @@ jobs:
             "pytests_location": {
               "id": "PyTest Location",
               "value": "${{ github.event.inputs.pytests_location }}",
-              "default": "${{ env.pytests_location }}"
+              "default": "${{ vars.DEPENDENCIES_PYTESTS }}"
             },
             "pytests_resources": {
               "id": "PyTests Resources",
               "value": "${{ github.event.inputs.pytests_resources }}",
-              "default": "${{ env.pytests_resources }}"
+              "default": "${{ vars.DEPENDENCIES_RESOURCES }}"
             },
             "package_location": {
               "id": "Package Location",
               "value": "${{ github.event.inputs.package_location }}",
-              "default": "${{ env.package_location }}"
+              "default": "${{ vars.DEPENDENCIES_PACKAGE }}"
             },
             "project_scripts": {
               "id": "Project Scripts",
               "value": "${{ github.event.inputs.project_scripts }}",
-              "default": "${{ env.project_scripts }}"
+              "default": "${{ vars.PROJECT_SCRIPTS }}"
             }
           }
         }
-    env:
-      pytests_location: ${{ vars.DEPENDENCIES_PYTESTS }}
-      pytests_resources: ${{ vars.DEPENDENCIES_RESOURCES }}
-      package_location: ${{ vars.DEPENDENCIES_PACKAGE }}
-      project_scripts: ${{ vars.PROJECT_SCRIPTS }}
 
   parameters:
     needs: workflow

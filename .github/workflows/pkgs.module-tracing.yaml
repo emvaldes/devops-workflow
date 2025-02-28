@@ -59,25 +59,26 @@ jobs:
             "pytests_location": {
               "id": "PyTest Location",
               "value": "${{ github.event.inputs.pytests_location }}",
-              "default": "tests/appflow_tracer/tracing"
+              "default": "${{ vars.TRACING_PYTESTS }}"
             },
             "pytests_resources": {
               "id": "PyTests Resources",
               "value": "${{ github.event.inputs.pytests_resources }}",
-              "default": "test_tracing.py"
+              "default": "${{ vars.TRACING_RESOURCES }}"
             },
             "package_location": {
               "id": "Package Location",
               "value": "${{ github.event.inputs.package_location }}",
-              "default": "packages/appflow_tracer/tracing"
+              "default": "${{ vars.TRACING_PACKAGE }}"
             },
             "project_scripts": {
               "id": "Project Scripts",
               "value": "${{ github.event.inputs.project_scripts }}",
-              "default": ".github/scripts"
+              "default": "${{ vars.PROJECT_SCRIPTS }}"
             }
           }
         }
+    env:
 
   parameters:
     needs: workflow
