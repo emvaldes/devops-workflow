@@ -14,25 +14,25 @@ on:
         description: "PyTests Files Directory"
         required: false
         type: string
-        default: "tests/requirements/dependencies"
+        # default: "tests/requirements/dependencies"
 
       pytests_resources:
         description: "PyTests Target Resources"
         required: false
         type: string
-        default: "test_dependencies.py"
+        # default: "test_dependencies.py"
 
       package_location:
         description: "Packages/Modules Directory"
         required: false
         type: string
-        default: "packages/requirements/dependencies"
+        # default: "packages/requirements/dependencies"
 
       project_scripts:
         description: "Target Project Scripts Path"
         required: false
         type: string
-        default: ".github/scripts"
+        # default: ".github/scripts"
 
   push:
     branches:

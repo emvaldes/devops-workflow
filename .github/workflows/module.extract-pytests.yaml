@@ -8,10 +8,10 @@ on:
 
     inputs:
 
-      output_filename:
+      pytest_mapping:
         required: false
         type: string
-        default: 'test_functions.json'
+        # default: 'pytest_functions.json'
 
       pytest:
         required: false
@@ -37,9 +37,10 @@ jobs:
         {
           "workflow": "module.extract-pytests",
           "inputs": {
-            "output_filename": {
+            "pytest_mapping": {
               "id": "Output Filename",
-              "value": "${{ inputs.output_filename }}"
+              "value": "${{ inputs.pytest_mapping }}",
+              "default": "${{ vars.PYTEST_MAPPING }}"
             },
             "pytest": {
               "id": "Workflow Parameters", "value": ${{ inputs.pytest }}
@@ -57,12 +58,14 @@ jobs:
         id: workflow_parameters
         run: |
 
+          echo "PyTest Mapping: ${{ fromJson(
+            needs.workflow.outputs.validated ).pytest_mapping }}" ;
           echo -e "PyTests Location: ${{ fromJson(
             needs.workflow.outputs.validated ).pytest.params.pytests_location }}" ;
           echo -e "Project Scripts: ${{ fromJson(
             needs.workflow.outputs.validated ).pytest.params.project_scripts }}" ;
           echo -e "Output Filename: ${{ fromJson(
-            needs.workflow.outputs.validated ).output_filename }}" ;
+            needs.workflow.outputs.validated ).pytest_mapping }}" ;
 
   extract-pytests:
 
@@ -76,8 +79,8 @@ jobs:
         needs.workflow.outputs.validated ).pytest.params.project_scripts }}
       pytests_location: ${{ fromJson(
         needs.workflow.outputs.validated ).pytest.params.pytests_location }}
-      output_filename: ${{ fromJson(
-        needs.workflow.outputs.validated ).output_filename }}
+      pytest_mapping: ${{ fromJson(
+        needs.workflow.outputs.validated ).pytest_mapping }}
     steps:
 
       - name: Checkout Repository
@@ -92,25 +95,25 @@ jobs:
             ${{ env.project_scripts }}/extract-pytest-functions.shell \
             --pytests-location="${{ env.pytests_location }}" \
             --scripts-location="${{ env.project_scripts }}" \
-            --output-filename="${{ env.output_filename }}"
+            --output-filename="${{ env.pytest_mapping }}"
           ) ; # echo -e "Extracted Parameters:\n${extracted}" ;
 
           ## Validate Test-Functions JSON before proceeding
-          if [[ -e ${{ env.output_filename }} ]]; then
-                jq -e . ${{ env.output_filename }} 2>&1>/dev/null ;
+          if [[ -e ${{ env.pytest_mapping }} ]]; then
+                jq -e . ${{ env.pytest_mapping }} 2>&1>/dev/null ;
                 status=$?; #echo -e "Status: ${status}" ;
                 if [[ ${status} -gt 0 ]]; then
-                    echo -e "Configuration: Invalid JSON '${{ env.output_filename }}' object!" ;
+                    echo -e "Configuration: Invalid JSON '${{ env.pytest_mapping }}' object!" ;
                     exit 1 ;
                   else  echo -e "\nPyTest Functions JSON configuration" ;
-                    ls -al ${{ env.output_filename }} ;
-                    cat ${{ env.output_filename }} ;
+                    ls -al ${{ env.pytest_mapping }} ;
+                    cat ${{ env.pytest_mapping }} ;
                     TEST_FUNCTIONS=$(
-                      jq -c '.test_functions' ${{ env.output_filename }}
+                      jq -c '.test_functions' ${{ env.pytest_mapping }}
                     ) ;
                     echo -e "test_functions=$TEST_FUNCTIONS" >> "$GITHUB_OUTPUT" ;
                 fi ;
-            else  echo -e "Warning: '${{ env.output_filename }}' is missing/not-found!" ;
+            else  echo -e "Warning: '${{ env.pytest_mapping }}' is missing/not-found!" ;
           fi ;
 
           ## Validate Test-Modules JSON before proceeding

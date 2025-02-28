@@ -10,6 +10,11 @@ on:
 
     inputs:
 
+      pytest_mapping:
+        required: false
+        type: string
+        # default: 'pytest_functions.json'
+
       params:
         required: false
         type: string
@@ -29,6 +34,11 @@ jobs:
         {
           "workflow": "pytest.module-matrix",
           "inputs": {
+            "pytest_mapping": {
+              "id": "PyTest Mapping",
+              "value": "${{ inputs.pytest_mapping }}",
+              "default": "${{ vars.PYTEST_MAPPING }}"
+            },
             "params": {
               "id": "Workflow Parameters", "value": ${{ inputs.params }}
             }
@@ -44,6 +54,8 @@ jobs:
         id: workflow_parameters
         run: |
 
+          echo "PyTest Mapping: ${{ fromJson(
+            needs.workflow.outputs.validated ).pytest_mapping }}" ;
           echo "PyTests Location: ${{ fromJson(
             needs.workflow.outputs.validated ).params.pytests_location }}" ;
           echo "Package Location: ${{ fromJson(
@@ -56,11 +68,14 @@ jobs:
     uses: ./.github/workflows/module.extract-pytests.yaml
     with:
       pytest: ${{ needs.workflow.outputs.validated }}
+      pytest_mapping: ${{ fromJson(
+        needs.workflow.outputs.validated ).pytest_mapping }}
 
   running-pytests:
     needs: [ workflow, parameters, extracting-pytests ]
     uses: ./.github/workflows/module.running-pytests.yaml
     with:
+      pytest_files: ${{ needs.extracting-pytests.outputs.pytest_files }}
       test_functions: ${{ needs.extracting-pytests.outputs.test_functions }}
       pytest: ${{ needs.workflow.outputs.validated }}
 

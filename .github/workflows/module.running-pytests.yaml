@@ -72,13 +72,6 @@ jobs:
         run: |
           set ;
 
-      - name: Importing PyTest Files/Functions
-        id: importing_resources
-        shell: bash
-        run:
-
-          find . -type f \( -name 'pytest_files.json' -o -name 'test_functions.json' \) | xargs -I {} cat {} ;
-
   running-pytests:
 
     needs: [ workflow, parameters, pytest-files ]

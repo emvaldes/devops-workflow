@@ -14,25 +14,25 @@ on:
         description: "PyTests Files Directory"
         required: false
         type: string
-        default: "tests/appflow_tracer/tracing"
+        # default: "tests/appflow_tracer/tracing"
 
       pytests_resources:
         description: "PyTests Target Resources"
         required: false
         type: string
-        default: "test_tracing.py"
+        # default: "test_tracing.py"
 
       package_location:
         description: "Packages/Modules Directory"
         required: false
         type: string
-        default: "packages/appflow_tracer/tracing"
+        # default: "packages/appflow_tracer/tracing"
 
       project_scripts:
         description: "Target Project Scripts Path"
         required: false
         type: string
-        default: ".github/scripts"
+        # default: ".github/scripts"
 
   push:
     branches:
