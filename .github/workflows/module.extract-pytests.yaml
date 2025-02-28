@@ -23,9 +23,9 @@ on:
         description: "Extracted PyTest Modules"
         value: ${{ jobs.extract-pytests.outputs.pytest_files }}
 
-      test_functions:
+      pytest_functions:
         description: "Extracted PyTest Functions"
-        value: ${{ jobs.extract-pytests.outputs.test_functions }}
+        value: ${{ jobs.extract-pytests.outputs.pytest_functions }}
 
 jobs:
 
@@ -73,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       pytest_files: ${{ steps.extract.outputs.pytest_files }}
-      test_functions: ${{ steps.extract.outputs.test_functions }}
+      pytest_functions: ${{ steps.extract.outputs.pytest_functions }}
     env:
       project_scripts: ${{ fromJson(
         needs.workflow.outputs.validated ).pytest.params.project_scripts }}
@@ -102,10 +102,10 @@ jobs:
 
           ## Validate Test-Functions JSON before proceeding
           if [[ -e ${{ env.pytest_mapping }} ]]; then
-                  TEST_FUNCTIONS=$(
+                  PYTEST_FUNCTIONS=$(
                     jq -c '.test_functions' ${{ env.pytest_mapping }}
                   ) ;
-                  echo -e "test_functions=$TEST_FUNCTIONS" >> "$GITHUB_OUTPUT" ;
+                  echo -e "pytest_functions=$PYTEST_FUNCTIONS" >> "$GITHUB_OUTPUT" ;
             else  echo -e "Warning: '${{ env.pytest_mapping }}' is missing/not-found!" ;
           fi ;
 

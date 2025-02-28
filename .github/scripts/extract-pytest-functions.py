@@ -8,10 +8,12 @@ import json
 import sys
 import os
 
+script_name = os.path.basename(__file__)
+
 ## Ensure we received the correct arguments
 if len( sys.argv ) != 3:
     print(
-        "Usage: extract_pytest_functions.py <pytest_listing> <pytest_mapping>",
+        f"Usage: {script_name} <pytest_listing> <pytest_mapping>",
         file=sys.stderr
     )
     sys.exit(1)
@@ -20,12 +22,12 @@ pytest_listing = sys.argv[1]
 pytest_mapping = sys.argv[2]
 
 if pytest_mapping is None:
-    pytest_mapping = "test_functions.json"
+    pytest_mapping = "pytest_functions.json"
 
 # print( f'\nPyTests JSON-list:\n{pytest_listing}' )
 # print( f'\nOutput Filename: {pytest_mapping}\n' )
 
-invalid_content = "Error: Invalid Files/Functions JSON input."
+invalid_content = f"Error: Invalid Files/Functions JSON input."
 
 ## Importing pytest-files listing
 try:
@@ -37,7 +39,7 @@ except json.JSONDecodeError:
     )
     sys.exit(1)
 
-test_functions = {}
+pytest_functions = {}
 
 ## Processing all target pytest-files
 for file in pytest_files:
@@ -60,23 +62,23 @@ for file in pytest_files:
                 re.MULTILINE
             )
         if functions:
-            test_functions[file] = functions
+            pytest_functions[file] = functions
     except Exception as e:
         print(
             f"Warning: Failed to parse {file} - {str(e)}",
             file=sys.stderr
         )
 
-## Identifies if test_functions exist
-if not test_functions:
-    # test_functions["dummy_test"] = ["dummy_test_function"]
+## Identifies if pytest_functions exist
+if not pytest_functions:
+    # pytest_functions["dummy_test"] = ["dummy_test_function"]
     print(
         invalid_content,
         file=sys.stderr
     )
     sys.exit(1)
 else:
-    json_output = {"test_functions": test_functions}
+    json_output = {"pytest_functions": pytest_functions}
 
 ## Export/Save json-output to file
 with open(
@@ -113,19 +115,19 @@ try:
     # Ensure JSON structure is correct
     if (
         not isinstance( data, dict )
-        or "test_functions" not in data
-        or not isinstance( data["test_functions"], dict )
+        or "pytest_functions" not in data
+        or not isinstance( data["pytest_functions"], dict )
     ):
         print(
             f"Error: Invalid JSON structure in '{pytest_mapping}'.",
             file=sys.stderr
         )
         sys.exit(1)
-    # Ensure all keys in "test_functions" are filenames with list values
-    for file, functions in data["test_functions"].items():
+    # Ensure all keys in "pytest_functions" are filenames with list values
+    for file, functions in data["pytest_functions"].items():
         if not isinstance( file, str ) or not isinstance( functions, list ):
             print(
-                f"Error: Malformed entry in 'test_functions': {file} -> {functions}",
+                f"Error: Malformed entry in 'pytest_functions': {file} -> {functions}",
                 file=sys.stderr
             )
             sys.exit(1)

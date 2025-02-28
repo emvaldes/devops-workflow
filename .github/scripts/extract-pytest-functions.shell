@@ -9,7 +9,7 @@ set -o pipefail ;  # Fail if any piped command fails
 
 ## extract-pytest-functions \
 ##   --pytests-location="tests/package/module" \
-##   --output-filename="test_functions.json" \
+##   --output-filename="pytest_functions.json" \
 ##   --scripts-location=".github/scripts" \
 ##   --dry-run \
 ##   --verbose ;
@@ -49,7 +49,7 @@ function extract_pytest_functions () {
             # Ensure the file exists before proceeding
       else  if [[ ! -e "${pytests_location}" ]]; then
               echo -e "Error: Target location was not found: ${pytests_location}";
-              # echo -e '{"test_functions": ["dummy_test_function"]}' > "${output_filename}";
+              # echo -e '{"pytest_functions": ["dummy_test_function"]}' > "${output_filename}";
               exit 1;
             fi;
     fi;
@@ -57,7 +57,7 @@ function extract_pytest_functions () {
       scripts_location="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
     fi;
     if [[ -z ${pytests_location} ]]; then
-      local output_filename="test_functions.json";
+      local output_filename="pytest_functions.json";
     fi;
 
     # pytests_location="tests/requirements/dependencies/test_dependencies.py" ;
@@ -70,7 +70,7 @@ function extract_pytest_functions () {
 
     if [[ ${#test_files[@]} -eq 0 ]]; then
             echo -e "ERROR: No test files found in '${pytests_location}'!";
-            # echo -e '{"test_functions": ["dummy_test_function"]}' > "${output_filename}";
+            # echo -e '{"pytest_functions": ["dummy_test_function"]}' > "${output_filename}";
             exit 1;
       # else  for file in ${test_files[@]}; do echo -e "Test File: ${file}"; done;
     fi;
@@ -111,9 +111,9 @@ function extract_pytest_functions () {
     fi;
 
     ## Flatten JSON: Extract functions into a single list
-    # jq '[.test_functions | to_entries[] | .value[]]' \
+    # jq '[.pytest_functions | to_entries[] | .value[]]' \
     #    ${output_filename} > temp.json && mv temp.json ${output_filename};
-    jq '{"test_functions": ( .test_functions | map(.[]) | flatten )}' \
+    jq '{"pytest_functions": ( .pytest_functions | map(.[]) | flatten )}' \
        ${output_filename} > temp.json && mv temp.json ${output_filename};
 
     if [[ ! -e ${output_filename} ]]; then

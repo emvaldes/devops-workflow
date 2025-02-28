@@ -76,7 +76,7 @@ jobs:
     uses: ./.github/workflows/module.running-pytests.yaml
     with:
       pytest_files: ${{ needs.extracting-pytests.outputs.pytest_files }}
-      test_functions: ${{ needs.extracting-pytests.outputs.test_functions }}
+      pytest_functions: ${{ needs.extracting-pytests.outputs.pytest_functions }}
       pytest: ${{ needs.workflow.outputs.validated }}
 
   aggregating-pytests:

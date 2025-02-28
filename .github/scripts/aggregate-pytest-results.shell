@@ -8,16 +8,16 @@ set -e ;             # Exit on error
 set -o pipefail ;    # Fail if any piped command fails
 shopt -s nullglob ;  # Prevent errors if no files are found
 
-test_functions='artifacts/test_functions.log' ;
+pytest_functions='artifacts/pytest_functions.log' ;
 test_results='artifacts/test_results.json' ;
 
 echo -e "\nAggregating test results..." ;
-find artifacts -type f -name "*.xml" > ${test_functions} ;
+find artifacts -type f -name "*.xml" > ${pytest_functions} ;
 
 # Initialize JSON structure
 jq -n '{test_summary: []}' > ${test_results} 2>/dev/null ;
 
-if [[ ! -s ${test_functions} ]]; then
+if [[ ! -s ${pytest_functions} ]]; then
   echo -e "No test result files found in 'artifacts/'!" ;
   exit 1 ;
 fi ;
@@ -104,7 +104,7 @@ while read -r test_file; do
 
   done ;
 
-done < ${test_functions} ;
+done < ${pytest_functions} ;
 
 # Print JSON for debugging
 # echo -e "Final Aggregated Test Results [${test_results}]: " ;

@@ -12,7 +12,7 @@ on:
         required: true
         type: string
 
-      test_functions:
+      pytest_functions:
         required: true
         type: string
 
@@ -34,9 +34,9 @@ jobs:
               "id": "PyTest Files",
               "value": ${{ toJson( fromJson( inputs.pytest_files ) ) }}
             },
-            "test_functions": {
+            "pytest_functions": {
               "id": "PyTest Functions",
-              "value": ${{ toJson( fromJson( inputs.test_functions ) ) }}
+              "value": ${{ toJson( fromJson( inputs.pytest_functions ) ) }}
             },
             "pytest": {
               "id": "Workflow Parameters", "value": ${{ inputs.pytest }}
@@ -61,7 +61,7 @@ jobs:
           echo -e "PyTest Files: ${{ toJson( fromJson(
             needs.workflow.outputs.validated ).pytest_files ) }}" ;
           echo -e "PyTest Functions: ${{ toJson( fromJson(
-            needs.workflow.outputs.validated ).test_functions ) }}" ;
+            needs.workflow.outputs.validated ).pytest_functions ) }}" ;
 
   # Experimental Cutter Matrix Using pytest_files.json
   pytest-files:
@@ -89,7 +89,7 @@ jobs:
     strategy:
       matrix:
         python-version: ${{ fromJson( vars.PYTHON_VERSIONS ).python }}
-        test_function: ${{ fromJson( inputs.test_functions ) }}
+        test_function: ${{ fromJson( inputs.pytest_functions ) }}
     env:
       pytests_location: ${{ fromJson(
         needs.workflow.outputs.validated ).pytest.params.pytests_location }}
