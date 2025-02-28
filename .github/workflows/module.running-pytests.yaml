@@ -72,6 +72,12 @@ jobs:
         run: |
           set ;
 
+      - name: Importing PyTest Files/Functions
+        id: importing_resources
+        run:
+
+          cat ./tests_files.json ;
+
   running-pytests:
 
     needs: [ workflow, parameters, pytest-files ]
