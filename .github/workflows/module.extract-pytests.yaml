@@ -38,7 +38,7 @@ jobs:
           "workflow": "module.extract-pytests",
           "inputs": {
             "pytest_mapping": {
-              "id": "Output Filename",
+              "id": "PyTest Mapping",
               "value": "${{ inputs.pytest_mapping }}",
               "default": "${{ vars.PYTEST_MAPPING }}"
             },
@@ -64,7 +64,7 @@ jobs:
             needs.workflow.outputs.validated ).pytest.params.pytests_location }}" ;
           echo -e "Project Scripts: ${{ fromJson(
             needs.workflow.outputs.validated ).pytest.params.project_scripts }}" ;
-          echo -e "Output Filename: ${{ fromJson(
+          echo -e "PyTest Mapping: ${{ fromJson(
             needs.workflow.outputs.validated ).pytest_mapping }}" ;
 
   extract-pytests:

@@ -58,11 +58,10 @@ jobs:
             needs.workflow.outputs.validated ).pytest.params.pytests_location }}" ;
           echo -e "PyTests Resources: ${{ fromJson(
             needs.workflow.outputs.validated ).pytest.params.pytests_resources }}" ;
-
-          echo -e "PyTest Files: ${{ fromJson(
-            needs.workflow.outputs.validated ).test_files }}" ;
-          echo -e "PyTest Functions: ${{ fromJson(
-            needs.workflow.outputs.validated ).test_functions }}" ;
+          echo -e "PyTest Files: ${{ toJson( fromJson(
+            needs.workflow.outputs.validated ).pytest_files ) }}" ;
+          echo -e "PyTest Functions: ${{ toJson( fromJson(
+            needs.workflow.outputs.validated ).test_functions ) }}" ;
 
   # Experimental Cutter Matrix Using pytest_files.json
   pytest-files:
