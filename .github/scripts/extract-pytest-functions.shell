@@ -21,7 +21,7 @@ function extract_pytest_functions () {
     # read -ra parameters <<< "$( sanitize_parameters "${@}" )";
     # ✅ Capture output of sanitize_parameters as an array (preserving spaces)
     mapfile -t parameters < <( ${script_dirname}/sanitize-parameters.shell "${@}" );
-    echo -e; for param in "${parameters[@]}"; do echo -e "Parameter: '${param}'"; done;
+    # echo -e; for param in "${parameters[@]}"; do echo -e "Parameter: '${param}'"; done;
 
     oIFS="${IFS}";
     for xitem in "${parameters[@]}"; do
@@ -86,33 +86,39 @@ function extract_pytest_functions () {
     python3 ${scripts_location}/extract-pytest-functions.py \
         "${json_list}" "${output_filename}";
 
-    if [[ -e ${output_filename} ]]; then
+    # ## Validate JSON before proceeding
+    # jq -e . ${output_filename} 2>&1>/dev/null;
+    # status=$?; #echo -e "Status: ${status}";
+    # if [[ ${status} -gt 0 ]]; then
+    #   echo -e "\nWarning: '${output_filename}' is not valid JSON object!";
+    #   exit 1;
+    # fi ;
 
-            ## Validate JSON before proceeding
-            jq -e . ${output_filename} 2>&1>/dev/null;
-            status=$?; #echo -e "Status: ${status}";
+    pytest_files="pytest_files.json";
+    jq . ${output_filename} > ${pytest_files};
+    # ls -al ${pytest_files};
+    # jq -c . ${pytest>files};
+
+    if [[ -e ${pytest_files} ]]; then
+            jq -e . ${pytest_files} 2>&1>/dev/null ;
+            status=$?; #echo -e "Status: ${status}" ;
             if [[ ${status} -gt 0 ]]; then
-                    echo -e "Configuration: '${output_filename}' is not valid JSON object!";
-                    exit 1 ;
-              else  pytest_files="pytest_files.json";
-                    jq . ${output_filename} > ${pytest_files};
-                    # ls -al ${pytest_files};
-                    # cat ${pytest>files};
-                    # echo -e;
-            fi ;
-
-            # ## Flatten JSON: Extract functions into a single list
-            # jq '[.test_functions | to_entries[] | .value[]]' \
-            #    ${output_filename} > temp.json && mv temp.json ${output_filename};
-            jq '{"test_functions": ( .test_functions | map(.[]) | flatten )}' \
-               ${output_filename} > temp.json && mv temp.json ${output_filename};
-
-            # echo -e "Extracted test functions saved to: ${output_filename}" ;
-            # echo -e "Final JSON Output: ";
-            # jq . ${output_filename};
-
-      else  echo -e "Warning: ${output_filename} is not avilable/missing!";
+              echo -e "\Warning: '${pytest_files}' is not valid JSON object!";
+              exit 1;
+            fi;
+      else  echo -e "Warning: ${pytest_files} is missing/not-found!";
             exit 1;
+    fi;
+
+    ## Flatten JSON: Extract functions into a single list
+    # jq '[.test_functions | to_entries[] | .value[]]' \
+    #    ${output_filename} > temp.json && mv temp.json ${output_filename};
+    jq '{"test_functions": ( .test_functions | map(.[]) | flatten )}' \
+       ${output_filename} > temp.json && mv temp.json ${output_filename};
+
+    if [[ ! -e ${output_filename} ]]; then
+      echo -e "Warning: ${output_filename} is missing/not-found!" ;
+      exit 1;
     fi;
 
     # echo -e;

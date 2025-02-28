@@ -102,36 +102,17 @@ jobs:
 
           ## Validate Test-Functions JSON before proceeding
           if [[ -e ${{ env.pytest_mapping }} ]]; then
-                jq -e . ${{ env.pytest_mapping }} 2>&1>/dev/null ;
-                status=$?; #echo -e "Status: ${status}" ;
-                if [[ ${status} -gt 0 ]]; then
-                    echo -e "Configuration: Invalid JSON '${{ env.pytest_mapping }}' object!" ;
-                    exit 1 ;
-                  else  echo -e "\nPyTest Functions JSON configuration" ;
-                    ls -al ${{ env.pytest_mapping }} ;
-                    cat ${{ env.pytest_mapping }} ;
-                    TEST_FUNCTIONS=$(
-                      jq -c '.test_functions' ${{ env.pytest_mapping }}
-                    ) ;
-                    echo -e "test_functions=$TEST_FUNCTIONS" >> "$GITHUB_OUTPUT" ;
-                fi ;
+                  TEST_FUNCTIONS=$(
+                    jq -c '.test_functions' ${{ env.pytest_mapping }}
+                  ) ;
+                  echo -e "test_functions=$TEST_FUNCTIONS" >> "$GITHUB_OUTPUT" ;
             else  echo -e "Warning: '${{ env.pytest_mapping }}' is missing/not-found!" ;
           fi ;
 
           ## Validate Test-Modules JSON before proceeding
           pytest_files="pytest_files.json" ;
           if [[ -e ${pytest_files} ]]; then
-                  jq -e . ${pytest_files} 2>&1>/dev/null ;
-                  status=$?; #echo -e "Status: ${status}" ;
-                  if [[ ${status} -gt 0 ]]; then
-                      echo -e "Configuration: '${pytest_files}' is not valid JSON object!" ;
-                      exit 1 ;
-                    else  echo -e "\nPyTest Files JSON configuration" ;
-                      ls -al ${pytest_files} ;
-                      cat ${pytest_files} ;
-                      # PYTEST_FILES=$( jq -c 'keys' ${pytest_files} ) ;
-                      PYTEST_FILES=$( jq -c . ${pytest_files} ) ;
-                      echo "pytest_files=$PYTEST_FILES" >> $GITHUB_OUTPUT ;
-                  fi ;
+                  PYTEST_FILES=$( jq -c . ${pytest_files} ) ;
+                  echo "pytest_files=$PYTEST_FILES" >> $GITHUB_OUTPUT ;
             else  echo -e "Warning: ${pytest_files} is missing/not-found!" ;
           fi ;
