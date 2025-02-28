@@ -76,8 +76,8 @@ jobs:
         id: importing_resources
         run:
 
-          cat ./pytest_files.json ;
-          cat ./test_functions.json ;
+          find . -type f \( -name 'pytest_files.json' -o -name 'test_functions.json' \) \
+          | xargs -I {} cat {} ;
 
   running-pytests:
 
