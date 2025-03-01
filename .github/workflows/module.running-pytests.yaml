@@ -156,17 +156,31 @@ jobs:
 
           test_function="${{ matrix.test_function }}" ;
 
-          ## Remove only the last '.py' extension
-          function_file="${test_function%%::*}" ;
-          echo "function_file=${function_file}" >> $GITHUB_ENV ;
-
           ## Extract everything before '::'
-          function_name="${test_function##*::}" ;
-          echo "function_name=${function_name}" >> $GITHUB_ENV ;
+          function_file="${test_function%%::*}" ;
 
+          ## Define known file extensions to remove
+          declare -a known_extensions=( "py" "python" ) ;
+
+          ## Loop through extensions and remove the last one if it matches
+          for extension in "${known_extensions[@]}"; do
+            if [[ "${function_file}" == *.${extension} ]]; then
+              function_file="${function_file%.$extension}" ;
+              break ;  # Stop after removing the first matched extension
+            fi ;
+          done ;
+
+          ## Extract everything after '::'
+          function_name="${test_function##*::}" ;
+
+          ## Construct artifact name with '--' separator
           artifact_fullname="pytest-results--${{ matrix.python-version }}--" ;
-          artifact_fullname+="${function_file%.*}.${function_name}" ;
-          echo "artifact_fullname=${artifact_fullname}" >> $GITHUB_ENV ;
+          artifact_fullname+="${function_file}.${function_name}" ;
+
+          ## Ensure no spaces in variables
+          echo "function_file=${function_file}" >> "$GITHUB_ENV" ;
+          echo "function_name=${function_name}" >> "$GITHUB_ENV" ;
+          echo "artifact_fullname=${artifact_fullname}" >> "$GITHUB_ENV" ;
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
