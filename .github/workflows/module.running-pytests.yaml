@@ -154,13 +154,23 @@ jobs:
         id: function_name
         run: |
 
-          FUNCTION_NAME="${{ matrix.test_function }}" ;
-          echo "function_name=${FUNCTION_NAME##*::}" >> $GITHUB_ENV ;
+          test_function="${{ matrix.test_function }}" ;
+
+          ## Remove only the last '.py' extension
+          function_file="${test_function%.*}" ;
+          echo "function_file=${function_file}" >> $GITHUB_ENV ;
+
+          ## Extract everything before '::'
+          function_name="${test_function%%::*}" ;
+          echo "function_name=${function_name}" >> $GITHUB_ENV ;
+
+          artifact_fullname="pytest-results--${{ matrix.python-version }}--" ;
+          artifact_fullname+="${function_file}.${function_name}" ;
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
         with:
-          name: pytest-results-${{ matrix.python-version }}-${{ env.test_function }}
+          name: ${{ env.artifact_fullname }}
           path: pytest-results.xml
 
       - name: Debug - List Uploaded Artifacts
