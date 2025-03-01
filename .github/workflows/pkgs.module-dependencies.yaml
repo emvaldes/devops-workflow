@@ -68,7 +68,7 @@ jobs:
           }
         }
 
-  dependencies-module-parameters:
+  dependencies-parameters:
     needs: workflow
     runs-on: ubuntu-latest
     steps:
@@ -80,7 +80,7 @@ jobs:
           echo -e "Workflow Parameters: ${{ needs.workflow.outputs.validated }}" ;
 
   install-packages:
-    needs: [ workflow, dependencies-module-parameters ]
+    needs: [ workflow, dependencies-parameters ]
     uses: ./.github/workflows/module.install-packages.yaml
     with:
       packages: "${{
@@ -88,13 +88,13 @@ jobs:
         }}"
 
   pytests-module:
-    needs: [ workflow, dependencies-module-parameters, install-packages ]
+    needs: [ workflow, dependencies-parameters, install-packages ]
     uses: ./.github/workflows/pytest.module-matrix.yaml
     with:
       params: ${{ needs.workflow.outputs.validated }}
 
   execute-module:
-    needs: [ workflow, dependencies-module-parameters, pytests-module ]
+    needs: [ workflow, dependencies-parameters, pytests-module ]
     # if: needs.pytests-module.outputs.aggregated_results
     uses: ./.github/workflows/module.execute-module.yaml
     with:

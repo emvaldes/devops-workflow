@@ -157,15 +157,15 @@ jobs:
           test_function="${{ matrix.test_function }}" ;
 
           ## Remove only the last '.py' extension
-          function_file="${test_function%.*}" ;
+          function_file="${test_function%%::*}" ;
           echo "function_file=${function_file}" >> $GITHUB_ENV ;
 
           ## Extract everything before '::'
-          function_name="${test_function%%::*}" ;
+          function_name="${test_function##*::}" ;
           echo "function_name=${function_name}" >> $GITHUB_ENV ;
 
           artifact_fullname="pytest-results--${{ matrix.python-version }}--" ;
-          artifact_fullname+="${function_file}.${function_name}" ;
+          artifact_fullname+="${function_file%.*}.${function_name}" ;
           echo "artifact_fullname=${artifact_fullname}" >> $GITHUB_ENV ;
 
       - name: Upload Test Results
