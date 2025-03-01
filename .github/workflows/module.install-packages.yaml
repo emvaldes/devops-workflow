@@ -29,7 +29,7 @@ jobs:
           }
         }
 
-  parameters:
+  install-packages-parameters:
 
     needs: workflow
     runs-on: ubuntu-latest
@@ -44,7 +44,7 @@ jobs:
 
   install-packages:
 
-    needs: [ workflow, parameters ]
+    needs: [ workflow, install-packages-parameters ]
     runs-on: ubuntu-latest
     strategy:
       matrix:

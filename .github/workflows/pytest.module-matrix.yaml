@@ -55,7 +55,7 @@ jobs:
           }
         }
 
-  parameters:
+  module-matrix-parameters:
     needs: workflow
     runs-on: ubuntu-latest
     steps:
@@ -78,7 +78,7 @@ jobs:
             needs.workflow.outputs.validated ).params.project_scripts }}" ;
 
   extracting-pytests:
-    needs: [ workflow, parameters ]
+    needs: [ workflow, module-matrix-parameters ]
     uses: ./.github/workflows/module.extract-pytests.yaml
     with:
       pytest: ${{ needs.workflow.outputs.validated }}
@@ -86,7 +86,7 @@ jobs:
         needs.workflow.outputs.validated ).pytest_mapping }}
 
   running-pytests:
-    needs: [ workflow, parameters, extracting-pytests ]
+    needs: [ workflow, module-matrix-parameters, extracting-pytests ]
     uses: ./.github/workflows/module.running-pytests.yaml
     with:
       pytest_files: ${{ needs.extracting-pytests.outputs.pytest_files }}
@@ -94,7 +94,7 @@ jobs:
       pytest: ${{ needs.workflow.outputs.validated }}
 
   aggregating-pytests:
-    needs: [ workflow, parameters, running-pytests ]
+    needs: [ workflow, module-matrix-parameters, running-pytests ]
     uses: ./.github/workflows/module.aggregate-results.yaml
     with:
       pytest: ${{ needs.workflow.outputs.validated }}

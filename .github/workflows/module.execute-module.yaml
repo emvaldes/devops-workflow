@@ -28,7 +28,7 @@ jobs:
           }
         }
 
-  parameters:
+  execute-module-parameters:
 
     needs: workflow
     runs-on: ubuntu-latest
@@ -43,7 +43,7 @@ jobs:
 
   execute-module:
 
-    needs: [ workflow, parameters ]
+    needs: [ workflow, execute-module-parameters ]
     runs-on: ubuntu-latest
     strategy:
       matrix:

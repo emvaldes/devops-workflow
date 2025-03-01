@@ -58,7 +58,7 @@ jobs:
           }
         }
 
-  parameters:
+  extract-pytests-parameters:
 
     needs: workflow
     runs-on: ubuntu-latest
@@ -80,7 +80,7 @@ jobs:
 
   extract-pytests:
 
-    needs: [ workflow, parameters ]
+    needs: [ workflow, extract-pytests-parameters ]
     runs-on: ubuntu-latest
     outputs:
       pytest_files: ${{ steps.extract.outputs.pytest_files }}

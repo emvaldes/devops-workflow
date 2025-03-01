@@ -44,7 +44,7 @@ jobs:
           }
         }
 
-  parameters:
+  running-pytests-parameters:
 
     needs: workflow
     runs-on: ubuntu-latest
@@ -62,7 +62,7 @@ jobs:
   # Experimental Cutter Matrix Using pytest_files.json
   pytest-files:
 
-    needs: [ workflow, parameters ]
+    needs: [ workflow, running-pytests-parameters ]
     runs-on: ubuntu-latest
     outputs:
       pytest_files: ${{ steps.extract.outputs.pytest_files }}
@@ -80,7 +80,7 @@ jobs:
 
   running-pytests:
 
-    needs: [ workflow, parameters, pytest-files ]
+    needs: [ workflow, running-pytests-parameters, pytest-files ]
     runs-on: ubuntu-latest
     strategy:
       matrix:
