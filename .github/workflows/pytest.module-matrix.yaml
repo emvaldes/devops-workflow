@@ -10,6 +10,11 @@ on:
 
     inputs:
 
+      pytest_files:
+        required: false
+        type: string
+        # default: 'pytest_files.json'
+
       pytest_mapping:
         required: false
         type: string
@@ -34,6 +39,11 @@ jobs:
         {
           "workflow": "pytest.module-matrix",
           "inputs": {
+            "pytest_files": {
+              "id": "PyTest Files",
+              "value": "${{ inputs.pytest_files }}",
+              "default": "${{ vars.PYTEST_FILES }}"
+            },
             "pytest_mapping": {
               "id": "PyTest Mapping",
               "value": "${{ inputs.pytest_mapping }}",
@@ -54,12 +64,16 @@ jobs:
         id: workflow_parameters
         run: |
 
+          echo "PyTest Files: ${{ fromJson(
+            needs.workflow.outputs.validated ).pytest_files }}" ;
           echo "PyTest Mapping: ${{ fromJson(
             needs.workflow.outputs.validated ).pytest_mapping }}" ;
+
           echo "PyTests Location: ${{ fromJson(
             needs.workflow.outputs.validated ).params.pytests_location }}" ;
           echo "Package Location: ${{ fromJson(
             needs.workflow.outputs.validated ).params.package_location }}" ;
+
           echo "Project Scripts: ${{ fromJson(
             needs.workflow.outputs.validated ).params.project_scripts }}" ;
 

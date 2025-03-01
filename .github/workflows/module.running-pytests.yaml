@@ -54,14 +54,15 @@ jobs:
         id: workflow_parameters
         run: |
 
-          echo -e "PyTests Location: ${{ fromJson(
-            needs.workflow.outputs.validated ).pytest.params.pytests_location }}" ;
-          echo -e "PyTests Resources: ${{ fromJson(
-            needs.workflow.outputs.validated ).pytest.params.pytests_resources }}" ;
           echo -e "PyTest Files: ${{ toJson( fromJson(
             needs.workflow.outputs.validated ).pytest_files ) }}" ;
           echo -e "PyTest Functions: ${{ toJson( fromJson(
             needs.workflow.outputs.validated ).pytest_functions ) }}" ;
+
+          echo -e "PyTests Location: ${{ fromJson(
+            needs.workflow.outputs.validated ).pytest.params.pytests_location }}" ;
+          echo -e "PyTests Resources: ${{ fromJson(
+            needs.workflow.outputs.validated ).pytest.params.pytests_resources }}" ;
 
   # Experimental Cutter Matrix Using pytest_files.json
   pytest-files:
@@ -150,8 +151,11 @@ jobs:
       - name: Run Pytest Function
         run: |
 
+          # pytest -v --junitxml=pytest-results.xml \
+          # "${{ env.pytests_location }}/${{ env.pytests_resources }}::${{ matrix.test_function }}" ;
+
           pytest -v --junitxml=pytest-results.xml \
-          "${{ env.pytests_location }}/${{ env.pytests_resources }}::${{ matrix.test_function }}" ;
+          "${{ env.pytests_location }}/${{ matrix.test_function }}" ;
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4

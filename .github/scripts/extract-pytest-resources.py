@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-## File: .github/scripts/extract-pytest-functions.py
+## File: .github/scripts/extract-pytest-resources.py
 ## Version: 0.0.1
 
 import re
@@ -39,7 +39,16 @@ except json.JSONDecodeError:
     )
     sys.exit(1)
 
-pytest_functions = {}
+pytest_resources = []
+
+## Determine base location from the provided files
+if len(pytest_files) == 1:
+    ## If only one file, set its directory as the location
+    single_file_path = pytest_files[0]
+    base_location = os.path.dirname( single_file_path )
+else:
+    ## Otherwise, find the common directory for all files
+    base_location = os.path.commonpath( pytest_files )
 
 ## Processing all target pytest-files
 for file in pytest_files:
@@ -63,23 +72,25 @@ for file in pytest_files:
                 re.MULTILINE
             )
         if functions:
-            pytest_functions[file] = functions
+            ## Convert absolute file path to relative path based on base_location
+            relative_file = os.path.relpath( file, base_location )
+            pytest_resources.append( {"file": relative_file, "functions": functions} )
     except Exception as e:
         print(
             f"Warning: Failed to parse {file} - {str(e)}",
             file=sys.stderr
         )
 
-## Identifies if pytest_functions exist
-if not pytest_functions:
-    # pytest_functions["dummy_test"] = ["dummy_test_function"]
+## Identifies if pytest_resources exist
+if not pytest_resources:
     print(
         invalid_content,
         file=sys.stderr
     )
     sys.exit(1)
 else:
-    json_output = {"pytest_functions": pytest_functions}
+    ## Construct final JSON output
+    json_output = {"location": base_location, "resources": pytest_resources}
 
 ## Export/Save json-output to file
 with open(
@@ -116,19 +127,20 @@ try:
     ## Ensure JSON structure is correct
     if (
         not isinstance( data, dict )
-        or "pytest_functions" not in data
-        or not isinstance( data["pytest_functions"], dict )
+        or "location" not in data
+        or "resources" not in data
+        or not isinstance( data["resources"], list )
     ):
         print(
             f"Error: Invalid JSON structure in '{pytest_mapping}'.",
             file=sys.stderr
         )
         sys.exit(1)
-    ## Ensure all keys in "pytest_functions" are filenames with list values
-    for file, functions in data["pytest_functions"].items():
-        if not isinstance( file, str ) or not isinstance( functions, list ):
+    ## Ensure all resources have correct structure
+    for entry in data["resources"]:
+        if not isinstance( entry, dict ) or "file" not in entry or "functions" not in entry:
             print(
-                f"Error: Malformed entry in 'pytest_functions': {file} -> {functions}",
+                f"Error: Malformed entry in 'resources': {entry}",
                 file=sys.stderr
             )
             sys.exit(1)
