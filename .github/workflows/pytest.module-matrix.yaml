@@ -82,6 +82,8 @@ jobs:
     uses: ./.github/workflows/module.extract-pytests.yaml
     with:
       pytest: ${{ needs.workflow.outputs.validated }}
+      pytest_files: ${{ fromJson(
+        needs.workflow.outputs.validated ).pytest_files }}
       pytest_mapping: ${{ fromJson(
         needs.workflow.outputs.validated ).pytest_mapping }}
 

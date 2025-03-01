@@ -102,8 +102,9 @@ function extract_pytest_functions () {
     fi;
 
     ## Flatten JSON: Extract functions into a single list
-    jq '{ pytest_functions: [ . as $root | .resources[] | .file as $file
-       | .functions[] | ($root.location + "/" + $file + "::" + .) ] }' \
+    # jq '{ pytest_functions: [ . as $root | .resources[] | .file as $file
+    #    | .functions[] | ($root.location + "/" + $file + "::" + .) ] }' \
+    jq '{ pytest_functions: [ .resources[] | .file as $file | .functions[] | ($file + "::" + .) ] }' \
     ${pytest_mapping} > temp.json && mv temp.json ${pytest_mapping};
 
     jq . $pytest_mapping;
