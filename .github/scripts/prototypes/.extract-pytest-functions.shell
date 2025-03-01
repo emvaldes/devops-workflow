@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+
+## File: .github/scripts/extract-pytest-functions.shell
+## Version: 0.0.1
+
+set -x ;
+set -e ;           # Exit on error
+set -o pipefail ;  # Fail if any piped command fails
+
+## extract-pytest-functions \
+##   --location="tests/package/module" \
+##   --filename="pytest_functions.json" \
+##   --scripts=".github/scripts" \
+##   --dry-run \
+##   --verbose ;
+
+function extract_pytest_functions () {
+    ## tracking_process ${FUNCNAME} "${@}";
+
+    script_dirname="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
+    # read -ra parameters <<< "$( sanitize_parameters "${@}" )";
+    # ✅ Capture output of sanitize_parameters as an array (preserving spaces)
+    mapfile -t parameters < <( ${script_dirname}/sanitize-parameters.shell "${@}" );
+    # echo -e; for param in "${parameters[@]}"; do echo -e "Parameter: '${param}'"; done;
+
+    oIFS="${IFS}";
+    for xitem in "${parameters[@]}"; do
+      IFS='=' read -r key value <<< "$(
+        echo -e "${xitem}" | sed -e '1s|^\(-\)\{1,\}||'
+      )"; #echo -e "\nxitem: '${xitem}'\nkey: '${key}'\t->\tvalue: '${value}'";
+      [[ $key == "location" ]] && local pytests_location="${value}";
+      [[ $key == "filename" ]] && local pytests_filename="${value}";
+      [[ $key == "scripts" ]] && local scripts_location="${value}";
+      #### ---------------------------------------------------------------------
+      ## $key == "dry-run" ]] && local dry_run=true;
+      [[ $key == "verbose" ]] && local verbose=true
+      [[ $key == "debug" ]] && local debug=true
+    done; IFS="${oIFS}";
+    #### -----------------------------------------------------------------------
+    ## [[ -z ${dry_run} ]] && local dry_run=false;
+    [[ -z ${debug} ]] && local debug=false;
+    [[ -z ${verbose} ]] && local verbose=false;
+    #### -----------------------------------------------------------------------
+    [[ -z ${pytests_filename} ]] && local pytests_filename="pytest_functions.json";
+
+    ## Define custom-parameter(s):
+    if [[ -z ${pytests_location} ]]; then
+            echo -e "Error: PyTests Location is invalid or not provided!";
+            exit 1;
+            # Ensure the file exists before proceeding
+      else  if [[ ! -e "${pytests_location}" ]]; then
+              echo -e "Error: Target location was not found '${pytests_location}'";
+              # echo -e '{"pytest_functions": ["dummy_test_function"]}' > "${pytests_filename}";
+              exit 1;
+            fi;
+    fi;
+    if [[ -z ${scripts_location} ]]; then
+      scripts_location="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
+    fi;
+
+    # pytests_location="tests/requirements/dependencies/test_dependencies.py" ;
+    # echo -e "\nExtracting test functions from: ${pytests_location}\n";
+
+    ## Find all test_*.py files recursively
+    test_files=($(
+      find "${pytests_location}" -type f -name "test_*.py"
+    ));
+
+    if [[ ${#test_files[@]} -eq 0 ]]; then
+            echo -e "ERROR: No test files found in '${pytests_location}'!";
+            # echo -e '{"pytest_functions": ["dummy_test_function"]}' > "${pytests_filename}";
+            exit 1;
+      # else  for file in ${test_files[@]}; do echo -e "Test File: ${file}"; done;
+    fi;
+
+    ## Convert Bash array to a properly formatted JSON array
+    pytest_listing=$( printf '%s\n' "${test_files[@]}" | jq -R . | jq -s . );
+    # echo -e "PyTest files JSON:\n${pytest_listing}\n";
+
+    ## Call the external Python script instead of using here-doc
+    python3 ${scripts_location}/extract-pytest-functions.py \
+        "${pytest_listing}" "${pytests_filename}";
+
+    # # ## Validate JSON before proceeding
+    # # jq -e . ${output_filename} 2>&1>/dev/null;
+    # # status=$?; #echo -e "Status: ${status}";
+    # # if [[ ${status} -gt 0 ]]; then
+    # #   echo -e "\nWarning: '${output_filename}' is not valid JSON object!";
+    # #   exit 1;
+    # # fi ;
+    #
+    # pytest_files="pytest_files.json";
+    # jq . ${output_filename} > ${pytest_files};
+    # # ls -al ${pytest_files};
+    # # jq -c . ${pytest>files};
+    #
+    # if [[ -e ${pytest_files} ]]; then
+    #         jq -e . ${pytest_files} 2>&1>/dev/null ;
+    #         status=$?; #echo -e "Status: ${status}" ;
+    #         if [[ ${status} -gt 0 ]]; then
+    #           echo -e "\Warning: '${pytest_files}' is not valid JSON object!";
+    #           exit 1;
+    #         fi;
+    #   else  echo -e "Warning: ${pytest_files} is missing/not-found!";
+    #         exit 1;
+    # fi;
+    #
+    # ## Flatten JSON: Extract functions into a single list
+    # # jq '[.pytest_functions | to_entries[] | .value[]]' \
+    # #    ${output_filename} > temp.json && mv temp.json ${output_filename};
+    # jq '{"pytest_functions": ( .pytest_functions | map(.[]) | flatten )}' \
+    #    ${output_filename} > temp.json && mv temp.json ${output_filename};
+
+    if [[ ! -e ${pytests_filename} ]]; then
+      echo -e "Warning: ${pytests_filename} is missing/not-found!" ;
+      exit 1;
+    fi;
+
+    # echo -e;
+    return 0;
+}; alias extract-pytest-functions='extract_pytest_functions';
+
+extract_pytest_functions "${@}";

@@ -1,0 +1,65 @@
+---
+## File: .github/workflows/module.validate-parameters.yaml
+
+name: Validate Parameters
+on:
+
+  workflow_call:
+
+    inputs:
+
+      workflow_inputs:
+        description: "Workflow's input-parameters (JSON string)."
+        required: true
+        type: string
+
+    outputs:
+
+      validated:
+        description: "Validated JSON parameters"
+        value: ${{ jobs.validate-parameters.outputs.validated }}
+
+jobs:
+
+  validate-parameters:
+    runs-on: ubuntu-latest
+    outputs:
+      validated: ${{ steps.validate_parameters.outputs.validated }}
+    steps:
+
+      - name: Checkout Repository
+        id: checkout_repository
+        uses: actions/checkout@v4
+
+      - name: Validate Input Parameters
+        id: validate_parameters
+        shell: bash
+        run: |
+
+          validated=$(
+            ${{ github.workspace }}/.github/scripts/validate-parameters.shell \
+            --json='${{ inputs.workflow_inputs }}'
+          ) ; # echo -e "Validated Parameters:\n${validated}" ;
+
+          ## Ensure the variable is set
+          if [[ -z "${validated}" ]]; then
+                  echo "🚨 ERROR: the validated response is empty!" ;
+                  exit 1 ;
+            else  ## Validate JSON and capture errors
+                  echo "${validated}" | jq . > /dev/null 2>&1 ;
+                  if [[ $? -ne 0 ]]; then
+                      echo "🚨 ERROR: JSON is malformed!" ;
+                      echo "Raw JSON received:" ;
+                      echo "${validated}" ;
+                      exit 1 ;
+                  fi ;
+          fi ;
+
+          # Ensure JSON is formatted as a single line
+          validated_compact=$( echo "$validated" | jq -c . ) ;
+
+          # Debugging: Print the formatted JSON before setting it as output
+          echo "Validated JSON Output: ${validated_compact}" ;
+
+          # Set the validated parameters to GitHub output
+          echo "validated=$validated_compact" >> "$GITHUB_OUTPUT" ;
