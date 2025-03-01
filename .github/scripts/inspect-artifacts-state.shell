@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+## File: .github/scripts/inspect-artifacts-state.shell
+## Version: 0.0.1
+
+set -x ;
 set -e ;           # Exit on error
 set -o pipefail ;  # Fail if any piped command fails
 

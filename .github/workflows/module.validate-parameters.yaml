@@ -56,10 +56,11 @@ jobs:
           fi ;
 
           # Ensure JSON is formatted as a single line
-          validated_compact=$( echo "$validated" | jq -c . ) ;
+          validated_compact=$( jq -c . <<< "${validated}" ) ;
 
           # Debugging: Print the formatted JSON before setting it as output
-          echo "Validated JSON Output: ${validated_compact}" ;
+          echo -e "Validated JSON Output:" ;
+          jq . <<< ${validated_compact} ;
 
           # Set the validated parameters to GitHub output
           echo "validated=$validated_compact" >> "$GITHUB_OUTPUT" ;

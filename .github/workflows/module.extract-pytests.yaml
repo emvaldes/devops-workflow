@@ -91,13 +91,11 @@ jobs:
         shell: bash
         run: |
 
-          set -x ;
-
           extracted=$(
             ${{ env.project_scripts }}/extract-pytest-functions.shell \
             --pytests-location="${{ env.pytests_location }}" \
+            --output-filename="${{ env.pytest_mapping }}" \
             --scripts-location="${{ env.project_scripts }}" \
-            --output-filename="${{ env.pytest_mapping }}"
           ) ; # echo -e "Extracted Parameters:\n${extracted}" ;
 
           ## Validate Test-Functions JSON before proceeding

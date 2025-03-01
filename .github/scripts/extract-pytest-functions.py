@@ -56,6 +56,7 @@ for file in pytest_files:
             encoding="utf-8"
         ) as f:
             content = f.read()
+            ## Extract test function names using regex
             functions = re.findall(
                 r'^def (test_[a-zA-Z0-9_]+)',
                 content,
@@ -94,7 +95,7 @@ with open(
         sort_keys=True
     )
 
-# # Print final JSON output
+## Print final JSON output
 # print(json.dumps(json_output, indent=2, ensure_ascii=False, sort_keys=True))
 
 ## Validate the JSON file exists and structure is correct
@@ -112,7 +113,7 @@ try:
         encoding="utf-8"
     ) as f:
         data = json.load(f)
-    # Ensure JSON structure is correct
+    ## Ensure JSON structure is correct
     if (
         not isinstance( data, dict )
         or "pytest_functions" not in data
@@ -123,7 +124,7 @@ try:
             file=sys.stderr
         )
         sys.exit(1)
-    # Ensure all keys in "pytest_functions" are filenames with list values
+    ## Ensure all keys in "pytest_functions" are filenames with list values
     for file, functions in data["pytest_functions"].items():
         if not isinstance( file, str ) or not isinstance( functions, list ):
             print(

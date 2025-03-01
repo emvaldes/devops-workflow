@@ -96,7 +96,7 @@ jobs:
           echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV ;
           echo -e "PYTHONPATH set to: ${GITHUB_WORKSPACE}" ;
 
-      - name: Convert Path & Execute Python Module
+      - name: Execute Python Module
         run: |
 
           package_module=$(

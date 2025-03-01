@@ -76,15 +76,12 @@ function extract_pytest_functions () {
     fi;
 
     ## Convert Bash array to a properly formatted JSON array
-    json_list=$( printf '%s\n' "${test_files[@]}" | jq -R . | jq -s . );
-    # echo -e "PyTest files JSON:\n${json_list}\n";
-
-    # echo -en "python3 ${scripts_location}/extract-pytest-functions.py ";
-    # echo -e  ${json_list} ${output_filename};
+    pytest_listing=$( printf '%s\n' "${test_files[@]}" | jq -R . | jq -s . );
+    # echo -e "PyTest files JSON:\n${pytest_listing}\n";
 
     ## Call the external Python script instead of using here-doc
     python3 ${scripts_location}/extract-pytest-functions.py \
-        "${json_list}" "${output_filename}";
+        "${pytest_listing}" "${output_filename}";
 
     # ## Validate JSON before proceeding
     # jq -e . ${output_filename} 2>&1>/dev/null;
