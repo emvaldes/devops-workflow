@@ -159,6 +159,9 @@ jobs:
           ## Extract everything before '::'
           function_file="${test_function%%::*}" ;
 
+          ## Remove any folder structure (keep only the filename)
+          function_file="$(basename "${function_file}")"
+
           ## Define known file extensions to remove
           declare -a known_extensions=( "py" "python" ) ;
 
