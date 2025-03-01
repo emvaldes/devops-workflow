@@ -122,12 +122,6 @@ jobs:
           name: requirements-${{ matrix.python-version }}
           path: .
 
-      - name: Listing Entire Project
-        id: listing_project
-        run: |
-
-          tree -FCla --prune -I .git ${{ github.workspace }} ;
-
       - name: Verify requirements.txt Exists
         run: |
 
@@ -150,10 +144,23 @@ jobs:
           pytest -v --junitxml=pytest-results.xml \
           "${{ env.pytests_location }}/${{ matrix.test_function }}" ;
 
+      - name: Listing Entire Project
+        id: listing_project
+        run: |
+
+          tree -FCla --prune -I .git ${{ github.workspace }} ;
+
+      - name: Extract Function Name
+        id: function_name
+        run: |
+
+          FUNCTION_NAME="${{ matrix.test_function }}" ;
+          echo "function_name=${FUNCTION_NAME##*::}" >> $GITHUB_ENV ;
+
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
         with:
-          name: pytest-results-${{ matrix.python-version }}-${{ matrix.test_function }}
+          name: pytest-results-${{ matrix.python-version }}-${{ env.test_function }}
           path: pytest-results.xml
 
       - name: Debug - List Uploaded Artifacts
