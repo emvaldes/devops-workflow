@@ -1,0 +1,212 @@
+### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/configure_params.py
+
+Python Library Documentation: module lib.configure_params in lib
+
+NNAAMMEE
+    lib.configure_params - File Path: ./lib/configure_params.py
+
+DDEESSCCRRIIPPTTIIOONN
+    Description:
+
+    Configuration Parameters Manager
+
+    This module is responsible for loading, validating, and managing configuration parameters.
+    It integrates with the framework's parameter handling system, merging user-defined and default settings.
+
+    Core Features:
+
+    - **JSON Configuration Loading**: Reads structured parameters from system configuration files.
+    - **Runtime Parameter Management**: Dynamically integrates `.env` values into execution logic.
+    - **Validation & Error Handling**: Ensures required configuration files exist and are correctly formatted.
+    - **Automatic Environment Initialization**: Creates missing `.env` and `runtime-params.json` when necessary.
+
+    Primary Functions:
+
+    - `load_json_sources(filepaths, mode)`: Loads and merges JSON configuration files.
+    - `fetching_runtime_variables()`: Retrieves structured runtime parameters.
+    - `initialize_env_file()`: Ensures `.env` exists and is valid.
+    - `initialize_runtime_file()`: Ensures `runtime-params.json` is properly set up.
+    - `populate_env_file()`: Writes environment variables dynamically.
+    - `populate_runtime_file()`: Generates structured runtime parameters.
+
+    Expected Behavior:
+
+    - If a required configuration file is missing, an error is logged.
+    - JSON parsing errors are handled gracefully to prevent execution failures.
+    - `.env` is updated dynamically when runtime parameters are changed.
+
+    Dependencies:
+
+    - `json`, `os`, `logging`, `dotenv`
+    - `system_variables` (for directory paths and project settings)
+
+    Usage:
+
+    To process and validate configuration parameters:
+    > python configure_params.py
+
+FFUUNNCCTTIIOONNSS
+    ffeettcchhiinngg__rruunnttiimmee__vvaarriiaabblleess() -> Dict[str, Dict[str, Union[str, Dict[str, str]]]]
+        Retrieve runtime variables categorized by section.
+
+        Loads structured system parameters and extracts `target_env` values categorized by section.
+
+        Raises:
+            TypeError: If `options` inside a section is not a dictionary.
+            SystemExit: If an error occurs during retrieval.
+
+        Returns:
+            Dict[str, Dict[str, Union[str, Dict[str, str]]]]:
+            A dictionary mapping section names to their titles and option key-value pairs.
+
+    iinniittiiaalliizzee__eennvv__ffiillee()
+        Ensure the `.env` file exists and contains valid content.
+
+        If the file is missing or invalid, it will be recreated and populated.
+
+        Raises:
+            SystemExit: If the `.env` file cannot be populated.
+
+    iinniittiiaalliizzee__rruunnttiimmee__ffiillee()
+        Ensure the `runtime-params.json` file exists and contains valid content.
+
+        If the file is missing or invalid, it will be recreated and populated.
+
+        Raises:
+            SystemExit: If the `runtime-params.json` file cannot be populated.
+
+    llooaadd__jjssoonn__ssoouurrcceess(filepaths: List[str], mode: str = 'merge') -> Union[Dict, Tuple[Dict]]
+        Loads JSON configuration files and merges them or returns them separately.
+
+        This function reads multiple JSON files and either merges them into a single dictionary
+        (`merge` mode) or returns them separately as a tuple of dictionaries (`fetch` mode).
+
+        Args:
+            filepaths (List[str]): A list of JSON file paths to load.
+            mode (str, optional): Determines the return format. Either "merge" (default) or "fetch".
+
+        Raises:
+            ValueError: If a JSON file is not structured as a dictionary.
+            ValueError: If the JSON structure is invalid.
+            RuntimeError: If there's an issue reading the file.
+
+        Returns:
+            Union[Dict, Tuple[Dict]]: Merged dictionary or a tuple of dictionaries.
+
+    mmaaiinn() -> Tuple[Dict, Dict]
+        Processes environment configurations by integrating `.env` with `runtime-params.json`.
+
+        This function:
+        - Ensures `.env` and `runtime-params.json` exist and are valid.
+        - Loads system parameters and runtime parameters.
+
+        Raises:
+            Exception: If an error occurs while processing environment configurations.
+
+        Returns:
+            Tuple[Dict, Dict]: A tuple containing system parameters and runtime parameters.
+
+    ppooppuullaattee__eennvv__ffiillee() -> bool
+        Writes environment variables dynamically to the `.env` file.
+
+        Retrieves structured runtime parameters and formats them for `.env` storage.
+
+        Raises:
+            Exception: If there is an error during file population.
+
+        Returns:
+            bool: True if the `.env` file is successfully populated and validated, False otherwise.
+
+    ppooppuullaattee__rruunnttiimmee__ffiillee() -> bool
+        Generates structured runtime parameters by merging system parameters with `.env` values.
+
+        Updates `runtime-params.json` by:
+        - Extracting runtime variables.
+        - Merging environment variables.
+        - Removing unnecessary titles.
+
+        Raises:
+            SystemExit: If the runtime parameters cannot be initialized.
+
+        Returns:
+            bool: True if `runtime-params.json` is successfully updated, False otherwise.
+
+    vvaalliiddaattee__eennvv__ffiillee() -> bool
+        Validate the existence and integrity of the `.env` file.
+
+        Ensures that the `.env` file exists and contains valid content. If the file is empty
+        or only contains a header, it is considered invalid.
+
+        Returns:
+            bool: True if the file exists and is valid, False otherwise.
+
+    vvaalliiddaattee__rruunnttiimmee__ffiillee() -> bool
+        Validate the existence and integrity of the `runtime-params.json` file.
+
+        Ensures that the `runtime-params.json` file exists and contains valid content.
+        If the file is empty or contains an invalid structure, it is considered invalid.
+
+        Returns:
+            bool: True if the file exists and is valid, False otherwise.
+
+DDAATTAA
+    DDiicctt = typing.Dict
+        A generic version of dict.
+
+    LLiisstt = typing.List
+        A generic version of list.
+
+    TTuuppllee = typing.Tuple
+        Deprecated alias to builtins.tuple.
+
+        Tuple[X, Y] is the cross-product type of X and Y.
+
+        Example: Tuple[T1, T2] is a tuple of two elements corresponding
+        to type variables T1 and T2.  Tuple[int, float, str] is a tuple
+        of an int, a float and a string.
+
+        To specify a variable-length tuple of homogeneous type, use Tuple[T, ...].
+
+    UUnniioonn = typing.Union
+        Union type; Union[X, Y] means either X or Y.
+
+        On Python 3.10 and higher, the | operator
+        can also be used to denote unions;
+        X | Y means the same thing to the type checker as Union[X, Y].
+
+        To define a union, use e.g. Union[int, str]. Details:
+        - The arguments must be types and there must be at least one.
+        - None as an argument is a special case and is replaced by
+          type(None).
+        - Unions of unions are flattened, e.g.::
+
+            assert Union[Union[int, str], float] == Union[int, str, float]
+
+        - Unions of a single argument vanish, e.g.::
+
+            assert Union[int] == int  # The constructor actually returns int
+
+        - Redundant arguments are skipped, e.g.::
+
+            assert Union[int, str, int] == Union[int, str]
+
+        - When comparing unions, the argument order is ignored, e.g.::
+
+            assert Union[int, str] == Union[str, int]
+
+        - You cannot subclass or instantiate a union.
+        - You can use Optional[X] as a shorthand for Union[X, None].
+
+    eennvv__ffiillee__hheeaaddeerr = '## Environment variables (auto-generated)\n\n'
+    eennvv__ffiilleeppaatthh = PosixPath('/Users/emvaldes/.repos/devops/workflows/.env...
+    pprroojjeecctt__rroooott = PosixPath('/Users/emvaldes/.repos/devops/workflows')
+    rruunnttiimmee__ppaarraammss__ffiilleennaammee = 'runtime-params.json'
+    rruunnttiimmee__ppaarraammss__ffiilleeppaatthh = PosixPath('/Users/emvaldes/.repos/devops/wor...
+    ssyysstteemm__ppaarraammss__ffiilleennaammee = 'system-params.json'
+    ssyysstteemm__ppaarraammss__ffiilleeppaatthh = PosixPath('/Users/emvaldes/.repos/devops/work...
+    ssyysstteemm__ppaarraammss__lliissttiinngg = [PosixPath('/Users/emvaldes/.repos/devops/work...
+
+FFIILLEE
+    /Users/emvaldes/.repos/devops/workflows/lib/configure_params.py
+
+

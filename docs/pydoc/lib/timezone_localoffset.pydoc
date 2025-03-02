@@ -1,0 +1,50 @@
+### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/timezone_localoffset.py
+
+Python Library Documentation: module lib.timezone_localoffset in lib
+
+NNAAMMEE
+    lib.timezone_localoffset - File Path: ./lib/timezone_localoffset.py
+
+DDEESSCCRRIIPPTTIIOONN
+    Description:
+
+    Local Time Zone and Offset Manager
+
+    This module retrieves and calculates the local time zone and its offset from UTC.
+    It ensures accurate timekeeping and synchronization within the framework.
+
+    Features:
+
+    - Determines the local time zone using `pytz`.
+    - Calculates the offset between local time and UTC.
+    - Provides command-line execution for debugging time zone information.
+
+    This module is critical for applications that require accurate time zone awareness
+    when processing scheduled tasks or handling logs.
+
+    Dependencies:
+
+    - pytz
+    - datetime
+    - argparse
+
+    Usage:
+
+    To retrieve and display the local time zone and offset:
+    > python timezone_localoffset.py --debug ;
+
+FFUUNNCCTTIIOONNSS
+    ggeett__llooccaall__ooffffsseett(debug=False)
+        Returns local timezone and time zone offset information.
+
+    mmaaiinn(debug=False)
+        Main entry point to process time zone offset.
+
+DDAATTAA
+    LLooccaallOOffffsseett = None
+    LLooccaallTTiimmeeZZoonnee = None
+
+FFIILLEE
+    /Users/emvaldes/.repos/devops/workflows/lib/timezone_localoffset.py
+
+

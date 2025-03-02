@@ -1,0 +1,99 @@
+### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/parsing_userinput.py
+
+Python Library Documentation: module lib.parsing_userinput in lib
+
+NNAAMMEE
+    lib.parsing_userinput - File Path: ./lib/parsing_userinput.py
+
+DDEESSCCRRIIPPTTIIOONN
+    Description:
+
+    User Input Collection and Interactive Prompts
+
+    This module ensures all required runtime parameters are provided by prompting users interactively.
+    It dynamically loads argument configurations, identifies missing variables, and sets
+    environment variables accordingly.
+
+    Core Features:
+
+    - **Interactive Input Requests**: Prompts users for required input dynamically.
+    - **Configuration-Based Prompts**: Loads argument configurations from a JSON file.
+    - **Environment Variable Management**: Updates system environment variables at runtime.
+    - **Error Handling**: Ensures non-interactive environments exit safely with meaningful errors.
+
+    Primary Functions:
+
+    - `request_input(prompt, required, default)`: Prompts the user for input with validation.
+    - `user_interview(arguments_config, missing_vars)`: Collects missing required variables.
+    - `parse_and_collect_user_inputs(arguments_config_path, required_runtime_vars)`: Loads and processes required user inputs.
+
+    Expected Behavior:
+
+    - If running in a **non-interactive** environment, required parameters must be set beforehand.
+    - **Missing parameters trigger interactive prompts**, unless running in automation mode.
+    - If a configuration file is missing, an **error is logged and execution stops**.
+
+    Dependencies:
+
+    - `json`, `os`, `logging`
+
+    Usage:
+
+    To collect required user input:
+    > python parsing_userinput.py
+
+FFUUNNCCTTIIOONNSS
+    ppaarrssee__aanndd__ccoolllleecctt__uusseerr__iinnppuuttss(
+        arguments_config_path: str,
+        required_runtime_vars: list
+    ) -> dict
+        Load argument configuration, identify missing variables, and prompt the user.
+
+        Reads structured argument definitions from a JSON file, checks for missing
+        environment variables, and interacts with the user if required.
+
+        Args:
+            arguments_config_path (str): Path to the JSON configuration file.
+            required_runtime_vars (list): List of required runtime variables.
+
+        Raises:
+            FileNotFoundError: If the argument configuration file is missing.
+
+        Returns:
+            dict: A dictionary of user-provided environment variable values.
+
+    rreeqquueesstt__iinnppuutt(prompt: str, required: bool = True, default: str = None) -> str
+        Prompt the user for input with an optional default value.
+
+        This function requests input from the user in an interactive session. If running
+        in a non-interactive environment, it logs an error and exits.
+
+        Args:
+            prompt (str): The message displayed to the user.
+            required (bool, optional): Whether the input is mandatory. Defaults to True.
+            default (str, optional): The default value if no input is provided. Defaults to None.
+
+        Raises:
+            SystemExit: If required input is missing in a non-interactive environment.
+            KeyboardInterrupt: If the user manually interrupts input.
+
+        Returns:
+            str: The user-provided input or the default value.
+
+    uusseerr__iinntteerrvviieeww(arguments_config: dict, missing_vars: list) -> dict
+        Collect required user input for missing environment variables.
+
+        Iterates through the list of missing environment variables and prompts the user
+        for their values based on the argument configuration.
+
+        Args:
+            arguments_config (dict): Dictionary containing argument configurations.
+            missing_vars (list): List of required variables that are missing.
+
+        Returns:
+            dict: A dictionary mapping missing variable names to user-provided values.
+
+FFIILLEE
+    /Users/emvaldes/.repos/devops/workflows/lib/parsing_userinput.py
+
+

@@ -1,0 +1,44 @@
+### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/manage_accesstoken.py
+
+Python Library Documentation: module lib.manage_accesstoken in lib
+
+NNAAMMEE
+    lib.manage_accesstoken - File Path: ./lib/manage_accesstoken.py
+
+DDEESSCCRRIIPPTTIIOONN
+    Description:
+
+    Azure Access Token Manager
+
+    This module handles Azure authentication and manages access token expiration.
+    It ensures that tokens remain valid for API requests and integrates with timezone
+    handling for better session tracking.
+
+    Features:
+
+    - Retrieves and checks Azure access token expiration.
+    - Integrates with local timezone offset detection.
+    - Provides a command-line interface for session and token management.
+
+    This module ensures that the framework maintains valid authentication tokens
+    and properly handles session expiration.
+
+    Dependencies:
+
+    - accesstoken_expiration
+    - timezone_localoffset
+    - argument_parser
+
+    Usage:
+
+    To manage Azure session and token expiration:
+    > python manage_accesstoken.py --debug ;
+
+FFUUNNCCTTIIOONNSS
+    mmaannaaggee__aacccceessssttookkeenn()
+        Manages Azure authentication and session expiration handling.
+
+FFIILLEE
+    /Users/emvaldes/.repos/devops/workflows/lib/manage_accesstoken.py
+
+

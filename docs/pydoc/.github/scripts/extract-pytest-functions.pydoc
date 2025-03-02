@@ -1,0 +1,6 @@
+### Documentation for /Users/emvaldes/.repos/devops/workflows/.github/scripts/extract-pytest-functions.py
+
+pydoc
+Problem generating pydoc: No Python documentation found for '.github.scripts.extract-pytest-functions'.
+Use help() to get the interactive help utility.
+Use help(str) for help on the str class.
