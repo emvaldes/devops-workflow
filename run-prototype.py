@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-## File: ./run.py
-## Version: 0.0.2
+# File: ./run.py
+# Version: 0.0.5
 
 """
 File Path: ./run.py
@@ -94,17 +94,21 @@ def generate_pydoc(file_path, doc_path):
 
         print(f"Created an empty .pydoc file due to an error for {file_path}")
 
-def scan_and_generate_docs(path_to_scan, package_name):
+def scan_and_generate_docs(path_to_scan, base_doc_dir):
     """Scan the project directory and generate documentation for all Python files."""
-    doc_base = create_doc_structure(path_to_scan, package_name)
-
     # Walk through the directory and process Python files
     for root, dirs, files in os.walk(path_to_scan):
         py_files = [f for f in files if f.endswith(".py") and f not in ["__init__.py", "__main__.py"]]
 
         for py_file in py_files:
+            # Construct relative path for the module, which will be used for the doc structure
+            relative_dir = os.path.relpath(root, path_to_scan)
+
+            # Create the directory for the pydoc files
+            doc_dir = create_doc_structure(base_doc_dir, relative_dir)
+
             file_path = os.path.join(root, py_file)
-            generate_pydoc(file_path, doc_base)
+            generate_pydoc(file_path, doc_dir)
 
 def main():
     """Main function for handling user input and generating documentation."""
@@ -119,32 +123,28 @@ def main():
     # Generate documentation if --pydoc flag is passed
     if args.pydoc:
 
-        # if not args.target:
-        #     print("Error: The --target parameter must be specified with --pydoc.")
-        #     sys.exit(1)
-        #
-        # project_path = args.target
-        project_path = os.getcwd()
+        project_path = os.getcwd()  # Use current directory as the base for scanning
 
         if not os.path.isdir(project_path):
             print(f"Error: {project_path} is not a valid directory.")
             sys.exit(1)
 
-        package_name = os.path.basename(project_path)
+        # Base documentation folder should be 'docs/pydoc'
+        base_doc_dir = os.path.join(project_path, 'docs', 'pydoc')
 
         print(f"Generating documentation for the project at {project_path}...")
-        scan_and_generate_docs(project_path, package_name)
+        scan_and_generate_docs(project_path, base_doc_dir)
         print("Documentation generation completed successfully.")
         return
 
     # If --target flag is passed, execute the specified Package/Module or Script
     if args.target:
-        print(f"Running package/module {args.target}...")
+        print(f"Running Package/Module {args.target}...")
         subprocess.run([sys.executable, '-m', args.target])
         return
 
     # If no flags, print a basic message
-    print("No flags provided. Use --pydoc to generate documentation or --target to run a module.")
+    print("No flags provided. Use --pydoc to generate documentation or --target to run a Package/Module or Script.")
     return
 
 if __name__ == "__main__":

@@ -1,9 +1,0 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/setup.py
-
-pydoc
-Problem generating pydoc: problem in packages.appflow_tracer.setup - SystemExit: usage: run-prototype.py [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]
-   or: run-prototype.py --help [cmd1 cmd2 ...]
-   or: run-prototype.py --help-commands
-   or: run-prototype.py cmd --help
-
-error: option --pydoc not recognized
