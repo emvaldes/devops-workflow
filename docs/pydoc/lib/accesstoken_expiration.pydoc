@@ -1,0 +1,56 @@
+### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/accesstoken_expiration.py
+
+Python Library Documentation: module lib.accesstoken_expiration in lib
+
+NNAAMMEE
+    lib.accesstoken_expiration - File Path: ./lib/accesstoken_expiration.py
+
+DDEESSCCRRIIPPTTIIOONN
+    Description:
+
+    Azure Access Token Expiration Manager
+    This module handles retrieving and managing Azure access tokens.
+    It utilizes the `azure.identity` package to fetch tokens and determines expiration details.
+
+    Features:
+
+    - Fetches an Azure access token using `InteractiveBrowserCredential`
+    - Extracts and prints token expiration details
+    - Calculates remaining time before token expiration
+    - Provides a command-line interface for debugging token validity
+
+    This script is primarily used within the framework for handling authentication and ensuring
+    Azure API requests have valid credentials.
+
+    Dependencies:
+
+    - azure-identity
+    - azure-core
+
+    Usage:
+
+    Run this script to retrieve the token and check its expiration details:
+    > python accesstoken_expiration.py --debug ;
+
+FFUUNNCCTTIIOONNSS
+    ggeett__aacccceessss__ttookkeenn()
+        Fetches the Azure access token using Python SDK.
+
+    mmaaiinn(debug=False)
+        Main entry point to process token expiration.
+
+    pprriinntt__rreemmaaiinniinngg__ttiimmee()
+        Print the remaining time until token expiration.
+
+    pprriinntt__ttookkeenn__eexxppiirraattiioonn(debug=False)
+        Prints the expiration time and handles errors gracefully.
+
+DDAATTAA
+    AAcccceessssTTookkeenn = None
+    TTookkeennEExxppiirraattiioonn = None
+    TTookkeennSSccooppee = 'https://management.azure.com/'
+
+FFIILLEE
+    /Users/emvaldes/.repos/devops/workflows/lib/accesstoken_expiration.py
+
+

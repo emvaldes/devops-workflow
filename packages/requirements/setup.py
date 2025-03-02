@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="appflow-tracer.tracing",  # Package name for pip install
-    version="1.0.0",
+    name="requirements.dependencies",  # Package name for pip install
+    version="0.1.0",
     author="Eduardo Valdes",
     author_email="emvaldes@hotmail.com",
-    description="Structured Tracer/Tracing for Python applications",
+    description="Structured Dependencies/Requirements for Python applications",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/emvaldes/devops-workflow",

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: ./run.py
-# Version: 0.0.5
+# Version: 0.0.7
 
 """
 File Path: ./run.py
@@ -81,14 +81,14 @@ def generate_pydoc(file_path, doc_path):
 
     try:
 
-        # # Run pydoc through subprocess to avoid manual parsing issues
-        # command = ['python', '-m', 'pydoc', absolute_file_path]
-        # pydoc_output = subprocess.check_output(command, stderr=subprocess.STDOUT, text=True)
+        # Run pydoc through subprocess to avoid manual parsing issues
+        command = ['python', '-m', 'pydoc', absolute_file_path]
+        pydoc_output = subprocess.check_output(command, stderr=subprocess.STDOUT, text=True)
 
-        # If the file is inside a package, convert the file path into a module path
-        module_name = absolute_file_path.replace(os.getcwd() + os.sep, "").replace(os.sep, ".").replace(".py", "")
-        # Use pydoc to get the documentation for the module
-        pydoc_output = pydoc.render_doc(module_name)
+        # # If the file is inside a package, convert the file path into a module path
+        # module_name = absolute_file_path.replace(os.getcwd() + os.sep, "").replace(os.sep, ".").replace(".py", "")
+        # # Use pydoc to get the documentation for the module
+        # pydoc_output = pydoc.render_doc(module_name)
 
         # Write the pydoc output to the .pydoc file
         with open(doc_file_path, "w", encoding="utf-8") as doc_file:

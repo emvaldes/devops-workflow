@@ -1,0 +1,93 @@
+### Documentation for /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/lib/serialize_utils.py
+
+Python Library Documentation: module packages.appflow_tracer.lib.serialize_utils in packages.appflow_tracer.lib
+
+NNAAMMEE
+    packages.appflow_tracer.lib.serialize_utils - File Path: packages/appflow_tracer/lib/serialize_utils.py
+
+DDEESSCCRRIIPPTTIIOONN
+    Description:
+
+    Serialization and String Sanitization Utilities
+
+    This module provides helper functions for data serialization and
+    code sanitization, ensuring JSON compatibility and clean parsing.
+
+    Core Features:
+
+    - **Safe Serialization**: Converts Python objects to JSON-friendly formats.
+    - **String Sanitization**: Cleans and trims code strings while removing comments.
+
+    Primary Functions:
+
+    - `safe_serialize(data, verbose)`: Ensures serializable JSON output.
+    - `sanitize_token_string(line)`: Removes inline comments from a code string.
+
+    Expected Behavior:
+
+    - `safe_serialize()` should gracefully handle non-serializable objects.
+    - `sanitize_token_string()` should remove comments and preserve meaningful text.
+
+    Dependencies:
+
+    - `json`, `tokenize`, `StringIO` (for text processing)
+
+    Usage:
+
+    To safely serialize a Python object:
+    > safe_serialize(data={"key": "value"}, configs=CONFIGS)
+
+    To remove comments from a line of code:
+    > sanitize_token_string(data="some_code()  # this is a comment", configs=CONFIGS)
+
+FFUUNNCCTTIIOONNSS
+    ssaaffee__sseerriiaalliizzee(
+        data: <built-in function any>,
+        configs: dict,
+        verbose: bool = False
+    ) -> dict
+        Convert Python objects into a JSON-compatible serialized string with metadata.
+
+        This function ensures that data is properly serialized into a JSON string format.
+        If an object is not serializable, it attempts to extract its attributes or provide
+        meaningful information instead of just a memory address.
+
+        Args:
+            data (any): The Python object to serialize.
+            verbose (bool, optional): If True, the JSON output is formatted with indentation.
+
+        Returns:
+            dict: A structured response containing serialization results.
+
+        Example:
+            >>> safe_serialize({"key": "value"}, configs=configs)
+            {"success": True, "serialized": '{"key": "value"}', "type": "dict"}
+
+            >>> safe_serialize(object(), configs=configs)
+            {"success": False, "serialized": "[Unserializable data]", "type": "object", "error": "TypeError"}
+
+    ssaanniittiizzee__ttookkeenn__ssttrriinngg(line: str) -> str
+        Remove trailing comments and excess whitespace from a line of code.
+
+        Args:
+            line (str): A single line of text that may contain comments and extra spaces.
+
+        Returns:
+            str: The sanitized version of the input line, with comments and
+            unnecessary whitespace removed.
+
+        Example:
+            >>> sanitize_token_string("some_code()  # this is a comment")
+            "some_code()"
+
+            >>> sanitize_token_string("   another_line   ")
+            "another_line"
+
+DDAATTAA
+    ccaatteeggoorryy = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
+    ddeeffaauulltt__iinnddeenntt = 4
+
+FFIILLEE
+    /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/lib/serialize_utils.py
+
+

@@ -3,9 +3,9 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "appflow-tracer.tracing"
+name = "requirements.dependencies"
 version = "1.0.0"
-description = "Structured Tracer/Tracing for Python applications"
+description = "Structured Dependencies/Requirements for Python applications"
 readme = "README.md"
 authors = [{ name = "Eduardo Valdes", email = "emvaldes@hotmail.com" }]
 license = { file = "LICENSE" }

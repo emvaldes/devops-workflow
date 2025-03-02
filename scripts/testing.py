@@ -41,13 +41,15 @@ import logging
 from pathlib import Path
 
 # Add the project root to sys.path
-project_root = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(project_root))
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
 
+from lib import system_variables as environment
 from packages.appflow_tracer import tracing
-from lib.system_variables import (
-    project_root,
-    default_indent
+
+# Import trace_utils from packages.appflow_tracer.lib.*_utils
+from packages.appflow_tracer.lib import (
+    log_utils
 )
 
 def main() -> None:
@@ -80,9 +82,13 @@ def main() -> None:
     global LOGGING, CONFIGS, logger  # Ensure CONFIGS is globally accessible
 
     CONFIGS = tracing.setup_logging(events=["call", "return"])
-    # print(f'CONFIGS: {json.dumps(CONFIGS, indent=default_indent)}')
+    # print(f'CONFIGS: {json.dumps(CONFIGS, indent=environment.default_indent)}')
 
-    print("I am a stand-alone script minding my own business")
+    log_utils.log_message(
+        f'I am a stand-alone script minding my own business',
+        environment.category.debug.id,
+        configs=CONFIGS
+    )
 
 if __name__ == "__main__":
     main()

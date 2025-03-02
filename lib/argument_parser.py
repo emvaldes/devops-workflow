@@ -78,7 +78,9 @@ def load_argument_config() -> dict:
                 raise ValueError(f'ERROR: Empty JSON file "{system_params_filepath}". Please check the contents.')
             return data
     except json.JSONDecodeError as e:
-        raise ValueError(f'ERROR: Invalid JSON structure in "{system_params_filepath}".\nDetails: {e}'")
+        raise ValueError(
+            f'ERROR: Invalid JSON structure in "{system_params_filepath}".\nDetails: {e}'
+        )
     except Exception as e:
         raise RuntimeError(f'ERROR: Unable to read "{system_params_filepath}". Details: {e}')
 

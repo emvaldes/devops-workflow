@@ -1,0 +1,64 @@
+### Documentation for /Users/emvaldes/.repos/devops/workflows/run-prototype.py
+
+Python Library Documentation: module run-prototype
+
+NNAAMMEE
+    run-prototype - File Path: ./run.py
+
+DDEESSCCRRIIPPTTIIOONN
+    Description:
+
+    Main Execution Entry Point for the Framework
+
+    This script acts as the launcher for the framework, ensuring that system configurations,
+    dependencies, and user privileges are validated before execution.
+
+    Features:
+
+    - Executes the requested module/script to perform system validation and setup.
+    - Ensures all required dependencies and configurations are initialized.
+    - Provides a single-command entry point for launching the framework.
+    - Integrates functionality for generating documentation for Python files in a specific path.
+    - Allows running an arbitrary Python module.
+
+    Expected Behavior:
+
+    - This script **must be run from the project root**.
+    - Any errors encountered in the execution will be printed to the console.
+    - The script automatically terminates if critical dependencies are missing.
+    - If the --pydoc flag is passed, it generates documentation for the specified Python files.
+    - If the --target flag is passed, it executes the specified Python module.
+
+    Dependencies:
+
+    - subprocess (used to execute arbitrary scripts/modules)
+    - argparse (used to handle command-line arguments)
+
+    Usage:
+
+    To start the framework:
+    > python run.py
+
+    To generate documentation:
+    > python run.py --pydoc
+
+    To run an arbitrary Python Package/Module/Script:
+    > python run.py --target <module_name>
+
+FFUUNNCCTTIIOONNSS
+    ccrreeaattee__ddoocc__ssttrruuccttuurree(base_path, package_name)
+        Create the doc structure for the given package under the 'docs/pydoc' directory.
+
+    ggeenneerraattee__ppyyddoocc(file_path, doc_path)
+        Generate documentation for a given Python file using pydoc.
+
+    mmaaiinn()
+        Main function for handling user input and generating documentation.
+
+    ssccaann__aanndd__ggeenneerraattee__ddooccss(path_to_scan, base_doc_dir)
+        Scan the project directory and generate documentation for all Python files.
+
+FFIILLEE
+    /Users/emvaldes/.repos/devops/workflows/run-prototype.py
+
+
