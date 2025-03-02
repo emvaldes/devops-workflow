@@ -1,0 +1,73 @@
+### Documentation for /Users/emvaldes/.repos/devops/workflows/scripts/testing.py
+
+pydoc
+Python Library Documentation: module scripts.testing in scripts
+
+NNAAMMEE
+    scripts.testing - File Path: ./scripts/testing.py
+
+DDEESSCCRRIIPPTTIIOONN
+    Description:
+
+    Standalone Testing Script for Framework Logging
+
+    This script serves as a test module to verify logging and tracing capabilities.
+    It initializes structured logging via `packages.appflow_tracer.tracing`,
+    prints configuration details, and runs a simple test output.
+
+    Features:
+
+    - Configures logging using `tracing.setup_logging()`.
+    - Prints the loaded logging configuration in JSON format.
+    - Serves as a standalone script that can be run independently.
+
+    Expected Behavior:
+
+    - The script prints the structured logging configuration.
+    - Demonstrates logging setup and verification for debugging purposes.
+    - Can be used as a simple test script for logging functionality.
+
+    Dependencies:
+
+    - `packages.appflow_tracer.tracing` (for structured logging)
+    - `sys`, `json`, `logging`, `pathlib` (for system interaction and logging setup)
+
+    Usage:
+
+    To execute the test:
+    > python scripts/testing.py
+
+FFUUNNCCTTIIOONNSS
+    mmaaiinn() -> None
+        Execute a standalone test to verify the structured logging system.
+
+        This function:
+        - Configures logging using `tracing.setup_logging()`.
+        - Prints the loaded logging configuration in JSON format.
+        - Displays a test output message.
+
+        Expected Behavior:
+        - The script prints structured logging configuration details.
+        - Demonstrates the integration of logging setup in a simple, standalone script.
+
+        Raises:
+            Exception: If an error occurs during logging setup.
+
+        Returns:
+            None
+
+        Example:
+            >>> python scripts/testing.py
+            CONFIGS: {
+                "logging": { ... }
+            }
+            I am a stand-alone script minding my own business.
+
+DDAATTAA
+    ddeeffaauulltt__iinnddeenntt = 4
+    pprroojjeecctt__rroooott = PosixPath('/Users/emvaldes/.repos/devops/workflows')
+
+FFIILLEE
+    /Users/emvaldes/.repos/devops/workflows/scripts/testing.py
+
+

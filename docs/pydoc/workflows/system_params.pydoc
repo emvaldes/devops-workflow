@@ -1,0 +1,93 @@
+### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/system_params.py
+
+pydoc
+Python Library Documentation: module lib.system_params in lib
+
+NNAAMMEE
+    lib.system_params - File Path: ./lib/system_params.py
+
+DDEESSCCRRIIPPTTIIOONN
+    Description:
+
+    System Parameter Management
+
+    This module handles system-wide parameter management by loading runtime
+    parameters from JSON configuration files and merging them with environment variables.
+
+    Core Features:
+
+    - **Configuration Loading**: Reads parameters from `runtime-params.json`, `project-params.json`, and `default-params.json`.
+    - **Environment Variable Management**: Dynamically sets system-wide environment variables.
+    - **Validation and Error Handling**: Ensures required parameters are initialized before execution.
+
+    Primary Functions:
+
+    - `load_json_config(filepath)`: Reads and validates JSON configuration files.
+    - `get_runtime_variable(name, required)`: Retrieves an environment variable safely.
+    - `configure_params()`: Merges and validates runtime parameters.
+
+    Expected Behavior:
+
+    - If a required environment variable is missing, an error is logged.
+    - JSON files must be well-formed; otherwise, an error is raised.
+    - All system parameters are loaded dynamically before execution.
+
+    Dependencies:
+
+    - `os`, `json`, `logging`, `dotenv`, `pathlib`
+    - `lib.configure_params` (for JSON merging and validation)
+
+    Usage:
+
+    To load and initialize system parameters:
+    > python system_params.py
+
+FFUUNNCCTTIIOONNSS
+    ggeett__rruunnttiimmee__vvaarriiaabbllee(name: str, required: bool = False) -> str
+        Retrieve an environment variable safely, handling missing or empty values.
+
+        This function fetches an environment variable and logs a warning if a required
+        variable is missing or empty.
+
+        Args:
+            name (str): The name of the environment variable to retrieve.
+            required (bool, optional): Whether the variable is mandatory. Defaults to False.
+
+        Raises:
+            RuntimeError: If there is an issue retrieving the environment variable.
+
+        Returns:
+            str: The value of the environment variable, or None if it is missing.
+
+    llooaadd__jjssoonn__ccoonnffiigg(runtime_params_filepath: pathlib._local.Path) -> dict
+        Load environment variables from a JSON configuration file.
+
+        Reads a JSON file and ensures its structure is valid before returning
+        the parsed contents.
+
+        Args:
+            runtime_params_filepath (Path): The file path of the JSON configuration file.
+
+        Raises:
+            ValueError: If the JSON file is empty or has an invalid structure.
+            RuntimeError: If the file cannot be read.
+
+        Returns:
+            dict: The parsed JSON data containing system parameters.
+
+DDAATTAA
+    RRUUNNTTIIMMEE__PPAARRAAMMSS = {'defaults': {'options': {'auto': 'False', 'debug': '...
+    SSYYSSTTEEMM__PPAARRAAMMSS = {'defaults': {'options': {'auto': {'default': False, '...
+    ddeeffaauulltt__ppaarraammss__ffiilleeppaatthh = PosixPath('/Users/emvaldes/.repos/devops/wor...
+    ffiillee = <_io.TextIOWrapper name='/Users/emvaldes/.repos/...s/runtime-pa...
+    pprroojjeecctt__ppaarraammss__ffiilleeppaatthh = PosixPath('/Users/emvaldes/.repos/devops/wor...
+    pprroojjeecctt__rroooott = PosixPath('/Users/emvaldes/.repos/devops/workflows')
+    rruunnttiimmee__ppaarraammss__ffiilleennaammee = 'runtime-params.json'
+    rruunnttiimmee__ppaarraammss__ffiilleeppaatthh = PosixPath('/Users/emvaldes/.repos/devops/wor...
+    ssyysstteemm__ppaarraammss__ffiilleeppaatthh = PosixPath('/Users/emvaldes/.repos/devops/work...
+    ssyysstteemm__ppaarraammss__lliissttiinngg = [PosixPath('/Users/emvaldes/.repos/devops/work...
+
+FFIILLEE
+    /Users/emvaldes/.repos/devops/workflows/lib/system_params.py
+
+

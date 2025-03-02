@@ -1,0 +1,97 @@
+### Documentation for /Users/emvaldes/.repos/devops/workflows/packages/requirements/dependencies.py
+
+pydoc
+Python Library Documentation: module packages.requirements.dependencies in packages.requirements
+
+NNAAMMEE
+    packages.requirements.dependencies
+
+FFUUNNCCTTIIOONNSS
+    ggeett__iinnssttaalllleedd__vveerrssiioonn(package: str) -> Optional[str]
+        Return the installed version of a package, first checking Pip, then Brew.
+
+    iinnssttaallll__oorr__uuppddaattee__ppaacckkaaggee(
+        package: str,
+        version: str = None,
+        configs: dict = None
+    )
+        Install or update a package using Brew (if available) or Pip.
+
+        - If Brew is available, try installing/upgrading via Brew.
+        - If the package isn't found in Brew, fall back to Pip.
+        - If the package exists but is outdated, attempt an upgrade.
+
+    iinnssttaallll__rreeqquuiirreemmeennttss(requirements_file: str, configs: dict) -> None
+        Verify required dependencies from a JSON requirements file.
+
+    iiss__bbrreeww__aavvaaiillaabbllee() -> bool
+        Check if Homebrew is available on macOS.
+
+    iiss__ppaacckkaaggee__iinnssttaalllleedd(package: str, version_info: dict, configs: dict) -> bool
+
+    llooaadd__rreeqquuiirreemmeennttss(requirements_file: str, configs: dict) -> list
+
+    mmaaiinn() -> None
+
+    ppaarrssee__aarrgguummeennttss() -> argparse.Namespace
+        Parse command-line arguments for specifying the requirements file
+        and displaying the installed dependencies.
+
+        Returns:
+            argparse.Namespace: The parsed arguments object containing selected options.
+
+    pprriinntt__iinnssttaalllleedd__ppaacckkaaggeess(config_filepath: str, configs: dict) -> None
+        Print the installed dependencies in a readable format.
+
+        Args:
+            config_filepath (str): Path to the installed.json file.
+
+        Returns:
+            None
+
+    uuppddaattee__iinnssttaalllleedd__ppaacckkaaggeess(
+        requirements_file: str,
+        config_filepath: str,
+        configs: dict
+    ) -> None
+
+DDAATTAA
+    CCOONNFFIIGGSS = {'colors': {'CALL': '\x1b[92m', 'CRITICAL': '\x1b[41m', 'DEB...
+    LLIIBB__DDIIRR = PosixPath('/Users/emvaldes/.repos/devops/workflows/lib')
+    OOppttiioonnaall = typing.Optional
+        Optional[X] is equivalent to Union[X, None].
+
+    UUnniioonn = typing.Union
+        Union type; Union[X, Y] means either X or Y.
+
+        On Python 3.10 and higher, the | operator
+        can also be used to denote unions;
+        X | Y means the same thing to the type checker as Union[X, Y].
+
+        To define a union, use e.g. Union[int, str]. Details:
+        - The arguments must be types and there must be at least one.
+        - None as an argument is a special case and is replaced by
+          type(None).
+        - Unions of unions are flattened, e.g.::
+
+            assert Union[Union[int, str], float] == Union[int, str, float]
+
+        - Unions of a single argument vanish, e.g.::
+
+            assert Union[int] == int  # The constructor actually returns int
+
+        - Redundant arguments are skipped, e.g.::
+
+            assert Union[int, str, int] == Union[int, str]
+
+        - When comparing unions, the argument order is ignored, e.g.::
+
+            assert Union[int, str] == Union[str, int]
+
+        - You cannot subclass or instantiate a union.
+        - You can use Optional[X] as a shorthand for Union[X, None].
+
+FFIILLEE
+    /Users/emvaldes/.repos/devops/workflows/packages/requirements/dependencies.py
+
+

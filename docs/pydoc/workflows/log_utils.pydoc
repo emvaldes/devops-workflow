@@ -1,0 +1,143 @@
+### Documentation for /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/lib/log_utils.py
+
+pydoc
+Python Library Documentation: module packages.appflow_tracer.lib.log_utils in packages.appflow_tracer.lib
+
+NNAAMMEE
+    packages.appflow_tracer.lib.log_utils - File Path: packages/appflow_tracer/lib/log_utils.py
+
+DDEESSCCRRIIPPTTIIOONN
+    Description:
+
+    Structured Logging Utilities
+
+    This module provides structured logging functionality, enabling detailed
+    logging to both console and log files. It supports logging levels,
+    custom formats, and structured data output.
+
+    Core Features:
+
+    - **Structured Log Messages**: Formats logs in a consistent manner.
+    - **Console and File Logging**: Sends logs to both console and files.
+    - **Custom Log Levels**: Supports INFO, WARNING, ERROR, DEBUG, etc.
+    - **ANSI Color Support**: Enables colored output for console logs.
+
+    Primary Functions:
+
+    - `log_message(message, log_category, json_data, serialize_json, configs, handler)`:
+      Handles structured logging and directs output to the appropriate destination.
+    - `output_logfile(logger, message, json_data)`: Writes logs to a structured log file.
+    - `output_console(message, log_category, json_data, configs)`: Displays formatted logs in the console.
+
+    Expected Behavior:
+
+    - Logs are written to both the console and log files based on configuration settings.
+    - JSON data is formatted properly if included in log messages.
+    - Log categories map to appropriate logging levels (INFO, DEBUG, ERROR, etc.).
+
+    Dependencies:
+
+    - `json`, `logging`, `datetime`
+    - `CONFIGS` (global configuration dictionary, must be available)
+    - `file_utils` (for log file management)
+
+    Usage:
+
+    To log a structured message:
+    > log_message("This is a log entry", category.info.id, json_data={"key": "value"})
+
+    To log a message with a warning level:
+    > log_message("Something might be wrong", category.warning.id)
+
+FFUUNNCCTTIIOONNSS
+    lloogg__mmeessssaaggee(
+        message: str,
+        log_category: str = 'INFO',
+        json_data: dict = None,
+        serialize_json: bool = False,
+        configs: dict = None,
+        handler: logging.Logger = None
+    ) -> None
+        Log a structured message with optional JSON data to both console and log files.
+
+        This function supports multiple log levels, formats messages in a structured manner,
+        and appends additional structured JSON data if provided. The behavior is influenced
+        by global configurations, such as whether logs should be written to a file or displayed
+        on the console.
+
+        Args:
+            message (str): The main log message.
+            log_category (str, optional): The log level/log_category. e.g.:
+                category.info.id, category.warning.id, category.error.id but defaults to category.info.id.
+            json_data (dict, optional): Additional structured JSON data to log.
+            serialize_json (bool, optional): If True, the `json_data` is serialized into a JSON string.
+            configs (dict, optional): Configuration dictionary. Defaults to global `CONFIGS` if not provided.
+            handler (logging.Logger, optional): The specific logger instance to use. Defaults to the global logger.
+
+        Returns:
+            None
+
+        Example:
+            >>> log_message("This is an info message")
+            >>> log_message("This is a warning", category.warning.id)
+            >>> log_message("Structured log", json_data={"key": "value"})
+
+    oouuttppuutt__ccoonnssoollee(
+        message: str,
+        log_category: str,
+        json_data: dict = None,
+        configs: dict = None
+    ) -> None
+        Display a structured log message in the console with optional ANSI color formatting.
+
+        This function formats the given message according to the specified logging log-category
+        and appends structured JSON data if provided. ANSI color codes are applied based on
+        the logging configuration.
+
+        Args:
+            message (str): The main message to display.
+            log_category (str): The logging log_category. e.g.:
+                category.info.id, category.warning.id, category.error.id
+            json_data (dict, optional): Additional structured JSON data for output.
+            configs (dict, optional): Configuration dictionary for colors and formatting.
+
+        Returns:
+            None
+
+        Example:
+            >>> output_console("This is an info message", category.info.id)
+            >>> output_console("This is a warning", category.warning.id, {"details": "some data"})
+
+    oouuttppuutt__llooggffiillee(
+        logger: logging.Logger,
+        message: str,
+        log_category: str = 'INFO',
+        json_data: dict = None
+    ) -> None
+        Write a structured log message to a log file.
+
+        This function appends the formatted log message to a log file associated with the
+        given logger. If structured data (`json_data`) is provided, it is included in the
+        log entry.
+
+        Args:
+            logger (logging.Logger): The logger instance used for writing logs.
+            message (str): The log message text.
+            json_data (dict, optional): Additional structured JSON data for the log entry.
+
+        Returns:
+            None
+
+        Example:
+            >>> logger = logging.getLogger("example_logger")
+            >>> output_logfile(logger, "This is a log message", {"extra_key": "value"})
+
+DDAATTAA
+    ccaatteeggoorryy = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
+    ddeeffaauulltt__iinnddeenntt = 4
+    lloogg__lleevveellss = {'CALL': 20, 'CRITICAL': 50, 'DEBUG': 10, 'ERROR': 40, 'I...
+
+FFIILLEE
+    /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/lib/log_utils.py
+
+

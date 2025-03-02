@@ -165,16 +165,20 @@ try:
     # if not isinstance(RUNTIME_PARAMS, dict) or not all(isinstance(RUNTIME_PARAMS.get(section, {}), dict) for section in RUNTIME_PARAMS):
     #     logging.critical("ERROR: configure_params() did not return a dictionary with expected sections.")
     #     sys.exit(1)
-    # Extract runtime variables dynamically
-    SECTIONS_VARS = {
-        section: {
-            key: value.get("default")
-            for key, value in section_data.get("options", {}).items()
+    # Check if the RUNTIME_PARAMS object is empty or missing expected keys before proceeding
+    if not RUNTIME_PARAMS or not isinstance(RUNTIME_PARAMS, dict):
+        logging.warning("WARNING: RUNTIME_PARAMS is empty or not structured as expected, skipping further processing.")
+    else:
+        # Extract runtime variables dynamically
+        SECTIONS_VARS = {
+            section: {
+                key: value.get("default")
+                for key, value in section_data.get("options", {}).items()
+            }
+            for section, section_data in RUNTIME_PARAMS.items()
         }
-        for section, section_data in RUNTIME_PARAMS.items()
-    }
-    print( f'Sections Vars type:', type(SECTIONS_VARS))
-    print( f'Section Vars: {SECTIONS_VARS}' )
+        print( f'Sections Vars type:', type(SECTIONS_VARS))
+        print( f'Section Vars: {SECTIONS_VARS}' )
 
     # # Set environment variables for all sections
     # for section_name, section_vars in SECTIONS_VARS.items():
