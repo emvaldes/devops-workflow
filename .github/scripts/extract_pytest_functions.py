@@ -1,12 +1,63 @@
 #!/usr/bin/env python3
 
-## File: .github/scripts/extract-pytest-functions.py
+## File: .github/scripts/extract_pytest_functions.py
 ## Version: 0.0.1
+
+"""
+File Path: .github/scripts/extract_pytest_functions.py
+
+Description:
+
+PyTest Function Extractor
+
+This module scans a list of pytest test files and extracts function names that match the pytest naming convention.
+It saves the extracted function names into a structured JSON file for further processing.
+
+Core Features:
+
+- **Automatic PyTest Function Discovery**: Extracts function names that start with `test_`.
+- **Structured Output**: Saves extracted function names in JSON format.
+- **File Validation**: Ensures that all input test files exist before processing.
+- **Error Handling**: Logs warnings for missing or unreadable files instead of failing abruptly.
+- **JSON Integrity Check**: Validates the output JSON file after writing.
+
+Primary Functions:
+
+- `extract_pytest_functions(pytest_listing, pytest_mapping)`: Reads and processes pytest files.
+- `validate_json_output(pytest_mapping)`: Ensures the JSON file exists and follows the expected structure.
+
+Expected Behavior:
+
+- If an input file is missing, a warning is displayed, but execution continues.
+- If no valid test functions are found, an error message is logged.
+- JSON output is validated to prevent incorrect or malformed results.
+- The script exits with an appropriate status code based on the success or failure of extraction.
+
+Dependencies:
+
+- `re` (for regex-based function extraction)
+- `json` (for structured output)
+- `sys`, `os` (for file and argument handling)
+
+Usage:
+
+To extract pytest function names from a JSON list of test files and save them to an output JSON file:
+> python .github/scripts/extract_pytest_functions.py '<pytest_listing>' '<pytest_mapping>'
+
+Example:
+> python .github/scripts/extract_pytest_functions.py '["test_example.py"]' "pytest_functions.json"
+
+"""
 
 import re
 import json
 import sys
 import os
+
+from pathlib import Path
+
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 script_name = os.path.basename( __file__ )
 

@@ -34,13 +34,21 @@ To manage Azure session and token expiration:
 
 import sys
 
-from timezone_localoffset import get_local_offset
+from pathlib import Path
+
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from lib.timezone_localoffset import (
+    get_local_offset
+)
+
 from lib import system_params
-from argument_parser import parse_arguments
+from lib.argument_parser import parse_arguments
+from lib.accesstoken_expiration import print_token_expiration
 
 def manage_accesstoken():
     """Manages Azure authentication and session expiration handling."""
-    from accesstoken_expiration import print_token_expiration
     try:
         print_token_expiration( globals.DEBUG_MODE )
         get_local_offset( globals.DEBUG_MODE )

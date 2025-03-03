@@ -1,12 +1,13 @@
 .DS_Store
 
 .legacy
+*--legacy.*
+
 .outputs
 .project
-.prototype
 
-*--legacy.yaml
-*--prototype.yaml
+# .prototypes
+# *--prototype.*
 
 ## Ignore dynamically created installed.json
 packages/requirements/installed.json

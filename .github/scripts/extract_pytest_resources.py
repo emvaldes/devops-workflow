@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-## File: .github/scripts/extract-pytest-resources.py
+## File: .github/scripts/extract_pytest_resources.py
 ## Version: 0.0.1
 
 import re

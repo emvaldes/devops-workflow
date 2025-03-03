@@ -35,7 +35,12 @@ import sys
 import pytz
 
 from datetime import datetime
-from argument_parser import parse_arguments
+from pathlib import Path
+
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+# from lib.argument_parser import parse_arguments
 
 # Global variables for time zone and offset
 LocalTimeZone = None

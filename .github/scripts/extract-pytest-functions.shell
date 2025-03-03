@@ -20,7 +20,7 @@ function extract_pytest_functions () {
 
     script_dirname="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
     # read -ra parameters <<< "$( sanitize_parameters "${@}" )";
-    # ✅ Capture output of sanitize_parameters as an array (preserving spaces)
+    # Capture output of sanitize_parameters as an array (preserving spaces)
     mapfile -t parameters < <( ${script_dirname}/sanitize-parameters.shell "${@}" );
     # echo -e; for param in "${parameters[@]}"; do echo -e "Parameter: '${param}'"; done;
 
@@ -77,7 +77,7 @@ function extract_pytest_functions () {
     # echo -e "PyTest files JSON:\n${pytest_listing}\n";
 
     ## Call the external Python script instead of using here-doc
-    python3 ${scripts_location}/extract-pytest-resources.py \
+    python3 ${scripts_location}/extract_pytest_resources.py \
       "${pytest_listing}" "${pytest_mapping}";
 
     pytest_items="pytest_files.json";
