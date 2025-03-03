@@ -38,7 +38,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Ensure the root project directory is in sys.path
 ROOT_DIR = Path(__file__).resolve().parents[3]  # Adjust the number based on folder depth
@@ -146,8 +146,16 @@ def test_setup_logging(
         created_time = datetime.fromisoformat(config["stats"]["created"])
         updated_time = datetime.fromisoformat(config["stats"]["updated"])
         # Normalize both to naive datetimes
+
+        # if updated_time.tzinfo is not None:
+        #     updated_time = updated_time.replace(tzinfo=None)
+        # Ensure both timestamps are offset-naive for valid comparison
+
+        if created_time.tzinfo is not None:
+            created_time = created_time.astimezone(timezone.utc).replace(tzinfo=None)
         if updated_time.tzinfo is not None:
-            updated_time = updated_time.replace(tzinfo=None)
+            updated_time = updated_time.astimezone(timezone.utc).replace(tzinfo=None)
+
         assert created_time < updated_time, "Expected `updated` to be newer than `created`"
 
 def test_print_capture(

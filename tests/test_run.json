@@ -13,10 +13,10 @@
     "logging": {
         "enable": true,
         "max_logfiles": 5,
-        "package_name": "scripts",
-        "module_name": "testing",
-        "logs_dirname": "logs/scripts",
-        "log_filename": "logs/scripts/testing.log"
+        "package_name": "tests",
+        "module_name": "test_run",
+        "logs_dirname": "logs/tests",
+        "log_filename": "logs/tests/test_run.log"
     },
     "tracing": {
         "enable": true,
@@ -25,17 +25,17 @@
         }
     },
     "events": {
-        "call": true,
+        "call": false,
         "critical": false,
         "debug": false,
         "error": false,
         "import": false,
         "info": false,
-        "return": true,
+        "return": false,
         "warning": false
     },
     "stats": {
-        "created": "2025-03-03T18:13:42.599715+00:00",
-        "updated": "2025-03-03T21:39:11.314214+00:00"
+        "created": "2025-03-03T20:35:05.184785+00:00",
+        "updated": "2025-03-03T21:38:17.428712+00:00"
     }
 }

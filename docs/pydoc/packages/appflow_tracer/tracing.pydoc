@@ -98,7 +98,7 @@ CLASSES
      |
      |  Methods defined here:
      |
-     |  emit(self, record: logging.LogRecord) -> None
+     |  emit(self, record)
      |      Custom FileHandler that removes ANSI codes from log output
      |      and filters out logs from the internal Python logging module.
      |
@@ -264,19 +264,15 @@ CLASSES
      |
      |  Methods defined here:
      |
-     |  emit(self, record: logging.LogRecord) -> None
-     |      Custom logging handler that captures print statements and logs them
-     |      while ensuring they are displayed in the console.
+     |  emit(self, record)
+     |      Emit a record.
      |
-     |      This ensures that print statements are properly logged without affecting
-     |      real-time console output.
-     |
-     |      Args:
-     |          record (logging.LogRecord): The log record that contains information
-     |              about the log message to be captured and displayed.
-     |
-     |      Returns:
-     |          None
+     |      If a formatter is specified, it is used to format the record.
+     |      The record is then written to the stream with a trailing newline.  If
+     |      exception information is present, it is formatted using
+     |      traceback.print_exception and appended to the stream.  If the stream
+     |      has an 'encoding' attribute, it is used to determine how to do the
+     |      output to the stream.
      |
      |  ----------------------------------------------------------------------
      |  Methods inherited from logging.StreamHandler:

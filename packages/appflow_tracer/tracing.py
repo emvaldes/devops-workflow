@@ -260,6 +260,7 @@ class PrintCapture(logging.StreamHandler):
     real-time console output.
     """
 
+    # def emit(self, record):
     def emit(self, record: logging.LogRecord) -> None:
         """
         Custom logging handler that captures print statements and logs them
@@ -294,6 +295,7 @@ class ANSIFileHandler(logging.FileHandler):
     and ensures only relevant logs are recorded.
     """
 
+    # def emit(self, record):
     def emit(self, record: logging.LogRecord) -> None:
         """
         Custom FileHandler that removes ANSI codes from log output

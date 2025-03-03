@@ -1,0 +1,39 @@
+### Documentation for tests/test_run.py
+
+Help on module tests.test_run in tests:
+
+NAME
+    tests.test_run - Unit tests for run.py
+
+DESCRIPTION
+    This module contains tests for verifying the correct behavior of functions in run.py.
+    It ensures that argument parsing, documentation generation, and execution entry points function correctly.
+
+FUNCTIONS
+    mock_configs()
+        Globally mock CONFIGS for all tests.
+
+    mock_logger() -> unittest.mock.MagicMock
+        Create a mock logger for testing purposes.
+
+    test_create_doc_structure()
+        Test that create_doc_structure runs without errors.
+
+    test_generate_pydoc()
+        Test generate_pydoc function using run.py as the target.
+
+    test_main()
+        Test main function execution.
+
+    test_parse_arguments()
+        Test parse_arguments function with sample arguments.
+
+    test_scan_and_generate_docs()
+        Test scan_and_generate_docs function execution.
+
+DATA
+    CONFIGS = {'colors': {'CALL': '\x1b[92m', 'CRITICAL': '\x1b[41m', 'DEB...
+    ROOT_DIR = PosixPath('<user-home>/.repos')
+
+FILE
+    <project-location>/tests/test_run.py
