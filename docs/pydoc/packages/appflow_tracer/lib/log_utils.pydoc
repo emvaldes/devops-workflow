@@ -1,11 +1,11 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/lib/log_utils.py
 
-Python Library Documentation: module packages.appflow_tracer.lib.log_utils in packages.appflow_tracer.lib
+Help on module log_utils:
 
-NNAAMMEE
-    packages.appflow_tracer.lib.log_utils - File Path: packages/appflow_tracer/lib/log_utils.py
+NAME
+    log_utils - File Path: packages/appflow_tracer/lib/log_utils.py
 
-DDEESSCCRRIIPPTTIIOONN
+DESCRIPTION
     Description:
 
     Structured Logging Utilities
@@ -48,8 +48,8 @@ DDEESSCCRRIIPPTTIIOONN
     To log a message with a warning level:
     > log_message("Something might be wrong", category.warning.id)
 
-FFUUNNCCTTIIOONNSS
-    lloogg__mmeessssaaggee(
+FUNCTIONS
+    log_message(
         message: str,
         log_category: str = 'INFO',
         json_data: dict = None,
@@ -81,7 +81,7 @@ FFUUNNCCTTIIOONNSS
             >>> log_message("This is a warning", category.warning.id)
             >>> log_message("Structured log", json_data={"key": "value"})
 
-    oouuttppuutt__ccoonnssoollee(
+    output_console(
         message: str,
         log_category: str,
         json_data: dict = None,
@@ -107,7 +107,7 @@ FFUUNNCCTTIIOONNSS
             >>> output_console("This is an info message", category.info.id)
             >>> output_console("This is a warning", category.warning.id, {"details": "some data"})
 
-    oouuttppuutt__llooggffiillee(
+    output_logfile(
         logger: logging.Logger,
         message: str,
         log_category: str = 'INFO',
@@ -131,12 +131,13 @@ FFUUNNCCTTIIOONNSS
             >>> logger = logging.getLogger("example_logger")
             >>> output_logfile(logger, "This is a log message", {"extra_key": "value"})
 
-DDAATTAA
-    ccaatteeggoorryy = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
-    ddeeffaauulltt__iinnddeenntt = 4
-    lloogg__lleevveellss = {'CALL': 20, 'CRITICAL': 50, 'DEBUG': 10, 'ERROR': 40, 'I...
+DATA
+    category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
+    default_indent = 4
+    log_levels = {'CALL': 20, 'CRITICAL': 50, 'DEBUG': 10, 'ERROR': 40, 'I...
 
-FFIILLEE
+FILE
     /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/lib/log_utils.py
+
 
 

@@ -105,19 +105,6 @@
                 "default": false,
                 "example": false
             },
-            "pydoc": {
-                "flags": [ "--pydoc" ],
-                "kwargs": {
-                    "type": "bool",
-                    "required": false,
-                    "action": "store_true",
-                    "help": "Generates Python Documentation"
-                },
-                "target_env": "pydoc",
-                "prompt": "Generating Python Documentation",
-                "default": false,
-                "example": false
-            },
             "quiet": {
                 "flags": [ "--quiet" ],
                 "kwargs": {
@@ -128,19 +115,6 @@
                 },
                 "target_env": "quiet",
                 "prompt": "Disabling user prompts using defaults",
-                "default": false,
-                "example": false
-            },
-            "target": {
-                "flags": [ "--target" ],
-                "kwargs": {
-                    "type": "bool",
-                    "required": false,
-                    "action": "store_true",
-                    "help": "Identifies target component"
-                },
-                "target_env": "target",
-                "prompt": "Identifying target component",
                 "default": false,
                 "example": false
             },

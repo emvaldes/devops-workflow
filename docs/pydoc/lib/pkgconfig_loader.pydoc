@@ -1,11 +1,11 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/pkgconfig_loader.py
 
-Python Library Documentation: module lib.pkgconfig_loader in lib
+Help on module pkgconfig_loader:
 
-NNAAMMEE
-    lib.pkgconfig_loader - File Path: lib/pkgconfig_loader.py
+NAME
+    pkgconfig_loader - File Path: lib/pkgconfig_loader.py
 
-DDEESSCCRRIIPPTTIIOONN
+DESCRIPTION
     Description:
 
     Package Configuration Loader
@@ -46,8 +46,8 @@ DDEESSCCRRIIPPTTIIOONN
     To set up logging for a module:
     > setup_configs("/path/to/module.py")
 
-FFUUNNCCTTIIOONNSS
-    ccoonnffiigg__llooggffiillee(config: dict, caller_log_path: str = None) -> pathlib._local.Path
+FUNCTIONS
+    config_logfile(config: dict, caller_log_path: str = None) -> pathlib._local.Path
         Determine the correct log file path based on the caller module's request or self-inspection.
 
         This function generates a log file path based on the provided configuration. If a
@@ -61,7 +61,7 @@ FFUUNNCCTTIIOONNSS
         Returns:
             Path: The resolved path for the log file.
 
-    ppaacckkaaggee__ccoonnffiiggss(overrides: dict = None) -> dict
+    package_configs(overrides: dict = None) -> dict
         Load package configuration from a JSON file, or generate a default configuration if missing.
 
         This function attempts to load a package-specific configuration file. If the file is
@@ -78,7 +78,7 @@ FFUUNNCCTTIIOONNSS
         Returns:
             dict: The loaded or generated package configuration.
 
-    sseettuupp__ccoonnffiiggss(
+    setup_configs(
         absolute_path: pathlib._local.Path,
         logname_override: str = None,
         events: Union[bool, list, dict, NoneType] = None
@@ -101,11 +101,11 @@ FFUUNNCCTTIIOONNSS
         Returns:
             dict: The updated logging configuration for the module.
 
-DDAATTAA
-    OOppttiioonnaall = typing.Optional
+DATA
+    Optional = typing.Optional
         Optional[X] is equivalent to Union[X, None].
 
-    UUnniioonn = typing.Union
+    Union = typing.Union
         Union type; Union[X, Y] means either X or Y.
 
         On Python 3.10 and higher, the | operator
@@ -135,15 +135,16 @@ DDAATTAA
         - You cannot subclass or instantiate a union.
         - You can use Optional[X] as a shorthand for Union[X, None].
 
-    ccaatteeggoorryy = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
-    ddeeffaauulltt__iinnddeenntt = 4
-    mmaaxx__llooggffiilleess = 5
-    pprroojjeecctt__llooggss = PosixPath('/Users/emvaldes/.repos/devops/workflows/logs...
-    pprroojjeecctt__ppaacckkaaggeess = PosixPath('/Users/emvaldes/.repos/devops/workflows/...
-    pprroojjeecctt__rroooott = PosixPath('/Users/emvaldes/.repos/devops/workflows')
-    ttiimmeessttaammpp = '20250302122015'
+    category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
+    default_indent = 4
+    max_logfiles = 5
+    project_logs = PosixPath('/Users/emvaldes/.repos/devops/workflows/logs...
+    project_packages = PosixPath('/Users/emvaldes/.repos/devops/workflows/...
+    project_root = PosixPath('/Users/emvaldes/.repos/devops/workflows')
+    timestamp = '20250302175506'
 
-FFIILLEE
+FILE
     /Users/emvaldes/.repos/devops/workflows/lib/pkgconfig_loader.py
+
 
 

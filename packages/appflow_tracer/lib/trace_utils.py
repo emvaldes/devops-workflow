@@ -208,9 +208,12 @@ def trace_all(
             # Handle None or unexpected inputs gracefully
             return None
 
-        # print( f'\nFrame: {frame}' )
         # print( f'Event: {event}' )
-        # print( f'Arg: {arg}' )
+        # print( f'\nLogger: {logger}' )
+        # print( f'\nFrame: {frame}' )
+        # print( f'\nFilename: {filename}' )
+        # print( f'\nArg: {arg}' )
+        # print( f'Configs: {configs}\n' )
 
         if event == category.calls.id.lower():
             call_events(
@@ -220,7 +223,6 @@ def trace_all(
                 arg=arg,
                 configs=configs
             )
-
         elif event == category.returns.id.lower():
             return_events(
                 logger=logger,

@@ -1,11 +1,11 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/parsing_userinput.py
 
-Python Library Documentation: module lib.parsing_userinput in lib
+Help on module parsing_userinput:
 
-NNAAMMEE
-    lib.parsing_userinput - File Path: ./lib/parsing_userinput.py
+NAME
+    parsing_userinput - File Path: ./lib/parsing_userinput.py
 
-DDEESSCCRRIIPPTTIIOONN
+DESCRIPTION
     Description:
 
     User Input Collection and Interactive Prompts
@@ -42,8 +42,8 @@ DDEESSCCRRIIPPTTIIOONN
     To collect required user input:
     > python parsing_userinput.py
 
-FFUUNNCCTTIIOONNSS
-    ppaarrssee__aanndd__ccoolllleecctt__uusseerr__iinnppuuttss(
+FUNCTIONS
+    parse_and_collect_user_inputs(
         arguments_config_path: str,
         required_runtime_vars: list
     ) -> dict
@@ -62,7 +62,7 @@ FFUUNNCCTTIIOONNSS
         Returns:
             dict: A dictionary of user-provided environment variable values.
 
-    rreeqquueesstt__iinnppuutt(prompt: str, required: bool = True, default: str = None) -> str
+    request_input(prompt: str, required: bool = True, default: str = None) -> str
         Prompt the user for input with an optional default value.
 
         This function requests input from the user in an interactive session. If running
@@ -80,7 +80,7 @@ FFUUNNCCTTIIOONNSS
         Returns:
             str: The user-provided input or the default value.
 
-    uusseerr__iinntteerrvviieeww(arguments_config: dict, missing_vars: list) -> dict
+    user_interview(arguments_config: dict, missing_vars: list) -> dict
         Collect required user input for missing environment variables.
 
         Iterates through the list of missing environment variables and prompts the user
@@ -93,7 +93,8 @@ FFUUNNCCTTIIOONNSS
         Returns:
             dict: A dictionary mapping missing variable names to user-provided values.
 
-FFIILLEE
+FILE
     /Users/emvaldes/.repos/devops/workflows/lib/parsing_userinput.py
+
 
 

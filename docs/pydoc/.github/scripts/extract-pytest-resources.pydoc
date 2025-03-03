@@ -1,6 +1,4 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/.github/scripts/extract-pytest-resources.py
 
 pydoc
-Problem generating pydoc: No Python documentation found for '.github.scripts.extract-pytest-resources'.
-Use help() to get the interactive help utility.
-Use help(str) for help on the str class.
+Problem generating pydoc: Command '['python', '-m', 'pydoc', '/Users/emvaldes/.repos/devops/workflows/.github/scripts/extract-pytest-resources.py']' returned non-zero exit status 1.

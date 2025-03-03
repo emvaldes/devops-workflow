@@ -46,13 +46,15 @@ To process and validate configuration parameters:
 import sys
 import os
 
-import logging
 import json
+import logging
 
-from pathlib import Path
 from dotenv import load_dotenv, dotenv_values
-
 from typing import List, Dict, Tuple, Union
+from pathlib import Path
+
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from system_variables import (
     project_root,

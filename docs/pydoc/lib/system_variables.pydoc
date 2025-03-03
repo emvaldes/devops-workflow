@@ -1,11 +1,11 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/system_variables.py
 
-Python Library Documentation: module lib.system_variables in lib
+Help on module system_variables:
 
-NNAAMMEE
-    lib.system_variables - File Path: ./lib/system_variables.py
+NAME
+    system_variables - File Path: ./lib/system_variables.py
 
-DDEESSCCRRIIPPTTIIOONN
+DESCRIPTION
     Description:
 
     System-Wide Configuration Paths and Variables
@@ -33,13 +33,13 @@ DDEESSCCRRIIPPTTIIOONN
 
     - `category` (SimpleNamespace): Predefined logging categories for structured logging.
         - `category.calls.id`    ("CALL"): Function calls.
-        - `category.returns.id`  ("RETURN"): Function return values.
-        - `category.imports.id`  ("IMPORT"): Module imports.
-        - `category.debug.id`    ("DEBUG"): Debugging messages.
-        - `category.info.id`     ("INFO"): Informational messages.
-        - `category.warning.id`  ("WARNING"): Warnings.
-        - `category.error.id`    ("ERROR"): Error messages.
         - `category.critical.id` ("CRITICAL"): Critical system failures.
+        - `category.debug.id`    ("DEBUG"): Debugging messages.
+        - `category.error.id`    ("ERROR"): Error messages.
+        - `category.imports.id`  ("IMPORT"): Module imports.
+        - `category.info.id`     ("INFO"): Informational messages.
+        - `category.returns.id`  ("RETURN"): Function return values.
+        - `category.warning.id`  ("WARNING"): Warnings.
 
         Purpose:
         - Provides a structured way to reference log categories using dot-notation.
@@ -64,25 +64,26 @@ DDEESSCCRRIIPPTTIIOONN
     from lib.system_variables import category, project_root
     log_utils.log_message("This is a test", category.info.id)
 
-DDAATTAA
-    ccaatteeggoorryy = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
-    ddeeffaauulltt__iinnddeenntt = 4
-    ddeeffaauulltt__ppaarraammss__ffiilleennaammee = 'default-params.json'
-    ddeeffaauulltt__ppaarraammss__ffiilleeppaatthh = PosixPath('/Users/emvaldes/.repos/devops/wor...
-    eennvv__ffiilleeppaatthh = PosixPath('/Users/emvaldes/.repos/devops/workflows/.env...
-    mmaaxx__llooggffiilleess = 5
-    pprroojjeecctt__llooggss = PosixPath('/Users/emvaldes/.repos/devops/workflows/logs...
-    pprroojjeecctt__ppaacckkaaggeess = PosixPath('/Users/emvaldes/.repos/devops/workflows/...
-    pprroojjeecctt__ppaarraammss__ffiilleennaammee = 'project-params.json'
-    pprroojjeecctt__ppaarraammss__ffiilleeppaatthh = PosixPath('/Users/emvaldes/.repos/devops/wor...
-    pprroojjeecctt__rroooott = PosixPath('/Users/emvaldes/.repos/devops/workflows')
-    rruunnttiimmee__ppaarraammss__ffiilleennaammee = 'runtime-params.json'
-    rruunnttiimmee__ppaarraammss__ffiilleeppaatthh = PosixPath('/Users/emvaldes/.repos/devops/wor...
-    ssyysstteemm__ppaarraammss__ffiilleennaammee = 'system-params.json'
-    ssyysstteemm__ppaarraammss__ffiilleeppaatthh = PosixPath('/Users/emvaldes/.repos/devops/work...
-    ssyysstteemm__ppaarraammss__lliissttiinngg = [PosixPath('/Users/emvaldes/.repos/devops/work...
+DATA
+    category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
+    default_indent = 4
+    default_params_filename = 'default-params.json'
+    default_params_filepath = PosixPath('/Users/emvaldes/.repos/devops/wor...
+    env_filepath = PosixPath('/Users/emvaldes/.repos/devops/workflows/.env...
+    max_logfiles = 5
+    project_logs = PosixPath('/Users/emvaldes/.repos/devops/workflows/logs...
+    project_packages = PosixPath('/Users/emvaldes/.repos/devops/workflows/...
+    project_params_filename = 'project-params.json'
+    project_params_filepath = PosixPath('/Users/emvaldes/.repos/devops/wor...
+    project_root = PosixPath('/Users/emvaldes/.repos/devops/workflows')
+    runtime_params_filename = 'runtime-params.json'
+    runtime_params_filepath = PosixPath('/Users/emvaldes/.repos/devops/wor...
+    system_params_filename = 'system-params.json'
+    system_params_filepath = PosixPath('/Users/emvaldes/.repos/devops/work...
+    system_params_listing = [PosixPath('/Users/emvaldes/.repos/devops/work...
 
-FFIILLEE
+FILE
     /Users/emvaldes/.repos/devops/workflows/lib/system_variables.py
+
 
 

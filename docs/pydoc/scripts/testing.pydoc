@@ -1,11 +1,11 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/scripts/testing.py
 
-Python Library Documentation: module scripts.testing in scripts
+Help on module testing:
 
-NNAAMMEE
-    scripts.testing - File Path: ./scripts/testing.py
+NAME
+    testing - File Path: ./scripts/testing.py
 
-DDEESSCCRRIIPPTTIIOONN
+DESCRIPTION
     Description:
 
     Standalone Testing Script for Framework Logging
@@ -36,8 +36,8 @@ DDEESSCCRRIIPPTTIIOONN
     To execute the test:
     > python scripts/testing.py
 
-FFUUNNCCTTIIOONNSS
-    mmaaiinn() -> None
+FUNCTIONS
+    main() -> None
         Execute a standalone test to verify the structured logging system.
 
         This function:
@@ -62,11 +62,11 @@ FFUUNNCCTTIIOONNSS
             }
             I am a stand-alone script minding my own business.
 
-DDAATTAA
-    ddeeffaauulltt__iinnddeenntt = 4
-    pprroojjeecctt__rroooott = PosixPath('/Users/emvaldes/.repos/devops/workflows')
+DATA
+    PROJECT_ROOT = PosixPath('/Users/emvaldes/.repos/devops/workflows')
 
-FFIILLEE
+FILE
     /Users/emvaldes/.repos/devops/workflows/scripts/testing.py
+
 
 

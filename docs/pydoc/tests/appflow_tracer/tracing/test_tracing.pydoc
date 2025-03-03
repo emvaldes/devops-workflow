@@ -1,4 +1,64 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/tests/appflow_tracer/tracing/test_tracing.py
 
-pydoc
-Problem generating pydoc: problem in tests.appflow_tracer.tracing.test_tracing - ModuleNotFoundError: No module named 'pytest'
+Help on module test_tracing:
+
+NAME
+    test_tracing - Test Module: test_tracing.py
+
+DESCRIPTION
+    This module contains unit tests for the `tracing.py` module in `appflow_tracer`.
+    It ensures that tracing, logging, and ANSI handling functions operate correctly.
+
+    ## Tests:
+    1. **`test_setup_logging()`**
+       - Validates that `tracing.setup_logging()` initializes logging correctly.
+       - Ensures configuration keys (`colors`, `logging`, `tracing`, `stats`) exist.
+       - Confirms `stats.created` remains static while `stats.updated` changes per execution.
+
+    2. **`test_print_capture()`**
+       - Ensures `tracing.PrintCapture` properly captures and logs print statements.
+       - Simulates `sys.stdout.write()` to verify expected output.
+
+    3. **`test_ansi_file_handler()`**
+       - Ensures `tracing.ANSIFileHandler` removes ANSI escape sequences before writing logs.
+       - Uses a helper function `remove_ansi()` to strip escape codes before emitting logs.
+
+    ## Expected Behavior:
+    - **Logging configurations are correctly assigned** during initialization.
+    - **Print statements are redirected to the logging system**.
+    - **ANSI escape sequences are stripped before logging** to prevent unwanted formatting.
+
+    Author: Eduardo Valdes
+    Date: 2025/02/17
+
+FUNCTIONS
+    mock_configs()
+        Mock `CONFIGS` globally for all tests if not initialized.
+
+    mock_logger() -> unittest.mock.MagicMock
+        Creates a mock logger for testing.
+
+    test_ansi_file_handler(mock_logger: unittest.mock.MagicMock) -> None
+        Ensure `tracing.ANSIFileHandler` removes ANSI sequences before writing logs.
+
+    test_print_capture(mock_logger: unittest.mock.MagicMock) -> None
+        Ensure `tracing.PrintCapture` properly captures and logs print statements.
+
+    test_setup_logging(mock_logger: unittest.mock.MagicMock) -> None
+        Ensure `tracing.setup_logging()` correctly initializes logging configurations.
+
+        Tests:
+        - Ensures returned CONFIGS contains all expected keys.
+        - Validates logging file path assignment and expected defaults.
+        - Ensures tracing remains enabled when configured.
+        - Confirms `stats.created` remains static while `stats.updated` changes.
+
+DATA
+    CONFIGS = {'colors': {'CALL': '\x1b[92m', 'CRITICAL': '\x1b[41m', 'DEB...
+    ROOT_DIR = PosixPath('/Users/emvaldes/.repos/devops/workflows')
+
+FILE
+    /Users/emvaldes/.repos/devops/workflows/tests/appflow_tracer/tracing/test_tracing.py
+
+
+

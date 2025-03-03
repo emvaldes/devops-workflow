@@ -30,13 +30,13 @@ Primary Variables:
 
 - `category` (SimpleNamespace): Predefined logging categories for structured logging.
     - `category.calls.id`    ("CALL"): Function calls.
-    - `category.returns.id`  ("RETURN"): Function return values.
-    - `category.imports.id`  ("IMPORT"): Module imports.
-    - `category.debug.id`    ("DEBUG"): Debugging messages.
-    - `category.info.id`     ("INFO"): Informational messages.
-    - `category.warning.id`  ("WARNING"): Warnings.
-    - `category.error.id`    ("ERROR"): Error messages.
     - `category.critical.id` ("CRITICAL"): Critical system failures.
+    - `category.debug.id`    ("DEBUG"): Debugging messages.
+    - `category.error.id`    ("ERROR"): Error messages.
+    - `category.imports.id`  ("IMPORT"): Module imports.
+    - `category.info.id`     ("INFO"): Informational messages.
+    - `category.returns.id`  ("RETURN"): Function return values.
+    - `category.warning.id`  ("WARNING"): Warnings.
 
     Purpose:
     - Provides a structured way to reference log categories using dot-notation.
@@ -63,7 +63,6 @@ log_utils.log_message("This is a test", category.info.id)
 """
 
 from types import SimpleNamespace as simple
-
 from pathlib import Path
 
 """
@@ -148,12 +147,12 @@ Predefined logging categories for structured logging.
 """
 category = simple(
     calls    = simple(id="CALL",     color="\033[92m"),  # Green
-    returns  = simple(id="RETURN",   color="\033[93m"),  # Yellow
-    imports  = simple(id="IMPORT",   color="\033[94m"),  # Blue
-    debug    = simple(id="DEBUG",    color="\033[96m"),  # Cyan
-    info     = simple(id="INFO",     color="\033[97m"),  # White
-    warning  = simple(id="WARNING",  color="\033[91m"),  # Red
-    error    = simple(id="ERROR",    color="\033[31m"),  # Bright Red
     critical = simple(id="CRITICAL", color="\033[41m"),  # Red Background
+    debug    = simple(id="DEBUG",    color="\033[96m"),  # Cyan
+    error    = simple(id="ERROR",    color="\033[31m"),  # Bright Red
+    imports  = simple(id="IMPORT",   color="\033[94m"),  # Blue
+    info     = simple(id="INFO",     color="\033[97m"),  # White
+    returns  = simple(id="RETURN",   color="\033[93m"),  # Yellow
+    warning  = simple(id="WARNING",  color="\033[91m"),  # Red
     reset    = simple(id="RESET",    color="\033[0m")    # Reset to default
 )

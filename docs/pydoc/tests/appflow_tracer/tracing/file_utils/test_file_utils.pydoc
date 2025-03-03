@@ -1,4 +1,93 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/tests/appflow_tracer/tracing/file_utils/test_file_utils.py
 
-pydoc
-Problem generating pydoc: problem in tests.appflow_tracer.tracing.file_utils.test_file_utils - ModuleNotFoundError: No module named 'pytest'
+Help on module test_file_utils:
+
+NAME
+    test_file_utils - Test Module: ./tests/appflow_tracer/tracing/test_file_utils.py
+
+DESCRIPTION
+    This module contains unit tests for the `file_utils.py` module in `appflow_tracer.lib`.
+    It ensures that file handling functions operate correctly, including:
+
+    - **Path validation** for identifying project files.
+    - **Log file management** to enforce maximum log retention limits.
+    - **Relative path conversion** for standardizing file references.
+    - **ANSI escape code removal** for cleaning log outputs.
+
+    ## Use Cases:
+    1. **Verify project file path validation**
+       - Ensures `file_utils.is_project_file()` correctly identifies files inside the project directory.
+       - Rejects paths outside the project directory.
+
+    2. **Ensure `file_utils.manage_logfiles()` properly removes excess logs**
+       - Simulates an environment where `max_logfiles` is exceeded.
+       - Validates that the oldest logs are deleted while respecting the limit.
+       - Compares the list of expected deleted logs against the actual returned list.
+
+    3. **Validate relative path conversion**
+       - Ensures `file_utils.relative_path()` correctly strips absolute paths into relative project paths.
+       - Removes `.py` file extensions for consistency.
+
+    4. **Confirm ANSI escape code removal**
+       - Verifies `file_utils.remove_ansi_escape_codes()` strips formatting sequences from log output.
+       - Ensures output is clean and human-readable.
+
+    ## Improvements Implemented:
+    - `file_utils.manage_logfiles()` now **returns a list of deleted files**, making validation straightforward.
+    - The test dynamically **adjusts `max_logfiles`** to trigger controlled log deletion.
+    - Instead of assuming a deletion count, the test **compares expected vs. actual deleted logs**.
+    - Fixed `Path.stat()` mocking to properly handle `follow_symlinks=True`, preventing test failures.
+    - Ensured logging does not interfere when disabled in `CONFIGS`.
+
+    ## Expected Behavior:
+    - **Logs exceeding `max_logfiles` are removed**, with older logs prioritized.
+    - **Deleted logs are returned and verified** to ensure the function works correctly.
+    - **Path handling and text sanitization functions operate as expected**.
+    - **Logging is only enabled when explicitly set in `CONFIGS`.**
+    - **Path handling and text sanitization functions operate as expected.**
+
+    Author: Eduardo Valdes
+    Date: 2025/01/01
+
+FUNCTIONS
+    mock_configs()
+        Mock CONFIGS globally for test stability.
+
+    test_is_project_file() -> None
+        Ensure `file_utils.is_project_file()` correctly identifies project files and rejects external ones.
+
+        Tests:
+        - Identifies valid project file paths within the root directory.
+        - Ensures external paths (outside project scope) return `False`.
+
+    test_manage_logfiles()
+        Simulates log file cleanup by `file_utils.manage_logfiles()` and validates the list of deleted logs.
+
+        Tests:
+        - Simulates an environment with excess log files.
+        - Ensures the oldest logs are deleted while respecting `max_logfiles`.
+        - Compares expected vs. actual deleted logs to validate accuracy.
+
+    test_relative_path() -> None
+        Ensure `file_utils.relative_path()` correctly converts absolute paths into project-relative paths.
+
+        Tests:
+        - Converts absolute file paths into a standardized project-relative format.
+        - Ensures `.py` file extensions are stripped from the final output.
+
+    test_remove_ansi_escape_codes() -> None
+        Verify `file_utils.remove_ansi_escape_codes()` correctly strips ANSI formatting sequences from text.
+
+        Tests:
+        - Removes ANSI escape codes from formatted text.
+        - Ensures the cleaned output maintains readability without formatting artifacts.
+
+DATA
+    CONFIGS = {'colors': {'CALL': '\x1b[92m', 'CRITICAL': '\x1b[41m', 'DEB...
+    ROOT_DIR = PosixPath('/Users/emvaldes/.repos/devops/workflows')
+
+FILE
+    /Users/emvaldes/.repos/devops/workflows/tests/appflow_tracer/tracing/file_utils/test_file_utils.py
+
+
+

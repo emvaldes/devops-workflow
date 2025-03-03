@@ -45,8 +45,11 @@ import os
 import json
 import logging
 
-from pathlib import Path
 from dotenv import load_dotenv
+from pathlib import Path
+
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from lib.configure_params import main as configure_params
 from lib.configure_params import load_json_sources

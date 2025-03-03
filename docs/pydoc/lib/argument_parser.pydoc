@@ -1,11 +1,11 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/argument_parser.py
 
-Python Library Documentation: module lib.argument_parser in lib
+Help on module argument_parser:
 
-NNAAMMEE
-    lib.argument_parser - File Path: ./lib/argument_parser.py
+NAME
+    argument_parser - File Path: ./lib/argument_parser.py
 
-DDEESSCCRRIIPPTTIIOONN
+DESCRIPTION
     Description:
 
     Command-Line Argument Parser
@@ -43,8 +43,8 @@ DDEESSCCRRIIPPTTIIOONN
     To run argument parsing with debug output:
     > python argument_parser.py --debug
 
-FFUUNNCCTTIIOONNSS
-    ccoonnvveerrtt__ttyyppeess(kwargs: dict) -> dict
+FUNCTIONS
+    convert_types(kwargs: dict) -> dict
         Convert JSON type definitions into actual Python types.
 
         This function modifies the argument properties dictionary by converting
@@ -57,7 +57,7 @@ FFUUNNCCTTIIOONNSS
         Returns:
             dict: Updated dictionary with the `type` field converted to a Python type if applicable.
 
-    llooaadd__aarrgguummeenntt__ccoonnffiigg() -> dict
+    load_argument_config() -> dict
         Load argument definitions from a JSON configuration file and validate them.
 
         Reads a structured JSON file that defines command-line arguments, ensuring the file exists,
@@ -71,13 +71,13 @@ FFUUNNCCTTIIOONNSS
         Returns:
             dict: A dictionary containing the parsed argument definitions.
 
-    mmaaiinn()
+    main()
         Main function for executing argument parsing when the script is run as a standalone module.
 
         This function loads the argument configuration, parses command-line arguments, and
         prints the parsed values in a structured JSON format.
 
-    ppaarrssee__aarrgguummeennttss(args: dict) -> argparse.Namespace
+    parse_arguments(args: dict) -> argparse.Namespace
         Process structured CLI arguments using argparse.
 
         This function manually processes each argument defined in a structured dictionary,
@@ -89,7 +89,7 @@ FFUUNNCCTTIIOONNSS
         Returns:
             argparse.Namespace: A namespace containing the parsed arguments as attributes.
 
-    ppaarrssee__aarrgguummeennttss____pprroottoottyyppee(
+    parse_arguments__prototype(
         context: dict = None,
         description: str = 'Azure CLI utility'
     ) -> argparse.Namespace
@@ -105,10 +105,11 @@ FFUUNNCCTTIIOONNSS
         Returns:
             argparse.Namespace: A namespace containing the parsed arguments as attributes.
 
-DDAATTAA
-    ssyysstteemm__ppaarraammss__ffiilleeppaatthh = PosixPath('/Users/emvaldes/.repos/devops/work...
+DATA
+    system_params_filepath = PosixPath('/Users/emvaldes/.repos/devops/work...
 
-FFIILLEE
+FILE
     /Users/emvaldes/.repos/devops/workflows/lib/argument_parser.py
+
 
 

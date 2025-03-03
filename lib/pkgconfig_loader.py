@@ -46,13 +46,16 @@ To set up logging for a module:
 
 import os
 import sys
+
 import json
 import inspect
 
 from typing import Optional, Union
-
-from pathlib import Path
 from datetime import datetime, timezone
+from pathlib import Path
+
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from system_variables import (
     project_root,
@@ -129,13 +132,13 @@ def package_configs(overrides: dict = None) -> dict:
         config = {
             "colors": {
                 category.calls.id    : category.calls.color,     # Green
-                category.returns.id  : category.returns.color,   # Yellow
-                category.imports.id  : category.imports.color,   # Blue
-                category.debug.id    : category.debug.color,     # Cyan
-                category.info.id     : category.info.color,      # White
-                category.warning.id  : category.warning.color,   # Red
-                category.error.id    : category.error.color,     # Bright Red
                 category.critical.id : category.critical.color,  # Red Background
+                category.debug.id    : category.debug.color,     # Cyan
+                category.error.id    : category.error.color,     # Bright Red
+                category.imports.id  : category.imports.color,   # Blue
+                category.info.id     : category.info.color,      # White
+                category.returns.id  : category.returns.color,   # Yellow
+                category.warning.id  : category.warning.color,   # Red
                 category.reset.id    : category.reset.color      # Reset to default
             },
             "logging": {
@@ -154,8 +157,13 @@ def package_configs(overrides: dict = None) -> dict:
             },
             "events": {
                 category.calls.id.lower(): True,
+                category.critical.id.lower(): True,
+                category.debug.id.lower(): True,
+                category.error.id.lower(): True,
+                category.imports.id.lower(): True,
+                category.info.id.lower(): True,
                 category.returns.id.lower(): True,
-                category.imports.id.lower(): True
+                category.warning.id.lower(): True
             },
             "stats": {
                 "created": datetime.now(timezone.utc).isoformat(),

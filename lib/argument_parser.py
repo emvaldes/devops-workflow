@@ -44,11 +44,15 @@ To run argument parsing with debug output:
 import sys
 import os
 
-import argparse
 import json
 import logging
+import argparse
 
 from pathlib import Path
+
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
 from system_variables import (
     system_params_filepath
 )
