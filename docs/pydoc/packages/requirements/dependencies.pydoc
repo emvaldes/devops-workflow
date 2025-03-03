@@ -1,0 +1,96 @@
+### Documentation for /Users/emvaldes/.repos/devops/workflows/packages/requirements/dependencies.py
+
+Help on module packages.requirements.dependencies in packages.requirements:
+
+NAME
+    packages.requirements.dependencies
+
+FUNCTIONS
+    get_installed_version(package: str) -> Optional[str]
+        Return the installed version of a package, first checking Pip, then Brew.
+
+    install_or_update_package(
+        package: str,
+        version: str = None,
+        configs: dict = None
+    )
+        Install or update a package using Brew (if available) or Pip.
+
+        - If Brew is available, try installing/upgrading via Brew.
+        - If the package isn't found in Brew, fall back to Pip.
+        - If the package exists but is outdated, attempt an upgrade.
+
+    install_requirements(requirements_file: str, configs: dict) -> None
+        Verify required dependencies from a JSON requirements file.
+
+    is_brew_available() -> bool
+        Check if Homebrew is available on macOS.
+
+    is_package_installed(package: str, version_info: dict, configs: dict) -> bool
+
+    load_requirements(requirements_file: str, configs: dict) -> list
+
+    main() -> None
+
+    parse_arguments() -> argparse.Namespace
+        Parse command-line arguments for specifying the requirements file
+        and displaying the installed dependencies.
+
+        Returns:
+            argparse.Namespace: The parsed arguments object containing selected options.
+
+    print_installed_packages(config_filepath: str, configs: dict) -> None
+        Print the installed dependencies in a readable format.
+
+        Args:
+            config_filepath (str): Path to the installed.json file.
+
+        Returns:
+            None
+
+    update_installed_packages(
+        requirements_file: str,
+        config_filepath: str,
+        configs: dict
+    ) -> None
+
+DATA
+    LIB_DIR = PosixPath('/Users/emvaldes/.repos/devops/workflows/lib')
+    Optional = typing.Optional
+        Optional[X] is equivalent to Union[X, None].
+
+    Union = typing.Union
+        Union type; Union[X, Y] means either X or Y.
+
+        On Python 3.10 and higher, the | operator
+        can also be used to denote unions;
+        X | Y means the same thing to the type checker as Union[X, Y].
+
+        To define a union, use e.g. Union[int, str]. Details:
+        - The arguments must be types and there must be at least one.
+        - None as an argument is a special case and is replaced by
+          type(None).
+        - Unions of unions are flattened, e.g.::
+
+            assert Union[Union[int, str], float] == Union[int, str, float]
+
+        - Unions of a single argument vanish, e.g.::
+
+            assert Union[int] == int  # The constructor actually returns int
+
+        - Redundant arguments are skipped, e.g.::
+
+            assert Union[int, str, int] == Union[int, str]
+
+        - When comparing unions, the argument order is ignored, e.g.::
+
+            assert Union[int, str] == Union[str, int]
+
+        - You cannot subclass or instantiate a union.
+        - You can use Optional[X] as a shorthand for Union[X, None].
+
+FILE
+    /Users/emvaldes/.repos/devops/workflows/packages/requirements/dependencies.py
+
+
+

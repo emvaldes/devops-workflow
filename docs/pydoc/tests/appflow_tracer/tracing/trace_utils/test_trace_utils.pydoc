@@ -1,0 +1,116 @@
+### Documentation for /Users/emvaldes/.repos/devops/workflows/tests/appflow_tracer/tracing/trace_utils/test_trace_utils.py
+
+Help on module tests.appflow_tracer.tracing.trace_utils.test_trace_utils in tests.appflow_tracer.tracing.trace_utils:
+
+NAME
+    tests.appflow_tracer.tracing.trace_utils.test_trace_utils - Test Module: ./tests/appflow_tracer/test_trace_utils.py
+
+DESCRIPTION
+    This module contains unit tests for the `trace_utils.py` module in `appflow_tracer.lib`.
+    It ensures correct function execution tracing and structured logging, covering:
+
+    - **Function call tracing**: Captures invocation details, ensuring execution visibility.
+    - **Return value logging**: Serializes return values for structured execution logs.
+    - **Project-specific filtering**: Ensures only relevant project functions are logged.
+    - **Configuration-driven activation**: Prevents unnecessary tracing when disabled.
+
+    ## Use Cases:
+    1. **Validate `trace_utils.start_tracing()` activation**
+       - Ensures tracing starts **only when enabled** in the configuration.
+       - Prevents redundant activations by checking `sys.gettrace()`.
+       - Verifies that `sys.settrace()` is correctly called.
+
+    2. **Ensure `trace_utils.trace_all()` generates a valid trace function**
+       - Confirms the trace function **properly processes events** (calls and returns).
+       - Ensures non-project functions are **excluded from logging**.
+       - Validates that function metadata is structured correctly.
+
+    3. **Test function call logging via `trace_utils.call_events()`**
+       - Simulates a function call and checks if metadata is captured.
+       - Verifies that **arguments are serialized correctly**.
+       - Ensures only **project-relevant function calls are logged**.
+
+    4. **Verify function return logging via `trace_utils.return_events()`**
+       - Captures return values and ensures correct serialization.
+       - Confirms function exit events are logged with structured data.
+       - Validates that primitive types and complex objects are handled correctly.
+
+    ## Improvements Implemented:
+    - **Mocking of `sys.settrace()`** to avoid real tracing activation.
+    - **Ensuring `CONFIGS` are respected** when enabling tracing.
+    - **Patching of logging utilities** to isolate logs per test.
+
+    ## Expected Behavior:
+    - **Tracing activates only when explicitly configured**.
+    - **Function call and return details are structured correctly**.
+    - **Non-project calls are filtered out, keeping logs relevant**.
+
+    Author: Eduardo Valdes
+    Date: 2025/01/01
+
+FUNCTIONS
+    mock_configs() -> dict
+        Provides a mock configuration dictionary for testing.
+
+    mock_logger() -> unittest.mock.MagicMock
+        Provides a mock logger for testing tracing output.
+
+    test_call_events(
+        mock_is_project_file: unittest.mock.MagicMock,
+        mock_log_message: unittest.mock.MagicMock,
+        mock_logger: unittest.mock.MagicMock,
+        mock_configs: dict
+    ) -> None
+        Ensure `trace_utils.call_events()` logs function calls correctly.
+
+    test_return_events(
+        mock_is_project_file: unittest.mock.MagicMock,
+        mock_log_message: unittest.mock.MagicMock,
+        mock_logger: unittest.mock.MagicMock,
+        mock_configs: dict
+    ) -> None
+        Ensure `trace_utils.return_events()` logs function return values correctly.
+
+    test_start_tracing(
+        mock_settrace: unittest.mock.MagicMock,
+        mock_logger: unittest.mock.MagicMock,
+        mock_configs: dict
+    ) -> None
+        Ensure `trace_utils.start_tracing()` initializes tracing only when enabled.
+
+        Tests:
+        - Ensures `sys.settrace()` is correctly called when tracing is enabled.
+        - Prevents multiple activations by checking `sys.gettrace()` before applying tracing.
+        - Verifies that tracing is properly configured via `CONFIGS`.
+
+    test_start_tracing_disabled(
+        mock_settrace: unittest.mock.MagicMock,
+        mock_logger: unittest.mock.MagicMock
+    ) -> None
+        Ensure `trace_utils.start_tracing()` does not initialize tracing when disabled.
+
+        Tests:
+        - Ensures `sys.settrace()` is **not called** when tracing is disabled in `CONFIGS`.
+        - Validates that `trace_utils.start_tracing()` respects configuration settings.
+
+    test_trace_all(
+        mock_trace_all: unittest.mock.MagicMock,
+        mock_logger: unittest.mock.MagicMock,
+        mock_configs: dict
+    ) -> None
+        Ensure `trace_utils.trace_all()` generates a valid trace function.
+
+        Tests:
+        - Mocks `trace_utils.trace_all()` to return a dummy function and verifies it is callable.
+        - Ensures that `trace_utils.trace_all()` does not fail when `CONFIGS` is missing logging settings.
+
+DATA
+    CONFIGS = {'colors': {'CALL': '\x1b[92m', 'CRITICAL': '\x1b[41m', 'DEB...
+    ROOT_DIR = PosixPath('/Users/emvaldes/.repos/devops/workflows')
+    category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
+
+FILE
+    /Users/emvaldes/.repos/devops/workflows/tests/appflow_tracer/tracing/trace_utils/test_trace_utils.py
+
+
+

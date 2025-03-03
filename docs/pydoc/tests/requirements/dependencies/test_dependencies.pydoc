@@ -1,0 +1,61 @@
+### Documentation for /Users/emvaldes/.repos/devops/workflows/tests/requirements/dependencies/test_dependencies.py
+
+Help on module tests.requirements.dependencies.test_dependencies in tests.requirements.dependencies:
+
+NAME
+    tests.requirements.dependencies.test_dependencies - Unit tests for the dependency management module.
+
+DESCRIPTION
+    This module contains tests for verifying the correct behavior of functions that load, install, and validate dependencies.
+    It ensures that packages are installed correctly, updates are applied properly, and compliance is maintained.
+
+FUNCTIONS
+    mock_configs()
+        Mock `CONFIGS` globally for all tests if not initialized.
+
+    test_debug_installation(mock_get_version, package, expected_version)
+        Debugging test to check whether the package installation check
+        is returning expected results.
+
+    test_install_or_update_package(mock_version, mock_configs)
+        Test that `dependencies.install_or_update_package` does not attempt installation
+        if the package is already installed with the correct version.
+
+    test_install_requirements(
+        mock_get_version,
+        mock_install,
+        tmp_path,
+        mock_configs
+    )
+        Test that `dependencies.install_requirements` correctly skips installation if
+        the required version is already installed, and triggers installation
+        when the package is missing.
+
+    test_is_package_installed(mock_version, mock_subproc_call, mock_configs)
+
+    test_load_requirements_invalid_json(tmp_path, mock_configs)
+        Test that loading a malformed JSON file raises a ValueError.
+
+    test_load_requirements_missing(mock_configs)
+        Test that loading a missing requirements file raises a FileNotFoundError.
+
+    test_load_requirements_valid(tmp_path, mock_configs)
+        Test that a valid requirements file is correctly loaded.
+
+    test_parse_arguments_custom()
+
+    test_parse_arguments_default()
+
+    test_print_installed_packages(mock_log_message, tmp_path, mock_configs)
+
+    test_update_installed_packages(mock_version, tmp_path, mock_configs)
+
+DATA
+    CONFIGS = {'colors': {'CALL': '\x1b[92m', 'CRITICAL': '\x1b[41m', 'DEB...
+    ROOT_DIR = PosixPath('/Users/emvaldes/.repos/devops/workflows')
+
+FILE
+    /Users/emvaldes/.repos/devops/workflows/tests/requirements/dependencies/test_dependencies.py
+
+
+

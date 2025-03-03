@@ -1,0 +1,89 @@
+### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/system_variables.py
+
+Help on module lib.system_variables in lib:
+
+NAME
+    lib.system_variables - File Path: ./lib/system_variables.py
+
+DESCRIPTION
+    Description:
+
+    System-Wide Configuration Paths and Variables
+
+    This module defines system-wide constants and configuration file paths
+    that serve as references throughout the framework.
+
+    Core Features:
+
+    - **Standardized Configuration Paths**: Defines paths for `.env`, `runtime-params.json`, etc.
+    - **Project Root Management**: Establishes a unified reference for directory traversal.
+    - **Dynamic Configuration Aggregation**: Aggregates available configuration files.
+    - **Log File Quota Management**: Restricts the number of stored logs for efficiency.
+
+    Primary Variables:
+
+    - `project_root`: Base directory for resolving project files.
+    - `env_filepath`: Location of the `.env` file for runtime parameters.
+    - `runtime_params_filepath`: Stores dynamically generated runtime parameters.
+    - `system_params_filepath`: Stores global system-wide configurations.
+    - `project_params_filepath`: Stores project-level configurations.
+    - `default_params_filepath`: Defines framework default parameters.
+    - `system_params_listing`: Aggregates configuration sources dynamically.
+    - `max_logfiles`: Restricts the number of stored logs (default: `5`).
+
+    - `category` (SimpleNamespace): Predefined logging categories for structured logging.
+        - `category.calls.id`    ("CALL"): Function calls.
+        - `category.critical.id` ("CRITICAL"): Critical system failures.
+        - `category.debug.id`    ("DEBUG"): Debugging messages.
+        - `category.error.id`    ("ERROR"): Error messages.
+        - `category.imports.id`  ("IMPORT"): Module imports.
+        - `category.info.id`     ("INFO"): Informational messages.
+        - `category.returns.id`  ("RETURN"): Function return values.
+        - `category.warning.id`  ("WARNING"): Warnings.
+
+        Purpose:
+        - Provides a structured way to reference log categories using dot-notation.
+        - Reduces hardcoded strings in logging calls for consistency.
+        - Improves readability and maintainability of log messages.
+
+    Expected Behavior:
+
+    - Configuration paths should always resolve correctly, ensuring consistency.
+    - `max_logfiles` should ideally be configurable via an environment variable.
+    - System parameter files should be aggregated dynamically for flexibility.
+
+    Dependencies:
+
+    - `pathlib` (for filesystem path handling)
+    - `types.SimpleNamespace` (for structured category labels)
+
+    Usage:
+
+    Note: This module is imported wherever system-wide file path references are required.
+
+    from lib.system_variables import category, project_root
+    log_utils.log_message("This is a test", category.info.id)
+
+DATA
+    category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
+    default_indent = 4
+    default_params_filename = 'default-params.json'
+    default_params_filepath = PosixPath('/Users/emvaldes/.repos/devops/wor...
+    env_filepath = PosixPath('/Users/emvaldes/.repos/devops/workflows/.env...
+    max_logfiles = 5
+    project_logs = PosixPath('/Users/emvaldes/.repos/devops/workflows/logs...
+    project_packages = PosixPath('/Users/emvaldes/.repos/devops/workflows/...
+    project_params_filename = 'project-params.json'
+    project_params_filepath = PosixPath('/Users/emvaldes/.repos/devops/wor...
+    project_root = PosixPath('/Users/emvaldes/.repos/devops/workflows')
+    runtime_params_filename = 'runtime-params.json'
+    runtime_params_filepath = PosixPath('/Users/emvaldes/.repos/devops/wor...
+    system_params_filename = 'system-params.json'
+    system_params_filepath = PosixPath('/Users/emvaldes/.repos/devops/work...
+    system_params_listing = [PosixPath('/Users/emvaldes/.repos/devops/work...
+
+FILE
+    /Users/emvaldes/.repos/devops/workflows/lib/system_variables.py
+
+
+

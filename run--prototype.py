@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: ./run.py
-# Version: 0.0.8
+# Version: 0.0.9
 
 """
 File Path: ./run.py
@@ -101,20 +101,24 @@ def generate_pydoc(file_path, doc_path):
     file_name = os.path.basename(file_path)
     doc_file_path = os.path.join(doc_path, f"{os.path.splitext(file_name)[0]}.pydoc")
 
-    try:
+    # Handle dot-prefixed directories (e.g., .github/scripts)
+    file_parent_dir = Path(absolute_file_path).parent
+    if file_parent_dir.name.startswith("."):
+        original_dir = os.getcwd()
+        os.chdir(file_parent_dir)
 
-        log_utils.log_message(
-            f'Target PyDoc File: {absolute_file_path}',
-            environment.category.debug.id,
-            configs=CONFIGS
-        )
-        # Convert file path to module name
+        # Adjust module name for pydoc
+        module_name = file_name.replace(".py", "")
+        log_utils.log_message(f'Temporary switch to directory: {file_parent_dir}', environment.category.debug.id, configs=CONFIGS)
+    else:
         module_name = absolute_file_path.replace(os.getcwd() + os.sep, "").replace(os.sep, ".").replace(".py", "")
         log_utils.log_message(
             f'Target PyDoc Module: {module_name}',
             environment.category.debug.id,
             configs=CONFIGS
         )
+
+    try:
 
         # Run pydoc through subprocess to avoid manual parsing issues
         # command = ['python', '-m', 'pydoc', absolute_file_path]
@@ -185,6 +189,10 @@ def generate_pydoc(file_path, doc_path):
         #     configs=CONFIGS
         # )
 
+    finally:
+        if file_parent_dir.name.startswith("."):
+            os.chdir(original_dir)  # Return to the original directory
+
 def scan_and_generate_docs(path_to_scan, base_doc_dir):
     """Scan the project directory and generate documentation for all Python files."""
 
@@ -195,7 +203,7 @@ def scan_and_generate_docs(path_to_scan, base_doc_dir):
     )
 
     # Walk through the directory and process Python files
-    for root, dirs, files in os.walk(path_to_scan):
+    for root, _, files in os.walk(path_to_scan):
         py_files = [f for f in files if f.endswith(".py") and f not in ["__init__.py", "__main__.py"]]
 
         for py_file in py_files:
