@@ -1,9 +1,9 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/lib/log_utils.py
 
-Help on module log_utils:
+Help on module packages.appflow_tracer.lib.log_utils in packages.appflow_tracer.lib:
 
 NAME
-    log_utils - File Path: packages/appflow_tracer/lib/log_utils.py
+    packages.appflow_tracer.lib.log_utils - File Path: packages/appflow_tracer/lib/log_utils.py
 
 DESCRIPTION
     Description:

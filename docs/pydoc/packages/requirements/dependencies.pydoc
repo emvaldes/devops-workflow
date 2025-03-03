@@ -1,9 +1,9 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/packages/requirements/dependencies.py
 
-Help on module dependencies:
+Help on module packages.requirements.dependencies in packages.requirements:
 
 NAME
-    dependencies
+    packages.requirements.dependencies
 
 FUNCTIONS
     get_installed_version(package: str) -> Optional[str]

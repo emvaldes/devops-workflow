@@ -1,9 +1,9 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/tests/appflow_tracer/tracing/test_tracing.py
 
-Help on module test_tracing:
+Help on module tests.appflow_tracer.tracing.test_tracing in tests.appflow_tracer.tracing:
 
 NAME
-    test_tracing - Test Module: test_tracing.py
+    tests.appflow_tracer.tracing.test_tracing - Test Module: test_tracing.py
 
 DESCRIPTION
     This module contains unit tests for the `tracing.py` module in `appflow_tracer`.

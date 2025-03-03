@@ -2,10 +2,10 @@
 
 WARNING:root:runtime-params.json file exists but is invalid (empty or only contains the header).
 CRITICAL:root:ERROR: Exception occurred while running configure_params: 'str' object has no attribute 'get'
-Help on module system_params:
+Help on module lib.system_params in lib:
 
 NAME
-    system_params - File Path: ./lib/system_params.py
+    lib.system_params - File Path: ./lib/system_params.py
 
 DESCRIPTION
     Description:

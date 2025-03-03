@@ -1,4 +1,0 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/scripts/devops-workflow.py
-
-pydoc
-Problem generating pydoc: Command '['python', '-m', 'pydoc', '/Users/emvaldes/.repos/devops/workflows/scripts/devops-workflow.py']' returned non-zero exit status 1.

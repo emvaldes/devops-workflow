@@ -1,9 +1,9 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/parsing_userinput.py
 
-Help on module parsing_userinput:
+Help on module lib.parsing_userinput in lib:
 
 NAME
-    parsing_userinput - File Path: ./lib/parsing_userinput.py
+    lib.parsing_userinput - File Path: ./lib/parsing_userinput.py
 
 DESCRIPTION
     Description:

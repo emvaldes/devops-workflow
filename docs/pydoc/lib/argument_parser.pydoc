@@ -1,9 +1,9 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/argument_parser.py
 
-Help on module argument_parser:
+Help on module lib.argument_parser in lib:
 
 NAME
-    argument_parser - File Path: ./lib/argument_parser.py
+    lib.argument_parser - File Path: ./lib/argument_parser.py
 
 DESCRIPTION
     Description:

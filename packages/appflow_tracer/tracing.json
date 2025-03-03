@@ -13,10 +13,10 @@
     "logging": {
         "enable": true,
         "max_logfiles": 5,
-        "package_name": ".",
-        "module_name": "run",
-        "logs_dirname": "logs",
-        "log_filename": "logs/run.log"
+        "package_name": "appflow_tracer",
+        "module_name": "tracing",
+        "logs_dirname": "logs/appflow_tracer",
+        "log_filename": "logs/appflow_tracer/tracing.log"
     },
     "tracing": {
         "enable": true,
@@ -27,15 +27,15 @@
     "events": {
         "call": true,
         "critical": false,
-        "debug": true,
-        "error": true,
+        "debug": false,
+        "error": false,
         "import": false,
         "info": false,
         "return": true,
         "warning": false
     },
     "stats": {
-        "created": "2025-03-02T21:35:45.455404+00:00",
-        "updated": "2025-03-03T01:47:26.910976+00:00"
+        "created": "2025-03-03T01:28:13.678917+00:00",
+        "updated": "2025-03-03T01:31:25.961559+00:00"
     }
 }

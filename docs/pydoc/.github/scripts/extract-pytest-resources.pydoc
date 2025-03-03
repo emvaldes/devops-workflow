@@ -1,4 +1,0 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/.github/scripts/extract-pytest-resources.py
-
-pydoc
-Problem generating pydoc: Command '['python', '-m', 'pydoc', '/Users/emvaldes/.repos/devops/workflows/.github/scripts/extract-pytest-resources.py']' returned non-zero exit status 1.

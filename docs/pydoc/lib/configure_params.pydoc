@@ -1,9 +1,9 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/configure_params.py
 
-Help on module configure_params:
+Help on module lib.configure_params in lib:
 
 NAME
-    configure_params - File Path: ./lib/configure_params.py
+    lib.configure_params - File Path: ./lib/configure_params.py
 
 DESCRIPTION
     Description:

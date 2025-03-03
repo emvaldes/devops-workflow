@@ -1,9 +1,9 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/tests/requirements/dependencies/test_dependencies.py
 
-Help on module test_dependencies:
+Help on module tests.requirements.dependencies.test_dependencies in tests.requirements.dependencies:
 
 NAME
-    test_dependencies - Unit tests for the dependency management module.
+    tests.requirements.dependencies.test_dependencies - Unit tests for the dependency management module.
 
 DESCRIPTION
     This module contains tests for verifying the correct behavior of functions that load, install, and validate dependencies.

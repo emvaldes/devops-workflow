@@ -1,9 +1,9 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/scripts/testing.py
 
-Help on module testing:
+Help on module scripts.testing in scripts:
 
 NAME
-    testing - File Path: ./scripts/testing.py
+    scripts.testing - File Path: ./scripts/testing.py
 
 DESCRIPTION
     Description:

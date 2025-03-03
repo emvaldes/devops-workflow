@@ -1,9 +1,9 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/accesstoken_expiration.py
 
-Help on module accesstoken_expiration:
+Help on module lib.accesstoken_expiration in lib:
 
 NAME
-    accesstoken_expiration - File Path: ./lib/accesstoken_expiration.py
+    lib.accesstoken_expiration - File Path: ./lib/accesstoken_expiration.py
 
 DESCRIPTION
     Description:

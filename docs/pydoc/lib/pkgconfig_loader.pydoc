@@ -1,9 +1,9 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/pkgconfig_loader.py
 
-Help on module pkgconfig_loader:
+Help on module lib.pkgconfig_loader in lib:
 
 NAME
-    pkgconfig_loader - File Path: lib/pkgconfig_loader.py
+    lib.pkgconfig_loader - File Path: lib/pkgconfig_loader.py
 
 DESCRIPTION
     Description:
@@ -141,7 +141,7 @@ DATA
     project_logs = PosixPath('/Users/emvaldes/.repos/devops/workflows/logs...
     project_packages = PosixPath('/Users/emvaldes/.repos/devops/workflows/...
     project_root = PosixPath('/Users/emvaldes/.repos/devops/workflows')
-    timestamp = '20250302175506'
+    timestamp = '20250302184731'
 
 FILE
     /Users/emvaldes/.repos/devops/workflows/lib/pkgconfig_loader.py

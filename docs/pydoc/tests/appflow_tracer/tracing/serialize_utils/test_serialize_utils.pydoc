@@ -1,9 +1,9 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/tests/appflow_tracer/tracing/serialize_utils/test_serialize_utils.py
 
-Help on module test_serialize_utils:
+Help on module tests.appflow_tracer.tracing.serialize_utils.test_serialize_utils in tests.appflow_tracer.tracing.serialize_utils:
 
 NAME
-    test_serialize_utils - Test Module: ./tests/appflow_tracer/tracing/test_serialize_utils.py
+    tests.appflow_tracer.tracing.serialize_utils.test_serialize_utils - Test Module: ./tests/appflow_tracer/tracing/test_serialize_utils.py
 
 DESCRIPTION
     This module contains unit tests for the `serialize_utils.py` module in `appflow_tracer.lib`.

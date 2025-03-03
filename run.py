@@ -102,9 +102,26 @@ def generate_pydoc(file_path, doc_path):
 
     try:
 
-        print( f'Target File: {absolute_file_path}' )
+        log_utils.log_message(
+            f'Target File: {absolute_file_path}',
+            environment.category.debug.id,
+            configs=CONFIGS
+        )
+
+        # Convert file path to module name
+        module_name = absolute_file_path.replace(os.getcwd() + os.sep, "").replace(os.sep, ".").replace(".py", "")
+        log_utils.log_message(
+            f'Target Module: {module_name}',
+            environment.category.debug.id,
+            configs=CONFIGS
+        )
+
+
+
         # Run pydoc through subprocess to avoid manual parsing issues
-        command = ['python', '-m', 'pydoc', absolute_file_path]
+        # command = ['python', '-m', 'pydoc', absolute_file_path]
+        command = ['python', '-m', 'pydoc', module_name]
+
         pydoc_output = subprocess.check_output(command, stderr=subprocess.STDOUT, text=True)
 
         # # If the file is inside a package, convert the file path into a module path
@@ -126,20 +143,47 @@ def generate_pydoc(file_path, doc_path):
     except Exception as e:
     # except subprocess.CalledProcessError as e:
 
-        # If there is an error generating pydoc, create an empty file and log the error
+        ## If there is an error generating pydoc, create an empty file and log the error
         log_utils.log_message(
             f'[ERROR] generating pydoc for {file_path}: {e}',
             environment.category.error.id,
             configs=CONFIGS
         )
+        ## Split the file path into name and extension
+        file_root, _ = os.path.splitext(file_path)
+        error_file_path = f"{file_root}.error"
+        try:
+            os.rename(file_path, error_file_path)
+            log_utils.log_message(
+                f'Renamed {file_path} to {error_file_path} due to an error',
+                environment.category.debug.id,
+                configs=CONFIGS
+            )
+        except Exception as rename_error:
+            log_utils.log_message(
+                f'[ERROR] Failed to rename {file_path} to {error_file_path}: {rename_error}',
+                environment.category.error.id,
+                configs=CONFIGS
+            )
+        ## Create an empty documentation file with the error message
         with open(doc_file_path, "w", encoding="utf-8") as doc_file:
             doc_file.write(f"### Documentation for {file_path}\n\n")
             doc_file.write(f"pydoc\nProblem generating pydoc: {e}\n")
+
         log_utils.log_message(
             f'Created an empty .pydoc file due to an error for {file_path}',
             environment.category.debug.id,
             configs=CONFIGS
         )
+
+        # with open(doc_file_path, "w", encoding="utf-8") as doc_file:
+        #     doc_file.write(f"### Documentation for {file_path}\n\n")
+        #     doc_file.write(f"pydoc\nProblem generating pydoc: {e}\n")
+        # log_utils.log_message(
+        #     f'Created an empty .pydoc file due to an error for {file_path}',
+        #     environment.category.debug.id,
+        #     configs=CONFIGS
+        # )
 
 def scan_and_generate_docs(path_to_scan, base_doc_dir):
     """Scan the project directory and generate documentation for all Python files."""

@@ -1,9 +1,9 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/system_variables.py
 
-Help on module system_variables:
+Help on module lib.system_variables in lib:
 
 NAME
-    system_variables - File Path: ./lib/system_variables.py
+    lib.system_variables - File Path: ./lib/system_variables.py
 
 DESCRIPTION
     Description:
