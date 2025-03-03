@@ -1,42 +1,44 @@
 #!/usr/bin/env python3
 
 """
-File Path: ./lib/system_params.py
+File: ./lib/system_params.py
 
 Description:
-
-System Parameter Management
-
-This module handles system-wide parameter management by loading runtime
-parameters from JSON configuration files and merging them with environment variables.
+    System Parameter Management
+    This module handles system-wide parameter management by loading runtime
+    parameters from JSON configuration files and merging them with environment variables.
 
 Core Features:
-
-- **Configuration Loading**: Reads parameters from `runtime-params.json`, `project-params.json`, and `default-params.json`.
-- **Environment Variable Management**: Dynamically sets system-wide environment variables.
-- **Validation and Error Handling**: Ensures required parameters are initialized before execution.
-
-Primary Functions:
-
-- `load_json_config(filepath)`: Reads and validates JSON configuration files.
-- `get_runtime_variable(name, required)`: Retrieves an environment variable safely.
-- `configure_params()`: Merges and validates runtime parameters.
-
-Expected Behavior:
-
-- If a required environment variable is missing, an error is logged.
-- JSON files must be well-formed; otherwise, an error is raised.
-- All system parameters are loaded dynamically before execution.
-
-Dependencies:
-
-- `os`, `json`, `logging`, `dotenv`, `pathlib`
-- `lib.configure_params` (for JSON merging and validation)
+    - **Configuration Loading**: Reads parameters from `runtime-params.json`, `project-params.json`, and `default-params.json`.
+    - **Environment Variable Management**: Dynamically sets system-wide environment variables.
+    - **Validation and Error Handling**: Ensures required parameters are initialized before execution.
 
 Usage:
+    To load and initialize system parameters:
+    ```bash
+    python system_params.py
+    ```
 
-To load and initialize system parameters:
-> python system_params.py
+Dependencies:
+    - os
+    - json
+    - logging
+    - dotenv
+    - pathlib
+    - lib.configure_params (for JSON merging and validation)
+
+Global Variables:
+    - `SYSTEM_PARAMS` (dict): Loaded system-wide parameters.
+    - `RUNTIME_PARAMS` (dict): Parameters dynamically merged at runtime.
+
+Exit Codes:
+    - `0`: Successful execution.
+    - `1`: Failure due to missing configuration files or invalid environment variables.
+
+Example:
+    ```bash
+    python system_params.py
+    ```
 """
 
 import sys
@@ -46,6 +48,8 @@ import json
 import logging
 
 from dotenv import load_dotenv
+from typing import Optional  # Import Optional for type hints
+
 from pathlib import Path
 
 # Ensure the current directory is added to sys.path
@@ -66,7 +70,9 @@ from system_variables import (
     default_params_filepath
 )
 
-def load_json_config(runtime_params_filepath: Path) -> dict:
+def load_json_config(
+    runtime_params_filepath: Path
+) -> dict:
     """
     Load environment variables from a JSON configuration file.
 
@@ -82,23 +88,28 @@ def load_json_config(runtime_params_filepath: Path) -> dict:
 
     Returns:
         dict: The parsed JSON data containing system parameters.
+
+    Notes:
+        - If the file is empty, the function raises a `ValueError`.
+        - If the file contains invalid JSON, the function raises `RuntimeError`.
+        - Ensures robust error handling for corrupt or missing files.
     """
 
     try:
         with open(runtime_params_filepath, "r") as file:
             data = json.load(file)
             if not data:
-                raise ValueError(f'ERROR: Empty JSON file "{runtime_params_filepath}". Please check the contents.')
+                raise ValueError(f'[ERROR] Empty JSON file "{runtime_params_filepath}". Please check the contents.')
             return data
     except json.JSONDecodeError as e:
-        raise ValueError(f'ERROR: Invalid JSON structure in "{runtime_params_filepath}".\nDetails: {e}')
+        raise ValueError(f'[ERROR] Invalid JSON structure in "{runtime_params_filepath}".\nDetails: {e}')
     except Exception as e:
-        raise RuntimeError(f'ERROR: Unable to read "{runtime_params_filepath}". Details: {e}')
+        raise RuntimeError(f'[ERROR] Unable to read "{runtime_params_filepath}". Details: {e}')
 
 def get_runtime_variable(
     name: str,
     required: bool = False
-) -> str:
+) -> Optional[str]:
     """
     Retrieve an environment variable safely, handling missing or empty values.
 
@@ -113,7 +124,11 @@ def get_runtime_variable(
         RuntimeError: If there is an issue retrieving the environment variable.
 
     Returns:
-        str: The value of the environment variable, or None if it is missing.
+        Optional[str]: The value of the environment variable, or None if it is missing.
+
+    Notes:
+        - If `required=True` and the variable is missing, a warning is logged.
+        - If an exception occurs, `RuntimeError` is raised.
     """
 
     try:
@@ -124,6 +139,49 @@ def get_runtime_variable(
         return value
     except Exception as e:
         raise RuntimeError(f'ERROR: Unable to load environment variable "{name}". Details: {e}')
+
+def validate_runtime_params(
+    runtime_params_filepath
+):
+    """
+    Validates the existence and content of the runtime parameters JSON file.
+
+    This function checks whether the specified JSON file exists, is not empty,
+    and contains valid JSON. It raises appropriate exceptions if any of the
+    validation steps fail.
+
+    Args:
+        runtime_params_filepath (str or Path): The file path to the runtime parameters JSON file
+                                               that needs to be validated.
+
+    Raises:
+        FileNotFoundError: If the file specified by `runtime_params_filepath` does not exist.
+        ValueError: If the file is empty or if it does not contain valid JSON.
+
+    Notes:
+        - This function reads the file as a string, strips any leading or trailing whitespace,
+          and checks for content.
+        - The function ensures that the file contains valid JSON. If the file is malformed
+          or contains invalid JSON, a `ValueError` will be raised.
+        - If the file does not exist, a `FileNotFoundError` will be raised.
+
+    Example:
+        >>> validate_runtime_params("/path/to/runtime-params.json")
+        >>> # Raises ValueError if the file is empty or contains invalid JSON,
+        >>> # Raises FileNotFoundError if the file doesn't exist.
+    """
+
+    if not os.path.exists(runtime_params_filepath):
+        raise FileNotFoundError(f"{runtime_params_filepath} not found.")
+
+    with open(runtime_params_filepath, 'r') as file:
+        content = file.read().strip()
+        if not content:
+            raise ValueError(f"{runtime_params_filepath} is empty.")
+        try:
+            json.loads(content)  # Check if it's valid JSON
+        except json.JSONDecodeError:
+            raise ValueError(f"{runtime_params_filepath} contains invalid JSON.")
 
 ## Ensure runtime_params_filepath file exists, create it based on system-params file if missing
 if not runtime_params_filepath.exists():
@@ -164,24 +222,40 @@ else:
 
 ## Run configure_params() first to generate runtime-params file
 try:
+
     SYSTEM_PARAMS, RUNTIME_PARAMS = configure_params()
     # if not isinstance(RUNTIME_PARAMS, dict) or not all(isinstance(RUNTIME_PARAMS.get(section, {}), dict) for section in RUNTIME_PARAMS):
     #     logging.critical("ERROR: configure_params() did not return a dictionary with expected sections.")
     #     sys.exit(1)
+
+    # Add logging to inspect the structure of RUNTIME_PARAMS
+    logging.debug(f"Run-Time Parameters: {RUNTIME_PARAMS}")  # This will log the structure of RUNTIME_PARAMS
+
     # Check if the RUNTIME_PARAMS object is empty or missing expected keys before proceeding
     if not RUNTIME_PARAMS or not isinstance(RUNTIME_PARAMS, dict):
-        logging.warning("WARNING: RUNTIME_PARAMS is empty or not structured as expected, skipping further processing.")
+        logging.warning(
+            f'[WARNING] RUNTIME_PARAMS is empty or not structured as expected, skipping further processing.'
+        )
     else:
-        # Extract runtime variables dynamically
+        ## Extract runtime variables dynamically
+
+        # SECTIONS_VARS = {
+        #     section: {
+        #         key: value.get("default")
+        #         for key, value in section_data.get("options", {}).items()
+        #     }
+        #     for section, section_data in RUNTIME_PARAMS.items()
+        # }
+        # print( f'Sections Vars type:', type(SECTIONS_VARS))
+        # print( f'Section Vars: {SECTIONS_VARS}' )
+
         SECTIONS_VARS = {
             section: {
-                key: value.get("default")
-                for key, value in section_data.get("options", {}).items()
+                key: value.get("default") if isinstance(value, dict) else value
+                for key, value in section_data.get("options", {}).items() if isinstance(section_data, dict)
             }
             for section, section_data in RUNTIME_PARAMS.items()
         }
-        print( f'Sections Vars type:', type(SECTIONS_VARS))
-        print( f'Section Vars: {SECTIONS_VARS}' )
 
     # # Set environment variables for all sections
     # for section_name, section_vars in SECTIONS_VARS.items():
@@ -199,8 +273,9 @@ try:
     # #     os.environ["DEBUG"] = str(os.environ["DEBUG"].lower() == "true")
     # # if "VERBOSE" in os.environ:
     # #     os.environ["VERBOSE"] = str(os.environ["VERBOSE"].lower() == "true")
+
 except Exception as e:
-    logging.critical(f'ERROR: Exception occurred while running configure_params: {e}')
+    logging.critical(f'[ERROR] Exception occurred while running configure_params: {e}')
     # sys.exit(1)
 # ## Logging final merged configuration
 # logging.info("Default's merged configuration (RUNTIME_VARS):")

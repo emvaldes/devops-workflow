@@ -1,47 +1,51 @@
 #!/usr/bin/env python3
 
 """
-File Path: lib/pkgconfig_loader.py
+File: lib/pkgconfig_loader.py
 
 Description:
-
-Package Configuration Loader
-
-This module provides a centralized mechanism for dynamically loading
-package-specific configurations. It ensures consistency across logging,
-tracing, and runtime parameters.
+    Package Configuration Loader
+    This module provides a centralized mechanism for dynamically loading
+    package-specific configurations. It ensures consistency across logging,
+    tracing, and runtime parameters.
 
 Core Features:
-
-- **Dynamic Configuration Loading**: Reads settings from JSON config files.
-- **Logging Standardization**: Ensures uniform logging across all packages.
-- **Self-Inspection Mechanism**: Determines module-specific log file paths.
-- **Resilient JSON Parsing**: Handles corrupt or missing configuration files gracefully.
-
-Primary Functions:
-
-- `package_configs(overrides)`: Loads package configuration with optional overrides.
-- `setup_configs(absolute_path, logname_override)`: Initializes logging configuration for a module.
-
-Expected Behavior:
-
-- If a config file is missing, a default one is created.
-- JSON parsing errors trigger a warning and result in regeneration.
-- Logging configurations are structured for uniformity across modules.
-
-Dependencies:
-
-- `os`, `sys`, `json`, `pathlib`, `datetime`
-- `system_variables` (for directory paths and project settings)
+    - **Dynamic Configuration Loading**: Reads settings from JSON config files.
+    - **Logging Standardization**: Ensures uniform logging across all packages.
+    - **Self-Inspection Mechanism**: Determines module-specific log file paths.
+    - **Resilient JSON Parsing**: Handles corrupt or missing configuration files gracefully.
 
 Usage:
+    To load a package-specific configuration:
+    ```python
+    from lib.pkgconfig_loader import package_configs
+    config = package_configs()
+    ```
 
-To load a package-specific configuration:
-> from lib.pkgconfig_loader import package_configs
-> config = package_configs()
+    To set up logging for a module:
+    ```python
+    setup_configs("/path/to/module.py")
+    ```
 
-To set up logging for a module:
-> setup_configs("/path/to/module.py")
+Dependencies:
+    - os
+    - sys
+    - json
+    - pathlib
+    - datetime
+    - system_variables (for directory paths and project settings)
+
+Global Variables:
+    - `timestamp` (str): Unique timestamp used for log filenames.
+
+Exit Codes:
+    - `0`: Successful execution.
+    - `1`: Failure due to missing or invalid configuration files.
+
+Example:
+    ```bash
+    python pkgconfig_loader.py
+    ```
 """
 
 import os
@@ -72,7 +76,7 @@ timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
 
 def config_logfile(
     config: dict,
-    caller_log_path: str = None
+    caller_log_path: Optional[str] = None
 ) -> Path:
     """
     Determine the correct log file path based on the caller module's request or self-inspection.
@@ -83,10 +87,14 @@ def config_logfile(
 
     Args:
         config (dict): The configuration dictionary containing logging settings.
-        caller_log_path (str, optional): A specific log directory path requested by the caller.
+        caller_log_path (Optional[str], optional): A specific log directory path requested by the caller.
 
     Returns:
         Path: The resolved path for the log file.
+
+    Notes:
+        - If `caller_log_path` is provided, the function ensures the log file is stored there.
+        - If no caller path is provided, it defaults to the package-specific logging directory.
     """
 
     logs_dirname = Path(config["logging"]["logs_dirname"])
@@ -96,7 +104,9 @@ def config_logfile(
     else:
         return logs_dirname / f'{config["logging"]["package_name"]}_{timestamp}.log'
 
-def package_configs(overrides: dict = None) -> dict:
+def package_configs(
+    overrides: Optional[dict] = None
+) -> dict:
     """
     Load package configuration from a JSON file, or generate a default configuration if missing.
 
@@ -105,7 +115,7 @@ def package_configs(overrides: dict = None) -> dict:
     across packages. The function supports overriding specific configuration keys.
 
     Args:
-        overrides (dict, optional): A dictionary containing configuration values to override defaults.
+        overrides (Optional[dict], optional): A dictionary containing configuration values to override defaults.
 
     Raises:
         FileNotFoundError: If the JSON file is not found.
@@ -113,6 +123,10 @@ def package_configs(overrides: dict = None) -> dict:
 
     Returns:
         dict: The loaded or generated package configuration.
+
+    Notes:
+        - If the configuration file is missing, the function regenerates a default configuration.
+        - If an override dictionary is provided, its values take precedence over the defaults.
     """
 
     # config_file = Path(__file__).with_suffix(".json")
@@ -191,7 +205,7 @@ def package_configs(overrides: dict = None) -> dict:
 
 def setup_configs(
     absolute_path: Path,
-    logname_override: str = None,
+    logname_override: Optional[str] = None,
     events: Optional[Union[bool, list, dict]] = None
 ) -> dict:
     """
@@ -203,8 +217,8 @@ def setup_configs(
 
     Args:
         absolute_path (Path): The absolute path of the module requesting logging setup.
-        logname_override (str, optional): A custom name for the log file, if needed.
-        events (dict, optional): Events control settings.
+        logname_override (Optional[str], optional): A custom name for the log file, if needed.
+        events (Optional[Union[bool, list, dict]], optional): Events control settings.
 
     Raises:
         RuntimeError: If the function is called in an environment where the module path cannot be determined.
@@ -212,6 +226,17 @@ def setup_configs(
 
     Returns:
         dict: The updated logging configuration for the module.
+
+    Workflow:
+        1. Identifies the calling module's file path and extracts package details.
+        2. Determines the appropriate configuration file for logging.
+        3. Loads the configuration file if it exists; otherwise, regenerates it.
+        4. Updates logging settings and event controls.
+        5. Saves the updated configuration to disk.
+
+    Notes:
+        - This function ensures uniform logging behavior across different modules.
+        - Supports logging customization via `logname_override` and `events` parameters.
     """
 
     # Identify the calling module's file path

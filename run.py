@@ -77,8 +77,24 @@ from packages.appflow_tracer import tracing
 from packages.appflow_tracer.lib import log_utils
 from lib import system_variables as environment
 
-def create_doc_structure(base_path, package_name):
-    """Create the doc structure for the given package under the 'docs/pydoc' directory."""
+def create_doc_structure(
+    base_path,
+    package_name
+):
+    """
+    Create the doc structure for the given package under the 'docs/pydoc' directory.
+
+    This function ensures that the necessary directory structure for the documentation is created,
+    specifically within the `docs/pydoc` directory.
+
+    Args:
+        base_path (str): The base path where the documentation will be created.
+        package_name (str): The name of the package for which the documentation is being created.
+
+    Returns:
+        str: The path to the created documentation directory.
+    """
+
     # Get the project root where the run.py script is located
     project_root = Path(__file__).resolve().parent
 
@@ -87,8 +103,23 @@ def create_doc_structure(base_path, package_name):
     os.makedirs(doc_dir, exist_ok=True)
     return doc_dir
 
-def generate_pydoc(file_path, doc_path):
-    """Generate documentation for a given Python file using pydoc."""
+def generate_pydoc(
+    file_path,
+    doc_path
+):
+    """
+    Generate documentation for a given Python file using pydoc.
+
+    This function invokes the `pydoc` module to generate documentation for a Python file
+    and stores it in the specified documentation directory. If the generation fails, an error file is created.
+
+    Args:
+        file_path (str): The path to the Python file for which documentation will be generated.
+        doc_path (str): The directory where the generated documentation will be saved.
+
+    Returns:
+        None: This function does not return any value but generates documentation or handles errors.
+    """
 
     project_root = Path(__file__).resolve().parent
 
@@ -193,8 +224,23 @@ def generate_pydoc(file_path, doc_path):
             configs=CONFIGS
         )
 
-def scan_and_generate_docs(path_to_scan, base_doc_dir):
-    """Scan the project directory and generate documentation for all Python files."""
+def scan_and_generate_docs(
+    path_to_scan,
+    base_doc_dir
+):
+    """
+    Scan the project directory and generate documentation for all Python files.
+
+    This function walks through the project directory, scanning for all Python files,
+    excluding `__init__.py` and `__main__.py`, and generates documentation for each file.
+
+    Args:
+        path_to_scan (str): The base directory to scan for Python files.
+        base_doc_dir (str): The base directory where the documentation will be saved.
+
+    Returns:
+        None: This function does not return any value but generates documentation for each Python file found.
+    """
 
     log_utils.log_message(
         f'Scanning project directory for Python files...',
@@ -221,6 +267,9 @@ def parse_arguments() -> argparse.Namespace:
     Parse command-line arguments for specifying the requirements file
     and displaying the installed dependencies.
 
+    Args:
+        None
+
     Returns:
         argparse.Namespace: The parsed arguments object containing selected options.
     """
@@ -242,7 +291,19 @@ def parse_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 def main():
-    """Main function for handling user input and generating documentation."""
+    """
+    Main function for handling user input and generating documentation.
+
+    This function processes command-line arguments, generates documentation if requested,
+    or runs a specified Python module based on user input. It handles the configuration,
+    sets up logging, and invokes the appropriate functions based on the flags provided.
+
+    Args:
+        None
+
+    Returns:
+        None: This function does not return any value but performs the required actions based on user input.
+    """
 
     # Ensure the variable exists globally
     global CONFIGS

@@ -3,6 +3,34 @@
 ## File: .github/scripts/sanitize-parameters.shell
 ## Version: 0.0.1
 
+# Description:
+#
+# This script sanitizes command-line parameters, ensuring that they are properly formatted and
+# handling cases where JSON values are passed as parameters. It processes each parameter to check
+# if it contains valid JSON and attempts to fix malformed JSON strings.
+#
+# Features:
+# - Identifies command-line parameters of the form `--key=value`.
+# - Handles JSON strings passed as parameter values, ensuring they are valid.
+# - Attempts to fix malformed JSON strings by removing unwanted spaces and tabs.
+# - Returns sanitized parameters, with invalid or non-JSON values handled appropriately.
+
+# Expected Behavior:
+# - The script processes each parameter to ensure that valid JSON is properly formatted.
+# - It attempts to fix malformed JSON strings by applying transformations to remove extra spaces, tabs, or invalid characters.
+# - The sanitized parameters are returned in the correct format, and malformed JSON is either fixed or excluded.
+
+# Dependencies:
+# - jq (for handling and validating JSON)
+# - sed (for string manipulation)
+# - tr (for text transformations)
+
+# Usage:
+# To run the script with the parameters:
+# > ./scripts/sanitize-parameters.shell --key=value --jsonparam='{"key": "value"}'
+#
+# It will output the sanitized parameters, with invalid or unfixable JSON marked appropriately.
+
 # set -x ;
 set -e ;           # Exit on error
 set -o pipefail ;  # Fail if any piped command fails

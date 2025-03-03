@@ -6,8 +6,8 @@
 .outputs
 .project
 
-# .prototypes
-# *--prototype.*
+.prototypes
+*--prototype.*
 
 ## Ignore dynamically created installed.json
 packages/requirements/installed.json

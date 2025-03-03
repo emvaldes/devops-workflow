@@ -1,5 +1,77 @@
 #!/usr/bin/env python3
 
+"""
+File Path: packages/installer/install_requirements.py
+
+Description:
+    Dependency Management System
+    This module handles the installation and verification of dependencies listed
+    in a JSON requirements file. It supports both Pip and Brew (for macOS) package
+    managers to ensure the correct versions of dependencies are installed and up-to-date.
+
+Core Features:
+    - **Install Missing Dependencies**: Installs missing or outdated packages from a JSON file.
+    - **Verify Installed Packages**: Checks installed versions of packages and ensures compliance with the requirements.
+    - **Update Installed Packages**: Updates packages if necessary, ensuring all dependencies are correctly installed.
+    - **Show Installed Packages**: Displays the installed versions of dependencies, highlighting any discrepancies.
+
+Usage:
+    To install or update dependencies:
+    ```python
+    from install_requirements import install_requirements
+    install_requirements(requirements_file="requirements.json", configs=configs)
+    ```
+
+    To show the installed packages:
+    ```bash
+    python install_requirements.py --show-installed
+    ```
+
+Dependencies:
+    - subprocess
+    - argparse
+    - json
+    - importlib.metadata
+    - pathlib
+    - datetime
+    - lib.system_variables (for project-wide configurations)
+    - lib.pkgconfig_loader (for configuration handling)
+    - lib.log_utils (for logging messages)
+    - packages.appflow_tracer (for tracing setup)
+
+Global Variables:
+    - `CONFIGS`: Stores the effective configurations used for logging and package installation.
+    - `LIB_DIR`: Directory path for the `lib` directory.
+    - `requirements_file`: Path to the JSON file containing the dependencies.
+
+Primary Functions:
+    - `load_requirements(requirements_file, configs)`: Loads and parses the requirements JSON file.
+    - `get_installed_version(package)`: Returns the installed version of a package, checking both Pip and Brew.
+    - `install_requirements(requirements_file, configs)`: Installs or updates the required dependencies listed in the JSON file.
+    - `install_or_update_package(package, version, configs)`: Installs or updates a specific package using Pip or Brew.
+    - `is_brew_available()`: Checks if Brew (for macOS) is available on the system.
+    - `is_package_installed(package, version_info, configs)`: Verifies whether a package is installed and meets the required version.
+    - `parse_arguments()`: Parses the command-line arguments for specifying the requirements file and showing installed dependencies.
+    - `print_installed_packages(config_filepath, configs)`: Prints the installed packages in a human-readable format.
+    - `update_installed_packages(requirements_file, config_filepath, configs)`: Updates the status of installed packages and writes them to the installed JSON file.
+
+Expected Behavior:
+    - Installs or updates packages listed in the JSON file to ensure they are up-to-date.
+    - Verifies installed versions and logs appropriate messages.
+    - Displays installed packages and their statuses when requested.
+    - Logs the installation and verification process to assist with debugging.
+
+Exit Codes:
+    - `0`: Successful execution.
+    - `1`: Failure due to errors in installation, package not found, or missing configurations.
+
+Example:
+    ```python
+    from install_requirements import install_requirements
+    install_requirements("requirements.json", configs)
+    ```
+"""
+
 import sys
 import subprocess
 import argparse
@@ -29,6 +101,26 @@ def load_requirements(
     requirements_file: str,
     configs: dict
 ) -> list:
+    """
+    Load the dependencies from a JSON requirements file.
+
+    This function parses the JSON file, ensuring it contains the required dependencies
+    and extracting the package names and their versions.
+
+    Args:
+        requirements_file (str): The path to the requirements JSON file.
+        configs (dict): Configuration dictionary used for logging.
+
+    Returns:
+        list: A list of dictionaries containing package names and their respective versions.
+              Each dictionary contains the keys:
+                - 'package' (str): The package name.
+                - 'version' (dict): A dictionary with the package version.
+
+    Raises:
+        FileNotFoundError: If the requirements file does not exist.
+        ValueError: If the JSON structure is invalid or the 'dependencies' key is missing.
+    """
 
     requirements_path = Path(requirements_file).resolve()
     if not requirements_path.exists():
@@ -65,8 +157,22 @@ def load_requirements(
             f'ERROR: Invalid JSON structure in "{requirements_path}".\nDetails: {e}'
         )
 
-def get_installed_version(package: str) -> Optional[str]:
-    """Return the installed version of a package, first checking Pip, then Brew."""
+def get_installed_version(
+    package: str
+) -> Optional[str]:
+    """
+    Return the installed version of a package, first checking Pip, then Brew.
+
+    This function first checks if the package is installed via Pip, and if not,
+    checks if it is available via Brew (macOS).
+
+    Args:
+        package (str): The name of the package to check.
+
+    Returns:
+        Optional[str]: The installed version of the package as a string if found, otherwise None.
+    """
+
     try:
         return importlib.metadata.version(package)
     except importlib.metadata.PackageNotFoundError:
@@ -86,6 +192,31 @@ def get_installed_version(package: str) -> Optional[str]:
             pass  # If Brew check fails, return None
     return None  # If neither Pip nor Brew has the package
 
+# def install_requirements(
+#     requirements_file: str,
+#     configs: dict
+# ) -> None:
+#
+#     dependencies = load_requirements(
+#         requirements_file=requirements_file,
+#         configs=configs
+#     )
+#     if not dependencies:
+#         log_utils.log_message(
+#             "No dependencies found in requirements.json",
+#             environment.category.warning.id,
+#             configs=configs
+#         )
+#         return
+#     for dep in dependencies:
+#         package = dep["package"]
+#         version = dep["version"]
+#         install_or_update_package(
+#             package=package,
+#             version=version["target"],
+#             configs=configs
+#         )
+
 def install_requirements(
     requirements_file: str,
     configs: dict
@@ -98,45 +229,12 @@ def install_requirements(
 
     Args:
         requirements_file (str): The path to the JSON requirements file.
+        configs (dict): Configuration dictionary used for logging.
 
     Returns:
-        None
-
-    Example:
-        >>> install_requirements(
-                requirements_file="requirements.json",
-                configs=configs
-            )
-        Installing missing dependencies...
+        None: This function performs installations or updates but does not return any value.
     """
 
-    dependencies = load_requirements(
-        requirements_file=requirements_file,
-        configs=configs
-    )
-    if not dependencies:
-        log_utils.log_message(
-            "No dependencies found in requirements.json",
-            environment.category.warning.id,
-            configs=configs
-        )
-        return
-    for dep in dependencies:
-        package = dep["package"]
-        version = dep["version"]
-        install_or_update_package(
-            package=package,
-            version=version["target"],
-            configs=configs
-        )
-
-def install_requirements(
-    requirements_file: str,
-    configs: dict
-) -> None:
-    """
-    Verify required dependencies from a JSON requirements file.
-    """
     dependencies = load_requirements(
         requirements_file=requirements_file,
         configs=configs
@@ -172,13 +270,20 @@ def install_or_update_package(
     package: str,
     version: str = None,
     configs: dict = None
-):
+) -> None:
     """
     Install or update a package using Brew (if available) or Pip.
 
-    - If Brew is available, try installing/upgrading via Brew.
-    - If the package isn't found in Brew, fall back to Pip.
-    - If the package exists but is outdated, attempt an upgrade.
+    This function attempts to install or update a package by first checking if Brew
+    is available and then trying to install or upgrade using Pip if necessary.
+
+    Args:
+        package (str): The package name.
+        version (str, optional): The required version of the package (default: None).
+        configs (dict, optional): Configuration dictionary used for logging (default: None).
+
+    Returns:
+        None: This function installs or updates the package, but does not return any value.
     """
 
     installed_version = get_installed_version(package)
@@ -261,7 +366,15 @@ def install_or_update_package(
         )
 
 def is_brew_available() -> bool:
-    """Check if Homebrew is available on macOS."""
+    """
+    Check if Homebrew is available on macOS.
+
+    This function checks whether the system is running on macOS and if Homebrew is installed.
+
+    Returns:
+        bool: True if Brew is available on macOS, otherwise False.
+    """
+
     if sys.platform != "darwin":
         return False
     try:
@@ -283,6 +396,21 @@ def is_package_installed(
     version_info: dict,
     configs: dict
 ) -> bool:
+    """
+    Check if a package is installed and meets the required version.
+
+    This function checks if a package is installed, either via Pip or Brew (on macOS),
+    and verifies that the installed version meets the specified version requirement.
+
+    Args:
+        package (str): The package name.
+        version_info (dict): Dictionary containing version information.
+        configs (dict): Configuration dictionary used for logging.
+
+    Returns:
+        bool: True if the package is installed and the version matches the requirement,
+              otherwise False.
+    """
 
     version = version_info.get("target")
     if not version:
@@ -345,8 +473,14 @@ def parse_arguments() -> argparse.Namespace:
     Parse command-line arguments for specifying the requirements file
     and displaying the installed dependencies.
 
+    Args:
+        None
+
     Returns:
         argparse.Namespace: The parsed arguments object containing selected options.
+
+    Return Type: argparse.Namespace
+        Returns an argparse.Namespace object containing the parsed command-line arguments.
     """
 
     parser = argparse.ArgumentParser(
@@ -373,11 +507,15 @@ def print_installed_packages(
     """
     Print the installed dependencies in a readable format.
 
+    This function reads the installed packages from the specified file and logs
+    their names, required versions, installed versions, and current status.
+
     Args:
         config_filepath (str): Path to the installed.json file.
+        configs (dict): Configuration dictionary used for logging.
 
     Returns:
-        None
+        None: This function prints the installed package details but does not return any value.
     """
 
     if not Path(config_filepath).exists():
@@ -415,6 +553,22 @@ def update_installed_packages(
     config_filepath: str,
     configs: dict
 ) -> None:
+    """
+    Update the status of installed packages and write them to the installed JSON file.
+
+    This function checks the installed versions of the packages listed in the requirements
+    file and updates the status (installed, outdated, or newer) before writing the information
+    to the installed.json file.
+
+    Args:
+        requirements_file (str): The path to the requirements JSON file.
+        config_filepath (str): The path to the installed.json file.
+        configs (dict): Configuration dictionary used for logging.
+
+    Returns:
+        None: This function updates the installed package statuses and writes the data
+              to the installed.json file, without returning any value.
+    """
 
     dependencies = load_requirements(
         requirements_file,
@@ -479,6 +633,17 @@ def update_installed_packages(
 # ---------- Module operations:
 
 def main() -> None:
+    """
+    Entry point for the package installer. Sets up logging, processes command-line arguments,
+    and installs or updates dependencies from a JSON requirements file.
+
+    Args:
+        None
+
+    Returns:
+        None: This function serves as the main entry point, performing actions based on
+              the command-line arguments, such as installing or updating dependencies.
+    """
 
     # Ensure the variable exists globally
     global CONFIGS
