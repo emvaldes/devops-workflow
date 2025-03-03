@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: ./run.py
-# Version: 0.0.8
+# Version: 0.0.9
 
 """
 File Path: ./run.py
@@ -90,43 +90,48 @@ def create_doc_structure(base_path, package_name):
 def generate_pydoc(file_path, doc_path):
     """Generate documentation for a given Python file using pydoc."""
 
+    project_root = Path(__file__).resolve().parent
+
     log_utils.log_message(
         f'Generating documentation for {file_path}...',
         environment.category.debug.id,
         configs=CONFIGS
     )
 
-    # Convert the file path to an absolute path
-    absolute_file_path = os.path.abspath(file_path)
+    # Convert file path to relative project path
+    relative_file_path = os.path.relpath(file_path, start=project_root)
+    log_utils.log_message(
+        f'Relative File Path: {relative_file_path}',
+        environment.category.debug.id,
+        configs=CONFIGS
+    )
+
     file_name = os.path.basename(file_path)
     doc_file_path = os.path.join(doc_path, f"{os.path.splitext(file_name)[0]}.pydoc")
 
-    try:
-
-        log_utils.log_message(
-            f'Target PyDoc File: {absolute_file_path}',
-            environment.category.debug.id,
-            configs=CONFIGS
-        )
-        # Convert file path to module name
-        module_name = absolute_file_path.replace(os.getcwd() + os.sep, "").replace(os.sep, ".").replace(".py", "")
-        log_utils.log_message(
-            f'Target PyDoc Module: {module_name}',
-            environment.category.debug.id,
-            configs=CONFIGS
-        )
-
-        # Run pydoc through subprocess to avoid manual parsing issues
-        # command = ['python', '-m', 'pydoc', absolute_file_path]
+    # Determine correct command based on directory structure
+    if any(part.startswith('.') for part in Path(relative_file_path).parts):
+        # If any folder in the path starts with '.', treat it as a script
+        command = ['python', '-m', 'pydoc', f'./{relative_file_path}']
+    else:
+        # Otherwise, treat it as a module
+        module_name = relative_file_path.replace(os.sep, ".").replace(".py", "")
         command = ['python', '-m', 'pydoc', module_name]
-        pydoc_output = subprocess.check_output(command, stderr=subprocess.STDOUT, text=True)
 
-        # # If the file is inside a package, convert the file path into a module path
-        # module_name = absolute_file_path.replace(os.getcwd() + os.sep, "").replace(os.sep, ".").replace(".py", "")
-        # # Use pydoc to get the documentation for the module
-        # pydoc_output = pydoc.render_doc(module_name)
+    log_utils.log_message(
+        f'Running PyDoc Command: {" ".join(command)}',
+        environment.category.debug.id,
+        configs=CONFIGS
+    )
 
-        # Write the pydoc output to the .pydoc file
+    try:
+        # Run pydoc command and capture output
+        pydoc_output = subprocess.check_output(
+            command, stderr=subprocess.STDOUT,
+            text=True
+        )
+
+        # Write successful documentation output
         with open(doc_file_path, "w", encoding="utf-8") as doc_file:
             doc_file.write(f"### Documentation for {file_path}\n\n")
             doc_file.write(f"{pydoc_output}\n")
@@ -137,37 +142,42 @@ def generate_pydoc(file_path, doc_path):
             configs=CONFIGS
         )
 
-    except Exception as e:
-    # except subprocess.CalledProcessError as e:
-
-        ## If there is an error generating pydoc, create an empty file and log the error
+    except subprocess.CalledProcessError as e:
+        # Handle pydoc failures properly
         log_utils.log_message(
             f'[ERROR] generating pydoc for {file_path}: {e}',
             environment.category.error.id,
             configs=CONFIGS
         )
+
         ## Split the file path into name and extension
         # file_root, _ = os.path.splitext(file_path)
         error_file_path = f'{doc_file_path}.error'
 
         try:
-            # os.rename(file_path, error_file_path)
-            os.rename(doc_file_path, error_file_path)
-            log_utils.log_message(
-                f'Renamed {doc_file_path} to {error_file_path} due to an error',
-                environment.category.debug.id,
-                configs=CONFIGS
-            )
+            if os.path.exists(doc_file_path):
+                os.rename(doc_file_path, error_file_path)
+                log_utils.log_message(
+                    f'Renamed {doc_file_path} to {error_file_path} due to an error',
+                    environment.category.debug.id,
+                    configs=CONFIGS
+                )
+            else:
+                log_utils.log_message(
+                    f'[WARNING] Skipping rename: {doc_file_path} does not exist, logging error message instead.',
+                    environment.category.warning.id,
+                    configs=CONFIGS
+                )
         except Exception as rename_error:
+            ## If there is an error generating pydoc, create an empty file and log the error
             log_utils.log_message(
                 f'[ERROR] Failed to rename {doc_file_path} to {error_file_path}: {rename_error}',
                 environment.category.error.id,
                 configs=CONFIGS
             )
 
-        ## Create an empty documentation file with the error message
+        # Write error message to the error file
         with open(error_file_path, "a", encoding="utf-8") as error_file:
-            # error_file.write(f"### Documentation for {file_path}\n\n")
             error_file.write(f"PyDoc Error:\n{e}\n")
 
         log_utils.log_message(
@@ -176,16 +186,12 @@ def generate_pydoc(file_path, doc_path):
             configs=CONFIGS
         )
 
-        # with open(doc_file_path, "w", encoding="utf-8") as doc_file:
-        #     doc_file.write(f"### Documentation for {file_path}\n\n")
-        #     doc_file.write(f"pydoc\nProblem generating pydoc: {e}\n")
-        # log_utils.log_message(
-        #     f'Created an empty .pydoc file due to an error for {file_path}',
-        #     environment.category.debug.id,
-        #     configs=CONFIGS
-        # )
-
-    # finally:
+    finally:
+        log_utils.log_message(
+            f'Finished processing {file_path}',
+            environment.category.debug.id,
+            configs=CONFIGS
+        )
 
 def scan_and_generate_docs(path_to_scan, base_doc_dir):
     """Scan the project directory and generate documentation for all Python files."""
@@ -197,7 +203,7 @@ def scan_and_generate_docs(path_to_scan, base_doc_dir):
     )
 
     # Walk through the directory and process Python files
-    for root, dirs, files in os.walk(path_to_scan):
+    for root, _, files in os.walk(path_to_scan):
         py_files = [f for f in files if f.endswith(".py") and f not in ["__init__.py", "__main__.py"]]
 
         for py_file in py_files:

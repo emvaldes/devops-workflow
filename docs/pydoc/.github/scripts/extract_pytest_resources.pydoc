@@ -1,0 +1,77 @@
+### Documentation for /Users/emvaldes/.repos/devops/workflows/.github/scripts/extract_pytest_resources.py
+
+Help on module extract_pytest_resources:
+
+NAME
+    extract_pytest_resources - File Path: .github/scripts/extract_pytest_resources.py
+
+DESCRIPTION
+    Description:
+
+    PyTest Resource Extractor
+
+    This module scans a list of pytest test files, extracts function names following
+    the pytest naming convention, and stores the results in JSON format.
+
+    Core Features:
+
+    - **Automatic PyTest Resource Extraction**: Identifies test function definitions.
+    - **Relative Path Resolution**: Normalizes file paths to a base location.
+    - **Structured Output**: Saves extracted resources in a structured JSON format.
+    - **File Validation**: Ensures that all input test files exist before processing.
+    - **Error Handling**: Logs warnings for missing or unreadable files instead of failing abruptly.
+    - **JSON Integrity Check**: Validates the output JSON file after writing.
+
+    Primary Functions:
+
+    - `extract_pytest_resources(pytest_files)`: Reads and processes pytest files.
+    - `validate_json_output(pytest_mapping)`: Ensures the JSON file exists and follows the expected structure.
+
+    Expected Behavior:
+
+    - If an input file is missing, a warning is displayed, but execution continues.
+    - If no valid test functions are found, an error message is logged.
+    - JSON output is validated to prevent incorrect or malformed results.
+    - The script exits with an appropriate status code based on the success or failure of extraction.
+
+    Dependencies:
+
+    - `re` (for regex-based function extraction)
+    - `json` (for structured output)
+    - `sys`, `os` (for file and argument handling)
+
+    Usage:
+
+    To extract pytest resources from a JSON list of test files and save them to an output JSON file:
+    > python .github/scripts/extract_pytest_resources.py '<pytest_listing>' '<pytest_mapping>'
+
+    Example:
+    > python .github/scripts/extract_pytest_resources.py '["test_example.py"]' "pytest_resources.json"
+
+FUNCTIONS
+    extract_pytest_resources(pytest_files)
+        Extracts function names that match the pytest naming pattern from the provided test files.
+
+        Args:
+            pytest_files (list): List of pytest test files to process.
+
+        Returns:
+            dict: A dictionary where keys are file paths, and values are lists of extracted function names.
+
+    main()
+        Main function to handle argument parsing and execution flow.
+
+    validate_json_output(pytest_mapping)
+        Validates that the generated JSON file exists and has the correct structure.
+
+        Args:
+            pytest_mapping (str): Path to the JSON output file.
+
+        Returns:
+            bool: True if the file is valid, False otherwise.
+
+FILE
+    /Users/emvaldes/.repos/devops/workflows/.github/scripts/extract_pytest_resources.py
+
+
+
