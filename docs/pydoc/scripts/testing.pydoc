@@ -1,4 +1,4 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/scripts/testing.py
+### Documentation for scripts/testing.py
 
 Help on module scripts.testing in scripts:
 
@@ -63,10 +63,10 @@ FUNCTIONS
             I am a stand-alone script minding my own business.
 
 DATA
-    PROJECT_ROOT = PosixPath('/Users/emvaldes/.repos/devops/workflows')
+    PROJECT_ROOT = PosixPath('<project-location>')
 
 FILE
-    /Users/emvaldes/.repos/devops/workflows/scripts/testing.py
+    <project-location>/scripts/testing.py
 
 
 

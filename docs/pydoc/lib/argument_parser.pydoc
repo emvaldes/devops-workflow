@@ -1,4 +1,4 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/argument_parser.py
+### Documentation for lib/argument_parser.py
 
 Help on module lib.argument_parser in lib:
 
@@ -157,10 +157,10 @@ DATA
     Dict = typing.Dict
         A generic version of dict.
 
-    system_params_filepath = PosixPath('/Users/emvaldes/.repos/devops/work...
+    system_params_filepath = PosixPath('<user-home>/.repos/devops/work...
 
 FILE
-    /Users/emvaldes/.repos/devops/workflows/lib/argument_parser.py
+    <project-location>/lib/argument_parser.py
 
 
 

@@ -1,4 +1,4 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/lib/file_utils.py
+### Documentation for packages/appflow_tracer/lib/file_utils.py
 
 Help on module packages.appflow_tracer.lib.file_utils in packages.appflow_tracer.lib:
 
@@ -150,11 +150,11 @@ DATA
     category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
     default_indent = 4
     max_logfiles = 5
-    project_logs = PosixPath('/Users/emvaldes/.repos/devops/workflows/logs...
-    project_root = PosixPath('/Users/emvaldes/.repos/devops/workflows')
+    project_logs = PosixPath('<project-location>/logs...
+    project_root = PosixPath('<project-location>')
 
 FILE
-    /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/lib/file_utils.py
+    <project-location>/packages/appflow_tracer/lib/file_utils.py
 
 
 

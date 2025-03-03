@@ -1,4 +1,4 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/packages/requirements/dependencies.py
+### Documentation for packages/requirements/dependencies.py
 
 Help on module packages.requirements.dependencies in packages.requirements:
 
@@ -219,7 +219,7 @@ FUNCTIONS
                   to the installed.json file, without returning any value.
 
 DATA
-    LIB_DIR = PosixPath('/Users/emvaldes/.repos/devops/workflows/lib')
+    LIB_DIR = PosixPath('<project-location>/lib')
     Optional = typing.Optional
         Optional[X] is equivalent to Union[X, None].
 
@@ -254,7 +254,7 @@ DATA
         - You can use Optional[X] as a shorthand for Union[X, None].
 
 FILE
-    /Users/emvaldes/.repos/devops/workflows/packages/requirements/dependencies.py
+    <project-location>/packages/requirements/dependencies.py
 
 
 

@@ -1,4 +1,4 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/accesstoken_expiration.py
+### Documentation for lib/accesstoken_expiration.py
 
 Help on module lib.accesstoken_expiration in lib:
 
@@ -136,7 +136,7 @@ DATA
     TokenScope = 'https://management.azure.com/'
 
 FILE
-    /Users/emvaldes/.repos/devops/workflows/lib/accesstoken_expiration.py
+    <project-location>/lib/accesstoken_expiration.py
 
 
 

@@ -1,6 +1,6 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/tests/appflow_tracer/tracing/trace_utils/test_trace_utils.py
+### Documentation for tests/appflow_tracer/tracing/trace_utils/test_trace_utils.py
 
-[91mDeleted old log: logs/tests/appflow_tracer/tracing/trace_utils/test_trace_utils_20250303113631.log[0m
+[91mDeleted old log: logs/tests/appflow_tracer/tracing/trace_utils/test_trace_utils_20250303115517.log[0m
 Help on module tests.appflow_tracer.tracing.trace_utils.test_trace_utils in tests.appflow_tracer.tracing.trace_utils:
 
 NAME
@@ -173,11 +173,11 @@ FUNCTIONS
 
 DATA
     CONFIGS = {'colors': {'CALL': '\x1b[92m', 'CRITICAL': '\x1b[41m', 'DEB...
-    ROOT_DIR = PosixPath('/Users/emvaldes/.repos/devops/workflows')
+    ROOT_DIR = PosixPath('<project-location>')
     category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
 
 FILE
-    /Users/emvaldes/.repos/devops/workflows/tests/appflow_tracer/tracing/trace_utils/test_trace_utils.py
+    <project-location>/tests/appflow_tracer/tracing/trace_utils/test_trace_utils.py
 
 
 

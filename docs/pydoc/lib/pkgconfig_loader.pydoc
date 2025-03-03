@@ -1,4 +1,4 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/pkgconfig_loader.py
+### Documentation for lib/pkgconfig_loader.py
 
 Help on module lib.pkgconfig_loader in lib:
 
@@ -161,13 +161,13 @@ DATA
     category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
     default_indent = 4
     max_logfiles = 5
-    project_logs = PosixPath('/Users/emvaldes/.repos/devops/workflows/logs...
-    project_packages = PosixPath('/Users/emvaldes/.repos/devops/workflows/...
-    project_root = PosixPath('/Users/emvaldes/.repos/devops/workflows')
-    timestamp = '20250303122606'
+    project_logs = PosixPath('<project-location>/logs...
+    project_packages = PosixPath('<project-location>/...
+    project_root = PosixPath('<project-location>')
+    timestamp = '20250303131724'
 
 FILE
-    /Users/emvaldes/.repos/devops/workflows/lib/pkgconfig_loader.py
+    <project-location>/lib/pkgconfig_loader.py
 
 
 

@@ -1,4 +1,4 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/tracing.py
+### Documentation for packages/appflow_tracer/tracing.py
 
 Help on module packages.appflow_tracer.tracing in packages.appflow_tracer:
 
@@ -475,7 +475,7 @@ FUNCTIONS
 
 DATA
     CONFIGS = None
-    LIB_DIR = PosixPath('/Users/emvaldes/.repos/devops/workflows/lib')
+    LIB_DIR = PosixPath('<project-location>/lib')
     LOGGING = None
     Optional = typing.Optional
         Optional[X] is equivalent to Union[X, None].
@@ -512,11 +512,11 @@ DATA
 
     default_indent = 4
     logger = None
-    project_logs = PosixPath('/Users/emvaldes/.repos/devops/workflows/logs...
-    project_root = PosixPath('/Users/emvaldes/.repos/devops/workflows')
+    project_logs = PosixPath('<project-location>/logs...
+    project_root = PosixPath('<project-location>')
 
 FILE
-    /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/tracing.py
+    <project-location>/packages/appflow_tracer/tracing.py
 
 
 

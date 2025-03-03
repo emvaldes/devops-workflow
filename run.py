@@ -51,6 +51,8 @@ import sys
 
 import subprocess
 import argparse
+
+import re
 import json
 
 import pydoc
@@ -129,7 +131,7 @@ def generate_pydoc(
         configs=CONFIGS
     )
 
-    # Convert file path to relative project path
+    ## Convert file path to relative project path
     relative_file_path = os.path.relpath(file_path, start=project_root)
     log_utils.log_message(
         f'Relative File Path: {relative_file_path}',
@@ -140,12 +142,12 @@ def generate_pydoc(
     file_name = os.path.basename(file_path)
     doc_file_path = os.path.join(doc_path, f"{os.path.splitext(file_name)[0]}.pydoc")
 
-    # Determine correct command based on directory structure
+    ## Determine correct command based on directory structure
     if any(part.startswith('.') for part in Path(relative_file_path).parts):
-        # If any folder in the path starts with '.', treat it as a script
+        ## If any folder in the path starts with '.', treat it as a script
         command = ['python', '-m', 'pydoc', f'./{relative_file_path}']
     else:
-        # Otherwise, treat it as a module
+        ## Otherwise, treat it as a module
         module_name = relative_file_path.replace(os.sep, ".").replace(".py", "")
         command = ['python', '-m', 'pydoc', module_name]
 
@@ -156,16 +158,26 @@ def generate_pydoc(
     )
 
     try:
-        # Run pydoc command and capture output
+        ## Run pydoc command and capture output
         pydoc_output = subprocess.check_output(
             command, stderr=subprocess.STDOUT,
             text=True
         )
 
-        # Write successful documentation output
+        ## Now, subtract the project_root part from file_path to get the relative path
+        relative_path = file_path.relative_to(project_root)
+
+        # Perform both sanitizations in one step using regex
+        sanitized_output = re.sub(
+            rf'({re.escape(str( project_root ))}|{re.escape(str( Path.home() ))})',
+            lambda match: "<project-location>" if match.group(0) == str( project_root ) else "<user-home>",
+            pydoc_output
+        )
+
+        ## Write successful documentation output
         with open(doc_file_path, "w", encoding="utf-8") as doc_file:
-            doc_file.write(f"### Documentation for {file_path}\n\n")
-            doc_file.write(f"{pydoc_output}\n")
+            doc_file.write(f"### Documentation for {relative_path}\n\n")
+            doc_file.write(f"{sanitized_output}\n")
 
         log_utils.log_message(
             f'Documentation saved to {doc_file_path}',
@@ -174,7 +186,7 @@ def generate_pydoc(
         )
 
     except subprocess.CalledProcessError as e:
-        # Handle pydoc failures properly
+        ## Handle pydoc failures properly
         log_utils.log_message(
             f'[ERROR] generating pydoc for {file_path}: {e}',
             environment.category.error.id,
@@ -207,7 +219,7 @@ def generate_pydoc(
                 configs=CONFIGS
             )
 
-        # Write error message to the error file
+        ## Write error message to the error file
         with open(error_file_path, "a", encoding="utf-8") as error_file:
             error_file.write(f"PyDoc Error:\n{e}\n")
 
@@ -259,7 +271,7 @@ def scan_and_generate_docs(
             # Create the directory for the pydoc files
             doc_dir = create_doc_structure(base_doc_dir, relative_dir)
 
-            file_path = os.path.join(root, py_file)
+            file_path = Path(os.path.join(root, py_file))
             generate_pydoc(file_path, doc_dir)
 
 def parse_arguments() -> argparse.Namespace:

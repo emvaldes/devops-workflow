@@ -1,4 +1,4 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/parsing_userinput.py
+### Documentation for lib/parsing_userinput.py
 
 Help on module lib.parsing_userinput in lib:
 
@@ -134,7 +134,7 @@ FUNCTIONS
             - The returned dictionary contains user-provided inputs mapped to their respective variables.
 
 FILE
-    /Users/emvaldes/.repos/devops/workflows/lib/parsing_userinput.py
+    <project-location>/lib/parsing_userinput.py
 
 
 

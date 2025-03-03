@@ -1,4 +1,4 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/run.py
+### Documentation for run.py
 
 Help on module run:
 
@@ -109,10 +109,10 @@ FUNCTIONS
             None: This function does not return any value but generates documentation for each Python file found.
 
 DATA
-    LIB_DIR = PosixPath('/Users/emvaldes/.repos/devops/workflows/lib')
+    LIB_DIR = PosixPath('<project-location>/lib')
 
 FILE
-    /Users/emvaldes/.repos/devops/workflows/run.py
+    <project-location>/run.py
 
 
 

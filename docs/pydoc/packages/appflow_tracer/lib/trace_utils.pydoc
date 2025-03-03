@@ -1,4 +1,4 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/lib/trace_utils.py
+### Documentation for packages/appflow_tracer/lib/trace_utils.py
 
 Help on module packages.appflow_tracer.lib.trace_utils in packages.appflow_tracer.lib:
 
@@ -173,7 +173,7 @@ DATA
     category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
 
 FILE
-    /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/lib/trace_utils.py
+    <project-location>/packages/appflow_tracer/lib/trace_utils.py
 
 
 

@@ -1,4 +1,4 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/configure_params.py
+### Documentation for lib/configure_params.py
 
 Help on module lib.configure_params in lib:
 
@@ -245,16 +245,16 @@ DATA
         - You can use Optional[X] as a shorthand for Union[X, None].
 
     env_file_header = '## Environment variables (auto-generated)\n\n'
-    env_filepath = PosixPath('/Users/emvaldes/.repos/devops/workflows/.env...
-    project_root = PosixPath('/Users/emvaldes/.repos/devops/workflows')
+    env_filepath = PosixPath('<project-location>/.env...
+    project_root = PosixPath('<project-location>')
     runtime_params_filename = 'runtime-params.json'
-    runtime_params_filepath = PosixPath('/Users/emvaldes/.repos/devops/wor...
+    runtime_params_filepath = PosixPath('<user-home>/.repos/devops/wor...
     system_params_filename = 'system-params.json'
-    system_params_filepath = PosixPath('/Users/emvaldes/.repos/devops/work...
-    system_params_listing = [PosixPath('/Users/emvaldes/.repos/devops/work...
+    system_params_filepath = PosixPath('<user-home>/.repos/devops/work...
+    system_params_listing = [PosixPath('<user-home>/.repos/devops/work...
 
 FILE
-    /Users/emvaldes/.repos/devops/workflows/lib/configure_params.py
+    <project-location>/lib/configure_params.py
 
 
 

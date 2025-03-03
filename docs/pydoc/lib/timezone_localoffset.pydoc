@@ -1,4 +1,4 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/timezone_localoffset.py
+### Documentation for lib/timezone_localoffset.py
 
 Help on module lib.timezone_localoffset in lib:
 
@@ -100,7 +100,7 @@ DATA
     LocalTimeZone = None
 
 FILE
-    /Users/emvaldes/.repos/devops/workflows/lib/timezone_localoffset.py
+    <project-location>/lib/timezone_localoffset.py
 
 
 

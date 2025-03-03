@@ -1,4 +1,4 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/.github/scripts/extract_pytest_resources.py
+### Documentation for .github/scripts/extract_pytest_resources.py
 
 Help on module extract_pytest_resources:
 
@@ -197,7 +197,7 @@ DATA
         - You can use Optional[X] as a shorthand for Union[X, None].
 
 FILE
-    /Users/emvaldes/.repos/devops/workflows/.github/scripts/extract_pytest_resources.py
+    <project-location>/.github/scripts/extract_pytest_resources.py
 
 
 

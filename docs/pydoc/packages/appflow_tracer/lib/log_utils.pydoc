@@ -1,4 +1,4 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/lib/log_utils.py
+### Documentation for packages/appflow_tracer/lib/log_utils.py
 
 Help on module packages.appflow_tracer.lib.log_utils in packages.appflow_tracer.lib:
 
@@ -173,7 +173,7 @@ DATA
     log_levels = {'CALL': 20, 'CRITICAL': 50, 'DEBUG': 10, 'ERROR': 40, 'I...
 
 FILE
-    /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/lib/log_utils.py
+    <project-location>/packages/appflow_tracer/lib/log_utils.py
 
 
 

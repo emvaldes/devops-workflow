@@ -1,4 +1,4 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/manage_accesstoken.py
+### Documentation for lib/manage_accesstoken.py
 
 Help on module lib.manage_accesstoken in lib:
 
@@ -89,7 +89,7 @@ FUNCTIONS
             - If an error occurs, execution is halted with a non-zero exit code.
 
 FILE
-    /Users/emvaldes/.repos/devops/workflows/lib/manage_accesstoken.py
+    <project-location>/lib/manage_accesstoken.py
 
 
 
