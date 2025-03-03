@@ -1,6 +1,6 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/tests/appflow_tracer/tracing/file_utils/test_file_utils.py
 
-[91mDeleted old log: logs/tests/appflow_tracer/tracing/file_utils/test_file_utils_20250303071225.log[0m
+[91mDeleted old log: logs/tests/appflow_tracer/tracing/file_utils/test_file_utils_20250303111048.log[0m
 Help on module tests.appflow_tracer.tracing.file_utils.test_file_utils in tests.appflow_tracer.tracing.file_utils:
 
 NAME
@@ -47,41 +47,64 @@ DESCRIPTION
     - **Logging is only enabled when explicitly set in `CONFIGS`.**
     - **Path handling and text sanitization functions operate as expected.**
 
-    Author: Eduardo Valdes
-    Date: 2025/01/01
-
 FUNCTIONS
     mock_configs()
-        Mock CONFIGS globally for test stability.
+        Mock `CONFIGS` globally for test stability.
+
+        This fixture ensures that the `CONFIGS` dictionary is mocked globally during tests to provide consistent configuration.
+        It modifies the `max_logfiles` value to 6 to trigger log file deletion during testing. The fixture uses `patch` to mock
+        the `CONFIGS` object and ensure the tests can control and manipulate configuration settings during execution.
+
+        The fixture is useful for ensuring that tests can simulate different configurations without requiring actual changes
+        to the `CONFIGS` object or the underlying system.
+
+        Yields:
+            dict: The mocked `CONFIGS` dictionary, with modified values for testing purposes.
 
     test_is_project_file() -> None
         Ensure `file_utils.is_project_file()` correctly identifies project files and rejects external ones.
 
-        Tests:
+        This test checks that the `is_project_file()` function in the `file_utils` module:
         - Identifies valid project file paths within the root directory.
-        - Ensures external paths (outside project scope) return `False`.
+        - Ensures external paths (outside the project scope) return `False`.
 
-    test_manage_logfiles()
+        Returns:
+            None: This test function does not return any value.
+            It asserts that the function behaves correctly.
+
+    test_manage_logfiles() -> None
         Simulates log file cleanup by `file_utils.manage_logfiles()` and validates the list of deleted logs.
 
-        Tests:
-        - Simulates an environment with excess log files.
-        - Ensures the oldest logs are deleted while respecting `max_logfiles`.
-        - Compares expected vs. actual deleted logs to validate accuracy.
+        This test ensures that the `manage_logfiles()` function correctly:
+        - Simulates an environment where there are more log files than the `max_logfiles` limit.
+        - Deletes the oldest logs while respecting the `max_logfiles` constraint.
+        - Compares the expected deleted logs against the actual deleted logs.
+
+        Returns:
+            None: This test function does not return any value.
+            It validates that the log management function works as expected.
 
     test_relative_path() -> None
         Ensure `file_utils.relative_path()` correctly converts absolute paths into project-relative paths.
 
-        Tests:
+        This test verifies that the `relative_path()` function:
         - Converts absolute file paths into a standardized project-relative format.
-        - Ensures `.py` file extensions are stripped from the final output.
+        - Strips `.py` file extensions from the final output to ensure consistency.
+
+        Returns:
+            None: This test function does not return any value.
+            It asserts that the relative path conversion is correct.
 
     test_remove_ansi_escape_codes() -> None
         Verify `file_utils.remove_ansi_escape_codes()` correctly strips ANSI formatting sequences from text.
 
-        Tests:
-        - Removes ANSI escape codes from formatted text.
+        This test ensures that the `remove_ansi_escape_codes()` function:
+        - Strips ANSI escape codes (e.g., color codes) from formatted text.
         - Ensures the cleaned output maintains readability without formatting artifacts.
+
+        Returns:
+            None: This test function does not return any value.
+            It checks that the output text is cleaned of escape codes.
 
 DATA
     CONFIGS = {'colors': {'CALL': '\x1b[92m', 'CRITICAL': '\x1b[41m', 'DEB...

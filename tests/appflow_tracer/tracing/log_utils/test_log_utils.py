@@ -43,8 +43,6 @@ It ensures that logging functions operate correctly, including:
 - **ANSI color formatting is applied to console logs** where applicable.
 - **Tests correctly handle different JSON output formats** based on configuration.
 
-Author: Eduardo Valdes
-Date: 2025/01/01
 """
 
 import sys
@@ -78,19 +76,38 @@ CONFIGS["tracing"]["enable"] = False  # Disable tracing to prevent unintended pr
 
 @pytest.fixture
 def mock_logger() -> MagicMock:
-    """Creates a mock logger for testing."""
+    """
+    Creates a mock logger for testing.
+
+    This fixture creates and returns a mock instance of the `logging.Logger` class using `MagicMock`. It allows for simulating
+    logging behavior without writing to actual log files. The mock logger is useful for testing functions or methods that
+    rely on logging, ensuring that logging calls are made correctly without affecting external logging systems.
+
+    Returns:
+        MagicMock: A mock logger object that mimics a `logging.Logger` instance.
+    """
+
     logger = MagicMock(spec=logging.Logger)
     return logger
 
-# Test log_utils.log_message function
-def test_log_message(mock_logger) -> None:
-    """Test that `log_utils.log_message()` correctly logs messages based on configuration.
-
-    Tests:
-    - Ensures messages are routed to the correct logging destinations (file/console).
-    - Verifies that JSON metadata is included in logs when provided.
-    - Checks that log level categorization is correctly applied.
+def test_log_message(
+    mock_logger
+) -> None:
     """
+    Test that `log_utils.log_message()` correctly logs messages based on configuration.
+
+    This test checks that:
+    - Log messages are correctly routed to file and console based on the configuration.
+    - JSON metadata is included in the log message when provided.
+    - Log levels (INFO, WARNING, ERROR, etc.) are properly categorized and logged.
+
+    Args:
+        mock_logger (MagicMock): Mock logger object used to capture log output.
+
+    Returns:
+        None: This function does not return a value. It asserts that logging behavior is as expected.
+    """
+
     with patch(
         "packages.appflow_tracer.lib.log_utils.output_logfile"
     ) as mock_output_logfile, \
@@ -114,15 +131,24 @@ def test_log_message(mock_logger) -> None:
         if CONFIGS["tracing"].get("enable", False):
             mock_output_console.assert_called_once()
 
-# Test log_utils.output_logfile function
-def test_output_logfile(mock_logger) -> None:
-    """Test that `log_utils.output_logfile()` writes correctly formatted messages to a log file.
-
-    Tests:
-    - Ensures log messages are structured correctly when written to a file.
-    - Verifies JSON metadata is preserved and formatted properly.
-    - Validates that INFO, WARNING, and ERROR log levels are categorized correctly.
+def test_output_logfile(
+    mock_logger
+) -> None:
     """
+    Test that `log_utils.output_logfile()` writes correctly formatted messages to a log file.
+
+    This test validates that:
+    - Log messages written to a file are structured correctly, including proper categorization by log level.
+    - JSON metadata is included and formatted properly.
+    - Different log levels (INFO, WARNING, ERROR) are categorized correctly.
+
+    Args:
+        mock_logger (MagicMock): Mock logger object to verify output.
+
+    Returns:
+        None: This function does not return a value. It asserts that the log file output matches the expected format.
+    """
+
     with patch.object(
         mock_logger,
         "info"
@@ -176,8 +202,25 @@ def test_output_console(
     compressed_setting,
     expected_format,
     expect_json
-):
-    """Test `log_utils.output_console()` with different JSON formats and console color handling."""
+) -> None:
+    """
+    Test `log_utils.output_console()` with different JSON formats and console color handling.
+
+    This test ensures that:
+    - ANSI color formatting is applied to console logs when enabled.
+    - Log messages are correctly formatted and displayed with metadata.
+    - JSON formatting behavior is as expected when `tracing.json.compressed` is set to True/False.
+
+    Args:
+        mock_logger (MagicMock): Mock logger object used to capture log output.
+        compressed_setting (bool, None): Determines whether JSON output is compressed.
+        expected_format (str, None): The expected JSON output format.
+        expect_json (bool): A flag indicating whether JSON output is expected.
+
+    Returns:
+        None: This function does not return a value. It asserts that the console output matches the expected format.
+    """
+
     global CONFIGS
     # Backup CONFIGS and restore it after test
     original_configs = json.loads(json.dumps(CONFIGS))

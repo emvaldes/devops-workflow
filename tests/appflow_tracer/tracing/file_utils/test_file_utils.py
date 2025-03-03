@@ -43,8 +43,6 @@ It ensures that file handling functions operate correctly, including:
 - **Logging is only enabled when explicitly set in `CONFIGS`.**
 - **Path handling and text sanitization functions operate as expected.**
 
-Author: Eduardo Valdes
-Date: 2025/01/01
 """
 
 import sys
@@ -76,7 +74,20 @@ CONFIGS['logging']['enable'] = False  # Disable logging for test consistency
 
 @pytest.fixture
 def mock_configs():
-    """Mock CONFIGS globally for test stability."""
+    """
+    Mock `CONFIGS` globally for test stability.
+
+    This fixture ensures that the `CONFIGS` dictionary is mocked globally during tests to provide consistent configuration.
+    It modifies the `max_logfiles` value to 6 to trigger log file deletion during testing. The fixture uses `patch` to mock
+    the `CONFIGS` object and ensure the tests can control and manipulate configuration settings during execution.
+
+    The fixture is useful for ensuring that tests can simulate different configurations without requiring actual changes
+    to the `CONFIGS` object or the underlying system.
+
+    Yields:
+        dict: The mocked `CONFIGS` dictionary, with modified values for testing purposes.
+    """
+
     CONFIGS["logging"]["max_logfiles"] = 6  # Ensure deletion triggers
     with patch(
         "packages.appflow_tracer.tracing.CONFIGS",
@@ -84,27 +95,38 @@ def mock_configs():
     ):
         yield CONFIGS
 
-# Test if a file is correctly identified as part of the project
 def test_is_project_file() -> None:
-    """Ensure `file_utils.is_project_file()` correctly identifies project files and rejects external ones.
-
-    Tests:
-    - Identifies valid project file paths within the root directory.
-    - Ensures external paths (outside project scope) return `False`.
     """
+    Ensure `file_utils.is_project_file()` correctly identifies project files and rejects external ones.
+
+    This test checks that the `is_project_file()` function in the `file_utils` module:
+    - Identifies valid project file paths within the root directory.
+    - Ensures external paths (outside the project scope) return `False`.
+
+    Returns:
+        None: This test function does not return any value.
+        It asserts that the function behaves correctly.
+    """
+
     valid_path = str(Path(environment.project_root) / "packages/appflow_tracer/lib/file_utils.py")
     invalid_path = "/outside/module.py"
     assert file_utils.is_project_file(valid_path) is True
     assert file_utils.is_project_file(invalid_path) is False
 
-def test_manage_logfiles():
-    """Simulates log file cleanup by `file_utils.manage_logfiles()` and validates the list of deleted logs.
-
-    Tests:
-    - Simulates an environment with excess log files.
-    - Ensures the oldest logs are deleted while respecting `max_logfiles`.
-    - Compares expected vs. actual deleted logs to validate accuracy.
+def test_manage_logfiles() -> None:
     """
+    Simulates log file cleanup by `file_utils.manage_logfiles()` and validates the list of deleted logs.
+
+    This test ensures that the `manage_logfiles()` function correctly:
+    - Simulates an environment where there are more log files than the `max_logfiles` limit.
+    - Deletes the oldest logs while respecting the `max_logfiles` constraint.
+    - Compares the expected deleted logs against the actual deleted logs.
+
+    Returns:
+        None: This test function does not return any value.
+        It validates that the log management function works as expected.
+    """
+
     with patch(
         "os.path.exists",
         return_value=True
@@ -159,26 +181,36 @@ def test_manage_logfiles():
         # Ensure logs were actually deleted
         assert len(deleted_logs) > 0, "No logs were deleted!"
 
-# Test relative path conversion
 def test_relative_path() -> None:
-    """Ensure `file_utils.relative_path()` correctly converts absolute paths into project-relative paths.
-
-    Tests:
-    - Converts absolute file paths into a standardized project-relative format.
-    - Ensures `.py` file extensions are stripped from the final output.
     """
+    Ensure `file_utils.relative_path()` correctly converts absolute paths into project-relative paths.
+
+    This test verifies that the `relative_path()` function:
+    - Converts absolute file paths into a standardized project-relative format.
+    - Strips `.py` file extensions from the final output to ensure consistency.
+
+    Returns:
+        None: This test function does not return any value.
+        It asserts that the relative path conversion is correct.
+    """
+
     abs_path = "/Users/user/project/module.py"
     rel_path = file_utils.relative_path(abs_path)
     assert "module" in rel_path  # Match how `file_utils.relative_path()` behaves
 
-# Test removal of ANSI escape codes from text
 def test_remove_ansi_escape_codes() -> None:
-    """Verify `file_utils.remove_ansi_escape_codes()` correctly strips ANSI formatting sequences from text.
-
-    Tests:
-    - Removes ANSI escape codes from formatted text.
-    - Ensures the cleaned output maintains readability without formatting artifacts.
     """
+    Verify `file_utils.remove_ansi_escape_codes()` correctly strips ANSI formatting sequences from text.
+
+    This test ensures that the `remove_ansi_escape_codes()` function:
+    - Strips ANSI escape codes (e.g., color codes) from formatted text.
+    - Ensures the cleaned output maintains readability without formatting artifacts.
+
+    Returns:
+        None: This test function does not return any value.
+        It checks that the output text is cleaned of escape codes.
+    """
+
     ansi_text = "\033[31mThis is red text\033[0m"
     clean_text = file_utils.remove_ansi_escape_codes(ansi_text)
     assert clean_text == "This is red text"
