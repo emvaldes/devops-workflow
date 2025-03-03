@@ -1,5 +1,6 @@
 ### Documentation for /Users/emvaldes/.repos/devops/workflows/tests/appflow_tracer/tracing/test_tracing.py
 
+[91mDeleted old log: logs/tests/appflow_tracer/tracing/test_tracing_20250302234030.log[0m
 Help on module tests.appflow_tracer.tracing.test_tracing in tests.appflow_tracer.tracing:
 
 NAME

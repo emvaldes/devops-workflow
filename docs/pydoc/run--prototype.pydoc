@@ -56,7 +56,11 @@ FUNCTIONS
         Main function for handling user input and generating documentation.
 
     parse_arguments() -> argparse.Namespace
-        Parse command-line arguments for specifying options.
+        Parse command-line arguments for specifying the requirements file
+        and displaying the installed dependencies.
+
+        Returns:
+            argparse.Namespace: The parsed arguments object containing selected options.
 
     scan_and_generate_docs(path_to_scan, base_doc_dir)
         Scan the project directory and generate documentation for all Python files.

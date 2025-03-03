@@ -185,6 +185,8 @@ def generate_pydoc(file_path, doc_path):
         #     configs=CONFIGS
         # )
 
+    # finally:
+
 def scan_and_generate_docs(path_to_scan, base_doc_dir):
     """Scan the project directory and generate documentation for all Python files."""
 

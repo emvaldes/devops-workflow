@@ -1,0 +1,38 @@
+### Documentation for /Users/emvaldes/.repos/devops/workflows/.github/scripts/extract_pytest_functions.py
+
+Help on module extract_pytest_functions:
+
+NAME
+    extract_pytest_functions
+
+DESCRIPTION
+    ## File: .github/scripts/extract_pytest_functions.py
+    ## Version: 0.0.2
+
+FUNCTIONS
+    extract_pytest_functions(pytest_files)
+        Extracts function names that match the pytest naming pattern from the provided test files.
+
+        Args:
+            pytest_files (list): List of pytest test files to process.
+
+        Returns:
+            dict: A dictionary where keys are file paths, and values are lists of extracted function names.
+
+    main()
+        Main function to handle argument parsing and execution flow.
+
+    validate_json_output(pytest_mapping)
+        Validates that the generated JSON file exists and has the correct structure.
+
+        Args:
+            pytest_mapping (str): Path to the JSON output file.
+
+        Returns:
+            bool: True if the file is valid, False otherwise.
+
+FILE
+    /Users/emvaldes/.repos/devops/workflows/.github/scripts/extract_pytest_functions.py
+
+
+

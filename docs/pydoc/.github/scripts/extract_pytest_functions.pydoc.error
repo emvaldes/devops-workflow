@@ -1,2 +1,0 @@
-PyDoc Error:
-Command '['python', '-m', 'pydoc', '.github.scripts.extract_pytest_functions']' returned non-zero exit status 1.
