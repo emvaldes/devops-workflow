@@ -13,10 +13,10 @@
     "logging": {
         "enable": true,
         "max_logfiles": 5,
-        "package_name": "tests/appflow_tracer/tracing/log_utils",
-        "module_name": "test_log_utils",
-        "logs_dirname": "logs/tests/appflow_tracer/tracing/log_utils",
-        "log_filename": "logs/tests/appflow_tracer/tracing/log_utils/test_log_utils.log"
+        "package_name": "tests",
+        "module_name": "test_run",
+        "logs_dirname": "logs/tests",
+        "log_filename": "logs/tests/test_run.log"
     },
     "tracing": {
         "enable": true,
@@ -35,7 +35,7 @@
         "warning": false
     },
     "stats": {
-        "created": "2025-03-03T18:10:46.987976+00:00",
-        "updated": "2025-03-03T21:38:11.224974+00:00"
+        "created": "2025-03-03T20:35:05.184785+00:00",
+        "updated": "2025-03-03T21:38:17.428712+00:00"
     }
 }

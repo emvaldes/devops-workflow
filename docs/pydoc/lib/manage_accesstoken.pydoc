@@ -1,44 +1,95 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/manage_accesstoken.py
+### Documentation for lib/manage_accesstoken.py
 
-Python Library Documentation: module lib.manage_accesstoken in lib
+Help on module lib.manage_accesstoken in lib:
 
-NNAAMMEE
-    lib.manage_accesstoken - File Path: ./lib/manage_accesstoken.py
+NAME
+    lib.manage_accesstoken - File: ./lib/manage_accesstoken.py
 
-DDEESSCCRRIIPPTTIIOONN
+DESCRIPTION
     Description:
-
-    Azure Access Token Manager
-
-    This module handles Azure authentication and manages access token expiration.
-    It ensures that tokens remain valid for API requests and integrates with timezone
-    handling for better session tracking.
+        Azure Access Token Manager
+        This module handles Azure authentication and manages access token expiration.
+        It ensures that tokens remain valid for API requests and integrates with timezone
+        handling for better session tracking.
 
     Features:
-
-    - Retrieves and checks Azure access token expiration.
-    - Integrates with local timezone offset detection.
-    - Provides a command-line interface for session and token management.
-
-    This module ensures that the framework maintains valid authentication tokens
-    and properly handles session expiration.
-
-    Dependencies:
-
-    - accesstoken_expiration
-    - timezone_localoffset
-    - argument_parser
+        - Retrieves and checks Azure access token expiration.
+        - Integrates with local timezone offset detection.
+        - Provides a command-line interface for session and token management.
 
     Usage:
+        To manage Azure session and token expiration:
+        ```bash
+        python manage_accesstoken.py --debug
+        ```
 
-    To manage Azure session and token expiration:
-    > python manage_accesstoken.py --debug ;
+    Dependencies:
+        - accesstoken_expiration
+        - timezone_localoffset
+        - argument_parser
 
-FFUUNNCCTTIIOONNSS
-    mmaannaaggee__aacccceessssttookkeenn()
+    Global Variables:
+        - `globals.DEBUG_MODE` (bool): Enables debug mode for detailed output.
+        - `globals.VERBOSE_MODE` (bool): Enables verbose logging mode.
+
+    Exit Codes:
+        - `0`: Successful execution.
+        - `1`: Failure due to authentication or timezone errors.
+
+    Example:
+        ```bash
+        python manage_accesstoken.py --debug
+        ```
+
+FUNCTIONS
+    main() -> None
+        Main entry point for managing Azure session and token expiration.
+
+        This function:
+        - Parses command-line arguments to configure debug and verbose modes.
+        - Updates global flags (`DEBUG_MODE` and `VERBOSE_MODE`).
+        - Calls `manage_accesstoken()` to validate authentication and session expiration.
+
+        Raises:
+            Exception: If argument parsing or authentication handling fails.
+
+        Returns:
+            None: This function does not return any values; it orchestrates session management.
+
+        Workflow:
+            1. Calls `parse_arguments()` to process CLI flags.
+            2. Updates global variables `DEBUG_MODE` and `VERBOSE_MODE` based on user input.
+            3. Calls `manage_accesstoken()` to verify token expiration and timezone offset.
+
+        Notes:
+            - If an error occurs during execution, the script terminates with a non-zero exit code.
+            - Debug mode (`--debug`) enables additional logging for troubleshooting.
+
+    manage_accesstoken() -> None
         Manages Azure authentication and session expiration handling.
 
-FFIILLEE
-    /Users/emvaldes/.repos/devops/workflows/lib/manage_accesstoken.py
+        This function:
+        - Retrieves the Azure access token and checks its expiration.
+        - Retrieves the local timezone offset.
+        - Logs relevant authentication and timezone details.
+
+        Raises:
+            Exception: If an error occurs during token retrieval or timezone processing.
+
+        Returns:
+            None: This function does not return any values; it handles session validation.
+
+        Workflow:
+            1. Calls `print_token_expiration()` to check the Azure token status.
+            2. Calls `get_local_offset()` to determine the local timezone offset.
+            3. Handles any authentication or timezone-related errors gracefully.
+
+        Notes:
+            - This function relies on the global `DEBUG_MODE` flag to determine logging verbosity.
+            - If an error occurs, execution is halted with a non-zero exit code.
+
+FILE
+    <project-location>/lib/manage_accesstoken.py
+
 
 

@@ -3,24 +3,56 @@
 ## File: .github/scripts/extract-pytest-functions.shell
 ## Version: 0.0.1
 
+# Description:
+#
+# This script is used to extract pytest functions from Python test files (`test_*.py`).
+# It identifies the test functions in the specified directory, collects the test cases,
+# and generates a JSON file listing the found test functions.
+#
+# Features:
+# - Scans a specified directory (location) for Python test files.
+# - Extracts function names from test files following the `test_*` naming convention.
+# - Generates a JSON file (`pytest_functions.json`) that maps the test functions.
+# - Provides options for verbose logging, dry run, and debugging.
+
+# Expected Behavior:
+# - The script generates a JSON file that includes all the test functions found in the specified directory.
+# - If no test files are found, it outputs an error message.
+# - Supports the use of dry-run, verbose, and debug flags for controlling the script's behavior.
+# - It accepts command-line arguments to specify the directory, output filename, and other options.
+
+# Dependencies:
+# - jq (for JSON manipulation)
+# - find (for searching files)
+# - sed (for string manipulation)
+# - bash (for shell scripting)
+# - python3 (for invoking external Python scripts)
+
+# Usage:
+# To run the script with the default settings:
+# > ./scripts/extract-pytest-functions.shell \
+#   --location="tests/package/module" \
+#   --filename="pytest_functions.json" \
+#   --scripts=".github/scripts" \
+#   --dry-run \
+#   --verbose ;
+#   --debug ;
+#
+# Additional flags:
+# --dry-run: Perform a dry run without making any changes.
+# --verbose: Enable verbose output for more detailed logging.
+# --debug: Enable debug mode for deeper insights into script operations.
+
 # set -x ;
 set -e ;           # Exit on error
 set -o pipefail ;  # Fail if any piped command fails
-
-## extract-pytest-functions \
-##   --location="tests/package/module" \
-##   --filename="pytest_functions.json" \
-##   --scripts=".github/scripts" \
-##   --dry-run \
-##   --verbose ;
-##   --debug ;
 
 function extract_pytest_functions () {
     ## tracking_process ${FUNCNAME} "${@}";
 
     script_dirname="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
     # read -ra parameters <<< "$( sanitize_parameters "${@}" )";
-    # ✅ Capture output of sanitize_parameters as an array (preserving spaces)
+    # Capture output of sanitize_parameters as an array (preserving spaces)
     mapfile -t parameters < <( ${script_dirname}/sanitize-parameters.shell "${@}" );
     # echo -e; for param in "${parameters[@]}"; do echo -e "Parameter: '${param}'"; done;
 
@@ -77,7 +109,7 @@ function extract_pytest_functions () {
     # echo -e "PyTest files JSON:\n${pytest_listing}\n";
 
     ## Call the external Python script instead of using here-doc
-    python3 ${scripts_location}/extract-pytest-resources.py \
+    python3 ${scripts_location}/extract_pytest_resources.py \
       "${pytest_listing}" "${pytest_mapping}";
 
     pytest_items="pytest_files.json";

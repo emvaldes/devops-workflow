@@ -25,8 +25,6 @@ It ensures that tracing, logging, and ANSI handling functions operate correctly.
 - **Print statements are redirected to the logging system**.
 - **ANSI escape sequences are stripped before logging** to prevent unwanted formatting.
 
-Author: Eduardo Valdes
-Date: 2025/02/17
 """
 
 import sys
@@ -40,7 +38,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Ensure the root project directory is in sys.path
 ROOT_DIR = Path(__file__).resolve().parents[3]  # Adjust the number based on folder depth
@@ -57,7 +55,20 @@ CONFIGS["tracing"]["enable"] = False  # Disable tracing to prevent unintended pr
 
 @pytest.fixture(autouse=True)
 def mock_configs():
-    """Mock `CONFIGS` globally for all tests if not initialized."""
+    """
+    Mock the `CONFIGS` object globally for all tests if not already initialized.
+
+    This fixture ensures that the `CONFIGS` object is available globally for all tests. If `CONFIGS` is not
+    initialized, it creates a default configuration with logging and tracing disabled, and events for `install`
+    and `update` enabled. It provides a consistent configuration for all tests that require access to `CONFIGS`.
+
+    The fixture is automatically applied to all tests because of the `autouse=True` flag, eliminating the need to
+    explicitly request it in individual test functions.
+
+    Returns:
+        dict: The `CONFIGS` dictionary, which includes configuration for logging, tracing, and event handling.
+    """
+
     global CONFIGS
     if CONFIGS is None:
         CONFIGS = {
@@ -69,21 +80,41 @@ def mock_configs():
 
 @pytest.fixture
 def mock_logger() -> MagicMock:
-    """Creates a mock logger for testing."""
+    """
+    Create a mock logger for testing purposes.
+
+    This fixture creates and returns a mock instance of a logger object using `MagicMock`, which simulates the behavior
+    of a `logging.Logger` object. It also ensures that the `handlers` attribute is properly initialized as an empty list.
+
+    This fixture is useful for testing logging functionality without writing actual logs, enabling verification of logging behavior
+    and ensuring that logging methods are called as expected.
+
+    Returns:
+        MagicMock: A mock logger object that mimics the behavior of a `logging.Logger` instance.
+    """
+
     logger = MagicMock(spec=logging.Logger)
     logger.handlers = []  # Ensure handlers attribute exists
     return logger
 
-# Test tracing.setup_logging function
-def test_setup_logging(mock_logger: MagicMock) -> None:
-    """Ensure `tracing.setup_logging()` correctly initializes logging configurations.
-
-    Tests:
-    - Ensures returned CONFIGS contains all expected keys.
-    - Validates logging file path assignment and expected defaults.
-    - Ensures tracing remains enabled when configured.
-    - Confirms `stats.created` remains static while `stats.updated` changes.
+def test_setup_logging(
+    mock_logger: MagicMock
+) -> None:
     """
+    Ensure `tracing.setup_logging()` correctly initializes logging configurations.
+
+    This test verifies:
+    - The returned `CONFIGS` contains all expected keys: `colors`, `logging`, `tracing`, and `stats`.
+    - The logging file path is correctly assigned, with a dynamic filename containing the timestamp.
+    - Ensures that `stats.created` remains static while `stats.updated` changes per execution.
+
+    Args:
+        mock_logger (MagicMock): Mock for the logger object to simulate logging behavior.
+
+    Returns:
+        None: This test does not return a value but asserts that logging configurations are set up correctly.
+    """
+
     with patch(
         "packages.appflow_tracer.tracing.logging.getLogger",
         return_value=mock_logger
@@ -115,13 +146,35 @@ def test_setup_logging(mock_logger: MagicMock) -> None:
         created_time = datetime.fromisoformat(config["stats"]["created"])
         updated_time = datetime.fromisoformat(config["stats"]["updated"])
         # Normalize both to naive datetimes
+
+        # if updated_time.tzinfo is not None:
+        #     updated_time = updated_time.replace(tzinfo=None)
+        # Ensure both timestamps are offset-naive for valid comparison
+
+        if created_time.tzinfo is not None:
+            created_time = created_time.astimezone(timezone.utc).replace(tzinfo=None)
         if updated_time.tzinfo is not None:
-            updated_time = updated_time.replace(tzinfo=None)
+            updated_time = updated_time.astimezone(timezone.utc).replace(tzinfo=None)
+
         assert created_time < updated_time, "Expected `updated` to be newer than `created`"
 
-# Test tracing.PrintCapture handler
-def test_print_capture(mock_logger: MagicMock) -> None:
-    """Ensure `tracing.PrintCapture` properly captures and logs print statements."""
+def test_print_capture(
+    mock_logger: MagicMock
+) -> None:
+    """
+    Ensure `tracing.PrintCapture` properly captures and logs print statements.
+
+    This test ensures:
+    - The `PrintCapture` handler captures print statements directed to `sys.stdout`.
+    - Validates that the captured output is logged as expected.
+
+    Args:
+        mock_logger (MagicMock): Mock logger used to verify the captured logs.
+
+    Returns:
+        None: This test does not return a value but asserts that the print statements are captured and logged correctly.
+    """
+
     handler = tracing.PrintCapture()
     handler.setLevel(logging.INFO)
     mock_logger.addHandler(handler)
@@ -147,13 +200,46 @@ def test_print_capture(mock_logger: MagicMock) -> None:
         )
         assert expected_output.strip() in captured_output.strip()
 
-# Test tracing.ANSIFileHandler log file handling
-def test_ansi_file_handler(mock_logger: MagicMock) -> None:
-    """Ensure `tracing.ANSIFileHandler` removes ANSI sequences before writing logs."""
-    def remove_ansi(text: str) -> str:
-        """Helper function to remove ANSI escape sequences."""
+def test_ansi_file_handler(
+    mock_logger: MagicMock
+) -> None:
+    """
+    Ensure `tracing.ANSIFileHandler` removes ANSI sequences before writing logs.
+
+    This test:
+    - Verifies that `ANSIFileHandler` strips ANSI escape codes from log messages before writing them to a file.
+    - Uses a helper function to remove ANSI codes and ensures that the final message written to the file does not contain any escape codes.
+
+    Args:
+        mock_logger (MagicMock): Mock logger used to verify the behavior of the file handler.
+
+    Returns:
+        None: This test does not return a value but asserts that ANSI escape codes are correctly stripped before logging to a file.
+    """
+
+    def remove_ansi(
+        text: str
+    ) -> str:
+        """
+        Helper function to remove ANSI escape sequences from a string.
+
+        This function removes ANSI escape codes, which are used for terminal text formatting (e.g., colors),
+        from the provided text. The cleaned text can then be safely logged or processed without formatting artifacts.
+
+        Args:
+            text (str): The string containing ANSI escape sequences to be removed.
+
+        Returns:
+            str: The input string with all ANSI escape sequences removed.
+
+        Example:
+            >>> remove_ansi("\033[31mError message\033[0m")
+            'Error message'
+        """
+
         ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
         return ansi_escape.sub('', text)
+
     with patch(
         "builtins.open",
         create=True

@@ -1,57 +1,69 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/lib/trace_utils.py
+### Documentation for packages/appflow_tracer/lib/trace_utils.py
 
-Python Library Documentation: module packages.appflow_tracer.lib.trace_utils in packages.appflow_tracer.lib
+Help on module packages.appflow_tracer.lib.trace_utils in packages.appflow_tracer.lib:
 
-NNAAMMEE
+NAME
     packages.appflow_tracer.lib.trace_utils - File Path: packages/appflow_tracer/lib/trace_utils.py
 
-DDEESSCCRRIIPPTTIIOONN
+DESCRIPTION
     Description:
+        Function Call and Execution Flow Tracing Utilities
+        This module provides **real-time function execution tracing** within the framework.
+        It captures **function calls and return values**, logs structured execution flow,
+        and ensures debugging visibility with minimal performance overhead.
 
-    Function Call and Execution Flow Tracing Utilities
+    Core Features:
+        - **Function Call Tracing**: Logs function calls, arguments, and execution order.
+        - **Execution Flow Logging**: Captures return values and structured execution flow.
+        - **Project Scope Enforcement**: Excludes system functions and external dependencies.
+        - **Selective Filtering**: Ignores known logging utilities and non-essential functions.
+        - **Configurable Logging**: Enables logging dynamically based on configuration settings.
 
-    This module provides **real-time function execution tracing** within the framework.
-    It captures **function calls and return values**, logs structured execution flow,
-    and ensures debugging visibility with minimal performance overhead.
+    Usage:
+        To enable tracing and track function calls:
+        ```python
+        import trace_utils
+        trace_utils.start_tracing()
+        ```
 
-    ### Core Features:
+    Dependencies:
+        - sys
+        - json
+        - inspect
+        - logging
+        - lib.system_variables (for project settings)
+        - lib.log_utils (for structured logging)
+        - lib.file_utils (for project file validation)
+        - lib.serialize_utils (for safe data serialization)
 
-    - **Function Call Tracing**: Logs function calls, arguments, and execution order.
-    - **Execution Flow Logging**: Captures return values and structured execution flow.
-    - **Project Scope Enforcement**: Excludes system functions and external dependencies.
-    - **Selective Filtering**: Ignores known logging utilities and non-essential functions.
-    - **Configurable Logging**: Enables logging dynamically based on configuration settings.
+    Global Variables:
+        - Uses `category` from `lib.system_variables`.
 
-    ### Primary Functions:
+    Primary Functions:
+        - `start_tracing(logger, configs)`: Initializes function call tracing dynamically.
+        - `trace_all(logger, configs)`: Creates a **trace function** for `sys.settrace()`.
+        - `trace_events(frame, event, arg)`: Handles function call and return event logging.
+        - `call_events(logger, frame, filename, arg, configs)`: Logs function calls.
+        - `return_events(logger, frame, filename, arg, configs)`: Logs function return values.
 
-    - `start_tracing(logger, configs)`: Initializes tracing with the given configuration.
-    - `trace_all(logger, configs)`: Generates a **trace function** for `sys.settrace()`.
-    - `trace_events(frame, event, arg)`: Handles individual function calls and return events.
-    - `call_events(logger, frame, filename, arg, configs)`: Handles function call logging.
-    - `return_events(logger, frame, filename, arg, configs)`: Handles function return logging.
+    Expected Behavior:
+        - Tracing activates only when **enabled in the configuration**.
+        - Calls, returns, and execution paths are **logged dynamically**.
+        - Non-project files and system-level operations are **excluded from tracing**.
+        - Return values are **serialized safely** for structured logging.
 
-    ### Expected Behavior:
+    Exit Codes:
+        - `0`: Successful execution.
+        - `1`: Failure due to invalid configurations or execution tracing errors.
 
-    - Tracing activates only when **enabled in the configuration**.
-    - Calls, returns, and execution paths are **logged dynamically**.
-    - Non-project files and system-level operations are **excluded from tracing**.
-    - Return values are **serialized safely** for structured logging.
+    Example:
+        ```python
+        from trace_utils import start_tracing
+        start_tracing()
+        ```
 
-    ### Dependencies:
-
-    - `sys`, `json`, `inspect`, `logging`
-    - `log_utils` (for structured logging)
-    - `file_utils` (for project file validation)
-    - `serialize_utils` (for safe data serialization)
-
-    ### Usage:
-
-    To enable tracing and track function calls:
-    ```bash
-    python trace_utils.py
-
-FFUUNNCCTTIIOONNSS
-    ccaallll__eevveennttss(
+FUNCTIONS
+    call_events(
         logger: logging.Logger,
         frame: frame,
         filename: str,
@@ -75,31 +87,7 @@ FFUUNNCCTTIIOONNSS
         Returns:
             None
 
-    iinnffoo__eevveennttss(
-        logger: logging.Logger,
-        frame: frame,
-        filename: str,
-        arg: object,
-        configs: dict
-    ) -> None
-        Handles logging of function info events.
-
-        This function:
-        - **Extracts info details** including filename and function name.
-        - **Logs function invocation metadata** such as arguments and execution flow.
-        - **Filters out system and non-project info** to keep logs relevant.
-
-        Args:
-            logger (logging.Logger): Logger instance for logging structured execution.
-            frame (FrameType): The execution frame where the logging.info occurred.
-            filename (str): The source file where the logging.info was invoked.
-            arg (object): The arguments passed to the function.
-            configs (dict): The configuration dictionary.
-
-        Returns:
-            None
-
-    rreettuurrnn__eevveennttss(
+    return_events(
         logger: logging.Logger,
         frame: frame,
         filename: str,
@@ -123,7 +111,7 @@ FFUUNNCCTTIIOONNSS
         Returns:
             None
 
-    ssttaarrtt__ttrraacciinngg(logger: logging.Logger = None, configs: dict = None) -> None
+    start_tracing(logger: logging.Logger = None, configs: dict = None) -> None
         Initialize and activate function call tracing.
 
         This function sets up **function execution tracing**, ensuring:
@@ -145,7 +133,7 @@ FFUUNNCCTTIIOONNSS
             >>> start_tracing()
             # Tracing begins using the global configuration.
 
-    ttrraaccee__aallll(logger: logging.Logger, configs: dict) -> Callable
+    trace_all(logger: logging.Logger, configs: dict) -> Callable
         Generate a function that traces execution flow within project-specific files.
 
         This function returns a **callable trace handler** that:
@@ -157,6 +145,9 @@ FFUUNNCCTTIIOONNSS
             logger (logging.Logger): Logger instance for structured logging.
             configs (dict): The configuration dictionary that controls tracing behavior.
 
+        Raises:
+            ValueError: If tracing configurations are missing or invalid.
+
         Returns:
             Callable: A trace function that can be passed to `sys.settrace()`.
 
@@ -164,8 +155,8 @@ FFUUNNCCTTIIOONNSS
             >>> sys.settrace(trace_all(logger, configs))
             # Tracing starts using the provided configuration.
 
-DDAATTAA
-    CCaallllaabbllee = typing.Callable
+DATA
+    Callable = typing.Callable
         Deprecated alias to collections.abc.Callable.
 
         Callable[[int], str] signifies a function that takes a single
@@ -179,9 +170,10 @@ DDAATTAA
         There is no syntax to indicate optional or keyword arguments;
         such function types are rarely used as callback types.
 
-    ccaatteeggoorryy = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
+    category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
 
-FFIILLEE
-    /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/lib/trace_utils.py
+FILE
+    <project-location>/packages/appflow_tracer/lib/trace_utils.py
+
 
 

@@ -4,39 +4,71 @@
 File Path: packages/appflow_tracer/tracing.py
 
 Description:
-
-AppFlow Tracing System
-
-This module provides structured logging and tracing functionality within the framework,
-enabling automatic function call tracking, detailed execution monitoring, and structured logging
-to both console and file. It captures function call details, manages structured logs, and
-supports self-inspection when run directly, all without requiring changes to existing function behavior.
+    AppFlow Tracing System
+    This module provides structured logging and function call tracing, enabling
+    automatic function execution monitoring with minimal intrusion. It integrates
+    logging and tracing functionalities, ensuring accurate tracking of function
+    calls, return values, and execution flow.
 
 Core Features:
-
-- **Function Call Tracing**: Captures function calls, arguments, and return values dynamically.
-- **Structured Logging**: Logs execution details in JSON format, supporting both console and file output.
-- **Self-Inspection**: When executed directly, logs its own execution flow for debugging purposes.
-- **Automatic Log Management**: Controls log file retention to prevent excessive storage use.
-
-Expected Behavior:
-
-- Logs execution details automatically when tracing is enabled.
-- Logs function calls with arguments and return values.
-- Logs are stored in a structured format for debugging and analysis.
-
-Dependencies:
-
-- `sys`, `json`, `inspect`, `datetime`, `logging`, `builtins`, `pathlib`
-- `packages.appflow_tracer.lib.file_utils` (for log file handling)
-- `packages.appflow_tracer.lib.log_utils` (for structured logging)
-- `packages.appflow_tracer.lib.trace_utils` (for tracing logic)
-- `lib.system_variables`, `lib.pkgconfig_loader` (for configuration handling)
+    - **Function Call Tracing**: Automatically captures function calls, arguments, and return values.
+    - **Structured Logging**: Logs execution details in JSON format for debugging and auditing.
+    - **Self-Inspection**: When executed directly, logs its own execution for analysis.
+    - **Automatic Log Management**: Removes old log files to maintain storage efficiency.
+    - **Configurable Event Filtering**: Allows selective tracing of function calls and returns.
 
 Usage:
+    To enable function call tracing:
+    ```python
+    import tracing
+    tracing.setup_logging()
+    ```
 
-To enable function call tracing and log execution details:
-> python tracing.py
+    To run the tracing system as a standalone tool:
+    ```bash
+    python tracing.py
+    ```
+
+Dependencies:
+    - sys
+    - json
+    - inspect
+    - logging
+    - builtins
+    - pathlib
+    - datetime
+    - lib.system_variables (for project-wide configurations)
+    - lib.pkgconfig_loader (for configuration handling)
+    - lib.file_utils (for log file management)
+    - lib.log_utils (for structured logging)
+    - lib.trace_utils (for function call tracing)
+
+Global Variables:
+    - `LOGGING`: Boolean flag indicating whether logging has been initialized.
+    - `CONFIGS`: Stores the effective logging and tracing configurations.
+    - `logger`: Global logger instance used for structured logging.
+
+Primary Functions:
+    - `setup_logging(configs, logname_override, events)`: Initializes structured logging.
+    - `main()`: Entry point for standalone execution, setting up tracing and logging.
+    - `PrintCapture.emit(record)`: Captures print statements and redirects them to logs.
+    - `ANSIFileHandler.emit(record)`: Ensures log files do not contain ANSI escape sequences.
+
+Expected Behavior:
+    - Logs execution details when tracing is enabled.
+    - Logs function calls with arguments and return values.
+    - Maintains structured logs for debugging and execution tracking.
+    - Automatically removes older log files when exceeding retention limits.
+
+Exit Codes:
+    - `0`: Successful execution.
+    - `1`: Failure due to configuration or logging setup errors.
+
+Example:
+    ```python
+    from tracing import setup_logging
+    setup_logging()
+    ```
 """
 
 import sys
@@ -83,7 +115,7 @@ from lib import (
 def setup_logging(
     configs: Optional[dict] = None,
     logname_override: Optional[str] = None,
-    events: Optional[Union[bool, dict]] = None  # New parameter
+    events: Optional[Union[bool, dict]] = None
 ) -> Union[bool, dict]:
     """
     Configures and initializes the global logging system.
@@ -212,7 +244,7 @@ def setup_logging(
                 logger=logger,
                 configs=CONFIGS
             )
-            # log_utils.log_message("🔍 \nTracing system initialized.\n", "INFO", configs=CONFIGS)
+            # log_utils.log_message("\nTracing system initialized.\n", "INFO", configs=CONFIGS)
         except NameError:
             return False
     # Manage log files before starting new tracing session
@@ -228,14 +260,31 @@ class PrintCapture(logging.StreamHandler):
     real-time console output.
     """
 
-    def emit(self, record):
+    # def emit(self, record):
+    def emit(self, record: logging.LogRecord) -> None:
+        """
+        Custom logging handler that captures print statements and logs them
+        while ensuring they are displayed in the console.
+
+        This ensures that print statements are properly logged without affecting
+        real-time console output.
+
+        Args:
+            record (logging.LogRecord): The log record that contains information
+                about the log message to be captured and displayed.
+
+        Returns:
+            None
+        """
+
         log_entry = self.format(record)
         sys.__stdout__.write(log_entry + "\n")  # Write to actual stdout
         sys.__stdout__.flush()  # Ensure immediate flushing
-    def emit(self, record):
-        log_entry = self.format(record)
-        sys.__stdout__.write(log_entry + "\n")  # Write to actual stdout
-        sys.__stdout__.flush()  # Ensure immediate flushing
+
+    # def emit(self, record):
+    #     log_entry = self.format(record)
+    #     sys.__stdout__.write(log_entry + "\n")  # Write to actual stdout
+    #     sys.__stdout__.flush()  # Ensure immediate flushing
 
 class ANSIFileHandler(logging.FileHandler):
     """
@@ -246,7 +295,23 @@ class ANSIFileHandler(logging.FileHandler):
     and ensures only relevant logs are recorded.
     """
 
-    def emit(self, record):
+    # def emit(self, record):
+    def emit(self, record: logging.LogRecord) -> None:
+        """
+        Custom FileHandler that removes ANSI codes from log output
+        and filters out logs from the internal Python logging module.
+
+        This prevents unnecessary ANSI escape codes from appearing in log files
+        and ensures only relevant logs are recorded.
+
+        Args:
+            record (logging.LogRecord): The log record to be emitted, including
+                log message and additional context for filtering.
+
+        Returns:
+            None
+        """
+
         # Ensure only Python's internal logging system is ignored
         if "logging/__init__.py" in record.pathname:
             return  # Skip internal Python logging module logs
@@ -260,7 +325,7 @@ logger = None  # Global logger instance
 
 # ---------- Module operations:
 
-def main():
+def main() -> None:
     """
     Entry point for running the tracing module as a standalone program.
 
@@ -295,7 +360,7 @@ if __name__ == "__main__":
 #     log_file = CONFIGS["logging"].get("log_filename", False)
 #     print( f'\nReading Log-file: {log_file}' )
 #     with open(log_file, "r") as file:
-#         # print("\n📄 Log file content:")
+#         # print("\nLog file content:")
 #         print(file.read())
 # except Exception as e:
 #     print(f'Unable to read log file: {e}')

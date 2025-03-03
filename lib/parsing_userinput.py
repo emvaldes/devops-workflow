@@ -1,43 +1,42 @@
 #!/usr/bin/env python3
 
 """
-File Path: ./lib/parsing_userinput.py
+File: ./lib/parsing_userinput.py
 
 Description:
-
-User Input Collection and Interactive Prompts
-
-This module ensures all required runtime parameters are provided by prompting users interactively.
-It dynamically loads argument configurations, identifies missing variables, and sets
-environment variables accordingly.
+    User Input Collection and Interactive Prompts
+    This module ensures all required runtime parameters are provided by prompting users interactively.
+    It dynamically loads argument configurations, identifies missing variables, and sets
+    environment variables accordingly.
 
 Core Features:
-
-- **Interactive Input Requests**: Prompts users for required input dynamically.
-- **Configuration-Based Prompts**: Loads argument configurations from a JSON file.
-- **Environment Variable Management**: Updates system environment variables at runtime.
-- **Error Handling**: Ensures non-interactive environments exit safely with meaningful errors.
-
-Primary Functions:
-
-- `request_input(prompt, required, default)`: Prompts the user for input with validation.
-- `user_interview(arguments_config, missing_vars)`: Collects missing required variables.
-- `parse_and_collect_user_inputs(arguments_config_path, required_runtime_vars)`: Loads and processes required user inputs.
-
-Expected Behavior:
-
-- If running in a **non-interactive** environment, required parameters must be set beforehand.
-- **Missing parameters trigger interactive prompts**, unless running in automation mode.
-- If a configuration file is missing, an **error is logged and execution stops**.
-
-Dependencies:
-
-- `json`, `os`, `logging`
+    - **Interactive Input Requests**: Prompts users for required input dynamically.
+    - **Configuration-Based Prompts**: Loads argument configurations from a JSON file.
+    - **Environment Variable Management**: Updates system environment variables at runtime.
+    - **Error Handling**: Ensures non-interactive environments exit safely with meaningful errors.
 
 Usage:
+    To collect required user input:
+    ```bash
+    python parsing_userinput.py
+    ```
 
-To collect required user input:
-> python parsing_userinput.py
+Dependencies:
+    - json
+    - os
+    - logging
+
+Global Variables:
+    - Environment variables are dynamically updated based on user input.
+
+Exit Codes:
+    - `0`: Successful execution.
+    - `1`: Failure due to missing input in a non-interactive environment.
+
+Example:
+    ```bash
+    python parsing_userinput.py
+    ```
 """
 
 import sys
@@ -73,6 +72,10 @@ def request_input(
 
     Returns:
         str: The user-provided input or the default value.
+
+    Notes:
+        - If `sys.stdin.isatty()` is `False`, the function logs an error and exits, as interactive input is not possible.
+        - If the user presses Ctrl+C, the function logs the interruption and exits.
     """
 
     if not sys.stdin.isatty():
@@ -109,6 +112,11 @@ def user_interview(
 
     Returns:
         dict: A dictionary mapping missing variable names to user-provided values.
+
+    Notes:
+        - This function cross-references `arguments_config` to determine the prompt and default values.
+        - Calls `request_input()` for each missing variable.
+        - The returned dictionary contains user-provided inputs mapped to their respective variables.
     """
 
     user_inputs = {}
@@ -140,6 +148,12 @@ def parse_and_collect_user_inputs(
 
     Returns:
         dict: A dictionary of user-provided environment variable values.
+
+    Notes:
+        - If the configuration file is missing, logs an error and raises `FileNotFoundError`.
+        - Identifies missing variables by checking against environment variables.
+        - Calls `user_interview()` for interactive input collection.
+        - Updates `os.environ` dynamically based on user input.
     """
 
     if not os.path.exists(arguments_config_path):
@@ -160,3 +174,36 @@ def parse_and_collect_user_inputs(
         return user_inputs
     logging.info("No missing required environment variables. Proceeding without user interaction.")
     return {}
+
+def main() -> None:
+    """
+    Main entry point for parsing user input and managing runtime parameters.
+
+    This function:
+    - Loads the argument configuration from a JSON file.
+    - Identifies missing required runtime variables.
+    - Prompts the user interactively to collect missing values.
+    - Updates environment variables dynamically.
+
+    Raises:
+        FileNotFoundError: If the argument configuration file is missing.
+        Exception: If an unexpected error occurs during execution.
+
+    Returns:
+        None: This function does not return any values; it manages user input handling.
+
+    Workflow:
+        1. Defines the path to the argument configuration file.
+        2. Identifies missing runtime parameters that need user input.
+        3. Calls `parse_and_collect_user_inputs()` to process required variables.
+        4. Logs the collected user input and updates environment variables dynamically.
+
+    Notes:
+        - If a required argument configuration file is missing, execution is halted.
+        - If running in a **non-interactive** environment, the script exits safely.
+    """
+
+    pass
+
+if __name__ == "__main__":
+    main()

@@ -25,12 +25,13 @@ To log messages:
     log_message("This is a test log message.")
 """
 
-# Export only necessary functions
-from .tracing import (
+# from .tracing import (
+from packages.appflow_tracer.tracing import (
     setup_logging
 )
 
-from .lib import (
+# from .lib import (
+from packages.appflow_tracer.lib import (
     file_utils,
     log_utils,
     serialize_utils,

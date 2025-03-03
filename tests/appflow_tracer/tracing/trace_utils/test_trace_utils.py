@@ -42,8 +42,6 @@ It ensures correct function execution tracing and structured logging, covering:
 - **Function call and return details are structured correctly**.
 - **Non-project calls are filtered out, keeping logs relevant**.
 
-Author: Eduardo Valdes
-Date: 2025/01/01
 """
 
 import sys
@@ -74,12 +72,37 @@ CONFIGS["tracing"]["enable"] = False  # Disable tracing to prevent unintended pr
 
 @pytest.fixture
 def mock_logger() -> MagicMock:
-    """Provides a mock logger for testing tracing output."""
+    """
+    Provides a mock logger for testing tracing output.
+
+    This fixture creates and returns a mock instance of the `logging.Logger` class using `MagicMock`. It is designed to
+    simulate the behavior of a logger for testing purposes, particularly to verify that logging calls are made during
+    tracing without actually writing to log files.
+
+    The mock logger can be used to check if certain logging methods (e.g., `info`, `error`) are called with the expected
+    arguments, making it useful for verifying logging behavior in tests.
+
+    Returns:
+        MagicMock: A mock logger object that mimics a `logging.Logger` instance.
+    """
+
     return MagicMock(spec=logging.Logger)
 
 @pytest.fixture
 def mock_configs() -> dict:
-    """Provides a mock configuration dictionary for testing."""
+    """
+    Provides a mock configuration dictionary for testing.
+
+    This fixture creates and returns a mock configuration dictionary that simulates the `CONFIGS` object used in the application.
+    It includes default configurations for tracing and logging, both set to enabled (`True`), which can be used for testing
+    purposes where access to these configurations is required.
+
+    The mock configuration is useful for isolating tests that need configuration data without requiring actual system configuration.
+
+    Returns:
+        dict: A dictionary containing mock configuration settings for tracing and logging.
+    """
+
     return {
         "tracing": {"enable": True},
         "logging": {"enable": True}
@@ -91,13 +114,23 @@ def test_start_tracing(
     mock_logger: MagicMock,
     mock_configs: dict
 ) -> None:
-    """Ensure `trace_utils.start_tracing()` initializes tracing only when enabled.
-
-    Tests:
-    - Ensures `sys.settrace()` is correctly called when tracing is enabled.
-    - Prevents multiple activations by checking `sys.gettrace()` before applying tracing.
-    - Verifies that tracing is properly configured via `CONFIGS`.
     """
+    Ensure `trace_utils.start_tracing()` initializes tracing only when enabled.
+
+    This test ensures:
+    - `sys.settrace()` is called only when tracing is enabled in `CONFIGS`.
+    - Prevents multiple activations by checking `sys.gettrace()` before applying tracing.
+    - Verifies that tracing is correctly configured via `CONFIGS`.
+
+    Args:
+        mock_settrace (MagicMock): Mock for `sys.settrace()` to verify it is called or not.
+        mock_logger (MagicMock): Mock logger for tracing output.
+        mock_configs (dict): Mock configuration for tracing settings.
+
+    Returns:
+        None: This test function does not return a value. It verifies that tracing is activated correctly.
+    """
+
     sys.settrace(None)  # Reset trace before running the test
     trace_utils.start_tracing(
         logger=mock_logger,
@@ -110,12 +143,21 @@ def test_start_tracing_disabled(
     mock_settrace: MagicMock,
     mock_logger: MagicMock
 ) -> None:
-    """Ensure `trace_utils.start_tracing()` does not initialize tracing when disabled.
-
-    Tests:
-    - Ensures `sys.settrace()` is **not called** when tracing is disabled in `CONFIGS`.
-    - Validates that `trace_utils.start_tracing()` respects configuration settings.
     """
+    Ensure `trace_utils.start_tracing()` does not initialize tracing when disabled.
+
+    This test ensures:
+    - `sys.settrace()` is **not called** when tracing is disabled in `CONFIGS`.
+    - Verifies that `trace_utils.start_tracing()` respects the configuration settings.
+
+    Args:
+        mock_settrace (MagicMock): Mock for `sys.settrace()` to ensure it's not called.
+        mock_logger (MagicMock): Mock logger for testing.
+
+    Returns:
+        None: This test function does not return a value. It asserts that tracing is not activated when disabled.
+    """
+
     mock_configs = {
         "tracing": {
             "enable": False
@@ -133,12 +175,22 @@ def test_trace_all(
     mock_logger: MagicMock,
     mock_configs: dict
 ) -> None:
-    """Ensure `trace_utils.trace_all()` generates a valid trace function.
-
-    Tests:
-    - Mocks `trace_utils.trace_all()` to return a dummy function and verifies it is callable.
-    - Ensures that `trace_utils.trace_all()` does not fail when `CONFIGS` is missing logging settings.
     """
+    Ensure `trace_utils.trace_all()` generates a valid trace function.
+
+    This test:
+    - Mocks `trace_utils.trace_all()` to return a dummy trace function and ensures it is callable.
+    - Ensures that `trace_utils.trace_all()` does not fail even when `CONFIGS` is missing logging settings.
+
+    Args:
+        mock_trace_all (MagicMock): Mock for the `trace_utils.trace_all()` function.
+        mock_logger (MagicMock): Mock logger for tracing output.
+        mock_configs (dict): Mock configuration for tracing settings.
+
+    Returns:
+        None: This test function does not return a value. It verifies that `trace_utils.trace_all()` generates a callable trace function.
+    """
+
     mock_configs.setdefault(
         "logging",
         {"enable": True}
@@ -161,7 +213,24 @@ def test_call_events(
     mock_logger: MagicMock,
     mock_configs: dict
 ) -> None:
-    """Ensure `trace_utils.call_events()` logs function calls correctly."""
+    """
+    Ensure `trace_utils.call_events()` logs function calls correctly.
+
+    This test:
+    - Ensures that function calls are logged with the correct metadata.
+    - Verifies that function arguments are serialized correctly.
+    - Ensures only project-relevant function calls are logged.
+
+    Args:
+        mock_is_project_file (MagicMock): Mock to ensure the function is part of the project.
+        mock_log_message (MagicMock): Mock for the `log_message()` function to check if it is called.
+        mock_logger (MagicMock): Mock logger for tracing output.
+        mock_configs (dict): Mock configuration for tracing and logging settings.
+
+    Returns:
+        None: This test function does not return a value. It validates that `call_events()` correctly logs function calls.
+    """
+
     # Explicitly enable logging and ensure events are properly configured
     mock_configs["logging"]["enable"] = True
     mock_configs["tracing"]["enable"] = True
@@ -197,7 +266,23 @@ def test_return_events(
     mock_logger: MagicMock,
     mock_configs: dict
 ) -> None:
-    """Ensure `trace_utils.return_events()` logs function return values correctly."""
+    """
+    Ensure `trace_utils.return_events()` logs function return values correctly.
+
+    This test:
+    - Captures return values and ensures they are correctly serialized.
+    - Verifies that return events are logged with the appropriate function metadata.
+
+    Args:
+        mock_is_project_file (MagicMock): Mock to ensure the function is part of the project.
+        mock_log_message (MagicMock): Mock for the `log_message()` function to check if it is called.
+        mock_logger (MagicMock): Mock logger for tracing output.
+        mock_configs (dict): Mock configuration for tracing and logging settings.
+
+    Returns:
+        None: This test function does not return a value. It validates that `return_events()` logs return values correctly.
+    """
+
     # Explicitly enable logging and events
     mock_configs["logging"]["enable"] = True
     mock_configs["tracing"]["enable"] = True

@@ -3,6 +3,38 @@
 ## File: .github/scripts/aggregate-pytest-results.shell
 ## Version: 0.0.1
 
+# Description:
+#
+# This script aggregates and processes the results of multiple pytest XML output files.
+# It collects test case information from the files, normalizes the XML content,
+# and generates a JSON summary of the test results. This includes details about
+# the number of tests run, passed, failed, and skipped for each test case, and
+# associates the results with their corresponding Python version and class name.
+#
+# Features:
+# - Scans the 'artifacts' directory for pytest XML result files.
+# - Normalizes XML content and extracts key test information.
+# - Aggregates and processes test case results in JSON format.
+# - Generates a final summary that includes Python version, test class name,
+#   individual test case status, execution time, and overall results.
+
+# Expected Behavior:
+# - The script processes all pytest result files in the 'artifacts' directory.
+# - A JSON summary of test results is generated in 'artifacts/test_results.json'.
+# - If no test result files are found, the script exits with an error message.
+# - If no valid test cases are found in an XML file, the script logs an error for that file and continues.
+#
+# Dependencies:
+# - jq (for JSON manipulation)
+# - tr (for text transformation)
+# - sed (for text processing)
+# - grep (for extracting specific content)
+# - pytest (for generating XML test result files)
+
+# Usage:
+# Run this script to aggregate pytest results and generate a summary:
+# > ./scripts/aggregate-pytest-results.shell
+
 # set -x ;
 set -e ;             # Exit on error
 set -o pipefail ;    # Fail if any piped command fails

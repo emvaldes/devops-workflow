@@ -1,0 +1,203 @@
+### Documentation for .github/scripts/extract_pytest_resources.py
+
+Help on module extract_pytest_resources:
+
+NAME
+    extract_pytest_resources
+
+DESCRIPTION
+    File: .github/scripts/extract_pytest_resources.py
+    Version: 0.0.2
+
+    Description:
+        This script scans a list of pytest test files, extracts function names following
+        the pytest naming convention, and stores the results in JSON format.
+
+        The extracted test resources are normalized to a base location to ensure consistent
+        relative paths in the output JSON.
+
+    Features:
+        - **Automatic PyTest Resource Extraction**: Identifies and extracts test function definitions.
+        - **Relative Path Resolution**: Normalizes test file paths relative to a common base directory.
+        - **Structured Output**: Outputs extracted resources in a structured JSON format.
+        - **File Validation**: Ensures all input test files exist before processing.
+        - **Error Handling**: Logs warnings for missing/unreadable files instead of failing abruptly.
+        - **JSON Integrity Check**: Validates the output JSON file to ensure structural correctness.
+
+    Usage:
+        python extract_pytest_resources.py <pytest_listing> <pytest_mapping>
+
+    Arguments:
+        pytest_listing (str): A JSON-encoded list containing paths to pytest test files.
+        pytest_mapping (str): The output JSON file where extracted function names will be stored.
+
+    Exit Codes:
+        1 - An error occurred (invalid input, missing files, extraction failure, validation failure, etc.).
+        0 - Success, extracted test functions are stored correctly.
+
+    Requirements:
+        - Python 3.x
+        - JSON-formatted input for pytest test files
+        - Read access to the provided test files
+
+    Example:
+        ```bash
+        python extract_pytest_resources.py '["tests/test_example.py"]' "pytest_resources.json"
+        ```
+
+    Output Format:
+        The JSON file follows this structure:
+        ```json
+        {
+            "location": "tests/",
+            "resources": [
+                {
+                    "file": "test_example.py",
+                    "functions": ["test_addition", "test_subtraction"]
+                }
+            ]
+        }
+        ```
+
+FUNCTIONS
+    extract_pytest_resources(pytest_files: List[str]) -> Union[Dict[str, Union[str, List[Dict[str, Union[str, List[str]]]]]], bool]
+        Extracts pytest test function names from the given list of test files.
+
+        Args:
+            pytest_files (List[str]): A list of pytest test file paths to be processed.
+
+        Returns:
+            Dict[str, Union[str, List[Dict[str, Union[str, List[str]]]]]]:
+                - A dictionary containing the base directory location and a list of extracted test resources.
+                - Example:
+                  ```json
+                  {
+                      "location": "tests/",
+                      "resources": [
+                          {
+                              "file": "test_example.py",
+                              "functions": ["test_func_1", "test_func_2"]
+                          }
+                      ]
+                  }
+                  ```
+            bool: Returns False if no valid test functions are found in any file.
+
+        Raises:
+            IOError: If a file cannot be opened or read.
+            Exception: If an unexpected error occurs while processing the files.
+
+        Extraction Process:
+            - Determines the base directory from the input files.
+            - Reads each file and searches for function names matching the pattern `test_*`.
+            - Converts absolute file paths to relative paths based on the base directory.
+            - Returns structured JSON output.
+
+        Notes:
+            - If no valid test functions are found, the function returns `False` instead of an empty dictionary.
+            - The output dictionary includes a `"location"` field for relative path consistency.
+
+    main() -> None
+        Main function to orchestrate the extraction and validation of pytest test functions.
+
+        Workflow:
+            1. Parses command-line arguments.
+            2. Reads a JSON-formatted list of pytest test file paths.
+            3. Calls `extract_pytest_resources()` to scan the test files.
+            4. Saves the extracted function names to a JSON file.
+            5. Calls `validate_json_output()` to ensure the output is structured correctly.
+
+        Command-Line Arguments:
+            pytest_listing (str): JSON list containing pytest test file paths.
+            pytest_mapping (str): Path to save the extracted test function names (JSON).
+
+        Returns:
+            None: This function does not return any values. It either exits successfully or terminates with an error.
+
+        Exit Codes:
+            1 - Failure (invalid JSON input, missing files, extraction failure, or validation errors).
+            0 - Success (functions extracted and validated successfully).
+
+        Notes:
+            - If `pytest_mapping` is not specified, it defaults to `"pytest_resources.json"`.
+            - If extraction or validation fails, the script exits with status code 1.
+
+    validate_json_output(pytest_mapping: str) -> bool
+        Validates the structure and content of the generated JSON output file.
+
+        Args:
+            pytest_mapping (str): Path to the JSON file containing pytest function mappings.
+
+        Returns:
+            bool:
+                - True if the JSON file exists, follows the correct structure, and contains valid data.
+                - False if the file is missing, empty, or improperly formatted.
+
+        Raises:
+            json.JSONDecodeError: If the JSON file is corrupted or contains invalid JSON.
+            IOError: If the file cannot be accessed.
+            Exception: If any other unexpected error occurs.
+
+        Validation Process:
+            1. Checks if the file exists and is not empty.
+            2. Ensures the JSON structure follows the expected format:
+               ```json
+               {
+                   "location": "tests/",
+                   "resources": [
+                       {
+                           "file": "test_example.py",
+                           "functions": ["test_function_1", "test_function_2"]
+                       }
+                   ]
+               }
+               ```
+            3. Confirms that each extracted function name list is properly formatted.
+            4. Reports malformed entries or structural issues.
+
+        Notes:
+            - If the JSON file does not exist or is empty, the function returns `False`.
+            - If validation fails, descriptive error messages are printed to stderr.
+
+DATA
+    Dict = typing.Dict
+        A generic version of dict.
+
+    List = typing.List
+        A generic version of list.
+
+    Union = typing.Union
+        Union type; Union[X, Y] means either X or Y.
+
+        On Python 3.10 and higher, the | operator
+        can also be used to denote unions;
+        X | Y means the same thing to the type checker as Union[X, Y].
+
+        To define a union, use e.g. Union[int, str]. Details:
+        - The arguments must be types and there must be at least one.
+        - None as an argument is a special case and is replaced by
+          type(None).
+        - Unions of unions are flattened, e.g.::
+
+            assert Union[Union[int, str], float] == Union[int, str, float]
+
+        - Unions of a single argument vanish, e.g.::
+
+            assert Union[int] == int  # The constructor actually returns int
+
+        - Redundant arguments are skipped, e.g.::
+
+            assert Union[int, str, int] == Union[int, str]
+
+        - When comparing unions, the argument order is ignored, e.g.::
+
+            assert Union[int, str] == Union[str, int]
+
+        - You cannot subclass or instantiate a union.
+        - You can use Optional[X] as a shorthand for Union[X, None].
+
+FILE
+    <project-location>/.github/scripts/extract_pytest_resources.py
+
+
+

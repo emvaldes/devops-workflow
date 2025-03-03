@@ -3,6 +3,34 @@
 ## File: .github/scripts/inspect-artifacts-state.shell
 ## Version: 0.0.1
 
+# Description:
+#
+# This script is used to inspect and debug the state of the artifacts directory within a CI/CD pipeline.
+# It provides insights into the working directory, environment variables related to artifacts,
+# the location of any artifacts directories, and the presence of test result files (e.g., XML files).
+#
+# Features:
+# - Displays the current working directory.
+# - Prints environment variables related to artifacts.
+# - Locates and prints the path of the "artifacts" directory.
+# - Searches for test result files (XML format).
+# - Lists the contents of the "artifacts" directory, if found.
+
+# Expected Behavior:
+# - The script provides a summary of the current working directory and relevant environment variables.
+# - It identifies and prints the path to the "artifacts" directory.
+# - It searches for XML files (test results) in the workspace and prints their locations.
+# - It lists the contents of the "artifacts" directory if it exists.
+#
+# Dependencies:
+# - find (for searching files and directories)
+# - env (for printing environment variables)
+# - ls (for listing directory contents)
+
+# Usage:
+# To run the script and inspect the artifacts state:
+# > ./scripts/inspect-artifacts-state.shell
+
 # set -x ;
 set -e ;           # Exit on error
 set -o pipefail ;  # Fail if any piped command fails

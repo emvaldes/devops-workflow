@@ -35,8 +35,6 @@ It ensures that serialization and string sanitization functions operate correctl
 - **Non-serializable objects return structured fallback representations**.
 - **Inline comments are removed while preserving valid code structure**.
 
-Author: Eduardo Valdes
-Date: 2025/01/01
 """
 
 import sys
@@ -62,15 +60,18 @@ CONFIGS = tracing.setup_logging(
 CONFIGS["logging"]["enable"] = False  # Disable logging for test isolation
 CONFIGS["tracing"]["enable"] = False  # Disable tracing to prevent unintended prints
 
-# Test serialize_utils.safe_serialize function
 def test_safe_serialize() -> None:
-    """Ensure `serialize_utils.safe_serialize()` correctly converts objects to JSON strings with metadata.
+    """
+    Ensure `serialize_utils.safe_serialize()` correctly converts objects to JSON strings with metadata.
 
-    Tests:
-    - Serializing standard data types (dicts, lists, numbers).
-    - Handling `verbose=True` for formatted JSON output.
-    - Processing **non-serializable objects** and returning structured fallback data.
-    - Ensuring **error messages are included** for failed serializations.
+    This test verifies:
+    - Standard Python data types (dicts, lists, numbers) serialize correctly.
+    - Handles verbose output for formatted JSON.
+    - Properly handles **non-serializable objects**, returning structured fallback data.
+    - Includes **error messages** for failed serializations.
+
+    Returns:
+        None: This test function does not return a value. It asserts that the serialization works correctly for various object types.
     """
 
     # Test valid JSON serialization
@@ -118,18 +119,22 @@ def test_safe_serialize() -> None:
     assert "error" in result_unserializable
     assert result_unserializable["type"] == "object"
 
-# Test serialize_utils.sanitize_token_string function
 def test_sanitize_token_string() -> None:
-    """Ensure `serialize_utils.sanitize_token_string()` removes comments while keeping code intact.
-
-    Tests:
-    - Removes inline comments while keeping valid code.
-    - Strips full-line comments.
-    - Handles edge cases:
-      - Empty strings
-      - Whitespace-only inputs
-      - Special characters before `#`
     """
+    Ensure `serialize_utils.sanitize_token_string()` removes comments while keeping code intact.
+
+    This test checks:
+    - Removal of **inline comments** while preserving the rest of the code.
+    - Removal of **full-line comments**.
+    - Proper handling of edge cases:
+      - Empty strings
+      - Strings with only whitespace
+      - Special characters before the comment symbol (`#`).
+
+    Returns:
+        None: This test function does not return a value. It validates that the function correctly sanitizes code strings by removing comments.
+    """
+
     assert serialize_utils.sanitize_token_string(
         "some_code()  # this is a comment"
     ) == "some_code()"

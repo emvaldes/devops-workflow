@@ -1,53 +1,59 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/lib/file_utils.py
+### Documentation for packages/appflow_tracer/lib/file_utils.py
 
-Python Library Documentation: module packages.appflow_tracer.lib.file_utils in packages.appflow_tracer.lib
+Help on module packages.appflow_tracer.lib.file_utils in packages.appflow_tracer.lib:
 
-NNAAMMEE
-    packages.appflow_tracer.lib.file_utils - File Path: packages/appflow_tracer/lib/file_utils.py
+NAME
+    packages.appflow_tracer.lib.file_utils - File: packages/appflow_tracer/lib/file_utils.py
 
-DDEESSCCRRIIPPTTIIOONN
+DESCRIPTION
     Description:
-
-    File and Log Management Utilities
-
-    This module provides helper functions for managing log files, resolving
-    relative paths, and cleaning terminal output by removing ANSI escape codes.
+        File and Log Management Utilities
+        This module provides helper functions for managing log files, resolving
+        relative paths, and cleaning terminal output by removing ANSI escape codes.
 
     Core Features:
-
-    - **Log File Management**: Removes old logs to prevent excessive storage usage.
-    - **Project File Detection**: Verifies whether a file belongs to the project.
-    - **Path Resolution**: Converts absolute paths into project-relative paths.
-    - **ANSI Escape Code Removal**: Cleans formatted terminal output.
-
-    Primary Functions:
-
-    - `is_project_file(filename)`: Checks if a file belongs to the project.
-    - `manage_logfiles(configs)`: Deletes old logs when exceeding the configured limit.
-    - `relative_path(filepath)`: Converts absolute paths into relative project paths.
-    - `remove_ansi_escape_codes(text)`: Strips ANSI escape sequences from text.
-
-    Expected Behavior:
-
-    - Log files are removed only when exceeding the maximum allowed limit.
-    - Project-relative paths exclude `.py` extensions for consistency.
-    - ANSI escape codes are removed without altering message content.
-
-    Dependencies:
-
-    - `re`, `pathlib`
-    - `lib.system_variables` (for project settings)
+        - **Log File Management**: Removes old logs to prevent excessive storage usage.
+        - **Project File Detection**: Verifies whether a file belongs to the project.
+        - **Path Resolution**: Converts absolute paths into project-relative paths.
+        - **ANSI Escape Code Removal**: Cleans formatted terminal output.
 
     Usage:
+        To clean up old log files:
+        ```python
+        manage_logfiles(configs=CONFIGS)
+        ```
 
-    To clean up old log files:
-    > manage_logfiles(configs=CONFIGS)
+        To check if a file belongs to the project:
+        ```python
+        is_project_file("scripts/devops-workflow.py")
+        ```
 
-    To check if a file belongs to the project:
-    > is_project_file("scripts/devops-workflow.py")
+    Dependencies:
+        - sys
+        - re
+        - pathlib
+        - lib.system_variables (for project settings)
 
-FFUUNNCCTTIIOONNSS
-    iiss__pprroojjeecctt__ffiillee(filename: str) -> bool
+    Global Variables:
+        - Uses `project_root`, `project_logs`, and `category` from `lib.system_variables`.
+
+    Expected Behavior:
+        - Log files are removed only when exceeding the maximum allowed limit.
+        - Project-relative paths exclude `.py` extensions for consistency.
+        - ANSI escape codes are removed without altering message content.
+
+    Exit Codes:
+        - `0`: Successful execution.
+        - `1`: Failure due to file system or logging issues.
+
+    Example:
+        ```python
+        from file_utils import relative_path
+        print(relative_path("/absolute/path/to/script.py"))
+        ```
+
+FUNCTIONS
+    is_project_file(filename: str) -> bool
         Determine if a given file path belongs to the project directory structure.
 
         This function verifies whether the specified `filename` is located within
@@ -65,39 +71,39 @@ FFUUNNCCTTIIOONNSS
             >>> is_project_file("/usr/lib/python3.8/external.py")
             False
 
-    mmaannaaggee__llooggffiilleess(configs: dict = None) -> None
+        Notes:
+            - If the filename is `None` or an empty string, the function returns `False`.
+            - The function safely resolves the absolute path before performing the check.
+
+    manage_logfiles(configs: dict = None) -> list
         Manage log file storage by removing old logs if the number exceeds a configured limit.
 
         This function prevents log directories from growing indefinitely by:
         - Checking the current number of log files in each log subdirectory.
         - Deleting the oldest logs **only if** the total count exceeds the allowed limit.
-        - Returning a list of successfully deleted log files.
 
-        ## Args:
+        Args:
             configs (dict, optional): Configuration dictionary that specifies:
                 - `"max_logfiles"`: Maximum number of log files to retain.
                 Defaults to `None`, in which case the global `max_logfiles` setting is used.
 
-        ## Returns:
-            list: A list of deleted log file paths.
-
-        ## Raises:
+        Raises:
             OSError: If an error occurs while attempting to delete log files.
 
-        ## Behavior:
-        - **Logs are only deleted if the number of log files exceeds `max_logfiles`.**
-        - **The function automatically determines which logs to remove, prioritizing the oldest.**
-        - **If no logs exceed the threshold, no deletions occur, and an empty list is returned.**
+        Returns:
+            list: A list of deleted log file paths.
 
-        ## Example:
-            >>> deleted_logs = manage_logfiles(CONFIGS)
-            >>> print(deleted_logs)  # List of removed log files, if any
+        Workflow:
+            1. Sorts log files by modification time (oldest first).
+            2. Identifies files exceeding the limit.
+            3. Deletes excess log files.
+            4. Logs deletions using `log_utils.log_message()`.
 
-        ## Logging:
-        - Each deleted log file is recorded using `log_utils.log_message()`.
-        - Errors during deletion are logged as warnings.
+        Notes:
+            - The function ensures logging operations respect the `configs["logging"]["enable"]` flag.
+            - If no logs exceed the threshold, no deletions occur, and an empty list is returned.
 
-    rreellaattiivvee__ppaatthh(filepath: str) -> str
+    relative_path(filepath: str) -> str
         Convert an absolute file path into a project-relative path.
 
         This function maps the given absolute path to the project’s directory structure.
@@ -115,7 +121,11 @@ FFUUNNCCTTIIOONNSS
             >>> relative_path("/path/to/project/module.py")
             "module"
 
-    rreemmoovvee__aannssii__eessccaappee__ccooddeess(text: str) -> str
+        Notes:
+            - If the file is not within the project directory, the original path is returned.
+            - The `.py` extension is removed for consistency in logging and output formatting.
+
+    remove_ansi_escape_codes(text: str) -> str
         Remove ANSI escape sequences from a string.
 
         This function is used to clean up log messages or terminal output by
@@ -132,14 +142,19 @@ FFUUNNCCTTIIOONNSS
             >>> remove_ansi_escape_codes("[31mThis is red text[0m")
             "This is red text"
 
-DDAATTAA
-    ccaatteeggoorryy = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
-    ddeeffaauulltt__iinnddeenntt = 4
-    mmaaxx__llooggffiilleess = 5
-    pprroojjeecctt__llooggss = PosixPath('/Users/emvaldes/.repos/devops/workflows/logs...
-    pprroojjeecctt__rroooott = PosixPath('/Users/emvaldes/.repos/devops/workflows')
+        Notes:
+            - ANSI escape codes are commonly used for terminal colorization.
+            - The function ensures that formatted messages remain readable.
 
-FFIILLEE
-    /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/lib/file_utils.py
+DATA
+    category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
+    default_indent = 4
+    max_logfiles = 5
+    project_logs = PosixPath('<project-location>/logs...
+    project_root = PosixPath('<project-location>')
+
+FILE
+    <project-location>/packages/appflow_tracer/lib/file_utils.py
+
 
 

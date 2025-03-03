@@ -1,13 +1,13 @@
 .DS_Store
 
 .legacy
+*--legacy.*
+
 .outputs
 .project
-.prototype
-.github/legacy
 
-*--legacy.yaml
-*--prototype.yaml
+.prototypes
+*--prototype.*
 
 ## Ignore dynamically created installed.json
 packages/requirements/installed.json
@@ -73,7 +73,9 @@ cover/
 *.pot
 
 # Django stuff:
-*.log
+
+## Enable: *.log
+
 local_settings.py
 db.sqlite3
 db.sqlite3-journal

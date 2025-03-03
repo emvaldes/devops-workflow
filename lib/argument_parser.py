@@ -1,73 +1,81 @@
 #!/usr/bin/env python3
 
 """
-File Path: ./lib/argument_parser.py
+File: ./lib/argument_parser.py
 
 Description:
-
-Command-Line Argument Parser
-
-This module provides dynamic parsing of command-line arguments based on a JSON configuration file.
-It supports structured parameter definitions, automatic type conversion, and flexible flag handling.
+    Command-Line Argument Parser
+    This module provides dynamic parsing of command-line arguments based on a JSON configuration file.
+    It supports structured parameter definitions, automatic type conversion, and flexible flag handling.
 
 Core Features:
-
-- **JSON-Based Argument Loading**: Reads structured argument definitions dynamically.
-- **Automatic Type Conversion**: Converts CLI argument values to expected Python types.
-- **Structured Validation**: Ensures required and optional arguments are handled correctly.
-- **Debugging Support**: Displays parsed arguments in JSON format when `--debug` is used.
-
-Primary Functions:
-
-- `load_argument_config()`: Reads and validates argument definitions from a JSON file.
-- `convert_types(kwargs)`: Converts JSON type definitions into Python-compatible types.
-- `parse_arguments(context, description)`: Dynamically parses CLI arguments.
-- `parse_arguments(args)`: Processes structured CLI arguments from system parameters.
-
-Expected Behavior:
-
-- If the argument configuration file is missing, an error is logged.
-- JSON parsing errors are handled gracefully to prevent execution failures.
-- Debug mode (`--debug`) prints parsed arguments in JSON format.
-
-Dependencies:
-
-- `argparse`, `json`, `logging`
-- `system_variables` (for directory paths and settings)
+    - **JSON-Based Argument Loading**: Reads structured argument definitions dynamically.
+    - **Automatic Type Conversion**: Converts CLI argument values to expected Python types.
+    - **Structured Validation**: Ensures required and optional arguments are handled correctly.
+    - **Debugging Support**: Displays parsed arguments in JSON format when `--debug` is used.
 
 Usage:
+    To run argument parsing with debug output:
+    ```bash
+    python argument_parser.py --debug
+    ```
 
-To run argument parsing with debug output:
-> python argument_parser.py --debug
+Dependencies:
+    - argparse
+    - json
+    - logging
+    - system_variables (for directory paths and settings)
+
+Global Variables:
+    - `system_params_filepath` (Path): Stores the path to the JSON configuration file.
+
+Exit Codes:
+    - `0`: Successful execution.
+    - `1`: Failure due to errors in argument parsing or configuration loading.
+
+Example:
+    ```bash
+    python argument_parser.py --debug
+    ```
 """
 
 import sys
 import os
 
-import argparse
 import json
 import logging
+import argparse
 
+from typing import Dict, Any
 from pathlib import Path
+
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
 from system_variables import (
     system_params_filepath
 )
 
-def load_argument_config() -> dict:
+def load_argument_config() -> Dict[str, Any]:
     """
     Load argument definitions from a JSON configuration file and validate them.
 
     Reads a structured JSON file that defines command-line arguments, ensuring the file exists,
     is correctly formatted, and contains valid content.
 
+    Returns:
+        Dict[str, Any]: A dictionary containing the parsed argument definitions.
+
     Raises:
         FileNotFoundError: If the JSON configuration file does not exist.
         ValueError: If the JSON file is empty or contains invalid JSON.
         RuntimeError: If an unexpected error occurs while reading the file.
 
-    Returns:
-        dict: A dictionary containing the parsed argument definitions.
+    Notes:
+        - If the JSON configuration file is missing, execution is halted with an error.
+        - JSON parsing errors are logged to prevent execution failures.
     """
+
     if not system_params_filepath.exists():
         raise FileNotFoundError(f'ERROR: Argument configuration file not found at {system_params_filepath}')
     ## Handles empty files, permission issues, and invalid JSON.
@@ -84,7 +92,9 @@ def load_argument_config() -> dict:
     except Exception as e:
         raise RuntimeError(f'ERROR: Unable to read "{system_params_filepath}". Details: {e}')
 
-def convert_types(kwargs: dict) -> dict:
+def convert_types(
+    kwargs: Dict[str, Any]
+) -> Dict[str, Any]:
     """
     Convert JSON type definitions into actual Python types.
 
@@ -93,11 +103,16 @@ def convert_types(kwargs: dict) -> dict:
     Python types.
 
     Args:
-        kwargs (dict): Dictionary of argument properties, potentially including a `type` field.
+        kwargs (Dict[str, Any]): Dictionary of argument properties, potentially including a `type` field.
 
     Returns:
-        dict: Updated dictionary with the `type` field converted to a Python type if applicable.
+        Dict[str, Any]: Updated dictionary with the `type` field converted to a Python type if applicable.
+
+    Notes:
+        - If `action="store_true"` is set, the `type` field is removed to avoid conflicts.
+        - Supports automatic conversion of `str`, `int`, and `bool` type definitions.
     """
+
     type_mapping = {"str": str, "int": int, "bool": bool}
     ## Remove "type" if "store_true" action is set
     if "action" in kwargs and kwargs["action"] == "store_true":
@@ -107,7 +122,7 @@ def convert_types(kwargs: dict) -> dict:
     return kwargs
 
 def parse_arguments__prototype(
-    context: dict = None,
+    context: Dict[str, Any] = None,
     description: str = "Azure CLI utility"
 ) -> argparse.Namespace:
     """
@@ -117,11 +132,24 @@ def parse_arguments__prototype(
     adds them to an argparse parser. It supports automatic type conversion and structured validation.
 
     Args:
-        context (dict, optional): A dictionary specifying which arguments should be included. Defaults to None.
+        context (Dict[str, Any], optional): A dictionary specifying which arguments should be included. Defaults to None.
         description (str, optional): A description for the command-line utility. Defaults to "Azure CLI utility".
 
     Returns:
         argparse.Namespace: A namespace containing the parsed arguments as attributes.
+
+    Raises:
+        Exception: If an error occurs while processing arguments.
+
+    Workflow:
+        1. Loads argument definitions from a JSON file.
+        2. Iterates through the defined sections and adds them to the argparse parser.
+        3. Converts argument types as needed and applies appropriate argument flags.
+        4. Parses command-line arguments and returns them in a structured namespace.
+
+    Notes:
+        - Required arguments are manually enforced in `main()`, rather than in `argparse`.
+        - If `--debug` is provided, the parsed arguments are printed in JSON format.
     """
 
     parser = argparse.ArgumentParser(description=description)
@@ -146,7 +174,9 @@ def parse_arguments__prototype(
         print(json.dumps(vars(args), indent=4))
     return args
 
-def parse_arguments(args: dict) -> argparse.Namespace:
+def parse_arguments(
+    args: Dict[str, Any]
+) -> argparse.Namespace:
     """
     Process structured CLI arguments using argparse.
 
@@ -154,10 +184,24 @@ def parse_arguments(args: dict) -> argparse.Namespace:
     ensuring correct type conversions and handling unknown arguments gracefully.
 
     Args:
-        args (dict): A dictionary containing structured argument definitions.
+        args (Dict[str, Any]): A dictionary containing structured argument definitions.
 
     Returns:
         argparse.Namespace: A namespace containing the parsed arguments as attributes.
+
+    Raises:
+        Exception: If an error occurs while adding arguments.
+
+    Workflow:
+        1. Reads structured arguments from `args` dictionary.
+        2. Converts type definitions from strings (e.g., `"int"`) to Python types.
+        3. Iterates over argument sections and adds them to an `argparse` parser.
+        4. Parses arguments and stores them in a namespace.
+        5. Logs any unknown arguments encountered.
+
+    Notes:
+        - If `store_true` or `store_false` actions are used, the `type` field is removed to prevent conflicts.
+        - If an argument is missing its `flags` field, an error is logged.
     """
 
     parser = argparse.ArgumentParser(description="System Globals Parameter Parser")
@@ -205,13 +249,29 @@ def parse_arguments(args: dict) -> argparse.Namespace:
 
     return args
 
-def main():
+def main() -> None:
     """
     Main function for executing argument parsing when the script is run as a standalone module.
 
     This function loads the argument configuration, parses command-line arguments, and
     prints the parsed values in a structured JSON format.
+
+    Returns:
+        None: This function does not return values; it prints parsed argument data.
+
+    Raises:
+        Exception: If argument parsing fails.
+
+    Workflow:
+        1. Calls `parse_arguments()` to process command-line arguments.
+        2. Displays parsed argument values in a structured JSON format.
+        3. Logs errors if any required arguments are missing.
+
+    Notes:
+        - If the `--debug` flag is present, the parsed arguments are printed in JSON format.
+        - Ensures that command-line arguments are validated and processed correctly.
     """
+
     args = parse_arguments()
     print("\nArgument parsing completed successfully.")
     print(json.dumps(vars(args), indent=4))

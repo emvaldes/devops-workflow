@@ -1,48 +1,51 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/lib/system_params.py
+### Documentation for lib/system_params.py
 
-Python Library Documentation: module lib.system_params in lib
+WARNING:root:runtime-params.json file exists but is invalid (empty or only contains the header).
+Help on module lib.system_params in lib:
 
-NNAAMMEE
-    lib.system_params - File Path: ./lib/system_params.py
+NAME
+    lib.system_params - File: ./lib/system_params.py
 
-DDEESSCCRRIIPPTTIIOONN
+DESCRIPTION
     Description:
-
-    System Parameter Management
-
-    This module handles system-wide parameter management by loading runtime
-    parameters from JSON configuration files and merging them with environment variables.
+        System Parameter Management
+        This module handles system-wide parameter management by loading runtime
+        parameters from JSON configuration files and merging them with environment variables.
 
     Core Features:
-
-    - **Configuration Loading**: Reads parameters from `runtime-params.json`, `project-params.json`, and `default-params.json`.
-    - **Environment Variable Management**: Dynamically sets system-wide environment variables.
-    - **Validation and Error Handling**: Ensures required parameters are initialized before execution.
-
-    Primary Functions:
-
-    - `load_json_config(filepath)`: Reads and validates JSON configuration files.
-    - `get_runtime_variable(name, required)`: Retrieves an environment variable safely.
-    - `configure_params()`: Merges and validates runtime parameters.
-
-    Expected Behavior:
-
-    - If a required environment variable is missing, an error is logged.
-    - JSON files must be well-formed; otherwise, an error is raised.
-    - All system parameters are loaded dynamically before execution.
-
-    Dependencies:
-
-    - `os`, `json`, `logging`, `dotenv`, `pathlib`
-    - `lib.configure_params` (for JSON merging and validation)
+        - **Configuration Loading**: Reads parameters from `runtime-params.json`, `project-params.json`, and `default-params.json`.
+        - **Environment Variable Management**: Dynamically sets system-wide environment variables.
+        - **Validation and Error Handling**: Ensures required parameters are initialized before execution.
 
     Usage:
+        To load and initialize system parameters:
+        ```bash
+        python system_params.py
+        ```
 
-    To load and initialize system parameters:
-    > python system_params.py
+    Dependencies:
+        - os
+        - json
+        - logging
+        - dotenv
+        - pathlib
+        - lib.configure_params (for JSON merging and validation)
 
-FFUUNNCCTTIIOONNSS
-    ggeett__rruunnttiimmee__vvaarriiaabbllee(name: str, required: bool = False) -> str
+    Global Variables:
+        - `SYSTEM_PARAMS` (dict): Loaded system-wide parameters.
+        - `RUNTIME_PARAMS` (dict): Parameters dynamically merged at runtime.
+
+    Exit Codes:
+        - `0`: Successful execution.
+        - `1`: Failure due to missing configuration files or invalid environment variables.
+
+    Example:
+        ```bash
+        python system_params.py
+        ```
+
+FUNCTIONS
+    get_runtime_variable(name: str, required: bool = False) -> Optional[str]
         Retrieve an environment variable safely, handling missing or empty values.
 
         This function fetches an environment variable and logs a warning if a required
@@ -56,9 +59,13 @@ FFUUNNCCTTIIOONNSS
             RuntimeError: If there is an issue retrieving the environment variable.
 
         Returns:
-            str: The value of the environment variable, or None if it is missing.
+            Optional[str]: The value of the environment variable, or None if it is missing.
 
-    llooaadd__jjssoonn__ccoonnffiigg(runtime_params_filepath: pathlib._local.Path) -> dict
+        Notes:
+            - If `required=True` and the variable is missing, a warning is logged.
+            - If an exception occurs, `RuntimeError` is raised.
+
+    load_json_config(runtime_params_filepath: pathlib._local.Path) -> dict
         Load environment variables from a JSON configuration file.
 
         Reads a JSON file and ensures its structure is valid before returning
@@ -74,19 +81,56 @@ FFUUNNCCTTIIOONNSS
         Returns:
             dict: The parsed JSON data containing system parameters.
 
-DDAATTAA
-    RRUUNNTTIIMMEE__PPAARRAAMMSS = {'defaults': {'options': {'auto': 'False', 'debug': '...
-    SSYYSSTTEEMM__PPAARRAAMMSS = {'defaults': {'options': {'auto': {'default': False, '...
-    ddeeffaauulltt__ppaarraammss__ffiilleeppaatthh = PosixPath('/Users/emvaldes/.repos/devops/wor...
-    ffiillee = <_io.TextIOWrapper name='/Users/emvaldes/.repos/...s/runtime-pa...
-    pprroojjeecctt__ppaarraammss__ffiilleeppaatthh = PosixPath('/Users/emvaldes/.repos/devops/wor...
-    pprroojjeecctt__rroooott = PosixPath('/Users/emvaldes/.repos/devops/workflows')
-    rruunnttiimmee__ppaarraammss__ffiilleennaammee = 'runtime-params.json'
-    rruunnttiimmee__ppaarraammss__ffiilleeppaatthh = PosixPath('/Users/emvaldes/.repos/devops/wor...
-    ssyysstteemm__ppaarraammss__ffiilleeppaatthh = PosixPath('/Users/emvaldes/.repos/devops/work...
-    ssyysstteemm__ppaarraammss__lliissttiinngg = [PosixPath('/Users/emvaldes/.repos/devops/work...
+        Notes:
+            - If the file is empty, the function raises a `ValueError`.
+            - If the file contains invalid JSON, the function raises `RuntimeError`.
+            - Ensures robust error handling for corrupt or missing files.
 
-FFIILLEE
-    /Users/emvaldes/.repos/devops/workflows/lib/system_params.py
+    validate_runtime_params(runtime_params_filepath)
+        Validates the existence and content of the runtime parameters JSON file.
+
+        This function checks whether the specified JSON file exists, is not empty,
+        and contains valid JSON. It raises appropriate exceptions if any of the
+        validation steps fail.
+
+        Args:
+            runtime_params_filepath (str or Path): The file path to the runtime parameters JSON file
+                                                   that needs to be validated.
+
+        Raises:
+            FileNotFoundError: If the file specified by `runtime_params_filepath` does not exist.
+            ValueError: If the file is empty or if it does not contain valid JSON.
+
+        Notes:
+            - This function reads the file as a string, strips any leading or trailing whitespace,
+              and checks for content.
+            - The function ensures that the file contains valid JSON. If the file is malformed
+              or contains invalid JSON, a `ValueError` will be raised.
+            - If the file does not exist, a `FileNotFoundError` will be raised.
+
+        Example:
+            >>> validate_runtime_params("/path/to/runtime-params.json")
+            >>> # Raises ValueError if the file is empty or contains invalid JSON,
+            >>> # Raises FileNotFoundError if the file doesn't exist.
+
+DATA
+    Optional = typing.Optional
+        Optional[X] is equivalent to Union[X, None].
+
+    RUNTIME_PARAMS = {'defaults': {'options': {'auto': 'False', 'debug': '...
+    SECTIONS_VARS = {'defaults': {'auto': 'False', 'debug': 'False', 'exam...
+    SYSTEM_PARAMS = {'defaults': {'options': {'auto': {'default': False, '...
+    default_params_filepath = PosixPath('<user-home>/.repos/devops/wor...
+    file = <_io.TextIOWrapper name='<user-home>/.repos/...s/runtime-pa...
+    project_params_filepath = PosixPath('<user-home>/.repos/devops/wor...
+    project_root = PosixPath('<project-location>')
+    runtime_params_filename = 'runtime-params.json'
+    runtime_params_filepath = PosixPath('<user-home>/.repos/devops/wor...
+    system_params_filepath = PosixPath('<user-home>/.repos/devops/work...
+    system_params_listing = [PosixPath('<user-home>/.repos/devops/work...
+
+FILE
+    <project-location>/lib/system_params.py
+
 
 

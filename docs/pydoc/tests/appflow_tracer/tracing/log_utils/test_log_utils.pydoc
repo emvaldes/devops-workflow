@@ -1,4 +1,118 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/tests/appflow_tracer/tracing/log_utils/test_log_utils.py
+### Documentation for tests/appflow_tracer/tracing/log_utils/test_log_utils.py
 
-pydoc
-Problem generating pydoc: problem in tests.appflow_tracer.tracing.log_utils.test_log_utils - ModuleNotFoundError: No module named 'pytest'
+Help on module tests.appflow_tracer.tracing.log_utils.test_log_utils in tests.appflow_tracer.tracing.log_utils:
+
+NAME
+    tests.appflow_tracer.tracing.log_utils.test_log_utils - Test Module: ./tests/appflow_tracer/tracing/test_log_utils.py
+
+DESCRIPTION
+    This module contains unit tests for the `log_utils.py` module in `appflow_tracer.lib`.
+    It ensures that logging functions operate correctly, including:
+
+    - **Structured log message handling** for files and console.
+    - **File-based log output** validation ensuring correct JSON formatting.
+    - **ANSI-formatted console output** for colored log messages.
+    - **Handling of different JSON formatting configurations** (compressed, pretty-printed, and sanitized).
+
+    ## Use Cases:
+    1. **Validate structured logging via `log_utils.log_message()`**
+       - Ensures `log_utils.log_message()` correctly routes logs to files and console based on configuration.
+       - Verifies that JSON-formatted logs are properly serialized and categorized.
+       - Tests logging behavior with `tracing.json.compressed = True/False`.
+
+    2. **Ensure `log_utils.output_logfile()` correctly writes logs to file**
+       - Simulates log file output and verifies the expected format.
+       - Ensures log messages are categorized correctly (INFO, WARNING, ERROR, etc.).
+       - Validates that JSON metadata is properly included in log files.
+       - Accounts for different JSON formatting modes.
+
+    3. **Test `log_utils.output_console()` for formatted console logging**
+       - Ensures ANSI color formatting is applied to console logs when enabled.
+       - Validates structured log messages are properly displayed with metadata.
+       - Supports various JSON formatting options (compressed, pretty-printed, sanitized).
+
+    ## Improvements Implemented:
+    - `log_utils.log_message()` now properly **differentiates between log levels** and handles structured data.
+    - The test **isolates logging behavior** by dynamically disabling logging and tracing during execution.
+    - JSON validation ensures that **log file output maintains correct formatting**.
+    - Added multiple test scenarios to validate behavior under different `tracing.json` configurations:
+      - **Compressed JSON** (`tracing.json.compressed = True`)
+      - **Pretty-printed JSON** (`tracing.json.compressed = False`)
+      - **Sanitized JSON output**
+
+    ## Expected Behavior:
+    - **Log messages are routed properly** to files or console depending on configuration.
+    - **Structured JSON data is correctly serialized** and included in logs.
+    - **ANSI color formatting is applied to console logs** where applicable.
+    - **Tests correctly handle different JSON output formats** based on configuration.
+
+FUNCTIONS
+    mock_logger() -> unittest.mock.MagicMock
+        Creates a mock logger for testing.
+
+        This fixture creates and returns a mock instance of the `logging.Logger` class using `MagicMock`. It allows for simulating
+        logging behavior without writing to actual log files. The mock logger is useful for testing functions or methods that
+        rely on logging, ensuring that logging calls are made correctly without affecting external logging systems.
+
+        Returns:
+            MagicMock: A mock logger object that mimics a `logging.Logger` instance.
+
+    test_log_message(mock_logger) -> None
+        Test that `log_utils.log_message()` correctly logs messages based on configuration.
+
+        This test checks that:
+        - Log messages are correctly routed to file and console based on the configuration.
+        - JSON metadata is included in the log message when provided.
+        - Log levels (INFO, WARNING, ERROR, etc.) are properly categorized and logged.
+
+        Args:
+            mock_logger (MagicMock): Mock logger object used to capture log output.
+
+        Returns:
+            None: This function does not return a value. It asserts that logging behavior is as expected.
+
+    test_output_console(
+        mock_logger,
+        compressed_setting,
+        expected_format,
+        expect_json
+    ) -> None
+        Test `log_utils.output_console()` with different JSON formats and console color handling.
+
+        This test ensures that:
+        - ANSI color formatting is applied to console logs when enabled.
+        - Log messages are correctly formatted and displayed with metadata.
+        - JSON formatting behavior is as expected when `tracing.json.compressed` is set to True/False.
+
+        Args:
+            mock_logger (MagicMock): Mock logger object used to capture log output.
+            compressed_setting (bool, None): Determines whether JSON output is compressed.
+            expected_format (str, None): The expected JSON output format.
+            expect_json (bool): A flag indicating whether JSON output is expected.
+
+        Returns:
+            None: This function does not return a value. It asserts that the console output matches the expected format.
+
+    test_output_logfile(mock_logger) -> None
+        Test that `log_utils.output_logfile()` writes correctly formatted messages to a log file.
+
+        This test validates that:
+        - Log messages written to a file are structured correctly, including proper categorization by log level.
+        - JSON metadata is included and formatted properly.
+        - Different log levels (INFO, WARNING, ERROR) are categorized correctly.
+
+        Args:
+            mock_logger (MagicMock): Mock logger object to verify output.
+
+        Returns:
+            None: This function does not return a value. It asserts that the log file output matches the expected format.
+
+DATA
+    CONFIGS = {'colors': {'CALL': '\x1b[92m', 'CRITICAL': '\x1b[41m', 'DEB...
+    ROOT_DIR = PosixPath('<project-location>')
+
+FILE
+    <project-location>/tests/appflow_tracer/tracing/log_utils/test_log_utils.py
+
+
+

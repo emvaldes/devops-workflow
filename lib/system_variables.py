@@ -1,42 +1,54 @@
 #!/usr/bin/env python3
 
 """
-File Path: ./lib/system_variables.py
+File: ./lib/system_variables.py
 
 Description:
-
-System-Wide Configuration Paths and Variables
-
-This module defines system-wide constants and configuration file paths
-that serve as references throughout the framework.
+    System-Wide Configuration Paths and Variables
+    This module defines system-wide constants and configuration file paths
+    that serve as references throughout the framework.
 
 Core Features:
+    - **Standardized Configuration Paths**: Defines paths for `.env`, `runtime-params.json`, etc.
+    - **Project Root Management**: Establishes a unified reference for directory traversal.
+    - **Dynamic Configuration Aggregation**: Aggregates available configuration files.
+    - **Log File Quota Management**: Restricts the number of stored logs for efficiency.
 
-- **Standardized Configuration Paths**: Defines paths for `.env`, `runtime-params.json`, etc.
-- **Project Root Management**: Establishes a unified reference for directory traversal.
-- **Dynamic Configuration Aggregation**: Aggregates available configuration files.
-- **Log File Quota Management**: Restricts the number of stored logs for efficiency.
+Usage:
+    Note: This module is imported wherever system-wide file path references are required.
 
-Primary Variables:
+    ```python
+    from lib.system_variables import category, project_root
+    log_utils.log_message("This is a test", category.info.id)
+    ```
 
-- `project_root`: Base directory for resolving project files.
-- `env_filepath`: Location of the `.env` file for runtime parameters.
-- `runtime_params_filepath`: Stores dynamically generated runtime parameters.
-- `system_params_filepath`: Stores global system-wide configurations.
-- `project_params_filepath`: Stores project-level configurations.
-- `default_params_filepath`: Defines framework default parameters.
-- `system_params_listing`: Aggregates configuration sources dynamically.
-- `max_logfiles`: Restricts the number of stored logs (default: `5`).
+Dependencies:
+    - pathlib (for filesystem path handling)
+    - types.SimpleNamespace (for structured category labels)
 
-- `category` (SimpleNamespace): Predefined logging categories for structured logging.
-    - `category.calls.id`    ("CALL"): Function calls.
-    - `category.returns.id`  ("RETURN"): Function return values.
-    - `category.imports.id`  ("IMPORT"): Module imports.
-    - `category.debug.id`    ("DEBUG"): Debugging messages.
-    - `category.info.id`     ("INFO"): Informational messages.
-    - `category.warning.id`  ("WARNING"): Warnings.
-    - `category.error.id`    ("ERROR"): Error messages.
-    - `category.critical.id` ("CRITICAL"): Critical system failures.
+Global Variables:
+    - `project_root` (Path): Base directory for resolving project files.
+    - `project_logs` (Path): Directory where log files are stored.
+    - `project_packages` (Path): Path to the package directory.
+    - `env_filepath` (Path): Location of the `.env` file for runtime parameters.
+    - `runtime_params_filepath` (Path): Stores dynamically generated runtime parameters.
+    - `system_params_filepath` (Path): Stores global system-wide configurations.
+    - `project_params_filepath` (Path): Stores project-level configurations.
+    - `default_params_filepath` (Path): Defines framework default parameters.
+    - `system_params_listing` (List[Path]): Aggregates configuration sources dynamically.
+    - `max_logfiles` (int): Restricts the number of stored logs (default: `5`).
+    - `default_indent` (int): Default JSON indentation for formatting.
+
+Structured Logging Categories:
+    - `category` (SimpleNamespace): Predefined logging categories for structured logging.
+        - `category.calls.id`    ("CALL"): Function calls.
+        - `category.critical.id` ("CRITICAL"): Critical system failures.
+        - `category.debug.id`    ("DEBUG"): Debugging messages.
+        - `category.error.id`    ("ERROR"): Error messages.
+        - `category.imports.id`  ("IMPORT"): Module imports.
+        - `category.info.id`     ("INFO"): Informational messages.
+        - `category.returns.id`  ("RETURN"): Function return values.
+        - `category.warning.id`  ("WARNING"): Warnings.
 
     Purpose:
     - Provides a structured way to reference log categories using dot-notation.
@@ -44,26 +56,20 @@ Primary Variables:
     - Improves readability and maintainability of log messages.
 
 Expected Behavior:
+    - Configuration paths should always resolve correctly, ensuring consistency.
+    - `max_logfiles` should ideally be configurable via an environment variable.
+    - System parameter files should be aggregated dynamically for flexibility.
 
-- Configuration paths should always resolve correctly, ensuring consistency.
-- `max_logfiles` should ideally be configurable via an environment variable.
-- System parameter files should be aggregated dynamically for flexibility.
+Example:
+    ```python
+    from lib.system_variables import project_root, system_params_filepath
 
-Dependencies:
-
-- `pathlib` (for filesystem path handling)
-- `types.SimpleNamespace` (for structured category labels)
-
-Usage:
-
-Note: This module is imported wherever system-wide file path references are required.
-
-from lib.system_variables import category, project_root
-log_utils.log_message("This is a test", category.info.id)
+    print(f"Project Root: {project_root}")
+    print(f"System Params File: {system_params_filepath}")
+    ```
 """
 
 from types import SimpleNamespace as simple
-
 from pathlib import Path
 
 """
@@ -148,12 +154,12 @@ Predefined logging categories for structured logging.
 """
 category = simple(
     calls    = simple(id="CALL",     color="\033[92m"),  # Green
-    returns  = simple(id="RETURN",   color="\033[93m"),  # Yellow
-    imports  = simple(id="IMPORT",   color="\033[94m"),  # Blue
-    debug    = simple(id="DEBUG",    color="\033[96m"),  # Cyan
-    info     = simple(id="INFO",     color="\033[97m"),  # White
-    warning  = simple(id="WARNING",  color="\033[91m"),  # Red
-    error    = simple(id="ERROR",    color="\033[31m"),  # Bright Red
     critical = simple(id="CRITICAL", color="\033[41m"),  # Red Background
+    debug    = simple(id="DEBUG",    color="\033[96m"),  # Cyan
+    error    = simple(id="ERROR",    color="\033[31m"),  # Bright Red
+    imports  = simple(id="IMPORT",   color="\033[94m"),  # Blue
+    info     = simple(id="INFO",     color="\033[97m"),  # White
+    returns  = simple(id="RETURN",   color="\033[93m"),  # Yellow
+    warning  = simple(id="WARNING",  color="\033[91m"),  # Red
     reset    = simple(id="RESET",    color="\033[0m")    # Reset to default
 )

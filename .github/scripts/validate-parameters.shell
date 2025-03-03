@@ -3,38 +3,69 @@
 ## File: .github/scripts/validate-parameters.shell
 ## Version: 0.0.1
 
+# Description:
+#
+# This script validates input parameters, especially in the context of JSON data, and ensures that the parameters
+# conform to expected formats. It processes JSON data passed as parameters and checks for the presence of required
+# fields. If any invalid or missing values are detected, it outputs an error message, logs the issues, and returns
+# appropriate status codes.
+#
+# Features:
+# - Validates JSON input, including nested data structures.
+# - Supports debugging, verbose output, and dry-run behavior.
+# - Processes JSON data to ensure all required fields (workflow, inputs) are present and valid.
+# - Provides warnings for invalid parameters and formats the final JSON output.
+
+# Expected Behavior:
+# - The script processes input parameters, validates them, and displays warnings for any invalid or missing values.
+# - Outputs the validated JSON with corrected values (if any).
+# - If `--debug` is enabled, prints detailed information for debugging purposes.
+
+# Dependencies:
+# - jq (for handling and validating JSON)
+# - bash (for scripting)
+# - wc (for calculating string lengths)
+
+# Usage:
+# To run the script and validate parameters:
+#
+# > ./scripts/validate-parameters.shell --json="{
+#     "workflow": "pkgs.module-dependencies",
+#     "inputs": {
+#         "param": {
+#             "id": "description"
+#             "value": "inputs.variable"
+#         }
+#     }
+# }" \
+# --dry-run \
+# --verbose \
+# --debug ;
+#
+# > ./scripts/validate-parameters.shell --json="{
+#     "workflow": "pkgs.module-dependencies",
+#     "inputs": {
+#         "param": {
+#             "key": {
+#                 "id": "description"
+#                 "value": "github.event.inputs.variable",
+#                 "default": "inputs.variable"
+#             }
+#         }
+#     }
+# }" \
+# --dry-run \
+# --verbose \
+# --debug ;
+#
+# Options:
+# --json: The JSON string that needs to be validated.
+# --verbose: Enable verbose output for more detailed logs.
+# --debug: Enable debugging output to see additional processing details.
+
 # set -x ;
 set -e ;           # Exit on error
 set -o pipefail ;  # Fail if any piped command fails
-
-## validate-parameters.shell --json="{
-##     "workflow": "pkgs.module-dependencies",
-##     "inputs": {
-##         "param": {
-##             "id": "description"
-##             "value": "inputs.variable"
-##         }
-##     }
-## }" \
-## --dry-run \
-## --verbose \
-## --debug ;
-
-## validate-parameters.shell --json="{
-##     "workflow": "pkgs.module-dependencies",
-##     "inputs": {
-##         "param": {
-##             "key": {
-##                 "id": "description"
-##                 "value": "github.event.inputs.variable",
-##                 "default": "inputs.variable"
-##             }
-##         }
-##     }
-## }" \
-## --dry-run \
-## --verbose \
-## --debug ;
 
 ## This function expects the name of an associative array as its first argument.
 function validate_parameters() {

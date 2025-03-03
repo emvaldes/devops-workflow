@@ -1,11 +1,11 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/run.py
+### Documentation for run.py
 
-Python Library Documentation: module run
+Help on module run:
 
-NNAAMMEE
+NAME
     run - File Path: ./run.py
 
-DDEESSCCRRIIPPTTIIOONN
+DESCRIPTION
     Description:
 
     Main Execution Entry Point for the Framework
@@ -45,20 +45,74 @@ DDEESSCCRRIIPPTTIIOONN
     To run an arbitrary Python Package/Module/Script:
     > python run.py --target <module_name>
 
-FFUUNNCCTTIIOONNSS
-    ccrreeaattee__ddoocc__ssttrruuccttuurree(base_path, package_name)
+FUNCTIONS
+    create_doc_structure(base_path, package_name)
         Create the doc structure for the given package under the 'docs/pydoc' directory.
 
-    ggeenneerraattee__ppyyddoocc(file_path, doc_path)
+        This function ensures that the necessary directory structure for the documentation is created,
+        specifically within the `docs/pydoc` directory.
+
+        Args:
+            base_path (str): The base path where the documentation will be created.
+            package_name (str): The name of the package for which the documentation is being created.
+
+        Returns:
+            str: The path to the created documentation directory.
+
+    generate_pydoc(file_path, doc_path)
         Generate documentation for a given Python file using pydoc.
 
-    mmaaiinn()
+        This function invokes the `pydoc` module to generate documentation for a Python file
+        and stores it in the specified documentation directory. If the generation fails, an error file is created.
+
+        Args:
+            file_path (str): The path to the Python file for which documentation will be generated.
+            doc_path (str): The directory where the generated documentation will be saved.
+
+        Returns:
+            None: This function does not return any value but generates documentation or handles errors.
+
+    main()
         Main function for handling user input and generating documentation.
 
-    ssccaann__aanndd__ggeenneerraattee__ddooccss(path_to_scan, base_doc_dir)
+        This function processes command-line arguments, generates documentation if requested,
+        or runs a specified Python module based on user input. It handles the configuration,
+        sets up logging, and invokes the appropriate functions based on the flags provided.
+
+        Args:
+            None
+
+        Returns:
+            None: This function does not return any value but performs the required actions based on user input.
+
+    parse_arguments() -> argparse.Namespace
+        Parse command-line arguments for specifying the requirements file
+        and displaying the installed dependencies.
+
+        Args:
+            None
+
+        Returns:
+            argparse.Namespace: The parsed arguments object containing selected options.
+
+    scan_and_generate_docs(path_to_scan, base_doc_dir)
         Scan the project directory and generate documentation for all Python files.
 
-FFIILLEE
-    /Users/emvaldes/.repos/devops/workflows/run.py
+        This function walks through the project directory, scanning for all Python files,
+        excluding `__init__.py` and `__main__.py`, and generates documentation for each file.
+
+        Args:
+            path_to_scan (str): The base directory to scan for Python files.
+            base_doc_dir (str): The base directory where the documentation will be saved.
+
+        Returns:
+            None: This function does not return any value but generates documentation for each Python file found.
+
+DATA
+    LIB_DIR = PosixPath('<project-location>/lib')
+
+FILE
+    <project-location>/run.py
+
 
 

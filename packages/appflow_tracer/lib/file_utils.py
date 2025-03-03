@@ -1,47 +1,53 @@
 #!/usr/bin/env python3
 
 """
-File Path: packages/appflow_tracer/lib/file_utils.py
+File: packages/appflow_tracer/lib/file_utils.py
 
 Description:
-
-File and Log Management Utilities
-
-This module provides helper functions for managing log files, resolving
-relative paths, and cleaning terminal output by removing ANSI escape codes.
+    File and Log Management Utilities
+    This module provides helper functions for managing log files, resolving
+    relative paths, and cleaning terminal output by removing ANSI escape codes.
 
 Core Features:
-
-- **Log File Management**: Removes old logs to prevent excessive storage usage.
-- **Project File Detection**: Verifies whether a file belongs to the project.
-- **Path Resolution**: Converts absolute paths into project-relative paths.
-- **ANSI Escape Code Removal**: Cleans formatted terminal output.
-
-Primary Functions:
-
-- `is_project_file(filename)`: Checks if a file belongs to the project.
-- `manage_logfiles(configs)`: Deletes old logs when exceeding the configured limit.
-- `relative_path(filepath)`: Converts absolute paths into relative project paths.
-- `remove_ansi_escape_codes(text)`: Strips ANSI escape sequences from text.
-
-Expected Behavior:
-
-- Log files are removed only when exceeding the maximum allowed limit.
-- Project-relative paths exclude `.py` extensions for consistency.
-- ANSI escape codes are removed without altering message content.
-
-Dependencies:
-
-- `re`, `pathlib`
-- `lib.system_variables` (for project settings)
+    - **Log File Management**: Removes old logs to prevent excessive storage usage.
+    - **Project File Detection**: Verifies whether a file belongs to the project.
+    - **Path Resolution**: Converts absolute paths into project-relative paths.
+    - **ANSI Escape Code Removal**: Cleans formatted terminal output.
 
 Usage:
+    To clean up old log files:
+    ```python
+    manage_logfiles(configs=CONFIGS)
+    ```
 
-To clean up old log files:
-> manage_logfiles(configs=CONFIGS)
+    To check if a file belongs to the project:
+    ```python
+    is_project_file("scripts/devops-workflow.py")
+    ```
 
-To check if a file belongs to the project:
-> is_project_file("scripts/devops-workflow.py")
+Dependencies:
+    - sys
+    - re
+    - pathlib
+    - lib.system_variables (for project settings)
+
+Global Variables:
+    - Uses `project_root`, `project_logs`, and `category` from `lib.system_variables`.
+
+Expected Behavior:
+    - Log files are removed only when exceeding the maximum allowed limit.
+    - Project-relative paths exclude `.py` extensions for consistency.
+    - ANSI escape codes are removed without altering message content.
+
+Exit Codes:
+    - `0`: Successful execution.
+    - `1`: Failure due to file system or logging issues.
+
+Example:
+    ```python
+    from file_utils import relative_path
+    print(relative_path("/absolute/path/to/script.py"))
+    ```
 """
 
 import sys
@@ -62,7 +68,9 @@ from . import (
     log_utils
 )
 
-def is_project_file(filename: str) -> bool:
+def is_project_file(
+    filename: str
+) -> bool:
     """
     Determine if a given file path belongs to the project directory structure.
 
@@ -80,6 +88,10 @@ def is_project_file(filename: str) -> bool:
         True
         >>> is_project_file("/usr/lib/python3.8/external.py")
         False
+
+    Notes:
+        - If the filename is `None` or an empty string, the function returns `False`.
+        - The function safely resolves the absolute path before performing the check.
     """
 
     if not filename:
@@ -93,39 +105,36 @@ def is_project_file(filename: str) -> bool:
         # Handle None or unexpected inputs gracefully
         return False
 
-def manage_logfiles(configs: dict = None) -> None:
+def manage_logfiles(
+    configs: dict = None
+) -> list:
     """
     Manage log file storage by removing old logs if the number exceeds a configured limit.
 
     This function prevents log directories from growing indefinitely by:
     - Checking the current number of log files in each log subdirectory.
     - Deleting the oldest logs **only if** the total count exceeds the allowed limit.
-    - Returning a list of successfully deleted log files.
 
-    ## Args:
+    Args:
         configs (dict, optional): Configuration dictionary that specifies:
             - `"max_logfiles"`: Maximum number of log files to retain.
             Defaults to `None`, in which case the global `max_logfiles` setting is used.
 
-    ## Returns:
-        list: A list of deleted log file paths.
-
-    ## Raises:
+    Raises:
         OSError: If an error occurs while attempting to delete log files.
 
-    ## Behavior:
-    - **Logs are only deleted if the number of log files exceeds `max_logfiles`.**
-    - **The function automatically determines which logs to remove, prioritizing the oldest.**
-    - **If no logs exceed the threshold, no deletions occur, and an empty list is returned.**
+    Returns:
+        list: A list of deleted log file paths.
 
-    ## Example:
-        >>> deleted_logs = manage_logfiles(CONFIGS)
-        >>> print(deleted_logs)  # List of removed log files, if any
+    Workflow:
+        1. Sorts log files by modification time (oldest first).
+        2. Identifies files exceeding the limit.
+        3. Deletes excess log files.
+        4. Logs deletions using `log_utils.log_message()`.
 
-    ## Logging:
-    - Each deleted log file is recorded using `log_utils.log_message()`.
-    - Errors during deletion are logged as warnings.
-
+    Notes:
+        - The function ensures logging operations respect the `configs["logging"]["enable"]` flag.
+        - If no logs exceed the threshold, no deletions occur, and an empty list is returned.
     """
 
     logs_dir = Path(configs["logging"]["logs_dirname"])  # Target the correct logs directory
@@ -151,7 +160,9 @@ def manage_logfiles(configs: dict = None) -> None:
                     log_utils.log_message(f'Error deleting {log_file.as_posix()}: {e}', category.error.id, configs=configs)
     return deleted_logs
 
-def relative_path(filepath: str) -> str:
+def relative_path(
+    filepath: str
+) -> str:
     """
     Convert an absolute file path into a project-relative path.
 
@@ -169,6 +180,10 @@ def relative_path(filepath: str) -> str:
     Example:
         >>> relative_path("/path/to/project/module.py")
         "module"
+
+    Notes:
+        - If the file is not within the project directory, the original path is returned.
+        - The `.py` extension is removed for consistency in logging and output formatting.
     """
 
     try:
@@ -176,7 +191,9 @@ def relative_path(filepath: str) -> str:
     except ValueError:
         return filepath.replace(".py", "")  # Return original if not within project
 
-def remove_ansi_escape_codes(text: str) -> str:
+def remove_ansi_escape_codes(
+    text: str
+) -> str:
     """
     Remove ANSI escape sequences from a string.
 
@@ -193,6 +210,10 @@ def remove_ansi_escape_codes(text: str) -> str:
     Example:
         >>> remove_ansi_escape_codes("\x1b[31mThis is red text\x1b[0m")
         "This is red text"
+
+    Notes:
+        - ANSI escape codes are commonly used for terminal colorization.
+        - The function ensures that formatted messages remain readable.
     """
 
     ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')

@@ -1,53 +1,85 @@
-### Documentation for /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/tracing.py
+### Documentation for packages/appflow_tracer/tracing.py
 
-Python Library Documentation: module packages.appflow_tracer.tracing in packages.appflow_tracer
+Help on module packages.appflow_tracer.tracing in packages.appflow_tracer:
 
-NNAAMMEE
+NAME
     packages.appflow_tracer.tracing - File Path: packages/appflow_tracer/tracing.py
 
-DDEESSCCRRIIPPTTIIOONN
+DESCRIPTION
     Description:
-
-    AppFlow Tracing System
-
-    This module provides structured logging and tracing functionality within the framework,
-    enabling automatic function call tracking, detailed execution monitoring, and structured logging
-    to both console and file. It captures function call details, manages structured logs, and
-    supports self-inspection when run directly, all without requiring changes to existing function behavior.
+        AppFlow Tracing System
+        This module provides structured logging and function call tracing, enabling
+        automatic function execution monitoring with minimal intrusion. It integrates
+        logging and tracing functionalities, ensuring accurate tracking of function
+        calls, return values, and execution flow.
 
     Core Features:
-
-    - **Function Call Tracing**: Captures function calls, arguments, and return values dynamically.
-    - **Structured Logging**: Logs execution details in JSON format, supporting both console and file output.
-    - **Self-Inspection**: When executed directly, logs its own execution flow for debugging purposes.
-    - **Automatic Log Management**: Controls log file retention to prevent excessive storage use.
-
-    Expected Behavior:
-
-    - Logs execution details automatically when tracing is enabled.
-    - Logs function calls with arguments and return values.
-    - Logs are stored in a structured format for debugging and analysis.
-
-    Dependencies:
-
-    - `sys`, `json`, `inspect`, `datetime`, `logging`, `builtins`, `pathlib`
-    - `packages.appflow_tracer.lib.file_utils` (for log file handling)
-    - `packages.appflow_tracer.lib.log_utils` (for structured logging)
-    - `packages.appflow_tracer.lib.trace_utils` (for tracing logic)
-    - `lib.system_variables`, `lib.pkgconfig_loader` (for configuration handling)
+        - **Function Call Tracing**: Automatically captures function calls, arguments, and return values.
+        - **Structured Logging**: Logs execution details in JSON format for debugging and auditing.
+        - **Self-Inspection**: When executed directly, logs its own execution for analysis.
+        - **Automatic Log Management**: Removes old log files to maintain storage efficiency.
+        - **Configurable Event Filtering**: Allows selective tracing of function calls and returns.
 
     Usage:
+        To enable function call tracing:
+        ```python
+        import tracing
+        tracing.setup_logging()
+        ```
 
-    To enable function call tracing and log execution details:
-    > python tracing.py
+        To run the tracing system as a standalone tool:
+        ```bash
+        python tracing.py
+        ```
 
-CCLLAASSSSEESS
+    Dependencies:
+        - sys
+        - json
+        - inspect
+        - logging
+        - builtins
+        - pathlib
+        - datetime
+        - lib.system_variables (for project-wide configurations)
+        - lib.pkgconfig_loader (for configuration handling)
+        - lib.file_utils (for log file management)
+        - lib.log_utils (for structured logging)
+        - lib.trace_utils (for function call tracing)
+
+    Global Variables:
+        - `LOGGING`: Boolean flag indicating whether logging has been initialized.
+        - `CONFIGS`: Stores the effective logging and tracing configurations.
+        - `logger`: Global logger instance used for structured logging.
+
+    Primary Functions:
+        - `setup_logging(configs, logname_override, events)`: Initializes structured logging.
+        - `main()`: Entry point for standalone execution, setting up tracing and logging.
+        - `PrintCapture.emit(record)`: Captures print statements and redirects them to logs.
+        - `ANSIFileHandler.emit(record)`: Ensures log files do not contain ANSI escape sequences.
+
+    Expected Behavior:
+        - Logs execution details when tracing is enabled.
+        - Logs function calls with arguments and return values.
+        - Maintains structured logs for debugging and execution tracking.
+        - Automatically removes older log files when exceeding retention limits.
+
+    Exit Codes:
+        - `0`: Successful execution.
+        - `1`: Failure due to configuration or logging setup errors.
+
+    Example:
+        ```python
+        from tracing import setup_logging
+        setup_logging()
+        ```
+
+CLASSES
     logging.FileHandler(logging.StreamHandler)
         ANSIFileHandler
     logging.StreamHandler(logging.Handler)
         PrintCapture
 
-    class AANNSSIIFFiilleeHHaannddlleerr(logging.FileHandler)
+    class ANSIFileHandler(logging.FileHandler)
      |  ANSIFileHandler(filename, mode='a', encoding=None, delay=False, errors=None)
      |
      |  Custom FileHandler that removes ANSI codes from log output
@@ -66,34 +98,39 @@ CCLLAASSSSEESS
      |
      |  Methods defined here:
      |
-     |  eemmiitt(self, record)
-     |      Emit a record.
+     |  emit(self, record)
+     |      Custom FileHandler that removes ANSI codes from log output
+     |      and filters out logs from the internal Python logging module.
      |
-     |      If the stream was not opened because 'delay' was specified in the
-     |      constructor, open it before calling the superclass's emit.
+     |      This prevents unnecessary ANSI escape codes from appearing in log files
+     |      and ensures only relevant logs are recorded.
      |
-     |      If stream is not open, current mode is 'w' and `_closed=True`, record
-     |      will not be emitted (see Issue #42378).
+     |      Args:
+     |          record (logging.LogRecord): The log record to be emitted, including
+     |              log message and additional context for filtering.
+     |
+     |      Returns:
+     |          None
      |
      |  ----------------------------------------------------------------------
      |  Methods inherited from logging.FileHandler:
      |
-     |  ____iinniitt____(self, filename, mode='a', encoding=None, delay=False, errors=None)
+     |  __init__(self, filename, mode='a', encoding=None, delay=False, errors=None)
      |      Open the specified file and use it as the stream for logging.
      |
-     |  ____rreepprr____(self)
+     |  __repr__(self)
      |      Return repr(self).
      |
-     |  cclloossee(self)
+     |  close(self)
      |      Closes the stream.
      |
      |  ----------------------------------------------------------------------
      |  Methods inherited from logging.StreamHandler:
      |
-     |  fflluusshh(self)
+     |  flush(self)
      |      Flushes the stream.
      |
-     |  sseettSSttrreeaamm(self, stream)
+     |  setStream(self, stream)
      |      Sets the StreamHandler's stream to the specified value,
      |      if it is different.
      |
@@ -103,7 +140,7 @@ CCLLAASSSSEESS
      |  ----------------------------------------------------------------------
      |  Class methods inherited from logging.StreamHandler:
      |
-     |  ____ccllaassss__ggeettiitteemm____ = GenericAlias(args, /)
+     |  __class_getitem__ = GenericAlias(args, /)
      |      Represent a PEP 585 generic type
      |
      |      E.g. for t = list[int], t.__origin__ is list and t.__args__ is (int,).
@@ -111,26 +148,26 @@ CCLLAASSSSEESS
      |  ----------------------------------------------------------------------
      |  Data and other attributes inherited from logging.StreamHandler:
      |
-     |  tteerrmmiinnaattoorr = '\n'
+     |  terminator = '\n'
      |
      |  ----------------------------------------------------------------------
      |  Methods inherited from logging.Handler:
      |
-     |  aaccqquuiirree(self)
+     |  acquire(self)
      |      Acquire the I/O thread lock.
      |
-     |  ccrreeaatteeLLoocckk(self)
+     |  createLock(self)
      |      Acquire a thread lock for serializing access to the underlying I/O.
      |
-     |  ffoorrmmaatt(self, record)
+     |  format(self, record)
      |      Format the specified record.
      |
      |      If a formatter is set, use it. Otherwise, use the default formatter
      |      for the module.
      |
-     |  ggeett__nnaammee(self)
+     |  get_name(self)
      |
-     |  hhaannddllee(self, record)
+     |  handle(self, record)
      |      Conditionally emit the specified logging record.
      |
      |      Emission depends on filters which may have been added to the handler.
@@ -140,7 +177,7 @@ CCLLAASSSSEESS
      |      Returns an instance of the log record that was emitted
      |      if it passed all filters, otherwise a false value is returned.
      |
-     |  hhaannddlleeEErrrroorr(self, record)
+     |  handleError(self, record)
      |      Handle errors which occur during an emit() call.
      |
      |      This method should be called from handlers when an exception is
@@ -151,29 +188,29 @@ CCLLAASSSSEESS
      |      You could, however, replace this with a custom handler if you wish.
      |      The record which was being processed is passed in to this method.
      |
-     |  rreelleeaassee(self)
+     |  release(self)
      |      Release the I/O thread lock.
      |
-     |  sseettFFoorrmmaatttteerr(self, fmt)
+     |  setFormatter(self, fmt)
      |      Set the formatter for this handler.
      |
-     |  sseettLLeevveell(self, level)
+     |  setLevel(self, level)
      |      Set the logging level of this handler.  level must be an int or a str.
      |
-     |  sseett__nnaammee(self, name)
+     |  set_name(self, name)
      |
      |  ----------------------------------------------------------------------
      |  Data descriptors inherited from logging.Handler:
      |
-     |  nnaammee
+     |  name
      |
      |  ----------------------------------------------------------------------
      |  Methods inherited from logging.Filterer:
      |
-     |  aaddddFFiilltteerr(self, filter)
+     |  addFilter(self, filter)
      |      Add the specified filter to this handler.
      |
-     |  ffiilltteerr(self, record)
+     |  filter(self, record)
      |      Determine if a record is loggable by consulting all the filters.
      |
      |      The default is to allow the record to be logged; any filter can veto
@@ -197,19 +234,19 @@ CCLLAASSSSEESS
      |         Allow filters to return a LogRecord instead of
      |         modifying it in place.
      |
-     |  rreemmoovveeFFiilltteerr(self, filter)
+     |  removeFilter(self, filter)
      |      Remove the specified filter from this handler.
      |
      |  ----------------------------------------------------------------------
      |  Data descriptors inherited from logging.Filterer:
      |
-     |  ____ddiicctt____
+     |  __dict__
      |      dictionary for instance variables
      |
-     |  ____wweeaakkrreeff____
+     |  __weakref__
      |      list of weak references to the object
 
-    class PPrriinnttCCaappttuurree(logging.StreamHandler)
+    class PrintCapture(logging.StreamHandler)
      |  PrintCapture(stream=None)
      |
      |  Custom logging handler that captures print statements and logs them
@@ -227,7 +264,7 @@ CCLLAASSSSEESS
      |
      |  Methods defined here:
      |
-     |  eemmiitt(self, record)
+     |  emit(self, record)
      |      Emit a record.
      |
      |      If a formatter is specified, it is used to format the record.
@@ -240,18 +277,18 @@ CCLLAASSSSEESS
      |  ----------------------------------------------------------------------
      |  Methods inherited from logging.StreamHandler:
      |
-     |  ____iinniitt____(self, stream=None)
+     |  __init__(self, stream=None)
      |      Initialize the handler.
      |
      |      If stream is not specified, sys.stderr is used.
      |
-     |  ____rreepprr____(self)
+     |  __repr__(self)
      |      Return repr(self).
      |
-     |  fflluusshh(self)
+     |  flush(self)
      |      Flushes the stream.
      |
-     |  sseettSSttrreeaamm(self, stream)
+     |  setStream(self, stream)
      |      Sets the StreamHandler's stream to the specified value,
      |      if it is different.
      |
@@ -261,7 +298,7 @@ CCLLAASSSSEESS
      |  ----------------------------------------------------------------------
      |  Class methods inherited from logging.StreamHandler:
      |
-     |  ____ccllaassss__ggeettiitteemm____ = GenericAlias(args, /)
+     |  __class_getitem__ = GenericAlias(args, /)
      |      Represent a PEP 585 generic type
      |
      |      E.g. for t = list[int], t.__origin__ is list and t.__args__ is (int,).
@@ -269,15 +306,15 @@ CCLLAASSSSEESS
      |  ----------------------------------------------------------------------
      |  Data and other attributes inherited from logging.StreamHandler:
      |
-     |  tteerrmmiinnaattoorr = '\n'
+     |  terminator = '\n'
      |
      |  ----------------------------------------------------------------------
      |  Methods inherited from logging.Handler:
      |
-     |  aaccqquuiirree(self)
+     |  acquire(self)
      |      Acquire the I/O thread lock.
      |
-     |  cclloossee(self)
+     |  close(self)
      |      Tidy up any resources used by the handler.
      |
      |      This version removes the handler from an internal map of handlers,
@@ -285,18 +322,18 @@ CCLLAASSSSEESS
      |      should ensure that this gets called from overridden close()
      |      methods.
      |
-     |  ccrreeaatteeLLoocckk(self)
+     |  createLock(self)
      |      Acquire a thread lock for serializing access to the underlying I/O.
      |
-     |  ffoorrmmaatt(self, record)
+     |  format(self, record)
      |      Format the specified record.
      |
      |      If a formatter is set, use it. Otherwise, use the default formatter
      |      for the module.
      |
-     |  ggeett__nnaammee(self)
+     |  get_name(self)
      |
-     |  hhaannddllee(self, record)
+     |  handle(self, record)
      |      Conditionally emit the specified logging record.
      |
      |      Emission depends on filters which may have been added to the handler.
@@ -306,7 +343,7 @@ CCLLAASSSSEESS
      |      Returns an instance of the log record that was emitted
      |      if it passed all filters, otherwise a false value is returned.
      |
-     |  hhaannddlleeEErrrroorr(self, record)
+     |  handleError(self, record)
      |      Handle errors which occur during an emit() call.
      |
      |      This method should be called from handlers when an exception is
@@ -317,29 +354,29 @@ CCLLAASSSSEESS
      |      You could, however, replace this with a custom handler if you wish.
      |      The record which was being processed is passed in to this method.
      |
-     |  rreelleeaassee(self)
+     |  release(self)
      |      Release the I/O thread lock.
      |
-     |  sseettFFoorrmmaatttteerr(self, fmt)
+     |  setFormatter(self, fmt)
      |      Set the formatter for this handler.
      |
-     |  sseettLLeevveell(self, level)
+     |  setLevel(self, level)
      |      Set the logging level of this handler.  level must be an int or a str.
      |
-     |  sseett__nnaammee(self, name)
+     |  set_name(self, name)
      |
      |  ----------------------------------------------------------------------
      |  Data descriptors inherited from logging.Handler:
      |
-     |  nnaammee
+     |  name
      |
      |  ----------------------------------------------------------------------
      |  Methods inherited from logging.Filterer:
      |
-     |  aaddddFFiilltteerr(self, filter)
+     |  addFilter(self, filter)
      |      Add the specified filter to this handler.
      |
-     |  ffiilltteerr(self, record)
+     |  filter(self, record)
      |      Determine if a record is loggable by consulting all the filters.
      |
      |      The default is to allow the record to be logged; any filter can veto
@@ -363,20 +400,20 @@ CCLLAASSSSEESS
      |         Allow filters to return a LogRecord instead of
      |         modifying it in place.
      |
-     |  rreemmoovveeFFiilltteerr(self, filter)
+     |  removeFilter(self, filter)
      |      Remove the specified filter from this handler.
      |
      |  ----------------------------------------------------------------------
      |  Data descriptors inherited from logging.Filterer:
      |
-     |  ____ddiicctt____
+     |  __dict__
      |      dictionary for instance variables
      |
-     |  ____wweeaakkrreeff____
+     |  __weakref__
      |      list of weak references to the object
 
-FFUUNNCCTTIIOONNSS
-    mmaaiinn()
+FUNCTIONS
+    main() -> None
         Entry point for running the tracing module as a standalone program.
 
         This function initializes the logging environment, manages log files, and
@@ -393,7 +430,7 @@ FFUUNNCCTTIIOONNSS
             >>> python tracing.py
             # Sets up logging, manages logs, and starts tracing.
 
-    sseettuupp__llooggggiinngg(
+    setup_logging(
         configs: Optional[dict] = None,
         logname_override: Optional[str] = None,
         events: Union[bool, dict, NoneType] = None
@@ -412,7 +449,7 @@ FFUUNNCCTTIIOONNSS
             events (bool, list, or dict, optional):
                 - `None` / `False` → Disables all event logging.
                 - `True` → Enables all event logging.
-                - `list` → Enables only specified events (e.g., ["call", "return", "info"]).
+                - `list` → Enables only specified events (e.g., ["call", "return"]).
                 - `dict` → Enables/disables events per user settings (e.g., {"call": True, "return": False}).
 
         Raises:
@@ -432,14 +469,14 @@ FFUUNNCCTTIIOONNSS
                 ...
             }
 
-DDAATTAA
-    CCOONNFFIIGGSS = {'colors': {'CALL': '\x1b[92m', 'CRITICAL': '\x1b[41m', 'DEB...
-    LLIIBB__DDIIRR = PosixPath('/Users/emvaldes/.repos/devops/workflows/lib')
-    LLOOGGGGIINNGG = True
-    OOppttiioonnaall = typing.Optional
+DATA
+    CONFIGS = None
+    LIB_DIR = PosixPath('<project-location>/lib')
+    LOGGING = None
+    Optional = typing.Optional
         Optional[X] is equivalent to Union[X, None].
 
-    UUnniioonn = typing.Union
+    Union = typing.Union
         Union type; Union[X, Y] means either X or Y.
 
         On Python 3.10 and higher, the | operator
@@ -469,12 +506,13 @@ DDAATTAA
         - You cannot subclass or instantiate a union.
         - You can use Optional[X] as a shorthand for Union[X, None].
 
-    ddeeffaauulltt__iinnddeenntt = 4
-    llooggggeerr = <Logger requirements.dependencies (DEBUG)>
-    pprroojjeecctt__llooggss = PosixPath('/Users/emvaldes/.repos/devops/workflows/logs...
-    pprroojjeecctt__rroooott = PosixPath('/Users/emvaldes/.repos/devops/workflows')
+    default_indent = 4
+    logger = None
+    project_logs = PosixPath('<project-location>/logs...
+    project_root = PosixPath('<project-location>')
 
-FFIILLEE
-    /Users/emvaldes/.repos/devops/workflows/packages/appflow_tracer/tracing.py
+FILE
+    <project-location>/packages/appflow_tracer/tracing.py
+
 
 
