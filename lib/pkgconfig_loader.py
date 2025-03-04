@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: ./lib/pkgconfig_loader.py
-# Version: 0.1.0
+__version__ = "0.1.0"  ## Package version
 
 """
 File: lib/pkgconfig_loader.py
@@ -50,9 +50,6 @@ Example:
     python pkgconfig_loader.py
     ```
 """
-
-# Package version
-__version__ = "0.1.0"
 
 import os
 import sys

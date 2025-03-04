@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# File: ./tests/test_run.py
+__version__ = "0.1.0"  ## Package version
+
 """
 File Path: tests/test_run.py
 

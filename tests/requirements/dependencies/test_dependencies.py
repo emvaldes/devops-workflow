@@ -1,14 +1,57 @@
 #!/usr/bin/env python3
 
-"""
-Unit tests for the dependency management module.
+# File: ./tests/test_dependencies.py
+__version__ = "0.1.0"  ## Package version
 
-This module contains tests for verifying the correct behavior of functions that load, install, and validate dependencies.
-It ensures that packages are installed correctly, updates are applied properly, and compliance is maintained.
 """
+File: packages/requirements/dependencies.py
 
-# Package version
-__version__ = "0.1.0"
+Description:
+    Dependency Management Module
+
+    This module provides functionality for managing dependencies within the project. It ensures
+    that required packages are installed, updated, and validated against specified versions.
+    The module supports reading dependencies from JSON configuration files, checking installed
+    versions, and performing installations or updates when necessary.
+
+Core Features:
+    - **Dependency Validation**: Checks if required packages are installed with the correct versions.
+    - **Automated Installation**: Installs missing dependencies and updates outdated ones.
+    - **JSON-based Configuration**: Reads package requirements from structured JSON files.
+    - **Logging & Debugging**: Integrates with structured logging for traceability.
+    - **Command-line Interface (CLI)**: Allows execution via command-line arguments.
+
+Usage:
+    To verify installed dependencies and install missing ones:
+    ```bash
+    python packages/requirements/dependencies.py
+    ```
+
+    To specify a custom requirements file:
+    ```bash
+    python packages/requirements/dependencies.py -f custom_requirements.json
+    ```
+
+Dependencies:
+    - `sys` (for system interaction)
+    - `json` (for reading configuration files)
+    - `subprocess` (for executing installation commands)
+    - `importlib.metadata` (for checking installed package versions)
+    - `pathlib` (for handling file paths)
+    - `pytest` (for unit testing)
+    - `unittest.mock` (for mocking during tests)
+
+Exit Codes:
+    - `0`: Execution completed successfully.
+    - `1`: Failure due to missing or invalid dependencies.
+    - `2`: Invalid or corrupted requirements file.
+
+Example:
+    ```bash
+    python -m packages.requirements.dependencies --help
+    ```
+
+"""
 
 import sys
 import json

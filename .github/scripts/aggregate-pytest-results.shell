@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-## File: .github/scripts/aggregate-pytest-results.shell
-## Version: 0.0.1
+# File: .github/scripts/aggregate-pytest-results.shell
+# __version__ = "0.1.0"  ## Package version
 
 # Description:
 #

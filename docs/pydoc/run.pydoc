@@ -3,54 +3,7 @@
 Help on module run:
 
 NAME
-    run - File: ./run.py
-
-DESCRIPTION
-    Description:
-        Framework Execution Entry Point
-
-        This script serves as the main launcher for the framework, ensuring proper initialization,
-        system validation, and execution of requested operations. It can generate documentation
-        for Python scripts and execute arbitrary Python modules.
-
-    Core Features:
-        - **System Validation & Setup**: Ensures the framework environment is correctly configured.
-        - **Python Documentation Generation**: Uses `pydoc` to generate structured documentation.
-        - **Module Execution**: Provides the ability to run specified Python modules or scripts.
-        - **Dynamic File Collection**: Recursively scans the project for non-empty Python files.
-        - **Logging & Debugging**: Captures execution details and potential errors.
-
-    Usage:
-        To launch the framework:
-        ```bash
-        python run.py
-        ```
-
-        To generate documentation:
-        ```bash
-        python run.py --pydoc
-        ```
-
-        To run an arbitrary module:
-        ```bash
-        python run.py --target <module_name>
-        ```
-
-    Dependencies:
-        - os
-        - sys
-        - json
-        - re
-        - argparse
-        - subprocess
-        - pathlib
-        - system_variables (for project environment settings)
-        - log_utils (for structured logging)
-        - pydoc_generator (for documentation generation)
-
-    Exit Codes:
-        - `0`: Successful execution.
-        - `1`: Failure due to incorrect parameters, invalid paths, or execution errors.
+    run - # File: ./run.py
 
 FUNCTIONS
     collect_files(target_dir: str, extensions: list[str]) -> list[str]
@@ -94,6 +47,7 @@ FUNCTIONS
         Example:
             ```bash
             python run.py --pydoc
+            python run.py --yamldoc
             python run.py --target some_module
             ```
 
@@ -109,6 +63,7 @@ FUNCTIONS
         Example:
             ```bash
             python run.py --pydoc
+            python run.py --yamldoc
             python run.py --target my_module
             ```
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: ./lib/parsing_userinput.py
-# Version: 0.1.0
+__version__ = "0.1.0"  ## Package version
 
 """
 File: ./lib/parsing_userinput.py
@@ -41,9 +41,6 @@ Example:
     python parsing_userinput.py
     ```
 """
-
-# Package version
-__version__ = "0.1.0"
 
 import sys
 import json

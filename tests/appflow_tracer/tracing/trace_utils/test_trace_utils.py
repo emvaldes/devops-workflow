@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# File: ./tests/appflow_tracer/tracing/test_trace_utils.py
+__version__ = "0.1.0"  ## Package version
+
 """
 Test Module: ./tests/appflow_tracer/test_trace_utils.py
 
@@ -43,9 +46,6 @@ It ensures correct function execution tracing and structured logging, covering:
 - **Non-project calls are filtered out, keeping logs relevant**.
 
 """
-
-# Package version
-__version__ = "0.1.0"
 
 import sys
 import os

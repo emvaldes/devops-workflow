@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: ./packages/appflow_tracer/lib/trace_utils.py
-# Version: 0.1.0
+__version__ = "0.1.0"  ## Package version
 
 """
 File Path: packages/appflow_tracer/lib/trace_utils.py
@@ -62,9 +62,6 @@ Example:
     start_tracing()
     ```
 """
-
-# Package version
-__version__ = "0.1.0"
 
 import sys
 import json

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: ./run.py
-# Version: 0.0.9
+__version__ = "0.1.0"  ## Package version
 
 """
 File: ./run.py
@@ -20,15 +20,30 @@ Core Features:
     - **Dynamic File Collection**: Recursively scans the project for non-empty Python files.
     - **Logging & Debugging**: Captures execution details and potential errors.
 
+Features:
+    - Executes the requested module/script to perform system validation and setup.
+    - Ensures all required dependencies and configurations are initialized.
+    - Provides a single-command entry point for launching the framework.
+    - Integrates functionality for generating documentation for Python and YAML files in a specific path.
+    - Allows running an arbitrary Python module.
+
+Expected Behavior:
+
+
 Usage:
     To launch the framework:
     ```bash
     python run.py
     ```
 
-    To generate documentation:
+    To generate Python documentation:
     ```bash
     python run.py --pydoc
+    ```
+
+    To generate YAML documentation:
+    ```bash
+    python run.py --yamldoc
     ```
 
     To run an arbitrary module:
@@ -41,20 +56,18 @@ Dependencies:
     - sys
     - json
     - re
-    - argparse
-    - subprocess
+    - argparse (used to handle command-line arguments)
+    - subprocess (used to execute arbitrary scripts/modules)
     - pathlib
     - system_variables (for project environment settings)
     - log_utils (for structured logging)
     - pydoc_generator (for documentation generation)
+    - yaml_doc_generator (for YAML documentation extraction)
 
 Exit Codes:
     - `0`: Successful execution.
     - `1`: Failure due to incorrect parameters, invalid paths, or execution errors.
 """
-
-# Package version
-__version__ = "0.1.0"
 
 import os
 import sys
@@ -90,6 +103,8 @@ from packages.appflow_tracer.lib import log_utils
 
 from lib import system_variables as environment
 from lib import pydoc_generator as pydoc_engine
+
+# from lib import yaml_doc_generator as yamldoc_engine
 
 def collect_files(
     target_dir: str,
@@ -145,18 +160,26 @@ def parse_arguments() -> argparse.Namespace:
     Example:
         ```bash
         python run.py --pydoc
+        python run.py --yamldoc
         python run.py --target my_module
         ```
     """
 
     parser = argparse.ArgumentParser(
         description="Verify installed dependencies for compliance. "
-                    "Use -d/--pydoc to generate documentation. Use -t/--target to execute a module."
+                    "Use -d/--pydoc to generate documentation."
+                    "Use -y/--yamldoc to generate YAML documentation. "
+                    "Use -t/--target to execute a module."
     )
     parser.add_argument(
         "-d", "--pydoc",
         action="store_true",
         help="Generate documentation for Python files."
+    )
+    parser.add_argument(
+        "-y", "--yamldoc",
+        action="store_true",
+        help="Generate documentation for YAML files."
     )
     parser.add_argument(
         "-t", "--target",
@@ -186,6 +209,7 @@ def main():
     Example:
         ```bash
         python run.py --pydoc
+        python run.py --yamldoc
         python run.py --target some_module
         ```
     """
@@ -203,38 +227,38 @@ def main():
 
     args = parse_arguments()
 
+    ## Use current directory as the base for scanning
+    # project_path = os.getcwd()
+    project_path = environment.project_root
+
+    if not os.path.isdir(project_path):
+        log_utils.log_message(
+            f'Error: {project_path} is not a valid directory.',
+            environment.category.error.id,
+            configs=CONFIGS
+        )
+        sys.exit(1)
+
+    # Base documentation folder should be 'docs/pydoc'
+    base_path = os.path.join(
+        project_path,
+        'docs',
+        'pydoc'
+    )
+
+    log_utils.log_message(
+        f'Generating project documentation at: {project_path}',
+        environment.category.debug.id,
+        configs=CONFIGS
+    )
+
     # Generate documentation if --pydoc flag is passed
     if args.pydoc:
-
-        ## Use current directory as the base for scanning
-        # project_path = os.getcwd()
-        project_path = environment.project_root
-
-        if not os.path.isdir(project_path):
-            log_utils.log_message(
-                f'Error: {project_path} is not a valid directory.',
-                environment.category.error.id,
-                configs=CONFIGS
-            )
-            sys.exit(1)
 
         file_extensions = [".py"]  ## Defined by CLI flag
         files_list = collect_files(
             project_path,
             file_extensions
-        )
-
-        # Base documentation folder should be 'docs/pydoc'
-        base_path = os.path.join(
-            project_path,
-            'docs',
-            'pydoc'
-        )
-
-        log_utils.log_message(
-            f'Generating documentation for the project at {project_path}...',
-            environment.category.debug.id,
-            configs=CONFIGS
         )
 
         pydoc_engine.create_pydocs(
@@ -247,6 +271,20 @@ def main():
         log_utils.log_message(
             f'Documentation generation completed successfully.',
             environment.category.debug.id,
+            configs=CONFIGS
+        )
+
+    if args.yamldoc:
+
+        files_list = collect_files(
+            project_path,
+            [".yaml", ".yml"]
+        )
+
+        yamldoc_engine.create_yamldocs(
+            project_path=project_path,
+            base_path=Path(project_path) / "docs/yamldoc",
+            files_list=files_list,
             configs=CONFIGS
         )
 

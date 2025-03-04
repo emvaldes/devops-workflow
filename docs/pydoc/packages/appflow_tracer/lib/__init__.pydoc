@@ -3,44 +3,7 @@
 Help on module packages.appflow_tracer.lib.__init__ in packages.appflow_tracer.lib:
 
 NAME
-    packages.appflow_tracer.lib.__init__ - File Path: packages/appflow_tracer/lib/__init__.py
-
-DESCRIPTION
-    Description:
-        AppFlow Tracer Library Initialization
-
-        This file defines the `lib` subpackage within the `appflow_tracer` framework. It provides
-        access to essential utility modules required for logging, file operations, tracing, and
-        serialization within the framework.
-
-    Core Features:
-        - **Subpackage Initialization**: Ensures that the `lib` directory is recognized as a Python package.
-        - **Utility Module Exposure**: Facilitates direct access to key framework utilities.
-        - **Structured Imports**: Enables clean and maintainable access to core functionality.
-
-    Submodules:
-        - `file_utils`: Provides file and directory management utilities.
-        - `log_utils`: Handles structured logging and message formatting.
-        - `trace_utils`: Supports runtime tracing and performance monitoring.
-        - `serialize_utils`: Manages data serialization and deserialization.
-
-    Usage:
-        To import specific utilities from this package:
-        ```python
-        from packages.appflow_tracer.lib import log_utils, file_utils
-
-        log_utils.log_message("Example log message")
-        file_utils.manage_logfiles()
-        ```
-
-    Dependencies:
-        - None (This module only manages imports)
-
-    Example:
-        ```python
-        from packages.appflow_tracer.lib import trace_utils
-        trace_utils.start_tracing()
-        ```
+    packages.appflow_tracer.lib.__init__ - # File: ./packages/appflow_tracer/lib/__init__.py
 
 DATA
     __all__ = ['file_utils', 'log_utils', 'trace_utils', 'serialize_utils'...

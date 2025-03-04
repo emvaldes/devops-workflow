@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: ./lib/__init__.py
-# Version: 0.1.0
+__version__ = "0.1.0"  ## Package version
 
 """
 File Path: ./lib/__init__.py
@@ -37,6 +37,3 @@ Example:
     log_utils.log_message("Initialization successful.")
     ```
 """
-
-# Package version
-__version__ = "0.1.0"

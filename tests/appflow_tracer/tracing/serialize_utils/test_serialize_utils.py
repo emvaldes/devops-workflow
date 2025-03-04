@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# File: ./tests/appflow_tracer/tracing/test_serialize_utils.py
+__version__ = "0.1.0"  ## Package version
+
 """
 Test Module: ./tests/appflow_tracer/tracing/test_serialize_utils.py
 
@@ -36,9 +39,6 @@ It ensures that serialization and string sanitization functions operate correctl
 - **Inline comments are removed while preserving valid code structure**.
 
 """
-
-# Package version
-__version__ = "0.1.0"
 
 import sys
 import os

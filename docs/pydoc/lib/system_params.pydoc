@@ -4,45 +4,7 @@ WARNING:root:runtime-params.json file exists but is invalid (empty or only conta
 Help on module lib.system_params in lib:
 
 NAME
-    lib.system_params - File: ./lib/system_params.py
-
-DESCRIPTION
-    Description:
-        System Parameter Management
-        This module handles system-wide parameter management by loading runtime
-        parameters from JSON configuration files and merging them with environment variables.
-
-    Core Features:
-        - **Configuration Loading**: Reads parameters from `runtime-params.json`, `project-params.json`, and `default-params.json`.
-        - **Environment Variable Management**: Dynamically sets system-wide environment variables.
-        - **Validation and Error Handling**: Ensures required parameters are initialized before execution.
-
-    Usage:
-        To load and initialize system parameters:
-        ```bash
-        python system_params.py
-        ```
-
-    Dependencies:
-        - os
-        - json
-        - logging
-        - dotenv
-        - pathlib
-        - lib.configure_params (for JSON merging and validation)
-
-    Global Variables:
-        - `SYSTEM_PARAMS` (dict): Loaded system-wide parameters.
-        - `RUNTIME_PARAMS` (dict): Parameters dynamically merged at runtime.
-
-    Exit Codes:
-        - `0`: Successful execution.
-        - `1`: Failure due to missing configuration files or invalid environment variables.
-
-    Example:
-        ```bash
-        python system_params.py
-        ```
+    lib.system_params - # File: ./lib/system_params.py
 
 FUNCTIONS
     get_runtime_variable(name: str, required: bool = False) -> Optional[str]

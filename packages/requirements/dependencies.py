@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# File: ./packages/appflow_tracer/tracing.py
+__version__ = "0.1.0"  ## Package version
+
 """
 File Path: packages/installer/install_requirements.py
 
@@ -71,9 +74,6 @@ Example:
     install_requirements("requirements.json", configs)
     ```
 """
-
-# Package version
-__version__ = "0.1.0"
 
 import sys
 import subprocess

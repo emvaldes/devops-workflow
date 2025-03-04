@@ -3,47 +3,7 @@
 Help on module tests.appflow_tracer.tracing.trace_utils.test_trace_utils in tests.appflow_tracer.tracing.trace_utils:
 
 NAME
-    tests.appflow_tracer.tracing.trace_utils.test_trace_utils - Test Module: ./tests/appflow_tracer/test_trace_utils.py
-
-DESCRIPTION
-    This module contains unit tests for the `trace_utils.py` module in `appflow_tracer.lib`.
-    It ensures correct function execution tracing and structured logging, covering:
-
-    - **Function call tracing**: Captures invocation details, ensuring execution visibility.
-    - **Return value logging**: Serializes return values for structured execution logs.
-    - **Project-specific filtering**: Ensures only relevant project functions are logged.
-    - **Configuration-driven activation**: Prevents unnecessary tracing when disabled.
-
-    ## Use Cases:
-    1. **Validate `trace_utils.start_tracing()` activation**
-       - Ensures tracing starts **only when enabled** in the configuration.
-       - Prevents redundant activations by checking `sys.gettrace()`.
-       - Verifies that `sys.settrace()` is correctly called.
-
-    2. **Ensure `trace_utils.trace_all()` generates a valid trace function**
-       - Confirms the trace function **properly processes events** (calls and returns).
-       - Ensures non-project functions are **excluded from logging**.
-       - Validates that function metadata is structured correctly.
-
-    3. **Test function call logging via `trace_utils.call_events()`**
-       - Simulates a function call and checks if metadata is captured.
-       - Verifies that **arguments are serialized correctly**.
-       - Ensures only **project-relevant function calls are logged**.
-
-    4. **Verify function return logging via `trace_utils.return_events()`**
-       - Captures return values and ensures correct serialization.
-       - Confirms function exit events are logged with structured data.
-       - Validates that primitive types and complex objects are handled correctly.
-
-    ## Improvements Implemented:
-    - **Mocking of `sys.settrace()`** to avoid real tracing activation.
-    - **Ensuring `CONFIGS` are respected** when enabling tracing.
-    - **Patching of logging utilities** to isolate logs per test.
-
-    ## Expected Behavior:
-    - **Tracing activates only when explicitly configured**.
-    - **Function call and return details are structured correctly**.
-    - **Non-project calls are filtered out, keeping logs relevant**.
+    tests.appflow_tracer.tracing.trace_utils.test_trace_utils - # File: ./tests/appflow_tracer/tracing/test_trace_utils.py
 
 FUNCTIONS
     mock_configs() -> dict

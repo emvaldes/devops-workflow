@@ -3,64 +3,7 @@
 Help on module packages.appflow_tracer.lib.trace_utils in packages.appflow_tracer.lib:
 
 NAME
-    packages.appflow_tracer.lib.trace_utils - File Path: packages/appflow_tracer/lib/trace_utils.py
-
-DESCRIPTION
-    Description:
-        Function Call and Execution Flow Tracing Utilities
-        This module provides **real-time function execution tracing** within the framework.
-        It captures **function calls and return values**, logs structured execution flow,
-        and ensures debugging visibility with minimal performance overhead.
-
-    Core Features:
-        - **Function Call Tracing**: Logs function calls, arguments, and execution order.
-        - **Execution Flow Logging**: Captures return values and structured execution flow.
-        - **Project Scope Enforcement**: Excludes system functions and external dependencies.
-        - **Selective Filtering**: Ignores known logging utilities and non-essential functions.
-        - **Configurable Logging**: Enables logging dynamically based on configuration settings.
-
-    Usage:
-        To enable tracing and track function calls:
-        ```python
-        import trace_utils
-        trace_utils.start_tracing()
-        ```
-
-    Dependencies:
-        - sys
-        - json
-        - inspect
-        - logging
-        - lib.system_variables (for project settings)
-        - lib.log_utils (for structured logging)
-        - lib.file_utils (for project file validation)
-        - lib.serialize_utils (for safe data serialization)
-
-    Global Variables:
-        - Uses `category` from `lib.system_variables`.
-
-    Primary Functions:
-        - `start_tracing(logger, configs)`: Initializes function call tracing dynamically.
-        - `trace_all(logger, configs)`: Creates a **trace function** for `sys.settrace()`.
-        - `trace_events(frame, event, arg)`: Handles function call and return event logging.
-        - `call_events(logger, frame, filename, arg, configs)`: Logs function calls.
-        - `return_events(logger, frame, filename, arg, configs)`: Logs function return values.
-
-    Expected Behavior:
-        - Tracing activates only when **enabled in the configuration**.
-        - Calls, returns, and execution paths are **logged dynamically**.
-        - Non-project files and system-level operations are **excluded from tracing**.
-        - Return values are **serialized safely** for structured logging.
-
-    Exit Codes:
-        - `0`: Successful execution.
-        - `1`: Failure due to invalid configurations or execution tracing errors.
-
-    Example:
-        ```python
-        from trace_utils import start_tracing
-        start_tracing()
-        ```
+    packages.appflow_tracer.lib.trace_utils - # File: ./packages/appflow_tracer/lib/trace_utils.py
 
 FUNCTIONS
     call_events(

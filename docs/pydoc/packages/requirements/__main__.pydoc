@@ -3,34 +3,7 @@
 Help on module packages.requirements.__main__ in packages.requirements:
 
 NAME
-    packages.requirements.__main__ - File Path: packages/requirements/__main__.py
-
-DESCRIPTION
-    Description:
-        Requirements Package Entry Point
-
-        This file serves as the execution entry point for the `requirements` package when run
-        in standalone mode. It initializes and runs the dependency management system by calling
-        the `main()` function from `dependencies.py`.
-
-    Core Features:
-        - **Standalone Execution**: Enables `python -m packages.requirements` execution.
-        - **Dependency Management**: Calls `main()` from `dependencies.py` to handle dependencies.
-        - **Modular Design**: Supports both standalone execution and direct function imports.
-
-    Usage:
-        To execute the `requirements` package as a standalone script:
-        ```bash
-        python -m packages.requirements
-        ```
-
-    Dependencies:
-        - dependencies (for managing package dependencies)
-
-    Example:
-        ```bash
-        python -m packages.requirements
-        ```
+    packages.requirements.__main__ - # File: ./packages/requirements/__main__.py
 
 VERSION
     0.1.0

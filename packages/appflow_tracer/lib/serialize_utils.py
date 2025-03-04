@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: ./packages/appflow_tracer/lib/serialize_utils.py
-# Version: 0.1.0
+__version__ = "0.1.0"  ## Package version
 
 """
 File Path: packages/appflow_tracer/lib/serialize_utils.py
@@ -50,9 +50,6 @@ Example:
     print(safe_serialize({"name": "Alice"}))
     ```
 """
-
-# Package version
-__version__ = "0.1.0"
 
 import json
 import tokenize

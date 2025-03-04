@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# File: ./tests/appflow_tracer/tracing/test_tracing_utils.py
+__version__ = "0.1.0"  ## Package version
+
 """
 Test Module: test_tracing.py
 
@@ -26,9 +29,6 @@ It ensures that tracing, logging, and ANSI handling functions operate correctly.
 - **ANSI escape sequences are stripped before logging** to prevent unwanted formatting.
 
 """
-
-# Package version
-__version__ = "0.1.0"
 
 import sys
 import os

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: ./lib/system_params.py
-# Version: 0.1.0
+__version__ = "0.1.0"  ## Package version
 
 """
 File: ./lib/system_params.py
@@ -43,9 +43,6 @@ Example:
     python system_params.py
     ```
 """
-
-# Package version
-__version__ = "0.1.0"
 
 import sys
 import os

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: ./packages/requirements/__main__.py
-# Version: 0.1.0
+__version__ = "0.1.0"  ## Package version
 
 """
 File Path: packages/requirements/__main__.py
@@ -32,9 +32,6 @@ Example:
     python -m packages.requirements
     ```
 """
-
-# Package version
-__version__ = "0.1.0"
 
 # Import the main function from dependencies.py
 from packages.requirements.dependencies import main

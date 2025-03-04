@@ -3,40 +3,7 @@
 Help on module packages.requirements.__init__ in packages.requirements:
 
 NAME
-    packages.requirements.__init__ - File Path: packages/requirements/__init__.py
-
-DESCRIPTION
-    Description:
-        Requirements Package Initialization
-
-        This file defines the `requirements` package and ensures it is properly recognized
-        as a Python package. It provides an entry point for managing dependencies by exposing
-        the `main` function from `dependencies.py`.
-
-    Core Features:
-        - **Package Initialization**: Marks `requirements/` as a valid Python package.
-        - **Dependency Management**: Exposes `main()` from `dependencies.py` for handling dependencies.
-        - **Explicit Module Control**: Prevents unintended imports by requiring explicit calls.
-
-    Usage:
-        To execute the dependencies management function:
-        ```python
-        from packages.requirements import main
-        main()
-        ```
-
-    Important:
-        - This file **does not** execute any logic automatically.
-        - The `main()` function must be explicitly invoked when needed.
-
-    Dependencies:
-        - dependencies (for handling package dependency management)
-
-    Example:
-        ```python
-        from packages.requirements import main
-        main()
-        ```
+    packages.requirements.__init__ - # File: ./packages/requirements/__init__.py
 
 FUNCTIONS
     main() -> None

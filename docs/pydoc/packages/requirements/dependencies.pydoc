@@ -3,76 +3,7 @@
 Help on module packages.requirements.dependencies in packages.requirements:
 
 NAME
-    packages.requirements.dependencies - File Path: packages/installer/install_requirements.py
-
-DESCRIPTION
-    Description:
-        Dependency Management System
-        This module handles the installation and verification of dependencies listed
-        in a JSON requirements file. It supports both Pip and Brew (for macOS) package
-        managers to ensure the correct versions of dependencies are installed and up-to-date.
-
-    Core Features:
-        - **Install Missing Dependencies**: Installs missing or outdated packages from a JSON file.
-        - **Verify Installed Packages**: Checks installed versions of packages and ensures compliance with the requirements.
-        - **Update Installed Packages**: Updates packages if necessary, ensuring all dependencies are correctly installed.
-        - **Show Installed Packages**: Displays the installed versions of dependencies, highlighting any discrepancies.
-
-    Usage:
-        To install or update dependencies:
-        ```python
-        from install_requirements import install_requirements
-        install_requirements(requirements_file="requirements.json", configs=configs)
-        ```
-
-        To show the installed packages:
-        ```bash
-        python install_requirements.py --show-installed
-        ```
-
-    Dependencies:
-        - subprocess
-        - argparse
-        - json
-        - importlib.metadata
-        - pathlib
-        - datetime
-        - lib.system_variables (for project-wide configurations)
-        - lib.pkgconfig_loader (for configuration handling)
-        - lib.log_utils (for logging messages)
-        - packages.appflow_tracer (for tracing setup)
-
-    Global Variables:
-        - `CONFIGS`: Stores the effective configurations used for logging and package installation.
-        - `LIB_DIR`: Directory path for the `lib` directory.
-        - `requirements_file`: Path to the JSON file containing the dependencies.
-
-    Primary Functions:
-        - `load_requirements(requirements_file, configs)`: Loads and parses the requirements JSON file.
-        - `get_installed_version(package)`: Returns the installed version of a package, checking both Pip and Brew.
-        - `install_requirements(requirements_file, configs)`: Installs or updates the required dependencies listed in the JSON file.
-        - `install_or_update_package(package, version, configs)`: Installs or updates a specific package using Pip or Brew.
-        - `is_brew_available()`: Checks if Brew (for macOS) is available on the system.
-        - `is_package_installed(package, version_info, configs)`: Verifies whether a package is installed and meets the required version.
-        - `parse_arguments()`: Parses the command-line arguments for specifying the requirements file and showing installed dependencies.
-        - `print_installed_packages(config_filepath, configs)`: Prints the installed packages in a human-readable format.
-        - `update_installed_packages(requirements_file, config_filepath, configs)`: Updates the status of installed packages and writes them to the installed JSON file.
-
-    Expected Behavior:
-        - Installs or updates packages listed in the JSON file to ensure they are up-to-date.
-        - Verifies installed versions and logs appropriate messages.
-        - Displays installed packages and their statuses when requested.
-        - Logs the installation and verification process to assist with debugging.
-
-    Exit Codes:
-        - `0`: Successful execution.
-        - `1`: Failure due to errors in installation, package not found, or missing configurations.
-
-    Example:
-        ```python
-        from install_requirements import install_requirements
-        install_requirements("requirements.json", configs)
-        ```
+    packages.requirements.dependencies - # File: ./packages/appflow_tracer/tracing.py
 
 FUNCTIONS
     get_installed_version(package: str) -> Optional[str]

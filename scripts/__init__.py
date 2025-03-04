@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# File: ./scripts/__init__.py
+__version__ = "0.1.0"  ## Package version
+
 """
 File Path: ./scripts/__init__.py
 
@@ -34,6 +37,3 @@ Example:
     example_script.run()
     ```
 """
-
-# Package version
-__version__ = "0.1.0"

@@ -3,50 +3,7 @@
 Help on module tests.test_run in tests:
 
 NAME
-    tests.test_run - File Path: tests/test_run.py
-
-DESCRIPTION
-    Description:
-        Unit tests for `run.py`
-
-        This module contains tests to verify the correct behavior of functions within `run.py`.
-        It ensures that argument parsing, CLI execution, and core entry points work as expected.
-
-    Core Features:
-        - **Argument Parsing Validation**: Confirms CLI flags are correctly interpreted.
-        - **Execution Entry Points**: Ensures `main()` runs properly with `--pydoc` and `--target` options.
-        - **Mocked Testing**: Uses `unittest.mock` to isolate dependencies.
-
-    Dependencies:
-        - pytest
-        - unittest.mock
-        - pathlib
-        - argparse
-        - sys
-
-    Expected Behavior:
-        - Tests should confirm correct argument parsing.
-        - Execution flow should be verified through mocks.
-        - CLI behavior for documentation and module execution should be validated.
-
-    Usage:
-        To run the tests:
-        ```bash
-        pytest -v tests/test_run.py
-        ```
-
-    Example Output:
-        ```bash
-        ============================= test session starts =============================
-        platform darwin -- Python 3.13.2, pytest-8.3.5, pluggy-1.5.0
-        collected 3 items
-
-        tests/test_run.py::test_parse_arguments PASSED
-        tests/test_run.py::test_main_pydoc PASSED
-        tests/test_run.py::test_main_target PASSED
-
-        ========================== 3 passed in 1.76s ==========================
-        ```
+    tests.test_run - # File: ./tests/test_run.py
 
 FUNCTIONS
     mock_configs()
@@ -74,6 +31,9 @@ FUNCTIONS
 DATA
     CONFIGS = {'colors': {'CALL': '\x1b[92m', 'CRITICAL': '\x1b[41m', 'DEB...
     ROOT_DIR = PosixPath('<project-location>')
+
+VERSION
+    0.1.0
 
 FILE
     <project-location>/tests/test_run.py

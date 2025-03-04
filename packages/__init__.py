@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: ./packages/__init__.py
-# Version: 0.1.0
+__version__ = "0.1.0"  ## Package version
 
 """
 File Path: packages/__init__.py
@@ -38,6 +38,3 @@ Example:
     CONFIGS = setup_logging()
     ```
 """
-
-# Package version
-__version__ = "0.1.0"

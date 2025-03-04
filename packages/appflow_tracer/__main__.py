@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: ./packages/appflow_tracer/__main__.py
-# Version: 0.1.0
+__version__ = "0.1.0"  ## Package version
 
 """
 File Path: packages/appflow_tracer/__main__.py
@@ -31,9 +31,6 @@ Example:
     python -m packages.appflow_tracer
     ```
 """
-
-# Package version
-__version__ = "0.1.0"
 
 from packages.appflow_tracer.tracing import main
 

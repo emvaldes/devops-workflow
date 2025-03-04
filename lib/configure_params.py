@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: ./lib/configure_params.py
-# Version: 0.1.0
+__version__ = "0.1.0"  ## Package version
 
 """
 File: ./lib/configure_params.py
@@ -44,9 +44,6 @@ Example:
     python configure_params.py
     ```
 """
-
-# Package version
-__version__ = "0.1.0"
 
 import sys
 import os

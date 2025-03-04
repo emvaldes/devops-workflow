@@ -3,56 +3,7 @@
 Help on module extract_pytest_functions:
 
 NAME
-    extract_pytest_functions
-
-DESCRIPTION
-    File: .github/scripts/extract_pytest_functions.py
-    Version: 0.0.2
-
-    Description:
-        This script scans a given list of pytest test files and extracts function names
-        that conform to pytest's test naming convention (`test_*`). The extracted function names
-        are stored in a structured JSON file.
-
-        The script also performs validation to ensure the generated JSON file adheres to
-        the expected format and contains valid function mappings.
-
-    Features:
-        - Reads a JSON list of pytest test files.
-        - Extracts valid test function names from each file using regex.
-        - Saves the extracted function mappings to a JSON output file.
-        - Validates the JSON output to ensure correctness and completeness.
-
-    Usage:
-        python extract_pytest_functions.py <pytest_listing> <pytest_mapping>
-
-    Arguments:
-        pytest_listing (str): A JSON-encoded list containing paths to pytest test files.
-        pytest_mapping (str): The output JSON file where extracted function names will be stored.
-
-    Exit Codes:
-        1 - An error occurred (invalid input, missing files, extraction failure, validation failure, etc.).
-        0 - Success, extracted test functions are stored correctly.
-
-    Requirements:
-        - Python 3.x
-        - JSON-formatted input for pytest test files
-        - Read access to the provided test files
-
-    Example:
-        ```bash
-        python extract_pytest_functions.py '["tests/test_example.py"]' "pytest_functions.json"
-        ```
-
-    Output Format:
-        The JSON file follows this structure:
-        ```json
-        {
-            "pytest_functions": {
-                "tests/test_example.py": ["test_addition", "test_subtraction"]
-            }
-        }
-        ```
+    extract_pytest_functions - # File: .github/scripts/extract_pytest_functions.py
 
 FUNCTIONS
     extract_pytest_functions(pytest_files: List[str]) -> Union[Dict[str, List[str]], bool]

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: lib/pydoc_generator.py
-# Version: 0.1.0
+__version__ = "0.1.0"  ## Package version
 
 """
 File: lib/pydoc_generator.py
@@ -44,9 +44,6 @@ Example:
     python -m pydoc lib.pydoc_generator
     ```
 """
-
-# Package version
-__version__ = "0.1.0"
 
 import sys
 import os
