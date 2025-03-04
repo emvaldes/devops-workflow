@@ -31,3 +31,9 @@ FILE
 
 
 
+### Code Coverage
+Name                      Stmts   Miss  Cover
+---------------------------------------------
+lib/system_variables.py      32      0   100%
+---------------------------------------------
+TOTAL                        32      0   100%

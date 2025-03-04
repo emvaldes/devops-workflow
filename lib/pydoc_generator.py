@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: lib/pydoc_generator.py
-__version__ = "0.1.0"  ## Package version
+__version__ = "0.1.1"  ## Package version
 
 """
 File: lib/pydoc_generator.py
@@ -19,6 +19,7 @@ Core Features:
     - **Error Handling & Logging**: Captures errors and logs messages for debugging.
     - **Flexible Execution**: Distinguishes between modules and standalone scripts for correct PyDoc execution.
     - **Output Sanitization**: Redacts sensitive system paths from generated documentation.
+    - **Coverage Integration**: Appends test coverage data for the processed file.
 
 Usage:
     To generate PyDoc documentation for all Python files in a project:
@@ -34,6 +35,7 @@ Dependencies:
     - pathlib
     - system_variables (for project environment settings)
     - log_utils (for structured logging)
+    - coverage (for tracking execution coverage)
 
 Exit Codes:
     - `0`: Successful execution.
@@ -97,8 +99,8 @@ def generate_pydoc(
     Generate and store PyDoc documentation for a given Python file.
 
     This function invokes `pydoc` to generate documentation for a Python script or module
-    and saves the output in the designated documentation directory. If an error occurs,
-    it logs the failure and stores an error file.
+    and saves the output in the designated documentation directory. Additionally, it appends
+    the test coverage report for the processed file.
 
     Args:
         project_path (Path): The root path of the project.
@@ -130,21 +132,18 @@ def generate_pydoc(
         configs=configs
     )
 
-    ## Convert file path to relative project path
-    # relative_file_path = os.path.relpath(str(file_path), start=str(project_path))
-
     # Ensure the file path is relative to the project root
-    relative_file_path = Path(file_path).relative_to(project_path)      ## Ensure it's relative
+    relative_filepath = Path(file_path).relative_to(project_path)      ## Ensure it's relative
 
     # Convert the path into a proper module name by joining parts with "."
-    module_name = ".".join( relative_file_path.with_suffix("").parts )  ## Fixes 'lib.pydoc_generator'
+    module_name = ".".join( relative_filepath.with_suffix("").parts )  ## Fixes 'lib.pydoc_generator'
 
     # Debugging
-    print(f"Original Relative Path: {relative_file_path}")
+    print(f"Original Relative Path: {relative_filepath}")
     print(f"Sanitized Module Path: {module_name}")
 
     log_utils.log_message(
-        f'Relative File Path: {relative_file_path}',
+        f'Relative File Path: {relative_filepath}',
         environment.category.debug.id,
         configs=configs
     )
@@ -153,18 +152,30 @@ def generate_pydoc(
     doc_file_path = docs_path / f"{file_path.stem}.pydoc"  ## Use Pathlib operations
 
     ## Ensure relative path is correct
-    relative_file_path = Path( file_path ).relative_to( project_path )  ## Ensure it's a Path object
+    relative_filepath = Path( file_path ).relative_to( project_path )  ## Ensure it's a Path object
 
     ## Check if any directory in the path starts with '.', meaning it's a script
-    is_script = any( part.startswith('.') for part in relative_file_path.parts )
+    is_script = any( part.startswith('.') for part in relative_filepath.parts )
 
     if is_script:
         ## Treat as a script, prepend "./"
-        command = ['python', '-m', 'pydoc', f'./{relative_file_path}']
+        command = [
+            'python',
+            '-m',
+            'pydoc',
+            f'./{relative_filepath}'
+        ]
     else:
         ## Treat as a module, convert path to module format
-        module_name = ".".join( relative_file_path.with_suffix("").parts )  ## Correct module format
-        command = ['python', '-m', 'pydoc', module_name]
+        module_name = ".".join(
+            relative_filepath.with_suffix("").parts
+        )  ## Correct module format
+        command = [
+            'python',
+            '-m',
+            'pydoc',
+            module_name
+        ]
 
     log_utils.log_message(
         f'Running PyDoc Command: {" ".join(command)}',
@@ -181,7 +192,33 @@ def generate_pydoc(
         )
 
         ## Now, subtract the project_path part from file_path to get the relative path
-        relative_path = file_path.relative_to(project_path)
+        # relative_filepath = file_path.relative_to(project_path)
+
+        coverage_command = [
+            "python",
+            "-m",
+            "coverage",
+            "report",
+            "--include",
+            f'./{relative_filepath}'
+        ]
+
+        try:
+            coverage_output = subprocess.check_output(
+                coverage_command,
+                stderr=subprocess.STDOUT,
+                text=True
+            )
+        except subprocess.CalledProcessError as e:
+            if "No data to report." in e.output:
+                log_utils.log_message(
+                    f'[WARNING] No coverage data available for "{relative_filepath}". Skipping coverage report.',
+                    environment.category.warning.id,
+                    configs=configs
+                )
+                coverage_output = "[WARNING] No coverage data available.\n"
+            else:
+                raise
 
         # Perform both sanitizations in one step using regex
         sanitized_output = re.sub(
@@ -192,8 +229,10 @@ def generate_pydoc(
 
         ## Write successful documentation output
         with open(doc_file_path, "w", encoding="utf-8") as doc_file:
-            doc_file.write(f"### Documentation for {relative_path}\n\n")
+            doc_file.write(f"### Documentation for {relative_filepath}\n\n")
             doc_file.write(f"{sanitized_output}\n")
+            doc_file.write("### Code Coverage\n")
+            doc_file.write(coverage_output)
 
         log_utils.log_message(
             f'Documentation saved to {doc_file_path}',
@@ -284,7 +323,7 @@ def create_pydocs(
     """
 
     log_utils.log_message(
-        f'Processing Python files [{files_list}]...',
+        f'Processing Python files [{files_list}] ...',
         environment.category.debug.id,
         configs=configs
     )
@@ -308,3 +347,24 @@ def create_pydocs(
             docs_path,
             configs=configs
         )
+
+        ## Generate Full Project Coverage Report After PyDoc Completes
+        log_utils.log_message(
+            f'Generating full project coverage report in ./docs/htmlcov...',
+            environment.category.debug.id,
+            configs=configs
+        )
+
+        try:
+            subprocess.run(["python", "-m", "coverage", "html", "-d", "docs/htmlcov"], check=True)
+            log_utils.log_message(
+                f'Coverage HTML report generated successfully at ./docs/htmlcov/index.html',
+                environment.category.debug.id,
+                configs=configs
+            )
+        except subprocess.CalledProcessError as e:
+            log_utils.log_message(
+                f'[ERROR] Failed to generate HTML coverage report: {e}',
+                environment.category.error.id,
+                configs=configs
+            )

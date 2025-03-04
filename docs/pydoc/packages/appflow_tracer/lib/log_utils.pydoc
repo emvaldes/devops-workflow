@@ -130,3 +130,9 @@ FILE
 
 
 
+### Code Coverage
+Name                                       Stmts   Miss  Cover
+--------------------------------------------------------------
+packages/appflow_tracer/lib/log_utils.py      39     28    28%
+--------------------------------------------------------------
+TOTAL                                         39     28    28%

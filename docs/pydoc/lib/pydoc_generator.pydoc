@@ -65,8 +65,8 @@ FUNCTIONS
         Generate and store PyDoc documentation for a given Python file.
 
         This function invokes `pydoc` to generate documentation for a Python script or module
-        and saves the output in the designated documentation directory. If an error occurs,
-        it logs the failure and stores an error file.
+        and saves the output in the designated documentation directory. Additionally, it appends
+        the test coverage report for the processed file.
 
         Args:
             project_path (Path): The root path of the project.
@@ -92,10 +92,12 @@ FUNCTIONS
             ```
 
 VERSION
-    0.1.0
+    0.1.1
 
 FILE
     <project-location>/lib/pydoc_generator.py
 
 
 
+### Code Coverage
+[WARNING] No coverage data available.

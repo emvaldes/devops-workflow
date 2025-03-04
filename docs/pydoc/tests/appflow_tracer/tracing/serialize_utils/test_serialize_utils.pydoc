@@ -1,5 +1,6 @@
 ### Documentation for tests/appflow_tracer/tracing/serialize_utils/test_serialize_utils.py
 
+[91mDeleted old log: logs/tests/appflow_tracer/tracing/serialize_utils/test_serialize_utils_20250304114525.log[0m
 Help on module tests.appflow_tracer.tracing.serialize_utils.test_serialize_utils in tests.appflow_tracer.tracing.serialize_utils:
 
 NAME
@@ -45,3 +46,5 @@ FILE
 
 
 
+### Code Coverage
+[WARNING] No coverage data available.
