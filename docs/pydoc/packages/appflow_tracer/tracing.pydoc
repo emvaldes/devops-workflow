@@ -453,5 +453,8 @@ VERSION
 FILE
     <project-location>/packages/appflow_tracer/tracing.py
 
-
-
+Name                                 Stmts   Miss  Cover
+--------------------------------------------------------
+packages/appflow_tracer/tracing.py      86     21    76%
+--------------------------------------------------------
+TOTAL                                   86     21    76%

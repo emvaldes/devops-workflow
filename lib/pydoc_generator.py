@@ -48,6 +48,7 @@ Example:
 import sys
 import os
 
+import coverage
 import re
 import subprocess
 

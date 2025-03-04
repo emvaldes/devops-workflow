@@ -1,0 +1,19 @@
+[run]
+branch = True
+parallel = True
+concurrency = multiprocessing
+source = packages,lib
+
+[report]
+omit =
+    */site-packages/*
+    */distutils/*
+    */_distutils_hack/*
+    */dist-packages/*
+    /usr/local/lib/python*/*
+    */_distutils_hack/*
+    */coverage/*
+    */setuptools/*
+
+[html]
+directory = docs/htmlcov

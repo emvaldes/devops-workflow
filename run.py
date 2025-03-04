@@ -274,19 +274,19 @@ def main():
             configs=CONFIGS
         )
 
-    if args.yamldoc:
-
-        files_list = collect_files(
-            project_path,
-            [".yaml", ".yml"]
-        )
-
-        yamldoc_engine.create_yamldocs(
-            project_path=project_path,
-            base_path=Path(project_path) / "docs/yamldoc",
-            files_list=files_list,
-            configs=CONFIGS
-        )
+    # if args.yamldoc:
+    #
+    #     files_list = collect_files(
+    #         project_path,
+    #         [".yaml", ".yml"]
+    #     )
+    #
+    #     yamldoc_engine.create_yamldocs(
+    #         project_path=project_path,
+    #         base_path=Path(project_path) / "docs/yamldoc",
+    #         files_list=files_list,
+    #         configs=CONFIGS
+    #     )
 
     # If --target flag is passed, execute the specified Package/Module or Script
     if args.target:
