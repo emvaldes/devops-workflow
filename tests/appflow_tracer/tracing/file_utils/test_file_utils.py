@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# File: ./tests/appflow_tracer/tracing/test_file_utils.py
+__version__ = "0.1.0"  ## Package version
+
 """
 Test Module: ./tests/appflow_tracer/tracing/test_file_utils.py
 
@@ -44,9 +47,6 @@ It ensures that file handling functions operate correctly, including:
 - **Path handling and text sanitization functions operate as expected.**
 
 """
-
-# Package version
-__version__ = "0.1.0"
 
 import sys
 import os

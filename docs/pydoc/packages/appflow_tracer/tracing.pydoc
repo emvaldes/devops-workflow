@@ -3,75 +3,7 @@
 Help on module packages.appflow_tracer.tracing in packages.appflow_tracer:
 
 NAME
-    packages.appflow_tracer.tracing - File Path: packages/appflow_tracer/tracing.py
-
-DESCRIPTION
-    Description:
-        AppFlow Tracing System
-        This module provides structured logging and function call tracing, enabling
-        automatic function execution monitoring with minimal intrusion. It integrates
-        logging and tracing functionalities, ensuring accurate tracking of function
-        calls, return values, and execution flow.
-
-    Core Features:
-        - **Function Call Tracing**: Automatically captures function calls, arguments, and return values.
-        - **Structured Logging**: Logs execution details in JSON format for debugging and auditing.
-        - **Self-Inspection**: When executed directly, logs its own execution for analysis.
-        - **Automatic Log Management**: Removes old log files to maintain storage efficiency.
-        - **Configurable Event Filtering**: Allows selective tracing of function calls and returns.
-
-    Usage:
-        To enable function call tracing:
-        ```python
-        import tracing
-        tracing.setup_logging()
-        ```
-
-        To run the tracing system as a standalone tool:
-        ```bash
-        python tracing.py
-        ```
-
-    Dependencies:
-        - sys
-        - json
-        - inspect
-        - logging
-        - builtins
-        - pathlib
-        - datetime
-        - lib.system_variables (for project-wide configurations)
-        - lib.pkgconfig_loader (for configuration handling)
-        - lib.file_utils (for log file management)
-        - lib.log_utils (for structured logging)
-        - lib.trace_utils (for function call tracing)
-
-    Global Variables:
-        - `LOGGING`: Boolean flag indicating whether logging has been initialized.
-        - `CONFIGS`: Stores the effective logging and tracing configurations.
-        - `logger`: Global logger instance used for structured logging.
-
-    Primary Functions:
-        - `setup_logging(configs, logname_override, events)`: Initializes structured logging.
-        - `main()`: Entry point for standalone execution, setting up tracing and logging.
-        - `PrintCapture.emit(record)`: Captures print statements and redirects them to logs.
-        - `ANSIFileHandler.emit(record)`: Ensures log files do not contain ANSI escape sequences.
-
-    Expected Behavior:
-        - Logs execution details when tracing is enabled.
-        - Logs function calls with arguments and return values.
-        - Maintains structured logs for debugging and execution tracking.
-        - Automatically removes older log files when exceeding retention limits.
-
-    Exit Codes:
-        - `0`: Successful execution.
-        - `1`: Failure due to configuration or logging setup errors.
-
-    Example:
-        ```python
-        from tracing import setup_logging
-        setup_logging()
-        ```
+    packages.appflow_tracer.tracing - # File: ./packages/appflow_tracer/tracing.py
 
 CLASSES
     logging.FileHandler(logging.StreamHandler)

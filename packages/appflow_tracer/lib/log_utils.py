@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: ./packages/appflow_tracer/lib/log_utils.py
-# Version: 0.1.0
+__version__ = "0.1.0"  ## Package version
 
 """
 File: packages/appflow_tracer/lib/log_utils.py
@@ -55,9 +55,6 @@ Example:
     log_message("Initialization complete", category.info.id)
     ```
 """
-
-# Package version
-__version__ = "0.1.0"
 
 import sys
 

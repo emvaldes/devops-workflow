@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: ./packages/appflow_tracer/__init__.py
-# Version: 0.1.0
+__version__ = "0.1.0"  ## Package version
 
 """
 File Path: packages/appflow_tracer/__init__.py
@@ -53,9 +53,6 @@ Example:
     log_utils.log_message("Framework initialized successfully.")
     ```
 """
-
-# Package version
-__version__ = "0.1.0"
 
 # from .tracing import (
 from packages.appflow_tracer.tracing import (

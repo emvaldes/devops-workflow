@@ -3,43 +3,7 @@
 Help on module lib.manage_accesstoken in lib:
 
 NAME
-    lib.manage_accesstoken - File: ./lib/manage_accesstoken.py
-
-DESCRIPTION
-    Description:
-        Azure Access Token Manager
-        This module handles Azure authentication and manages access token expiration.
-        It ensures that tokens remain valid for API requests and integrates with timezone
-        handling for better session tracking.
-
-    Features:
-        - Retrieves and checks Azure access token expiration.
-        - Integrates with local timezone offset detection.
-        - Provides a command-line interface for session and token management.
-
-    Usage:
-        To manage Azure session and token expiration:
-        ```bash
-        python manage_accesstoken.py --debug
-        ```
-
-    Dependencies:
-        - accesstoken_expiration
-        - timezone_localoffset
-        - argument_parser
-
-    Global Variables:
-        - `globals.DEBUG_MODE` (bool): Enables debug mode for detailed output.
-        - `globals.VERBOSE_MODE` (bool): Enables verbose logging mode.
-
-    Exit Codes:
-        - `0`: Successful execution.
-        - `1`: Failure due to authentication or timezone errors.
-
-    Example:
-        ```bash
-        python manage_accesstoken.py --debug
-        ```
+    lib.manage_accesstoken - # File: ./lib/manage_accesstoken.py
 
 FUNCTIONS
     main() -> None

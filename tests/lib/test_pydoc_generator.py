@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: ./tests/lib/test_pydoc_generator.py
-# Version: 0.1.2
+__version__ = "0.1.0"  ## Package version
 
 """
 File: tests/lib/test_pydoc_generator.py

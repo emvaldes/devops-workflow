@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## File: .github/scripts/validate-parameters.shell
-## Version: 0.0.1
+# __version__ = "0.1.0"  ## Package version
 
 # Description:
 #

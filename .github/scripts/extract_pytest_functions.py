@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
 # File: .github/scripts/extract_pytest_functions.py
-# Version: 0.1.0
+__version__ = "0.1.0"  ## Package version
 
 """
 File: .github/scripts/extract_pytest_functions.py
-Version: 0.0.2
+__version__ = "0.1.0"  ## Package version
 
 Description:
     This script scans a given list of pytest test files and extracts function names
@@ -52,9 +52,6 @@ Output Format:
     }
     ```
 """
-
-# Package version
-__version__ = "0.1.0"
 
 import sys
 import os

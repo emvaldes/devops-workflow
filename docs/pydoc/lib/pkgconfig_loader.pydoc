@@ -3,52 +3,7 @@
 Help on module lib.pkgconfig_loader in lib:
 
 NAME
-    lib.pkgconfig_loader - File: lib/pkgconfig_loader.py
-
-DESCRIPTION
-    Description:
-        Package Configuration Loader
-        This module provides a centralized mechanism for dynamically loading
-        package-specific configurations. It ensures consistency across logging,
-        tracing, and runtime parameters.
-
-    Core Features:
-        - **Dynamic Configuration Loading**: Reads settings from JSON config files.
-        - **Logging Standardization**: Ensures uniform logging across all packages.
-        - **Self-Inspection Mechanism**: Determines module-specific log file paths.
-        - **Resilient JSON Parsing**: Handles corrupt or missing configuration files gracefully.
-
-    Usage:
-        To load a package-specific configuration:
-        ```python
-        from lib.pkgconfig_loader import package_configs
-        config = package_configs()
-        ```
-
-        To set up logging for a module:
-        ```python
-        setup_configs("/path/to/module.py")
-        ```
-
-    Dependencies:
-        - os
-        - sys
-        - json
-        - pathlib
-        - datetime
-        - system_variables (for directory paths and project settings)
-
-    Global Variables:
-        - `timestamp` (str): Unique timestamp used for log filenames.
-
-    Exit Codes:
-        - `0`: Successful execution.
-        - `1`: Failure due to missing or invalid configuration files.
-
-    Example:
-        ```bash
-        python pkgconfig_loader.py
-        ```
+    lib.pkgconfig_loader - # File: ./lib/pkgconfig_loader.py
 
 FUNCTIONS
     config_logfile(config: dict, caller_log_path: Optional[str] = None) -> pathlib._local.Path
@@ -164,7 +119,7 @@ DATA
     project_logs = PosixPath('<project-location>/logs...
     project_packages = PosixPath('<project-location>/...
     project_root = PosixPath('<project-location>')
-    timestamp = '20250303213116'
+    timestamp = '20250303225554'
 
 VERSION
     0.1.0

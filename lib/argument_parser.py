@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: ./lib/argument_parser.py
-# Version: 0.1.0
+__version__ = "0.1.0"  ## Package version
 
 """
 File: ./lib/argument_parser.py
@@ -41,9 +41,6 @@ Example:
     python argument_parser.py --debug
     ```
 """
-
-# Package version
-__version__ = "0.1.0"
 
 import sys
 import os

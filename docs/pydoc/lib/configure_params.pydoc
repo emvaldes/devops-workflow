@@ -3,46 +3,7 @@
 Help on module lib.configure_params in lib:
 
 NAME
-    lib.configure_params - File: ./lib/configure_params.py
-
-DESCRIPTION
-    Description:
-        Configuration Parameters Manager
-        This module is responsible for loading, validating, and managing configuration parameters.
-        It integrates with the framework's parameter handling system, merging user-defined and default settings.
-
-    Core Features:
-        - **JSON Configuration Loading**: Reads structured parameters from system configuration files.
-        - **Runtime Parameter Management**: Dynamically integrates `.env` values into execution logic.
-        - **Validation & Error Handling**: Ensures required configuration files exist and are correctly formatted.
-        - **Automatic Environment Initialization**: Creates missing `.env` and `runtime-params.json` when necessary.
-
-    Usage:
-        To process and validate configuration parameters:
-        ```bash
-        python configure_params.py
-        ```
-
-    Dependencies:
-        - json
-        - os
-        - logging
-        - dotenv
-        - system_variables (for directory paths and project settings)
-
-    Global Variables:
-        - `env_filepath` (Path): Path to the `.env` configuration file.
-        - `runtime_params_filepath` (Path): Path to the `runtime-params.json` configuration file.
-        - `system_params_filepath` (Path): Path to the system-wide configuration file.
-
-    Exit Codes:
-        - `0`: Successful execution.
-        - `1`: Failure due to missing or invalid configuration files.
-
-    Example:
-        ```bash
-        python configure_params.py
-        ```
+    lib.configure_params - # File: ./lib/configure_params.py
 
 FUNCTIONS
     fetching_runtime_variables() -> Dict[str, Dict[str, Union[str, Dict[str, str]]]]

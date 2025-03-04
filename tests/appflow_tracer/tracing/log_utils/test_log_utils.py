@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# File: ./tests/appflow_tracer/tracing/test_log_utils.py
+__version__ = "0.1.0"  ## Package version
+
 """
 Test Module: ./tests/appflow_tracer/tracing/test_log_utils.py
 
@@ -44,9 +47,6 @@ It ensures that logging functions operate correctly, including:
 - **Tests correctly handle different JSON output formats** based on configuration.
 
 """
-
-# Package version
-__version__ = "0.1.0"
 
 import sys
 import os

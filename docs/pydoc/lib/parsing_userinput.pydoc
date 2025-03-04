@@ -3,43 +3,7 @@
 Help on module lib.parsing_userinput in lib:
 
 NAME
-    lib.parsing_userinput - File: ./lib/parsing_userinput.py
-
-DESCRIPTION
-    Description:
-        User Input Collection and Interactive Prompts
-        This module ensures all required runtime parameters are provided by prompting users interactively.
-        It dynamically loads argument configurations, identifies missing variables, and sets
-        environment variables accordingly.
-
-    Core Features:
-        - **Interactive Input Requests**: Prompts users for required input dynamically.
-        - **Configuration-Based Prompts**: Loads argument configurations from a JSON file.
-        - **Environment Variable Management**: Updates system environment variables at runtime.
-        - **Error Handling**: Ensures non-interactive environments exit safely with meaningful errors.
-
-    Usage:
-        To collect required user input:
-        ```bash
-        python parsing_userinput.py
-        ```
-
-    Dependencies:
-        - json
-        - os
-        - logging
-
-    Global Variables:
-        - Environment variables are dynamically updated based on user input.
-
-    Exit Codes:
-        - `0`: Successful execution.
-        - `1`: Failure due to missing input in a non-interactive environment.
-
-    Example:
-        ```bash
-        python parsing_userinput.py
-        ```
+    lib.parsing_userinput - # File: ./lib/parsing_userinput.py
 
 FUNCTIONS
     main() -> None

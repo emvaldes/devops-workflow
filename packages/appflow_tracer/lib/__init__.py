@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: ./packages/appflow_tracer/lib/__init__.py
-# Version: 0.1.0
+__version__ = "0.1.0"  ## Package version
 
 """
 File Path: packages/appflow_tracer/lib/__init__.py
@@ -42,9 +42,6 @@ Example:
     trace_utils.start_tracing()
     ```
 """
-
-# Package version
-__version__ = "0.1.0"
 
 # Import and expose key submodules
 from . import (

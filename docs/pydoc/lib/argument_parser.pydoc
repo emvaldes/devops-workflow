@@ -3,43 +3,7 @@
 Help on module lib.argument_parser in lib:
 
 NAME
-    lib.argument_parser - File: ./lib/argument_parser.py
-
-DESCRIPTION
-    Description:
-        Command-Line Argument Parser
-        This module provides dynamic parsing of command-line arguments based on a JSON configuration file.
-        It supports structured parameter definitions, automatic type conversion, and flexible flag handling.
-
-    Core Features:
-        - **JSON-Based Argument Loading**: Reads structured argument definitions dynamically.
-        - **Automatic Type Conversion**: Converts CLI argument values to expected Python types.
-        - **Structured Validation**: Ensures required and optional arguments are handled correctly.
-        - **Debugging Support**: Displays parsed arguments in JSON format when `--debug` is used.
-
-    Usage:
-        To run argument parsing with debug output:
-        ```bash
-        python argument_parser.py --debug
-        ```
-
-    Dependencies:
-        - argparse
-        - json
-        - logging
-        - system_variables (for directory paths and settings)
-
-    Global Variables:
-        - `system_params_filepath` (Path): Stores the path to the JSON configuration file.
-
-    Exit Codes:
-        - `0`: Successful execution.
-        - `1`: Failure due to errors in argument parsing or configuration loading.
-
-    Example:
-        ```bash
-        python argument_parser.py --debug
-        ```
+    lib.argument_parser - # File: ./lib/argument_parser.py
 
 FUNCTIONS
     convert_types(kwargs: Dict[str, Any]) -> Dict[str, Any]

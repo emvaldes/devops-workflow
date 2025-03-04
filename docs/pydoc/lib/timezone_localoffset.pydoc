@@ -3,43 +3,7 @@
 Help on module lib.timezone_localoffset in lib:
 
 NAME
-    lib.timezone_localoffset - File: ./lib/timezone_localoffset.py
-
-DESCRIPTION
-    Description:
-        Local Time Zone and Offset Manager
-        This module retrieves and calculates the local time zone and its offset from UTC.
-        It ensures accurate timekeeping and synchronization within the framework.
-
-    Core Features:
-        - **Time Zone Detection**: Determines the local time zone using `pytz`.
-        - **UTC Offset Calculation**: Computes the difference between local time and UTC.
-        - **Command-Line Execution**: Provides CLI debugging for time zone information.
-
-    Usage:
-        To retrieve and display the local time zone and offset:
-        ```bash
-        python timezone_localoffset.py --debug
-        ```
-
-    Dependencies:
-        - sys
-        - pytz
-        - datetime
-        - argparse
-
-    Global Variables:
-        - `LocalTimeZone` (pytz.timezone): Stores the detected local time zone.
-        - `LocalOffset` (float): Stores the UTC offset of the local time zone in hours.
-
-    Exit Codes:
-        - `0`: Successful execution.
-        - `1`: Failure due to time zone retrieval errors.
-
-    Example:
-        ```bash
-        python timezone_localoffset.py --debug
-        ```
+    lib.timezone_localoffset - # File: ./lib/timezone_localoffset.py
 
 FUNCTIONS
     get_local_offset(debug: bool = False) -> float

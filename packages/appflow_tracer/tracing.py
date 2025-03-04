@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# File: ./packages/appflow_tracer/tracing.py
+__version__ = "0.1.0"  ## Package version
+
 """
 File Path: packages/appflow_tracer/tracing.py
 
@@ -70,9 +73,6 @@ Example:
     setup_logging()
     ```
 """
-
-# Package version
-__version__ = "0.1.0"
 
 import sys
 import json

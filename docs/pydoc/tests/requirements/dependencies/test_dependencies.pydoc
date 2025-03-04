@@ -3,11 +3,7 @@
 Help on module tests.requirements.dependencies.test_dependencies in tests.requirements.dependencies:
 
 NAME
-    tests.requirements.dependencies.test_dependencies - Unit tests for the dependency management module.
-
-DESCRIPTION
-    This module contains tests for verifying the correct behavior of functions that load, install, and validate dependencies.
-    It ensures that packages are installed correctly, updates are applied properly, and compliance is maintained.
+    tests.requirements.dependencies.test_dependencies - # File: ./tests/test_dependencies.py
 
 FUNCTIONS
     mock_configs()

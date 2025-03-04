@@ -3,61 +3,7 @@
 Help on module extract_pytest_resources:
 
 NAME
-    extract_pytest_resources
-
-DESCRIPTION
-    File: .github/scripts/extract_pytest_resources.py
-    Version: 0.0.2
-
-    Description:
-        This script scans a list of pytest test files, extracts function names following
-        the pytest naming convention, and stores the results in JSON format.
-
-        The extracted test resources are normalized to a base location to ensure consistent
-        relative paths in the output JSON.
-
-    Features:
-        - **Automatic PyTest Resource Extraction**: Identifies and extracts test function definitions.
-        - **Relative Path Resolution**: Normalizes test file paths relative to a common base directory.
-        - **Structured Output**: Outputs extracted resources in a structured JSON format.
-        - **File Validation**: Ensures all input test files exist before processing.
-        - **Error Handling**: Logs warnings for missing/unreadable files instead of failing abruptly.
-        - **JSON Integrity Check**: Validates the output JSON file to ensure structural correctness.
-
-    Usage:
-        python extract_pytest_resources.py <pytest_listing> <pytest_mapping>
-
-    Arguments:
-        pytest_listing (str): A JSON-encoded list containing paths to pytest test files.
-        pytest_mapping (str): The output JSON file where extracted function names will be stored.
-
-    Exit Codes:
-        1 - An error occurred (invalid input, missing files, extraction failure, validation failure, etc.).
-        0 - Success, extracted test functions are stored correctly.
-
-    Requirements:
-        - Python 3.x
-        - JSON-formatted input for pytest test files
-        - Read access to the provided test files
-
-    Example:
-        ```bash
-        python extract_pytest_resources.py '["tests/test_example.py"]' "pytest_resources.json"
-        ```
-
-    Output Format:
-        The JSON file follows this structure:
-        ```json
-        {
-            "location": "tests/",
-            "resources": [
-                {
-                    "file": "test_example.py",
-                    "functions": ["test_addition", "test_subtraction"]
-                }
-            ]
-        }
-        ```
+    extract_pytest_resources - # File: .github/scripts/extract_pytest_resources.py
 
 FUNCTIONS
     extract_pytest_resources(pytest_files: List[str]) -> Union[Dict[str, Union[str, List[Dict[str, Union[str, List[str]]]]]], bool]

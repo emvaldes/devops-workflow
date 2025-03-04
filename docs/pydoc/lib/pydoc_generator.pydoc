@@ -3,46 +3,7 @@
 Help on module lib.pydoc_generator in lib:
 
 NAME
-    lib.pydoc_generator - File: lib/pydoc_generator.py
-
-DESCRIPTION
-    Description:
-        Automated Python Documentation Generator (PyDoc)
-
-        This module provides a framework for generating documentation for Python scripts and packages
-        within a project using the `pydoc` module. It ensures that documentation is structured correctly
-        and saved in an organized manner.
-
-    Core Features:
-        - **Dynamic Documentation Generation**: Automates the process of generating PyDoc documentation.
-        - **Path Handling**: Uses `pathlib` for robust and cross-platform path operations.
-        - **Error Handling & Logging**: Captures errors and logs messages for debugging.
-        - **Flexible Execution**: Distinguishes between modules and standalone scripts for correct PyDoc execution.
-        - **Output Sanitization**: Redacts sensitive system paths from generated documentation.
-
-    Usage:
-        To generate PyDoc documentation for all Python files in a project:
-        ```bash
-        python run.py --pydoc
-        ```
-
-    Dependencies:
-        - os
-        - sys
-        - re
-        - subprocess
-        - pathlib
-        - system_variables (for project environment settings)
-        - log_utils (for structured logging)
-
-    Exit Codes:
-        - `0`: Successful execution.
-        - `1`: Failure due to incorrect file paths or PyDoc errors.
-
-    Example:
-        ```bash
-        python -m pydoc lib.pydoc_generator
-        ```
+    lib.pydoc_generator - # File: lib/pydoc_generator.py
 
 FUNCTIONS
     create_pydocs(

@@ -3,57 +3,7 @@
 Help on module packages.appflow_tracer.lib.log_utils in packages.appflow_tracer.lib:
 
 NAME
-    packages.appflow_tracer.lib.log_utils - File: packages/appflow_tracer/lib/log_utils.py
-
-DESCRIPTION
-    Description:
-        Structured Logging Utilities
-        This module provides structured logging functionality, enabling detailed
-        logging to both console and log files. It supports logging levels,
-        custom formats, and structured data output.
-
-    Core Features:
-        - **Structured Log Messages**: Formats logs in a consistent manner.
-        - **Console and File Logging**: Sends logs to both console and files.
-        - **Custom Log Levels**: Supports INFO, WARNING, ERROR, DEBUG, etc.
-        - **ANSI Color Support**: Enables colored output for console logs.
-
-    Usage:
-        To log a structured message:
-        ```python
-        log_message("This is a log entry", category.info.id, json_data={"key": "value"})
-        ```
-
-        To log a message with a warning level:
-        ```python
-        log_message("Something might be wrong", category.warning.id)
-        ```
-
-    Dependencies:
-        - sys
-        - json
-        - logging
-        - datetime
-        - lib.system_variables (for global settings)
-        - file_utils (for log file management)
-
-    Global Variables:
-        - Uses `category` and `default_indent` from `lib.system_variables`.
-
-    Expected Behavior:
-        - Logs are written to both the console and log files based on configuration settings.
-        - JSON data is formatted properly if included in log messages.
-        - Log categories map to appropriate logging levels (INFO, DEBUG, ERROR, etc.).
-
-    Exit Codes:
-        - `0`: Successful execution.
-        - `1`: Failure due to logging configuration issues.
-
-    Example:
-        ```python
-        from log_utils import log_message
-        log_message("Initialization complete", category.info.id)
-        ```
+    packages.appflow_tracer.lib.log_utils - # File: ./packages/appflow_tracer/lib/log_utils.py
 
 FUNCTIONS
     log_message(

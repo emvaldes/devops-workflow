@@ -3,52 +3,7 @@
 Help on module packages.appflow_tracer.lib.serialize_utils in packages.appflow_tracer.lib:
 
 NAME
-    packages.appflow_tracer.lib.serialize_utils - File Path: packages/appflow_tracer/lib/serialize_utils.py
-
-DESCRIPTION
-    Description:
-        Serialization and String Sanitization Utilities
-        This module provides helper functions for data serialization and
-        code sanitization, ensuring JSON compatibility and clean parsing.
-
-    Core Features:
-        - **Safe Serialization**: Converts Python objects to JSON-friendly formats.
-        - **String Sanitization**: Cleans and trims code strings while removing comments.
-
-    Usage:
-        To safely serialize a Python object:
-        ```python
-        safe_serialize(data={"key": "value"}, configs=CONFIGS)
-        ```
-
-        To remove comments from a line of code:
-        ```python
-        sanitize_token_string(data="some_code()  # this is a comment", configs=CONFIGS)
-        ```
-
-    Dependencies:
-        - json
-        - tokenize
-        - io.StringIO (for text processing)
-        - lib.system_variables (for project settings)
-        - log_utils (for logging serialized data)
-
-    Global Variables:
-        - Uses `category` and `default_indent` from `lib.system_variables`.
-
-    Expected Behavior:
-        - `safe_serialize()` should gracefully handle non-serializable objects.
-        - `sanitize_token_string()` should remove comments and preserve meaningful text.
-
-    Exit Codes:
-        - `0`: Successful execution.
-        - `1`: Failure due to serialization errors.
-
-    Example:
-        ```python
-        from serialize_utils import safe_serialize, sanitize_token_string
-        print(safe_serialize({"name": "Alice"}))
-        ```
+    packages.appflow_tracer.lib.serialize_utils - # File: ./packages/appflow_tracer/lib/serialize_utils.py
 
 FUNCTIONS
     safe_serialize(

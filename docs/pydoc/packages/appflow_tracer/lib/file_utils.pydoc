@@ -3,54 +3,7 @@
 Help on module packages.appflow_tracer.lib.file_utils in packages.appflow_tracer.lib:
 
 NAME
-    packages.appflow_tracer.lib.file_utils - File: packages/appflow_tracer/lib/file_utils.py
-
-DESCRIPTION
-    Description:
-        File and Log Management Utilities
-        This module provides helper functions for managing log files, resolving
-        relative paths, and cleaning terminal output by removing ANSI escape codes.
-
-    Core Features:
-        - **Log File Management**: Removes old logs to prevent excessive storage usage.
-        - **Project File Detection**: Verifies whether a file belongs to the project.
-        - **Path Resolution**: Converts absolute paths into project-relative paths.
-        - **ANSI Escape Code Removal**: Cleans formatted terminal output.
-
-    Usage:
-        To clean up old log files:
-        ```python
-        manage_logfiles(configs=CONFIGS)
-        ```
-
-        To check if a file belongs to the project:
-        ```python
-        is_project_file("scripts/devops-workflow.py")
-        ```
-
-    Dependencies:
-        - sys
-        - re
-        - pathlib
-        - lib.system_variables (for project settings)
-
-    Global Variables:
-        - Uses `project_root`, `project_logs`, and `category` from `lib.system_variables`.
-
-    Expected Behavior:
-        - Log files are removed only when exceeding the maximum allowed limit.
-        - Project-relative paths exclude `.py` extensions for consistency.
-        - ANSI escape codes are removed without altering message content.
-
-    Exit Codes:
-        - `0`: Successful execution.
-        - `1`: Failure due to file system or logging issues.
-
-    Example:
-        ```python
-        from file_utils import relative_path
-        print(relative_path("/absolute/path/to/script.py"))
-        ```
+    packages.appflow_tracer.lib.file_utils - # File: ./packages/appflow_tracer/lib/file_utils.py
 
 FUNCTIONS
     is_project_file(filename: str) -> bool
