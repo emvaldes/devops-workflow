@@ -1,6 +1,5 @@
 ### Documentation for tests/appflow_tracer/tracing/serialize_utils/test_serialize_utils.py
 
-[91mDeleted old log: logs/tests/appflow_tracer/tracing/serialize_utils/test_serialize_utils_20250303192915.log[0m
 Help on module tests.appflow_tracer.tracing.serialize_utils.test_serialize_utils in tests.appflow_tracer.tracing.serialize_utils:
 
 NAME
@@ -70,6 +69,9 @@ DATA
     CONFIGS = {'colors': {'CALL': '\x1b[92m', 'CRITICAL': '\x1b[41m', 'DEB...
     ROOT_DIR = PosixPath('<project-location>')
     category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
+
+VERSION
+    0.1.0
 
 FILE
     <project-location>/tests/appflow_tracer/tracing/serialize_utils/test_serialize_utils.py

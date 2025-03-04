@@ -1,14 +1,28 @@
 ### Documentation for tests/test_run.py
 
-[91mDeleted old log: logs/tests/test_run_20250303192906.log[0m
 Help on module tests.test_run in tests:
 
 NAME
-    tests.test_run - Unit tests for run.py
+    tests.test_run - File: tests/test_run.py
 
 DESCRIPTION
-    This module contains tests for verifying the correct behavior of functions in run.py.
-    It ensures that argument parsing, documentation generation, and execution entry points function correctly.
+    Description:
+        Unit tests for `run.py`
+
+        This module contains tests for verifying the correct behavior of functions in `run.py`.
+        It ensures that argument parsing, documentation generation, and execution entry points
+        work correctly.
+
+    Core Features:
+        - **Argument Parsing Validation**: Ensures CLI flags are correctly interpreted.
+        - **Documentation Generation**: Tests if `pydoc` creation executes without issues.
+        - **Execution Entry Points**: Validates that `main()` runs as expected.
+
+    Dependencies:
+        - pytest
+        - unittest.mock
+        - pathlib
+        - shutil
 
 FUNCTIONS
     mock_configs()
@@ -17,11 +31,11 @@ FUNCTIONS
     mock_logger() -> unittest.mock.MagicMock
         Create a mock logger for testing purposes.
 
-    test_create_doc_structure()
-        Test that create_doc_structure runs without errors.
+    test_collect_files()
+        Test that collect_files correctly identifies and filters non-empty files.
 
     test_generate_pydoc()
-        Test generate_pydoc function using run.py as the target.
+        Test generate_pydoc function execution.
 
     test_main()
         Test main function execution.
@@ -29,12 +43,12 @@ FUNCTIONS
     test_parse_arguments()
         Test parse_arguments function with sample arguments.
 
-    test_scan_and_generate_docs()
-        Test scan_and_generate_docs function execution.
-
 DATA
     CONFIGS = {'colors': {'CALL': '\x1b[92m', 'CRITICAL': '\x1b[41m', 'DEB...
     ROOT_DIR = PosixPath('<user-home>/.repos')
+
+VERSION
+    0.1.0
 
 FILE
     <project-location>/tests/test_run.py

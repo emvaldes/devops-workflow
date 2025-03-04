@@ -129,6 +129,9 @@ DATA
     system_params_filepath = PosixPath('<user-home>/.repos/devops/work...
     system_params_listing = [PosixPath('<user-home>/.repos/devops/work...
 
+VERSION
+    0.1.0
+
 FILE
     <project-location>/lib/system_params.py
 

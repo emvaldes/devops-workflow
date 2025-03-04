@@ -72,6 +72,9 @@ Example:
     ```
 """
 
+# Package version
+__version__ = "0.1.0"
+
 from types import SimpleNamespace as simple
 from pathlib import Path
 

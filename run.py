@@ -53,6 +53,9 @@ Exit Codes:
     - `1`: Failure due to incorrect parameters, invalid paths, or execution errors.
 """
 
+# Package version
+__version__ = "0.1.0"
+
 import os
 import sys
 

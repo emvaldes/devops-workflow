@@ -44,6 +44,9 @@ It ensures correct function execution tracing and structured logging, covering:
 
 """
 
+# Package version
+__version__ = "0.1.0"
+
 import sys
 import os
 

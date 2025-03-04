@@ -53,6 +53,9 @@ Output Format:
     ```
 """
 
+# Package version
+__version__ = "0.1.0"
+
 import sys
 import os
 

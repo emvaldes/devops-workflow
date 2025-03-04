@@ -115,6 +115,9 @@ FUNCTIONS
 DATA
     LIB_DIR = PosixPath('<project-location>/lib')
 
+VERSION
+    0.1.0
+
 FILE
     <project-location>/run.py
 

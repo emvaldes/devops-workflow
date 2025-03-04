@@ -99,6 +99,9 @@ DATA
     LocalOffset = None
     LocalTimeZone = None
 
+VERSION
+    0.1.0
+
 FILE
     <project-location>/lib/timezone_localoffset.py
 

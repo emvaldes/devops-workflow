@@ -1,0 +1,50 @@
+### Documentation for tests/test_pydoc_generator.py
+
+Help on module tests.test_pydoc_generator in tests:
+
+NAME
+    tests.test_pydoc_generator - File: tests/test_pydoc_generator.py
+
+DESCRIPTION
+    Description:
+        Unit tests for `lib/pydoc_generator.py`
+
+        This module tests the core functionality of the PyDoc generator, ensuring
+        that documentation is generated correctly, directories are structured properly,
+        and error handling works as expected.
+
+    Core Features:
+        - **Documentation Generation**: Verifies `pydoc` command execution.
+        - **Directory Structure Creation**: Ensures output paths are created.
+        - **Error Handling & Logging**: Tests logging and error messages.
+
+    Dependencies:
+        - pytest
+        - unittest.mock
+        - pathlib
+        - shutil
+
+FUNCTIONS
+    mock_configs()
+        Mock CONFIGS for tests.
+
+    test_create_pydocs()
+        Test create_pydocs execution with multiple files.
+
+    test_create_structure()
+        Test that create_structure properly creates documentation directories.
+
+    test_generate_pydoc()
+        Test generate_pydoc execution with proper file paths.
+
+DATA
+    ROOT_DIR = PosixPath('<user-home>/.repos')
+
+VERSION
+    0.1.0
+
+FILE
+    <project-location>/tests/test_pydoc_generator.py
+
+
+

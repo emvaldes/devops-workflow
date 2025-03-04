@@ -515,6 +515,9 @@ DATA
     project_logs = PosixPath('<project-location>/logs...
     project_root = PosixPath('<project-location>')
 
+VERSION
+    0.1.0
+
 FILE
     <project-location>/packages/appflow_tracer/tracing.py
 
