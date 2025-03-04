@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# File: ./lib/timezone_localoffset.py
+# Version: 0.1.0
+
 """
 File: ./lib/timezone_localoffset.py
 
@@ -38,6 +41,9 @@ Example:
     python timezone_localoffset.py --debug
     ```
 """
+
+# Package version
+__version__ = "0.1.0"
 
 import sys
 import pytz

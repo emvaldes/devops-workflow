@@ -7,6 +7,9 @@ This module contains tests for verifying the correct behavior of functions that 
 It ensures that packages are installed correctly, updates are applied properly, and compliance is maintained.
 """
 
+# Package version
+__version__ = "0.1.0"
+
 import sys
 import json
 import subprocess

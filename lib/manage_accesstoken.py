@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# File: ./lib/manage_accesstoken.py
+# Version: 0.1.0
+
 """
 File: ./lib/manage_accesstoken.py
 
@@ -38,6 +41,9 @@ Example:
     python manage_accesstoken.py --debug
     ```
 """
+
+# Package version
+__version__ = "0.1.0"
 
 import sys
 

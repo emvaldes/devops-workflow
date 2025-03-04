@@ -70,6 +70,9 @@ DATA
     ROOT_DIR = PosixPath('<project-location>')
     category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
 
+VERSION
+    0.1.0
+
 FILE
     <project-location>/tests/appflow_tracer/tracing/serialize_utils/test_serialize_utils.py
 

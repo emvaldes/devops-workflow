@@ -176,6 +176,9 @@ DATA
         - You cannot subclass or instantiate a union.
         - You can use Optional[X] as a shorthand for Union[X, None].
 
+VERSION
+    0.1.0
+
 FILE
     <project-location>/.github/scripts/extract_pytest_functions.py
 

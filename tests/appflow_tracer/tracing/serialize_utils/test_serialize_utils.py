@@ -37,6 +37,9 @@ It ensures that serialization and string sanitization functions operate correctl
 
 """
 
+# Package version
+__version__ = "0.1.0"
+
 import sys
 import os
 

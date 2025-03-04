@@ -1,0 +1,140 @@
+### Documentation for lib/pydoc_generator.py
+
+Help on module lib.pydoc_generator in lib:
+
+NAME
+    lib.pydoc_generator - File: lib/pydoc_generator.py
+
+DESCRIPTION
+    Description:
+        Automated Python Documentation Generator (PyDoc)
+
+        This module provides a framework for generating documentation for Python scripts and packages
+        within a project using the `pydoc` module. It ensures that documentation is structured correctly
+        and saved in an organized manner.
+
+    Core Features:
+        - **Dynamic Documentation Generation**: Automates the process of generating PyDoc documentation.
+        - **Path Handling**: Uses `pathlib` for robust and cross-platform path operations.
+        - **Error Handling & Logging**: Captures errors and logs messages for debugging.
+        - **Flexible Execution**: Distinguishes between modules and standalone scripts for correct PyDoc execution.
+        - **Output Sanitization**: Redacts sensitive system paths from generated documentation.
+
+    Usage:
+        To generate PyDoc documentation for all Python files in a project:
+        ```bash
+        python run.py --pydoc
+        ```
+
+    Dependencies:
+        - os
+        - sys
+        - re
+        - subprocess
+        - pathlib
+        - system_variables (for project environment settings)
+        - log_utils (for structured logging)
+
+    Exit Codes:
+        - `0`: Successful execution.
+        - `1`: Failure due to incorrect file paths or PyDoc errors.
+
+    Example:
+        ```bash
+        python -m pydoc lib.pydoc_generator
+        ```
+
+FUNCTIONS
+    create_pydocs(
+        project_path: pathlib._local.Path,
+        base_path: pathlib._local.Path,
+        files_list: list[pathlib._local.Path],
+        configs: dict = None
+    )
+        Process multiple Python files and generate PyDoc documentation.
+
+        This function iterates through a list of Python files, generates their documentation,
+        and stores them in a structured format inside `docs/pydoc`.
+
+        Args:
+            project_path (Path): The root directory of the project.
+            base_path (Path): The base directory where documentation will be stored.
+            files_list (list[Path]): A list of Python file paths to document.
+            configs (dict, optional): Configuration settings for logging.
+
+        Returns:
+            None: Documentation files are generated and stored in the appropriate directories.
+
+        Example:
+            ```python
+            create_pydocs(
+                Path("<project-location>"),
+                Path("<project-location>/docs/pydoc"),
+                [Path("<project-location>/src/module1.py"), Path("<project-location>/src/module2.py")]
+            )
+            ```
+
+    create_structure(
+        base_path: pathlib._local.Path,
+        package_name: pathlib._local.Path
+    ) -> pathlib._local.Path
+        Create the directory structure for storing PyDoc-generated documentation.
+
+        This function ensures that the necessary directory structure exists under the
+        `docs/pydoc` directory to store documentation files. It will create the directories
+        if they do not already exist.
+
+        Args:
+            base_path (Path): The base path where documentation will be stored.
+            package_name (Path): The relative package path that determines the storage directory.
+
+        Returns:
+            Path: The absolute path to the created documentation directory.
+
+        Notes:
+            - Uses `mkdir(parents=True, exist_ok=True)` to ensure all parent directories exist.
+            - Accepts `Path` objects for improved cross-platform compatibility.
+
+    generate_pydoc(
+        project_path: pathlib._local.Path,
+        file_path: pathlib._local.Path,
+        docs_path: pathlib._local.Path,
+        configs: dict = None
+    )
+        Generate and store PyDoc documentation for a given Python file.
+
+        This function invokes `pydoc` to generate documentation for a Python script or module
+        and saves the output in the designated documentation directory. If an error occurs,
+        it logs the failure and stores an error file.
+
+        Args:
+            project_path (Path): The root path of the project.
+            file_path (Path): The Python file for which documentation will be generated.
+            docs_path (Path): The directory where the generated documentation will be stored.
+            configs (dict, optional): Additional configuration parameters for logging.
+
+        Returns:
+            None: This function does not return any value but writes documentation or error messages to disk.
+
+        Behavior:
+            - Differentiates between scripts and modules to invoke `pydoc` correctly.
+            - Stores the generated documentation in `docs/pydoc/<module>.pydoc`.
+            - Sanitizes system paths in the output to avoid exposing absolute paths.
+
+        Example:
+            ```python
+            generate_pydoc(
+                Path("<project-location>"),
+                Path("<project-location>/src/module.py"),
+                Path("<project-location>/docs/pydoc")
+            )
+            ```
+
+VERSION
+    0.1.0
+
+FILE
+    <project-location>/lib/pydoc_generator.py
+
+
+

@@ -111,6 +111,9 @@ DATA
     CONFIGS = {'colors': {'CALL': '\x1b[92m', 'CRITICAL': '\x1b[41m', 'DEB...
     ROOT_DIR = PosixPath('<project-location>')
 
+VERSION
+    0.1.0
+
 FILE
     <project-location>/tests/appflow_tracer/tracing/log_utils/test_log_utils.py
 

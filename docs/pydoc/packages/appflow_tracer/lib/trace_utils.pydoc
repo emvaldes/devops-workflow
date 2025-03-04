@@ -172,6 +172,9 @@ DATA
 
     category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
 
+VERSION
+    0.1.0
+
 FILE
     <project-location>/packages/appflow_tracer/lib/trace_utils.py
 

@@ -45,6 +45,9 @@ It ensures that logging functions operate correctly, including:
 
 """
 
+# Package version
+__version__ = "0.1.0"
+
 import sys
 import os
 

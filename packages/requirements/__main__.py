@@ -1,26 +1,43 @@
 #!/usr/bin/env python3
 
+# File: ./packages/requirements/__main__.py
+# Version: 0.1.0
+
 """
 File Path: packages/requirements/__main__.py
 
 Description:
+    Requirements Package Entry Point
 
-Requirements Package Entry Point
+    This file serves as the execution entry point for the `requirements` package when run
+    in standalone mode. It initializes and runs the dependency management system by calling
+    the `main()` function from `dependencies.py`.
 
-This file serves as the entry point for executing the `requirements` package in standalone mode.
-It initializes and runs the dependency management system.
+Core Features:
+    - **Standalone Execution**: Enables `python -m packages.requirements` execution.
+    - **Dependency Management**: Calls `main()` from `dependencies.py` to handle dependencies.
+    - **Modular Design**: Supports both standalone execution and direct function imports.
 
-Features:
+Usage:
+    To execute the `requirements` package as a standalone script:
+    ```bash
+    python -m packages.requirements
+    ```
 
-- Calls the `main()` function from `dependencies.py` to manage dependencies.
-- Allows the package to be executed as a standalone script.
+Dependencies:
+    - dependencies (for managing package dependencies)
 
-This module enables the execution of the package using:
-```python
-python -m packages.requirements ;
-```
+Example:
+    ```bash
+    python -m packages.requirements
+    ```
 """
 
-from .dependencies import main
+# Package version
+__version__ = "0.1.0"
+
+# Import the main function from dependencies.py
+from packages.requirements.dependencies import main
+
 if __name__ == "__main__":
     main()

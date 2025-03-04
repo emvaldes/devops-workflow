@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# File: ./lib/system_variables.py
+# Version: 0.1.0
+
 """
 File: ./lib/system_variables.py
 
@@ -68,6 +71,9 @@ Example:
     print(f"System Params File: {system_params_filepath}")
     ```
 """
+
+# Package version
+__version__ = "0.1.0"
 
 from types import SimpleNamespace as simple
 from pathlib import Path

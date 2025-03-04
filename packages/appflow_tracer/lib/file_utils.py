@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# File: ./packages/appflow_tracer/lib/file_utils.py
+# Version: 0.1.0
+
 """
 File: packages/appflow_tracer/lib/file_utils.py
 
@@ -49,6 +52,9 @@ Example:
     print(relative_path("/absolute/path/to/script.py"))
     ```
 """
+
+# Package version
+__version__ = "0.1.0"
 
 import sys
 import re

@@ -27,6 +27,9 @@ It ensures that tracing, logging, and ANSI handling functions operate correctly.
 
 """
 
+# Package version
+__version__ = "0.1.0"
+
 import sys
 import os
 
