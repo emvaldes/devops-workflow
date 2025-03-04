@@ -1,0 +1,102 @@
+### Documentation for tests/lib/test_pydoc_generator.py
+
+Help on module tests.lib.test_pydoc_generator in tests.lib:
+
+NAME
+    tests.lib.test_pydoc_generator - File: tests/lib/test_pydoc_generator.py
+
+DESCRIPTION
+    Description:
+        Unit tests for `lib/pydoc_generator.py`.
+
+        This module contains unit tests to validate the core functionality of the PyDoc generator.
+        It ensures that:
+        - Documentation is correctly generated for Python modules.
+        - Output directories are properly structured.
+        - Errors and failures are logged as expected.
+
+    Core Features:
+        - **Documentation Generation**: Verifies `pydoc` command execution.
+        - **Directory Structure Creation**: Ensures that documentation paths are generated correctly.
+        - **Error Handling & Logging**: Ensures graceful failure handling and proper logging.
+
+    Dependencies:
+        - pytest
+        - unittest.mock
+        - pathlib
+        - shutil
+
+    Usage:
+        Run the tests using:
+        ```bash
+        pytest -v tests/lib/test_pydoc_generator.py
+        ```
+
+FUNCTIONS
+    mock_configs()
+        Fixture to provide a mock `CONFIGS` dictionary for tests.
+
+        Returns:
+            dict: A mock configuration dictionary with logging and tracing disabled.
+
+    temp_doc_dir(tmp_path)
+        Fixture to create a temporary directory for storing generated documentation.
+
+        Args:
+            tmp_path (Path): A pytest fixture providing a unique temporary directory.
+
+        Returns:
+            Path: The path to the temporary documentation directory.
+
+    test_create_pydocs(mock_configs, temp_doc_dir)
+        Test that `create_pydocs` processes multiple files correctly.
+
+        This test ensures:
+            - Documentation is created for multiple Python files.
+            - The directory structure is properly managed.
+            - The `generate_pydoc` function is invoked as expected.
+
+        Args:
+            mock_configs (dict): The mocked logging and tracing configuration.
+            temp_doc_dir (Path): Temporary directory for storing generated docs.
+
+    test_create_structure()
+        Test that `create_structure` properly creates documentation directories.
+
+        This test ensures that the function correctly creates the expected directory
+        structure for storing PyDoc documentation.
+
+        Assertions:
+            - The function returns the correct path.
+            - The `mkdir` method is called to create the directory.
+
+    test_generate_pydoc(mock_configs, temp_doc_dir)
+        Test that `generate_pydoc` executes correctly with valid file paths.
+
+        This test verifies:
+            - `pydoc` runs without errors.
+            - The subprocess call is correctly constructed and executed.
+
+        Args:
+            mock_configs (dict): The mocked logging and tracing configuration.
+            temp_doc_dir (Path): Temporary directory for storing generated docs.
+
+    test_generate_pydoc_handles_error(mock_configs, temp_doc_dir)
+        Test that `generate_pydoc` handles errors gracefully.
+
+        This test verifies:
+            - The function catches `subprocess.CalledProcessError`.
+            - Error messages are logged correctly.
+
+        Args:
+            mock_configs (dict): The mocked logging and tracing configuration.
+            temp_doc_dir (Path): Temporary directory for storing generated docs.
+
+DATA
+    ROOT_DIR = PosixPath('<project-location>')
+
+FILE
+    <project-location>/tests/lib/test_pydoc_generator.py
+
+
+
