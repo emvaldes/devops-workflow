@@ -4,46 +4,53 @@
 # Version: 0.0.9
 
 """
-File Path: ./run.py
+File: ./run.py
 
 Description:
+    Framework Execution Entry Point
 
-Main Execution Entry Point for the Framework
+    This script serves as the main launcher for the framework, ensuring proper initialization,
+    system validation, and execution of requested operations. It can generate documentation
+    for Python scripts and execute arbitrary Python modules.
 
-This script acts as the launcher for the framework, ensuring that system configurations,
-dependencies, and user privileges are validated before execution.
-
-Features:
-
-- Executes the requested module/script to perform system validation and setup.
-- Ensures all required dependencies and configurations are initialized.
-- Provides a single-command entry point for launching the framework.
-- Integrates functionality for generating documentation for Python files in a specific path.
-- Allows running an arbitrary Python module.
-
-Expected Behavior:
-
-- This script **must be run from the project root**.
-- Any errors encountered in the execution will be printed to the console.
-- The script automatically terminates if critical dependencies are missing.
-- If the --pydoc flag is passed, it generates documentation for the specified Python files.
-- If the --target flag is passed, it executes the specified Python module.
-
-Dependencies:
-
-- subprocess (used to execute arbitrary scripts/modules)
-- argparse (used to handle command-line arguments)
+Core Features:
+    - **System Validation & Setup**: Ensures the framework environment is correctly configured.
+    - **Python Documentation Generation**: Uses `pydoc` to generate structured documentation.
+    - **Module Execution**: Provides the ability to run specified Python modules or scripts.
+    - **Dynamic File Collection**: Recursively scans the project for non-empty Python files.
+    - **Logging & Debugging**: Captures execution details and potential errors.
 
 Usage:
+    To launch the framework:
+    ```bash
+    python run.py
+    ```
 
-To start the framework:
-> python run.py
+    To generate documentation:
+    ```bash
+    python run.py --pydoc
+    ```
 
-To generate documentation:
-> python run.py --pydoc
+    To run an arbitrary module:
+    ```bash
+    python run.py --target <module_name>
+    ```
 
-To run an arbitrary Python Package/Module/Script:
-> python run.py --target <module_name>
+Dependencies:
+    - os
+    - sys
+    - json
+    - re
+    - argparse
+    - subprocess
+    - pathlib
+    - system_variables (for project environment settings)
+    - log_utils (for structured logging)
+    - pydoc_generator (for documentation generation)
+
+Exit Codes:
+    - `0`: Successful execution.
+    - `1`: Failure due to incorrect parameters, invalid paths, or execution errors.
 """
 
 import os
@@ -77,213 +84,66 @@ if str(LIB_DIR) not in sys.path:
 
 from packages.appflow_tracer import tracing
 from packages.appflow_tracer.lib import log_utils
+
 from lib import system_variables as environment
+from lib import pydoc_generator as pydoc_engine
 
-def create_doc_structure(
-    base_path,
-    package_name
-):
+def collect_files(
+    target_dir: str,
+    extensions: list[str]
+) -> list[str]:
     """
-    Create the doc structure for the given package under the 'docs/pydoc' directory.
+    Recursively scans a directory for non-empty files matching the specified extensions.
 
-    This function ensures that the necessary directory structure for the documentation is created,
-    specifically within the `docs/pydoc` directory.
+    This function ensures that only files with actual content are collected, preventing
+    the processing of empty or irrelevant files.
 
     Args:
-        base_path (str): The base path where the documentation will be created.
-        package_name (str): The name of the package for which the documentation is being created.
+        target_dir (str): The directory to scan.
+        extensions (List[str]): A list of file extensions to filter.
 
     Returns:
-        str: The path to the created documentation directory.
+        List[str]: A list of absolute file paths that match the specified extensions.
+
+    Raises:
+        ValueError: If the provided target directory does not exist.
+
+    Example:
+        ```python
+        python_files = collect_files("/project/src", [".py"])
+        ```
     """
 
-    # Get the project root where the run.py script is located
-    project_root = Path(__file__).resolve().parent
+    target_path = Path(target_dir).resolve()
 
-    # Ensure that the docs directory structure exists
-    doc_dir = os.path.join(project_root, 'docs', 'pydoc', package_name)
-    os.makedirs(doc_dir, exist_ok=True)
-    return doc_dir
+    if not target_path.is_dir():
+        raise ValueError(f"Error: {target_dir} is not a valid directory.")
 
-def generate_pydoc(
-    file_path,
-    doc_path
-):
-    """
-    Generate documentation for a given Python file using pydoc.
+    # Collect only non-empty matching files
+    files = [
+        str(file.resolve())
+        for ext in extensions
+        for file in target_path.rglob(f"*{ext}")
+        if file.stat().st_size > 0  # Ensure file is not empty
+    ]
 
-    This function invokes the `pydoc` module to generate documentation for a Python file
-    and stores it in the specified documentation directory. If the generation fails, an error file is created.
-
-    Args:
-        file_path (str): The path to the Python file for which documentation will be generated.
-        doc_path (str): The directory where the generated documentation will be saved.
-
-    Returns:
-        None: This function does not return any value but generates documentation or handles errors.
-    """
-
-    project_root = Path(__file__).resolve().parent
-
-    log_utils.log_message(
-        f'Generating documentation for {file_path}...',
-        environment.category.debug.id,
-        configs=CONFIGS
-    )
-
-    ## Convert file path to relative project path
-    relative_file_path = os.path.relpath(file_path, start=project_root)
-    log_utils.log_message(
-        f'Relative File Path: {relative_file_path}',
-        environment.category.debug.id,
-        configs=CONFIGS
-    )
-
-    file_name = os.path.basename(file_path)
-    doc_file_path = os.path.join(doc_path, f"{os.path.splitext(file_name)[0]}.pydoc")
-
-    ## Determine correct command based on directory structure
-    if any(part.startswith('.') for part in Path(relative_file_path).parts):
-        ## If any folder in the path starts with '.', treat it as a script
-        command = ['python', '-m', 'pydoc', f'./{relative_file_path}']
-    else:
-        ## Otherwise, treat it as a module
-        module_name = relative_file_path.replace(os.sep, ".").replace(".py", "")
-        command = ['python', '-m', 'pydoc', module_name]
-
-    log_utils.log_message(
-        f'Running PyDoc Command: {" ".join(command)}',
-        environment.category.debug.id,
-        configs=CONFIGS
-    )
-
-    try:
-        ## Run pydoc command and capture output
-        pydoc_output = subprocess.check_output(
-            command, stderr=subprocess.STDOUT,
-            text=True
-        )
-
-        ## Now, subtract the project_root part from file_path to get the relative path
-        relative_path = file_path.relative_to(project_root)
-
-        # Perform both sanitizations in one step using regex
-        sanitized_output = re.sub(
-            rf'({re.escape(str( project_root ))}|{re.escape(str( Path.home() ))})',
-            lambda match: "<project-location>" if match.group(0) == str( project_root ) else "<user-home>",
-            pydoc_output
-        )
-
-        ## Write successful documentation output
-        with open(doc_file_path, "w", encoding="utf-8") as doc_file:
-            doc_file.write(f"### Documentation for {relative_path}\n\n")
-            doc_file.write(f"{sanitized_output}\n")
-
-        log_utils.log_message(
-            f'Documentation saved to {doc_file_path}',
-            environment.category.debug.id,
-            configs=CONFIGS
-        )
-
-    except subprocess.CalledProcessError as e:
-        ## Handle pydoc failures properly
-        log_utils.log_message(
-            f'[ERROR] generating pydoc for {file_path}: {e}',
-            environment.category.error.id,
-            configs=CONFIGS
-        )
-
-        ## Split the file path into name and extension
-        # file_root, _ = os.path.splitext(file_path)
-        error_file_path = f'{doc_file_path}.error'
-
-        try:
-            if os.path.exists(doc_file_path):
-                os.rename(doc_file_path, error_file_path)
-                log_utils.log_message(
-                    f'Renamed {doc_file_path} to {error_file_path} due to an error',
-                    environment.category.debug.id,
-                    configs=CONFIGS
-                )
-            else:
-                log_utils.log_message(
-                    f'[WARNING] Skipping rename: {doc_file_path} does not exist, logging error message instead.',
-                    environment.category.warning.id,
-                    configs=CONFIGS
-                )
-        except Exception as rename_error:
-            ## If there is an error generating pydoc, create an empty file and log the error
-            log_utils.log_message(
-                f'[ERROR] Failed to rename {doc_file_path} to {error_file_path}: {rename_error}',
-                environment.category.error.id,
-                configs=CONFIGS
-            )
-
-        ## Write error message to the error file
-        with open(error_file_path, "a", encoding="utf-8") as error_file:
-            error_file.write(f"PyDoc Error:\n{e}\n")
-
-        log_utils.log_message(
-            f'Updated {error_file_path} with error details',
-            environment.category.debug.id,
-            configs=CONFIGS
-        )
-
-    finally:
-        log_utils.log_message(
-            f'Finished processing {file_path}',
-            environment.category.debug.id,
-            configs=CONFIGS
-        )
-
-def scan_and_generate_docs(
-    path_to_scan,
-    base_doc_dir
-):
-    """
-    Scan the project directory and generate documentation for all Python files.
-
-    This function walks through the project directory, scanning for all Python files,
-    excluding `__init__.py` and `__main__.py`, and generates documentation for each file.
-
-    Args:
-        path_to_scan (str): The base directory to scan for Python files.
-        base_doc_dir (str): The base directory where the documentation will be saved.
-
-    Returns:
-        None: This function does not return any value but generates documentation for each Python file found.
-    """
-
-    log_utils.log_message(
-        f'Scanning project directory for Python files...',
-        environment.category.debug.id,
-        configs=CONFIGS
-    )
-
-    # Walk through the directory and process Python files
-    for root, _, files in os.walk(path_to_scan):
-        py_files = [f for f in files if f.endswith(".py") and f not in ["__init__.py", "__main__.py"]]
-
-        for py_file in py_files:
-            # Construct relative path for the module, which will be used for the doc structure
-            relative_dir = os.path.relpath(root, path_to_scan)
-
-            # Create the directory for the pydoc files
-            doc_dir = create_doc_structure(base_doc_dir, relative_dir)
-
-            file_path = Path(os.path.join(root, py_file))
-            generate_pydoc(file_path, doc_dir)
+    return files
 
 def parse_arguments() -> argparse.Namespace:
     """
-    Parse command-line arguments for specifying the requirements file
-    and displaying the installed dependencies.
+    Parse command-line arguments for framework execution.
 
-    Args:
-        None
+    This function processes command-line flags that determine the execution behavior of
+    the framework, such as generating documentation or executing a target module.
 
     Returns:
         argparse.Namespace: The parsed arguments object containing selected options.
+
+    Example:
+        ```bash
+        python run.py --pydoc
+        python run.py --target my_module
+        ```
     """
 
     parser = argparse.ArgumentParser(
@@ -304,17 +164,27 @@ def parse_arguments() -> argparse.Namespace:
 
 def main():
     """
-    Main function for handling user input and generating documentation.
+    Framework Entry Point.
 
-    This function processes command-line arguments, generates documentation if requested,
-    or runs a specified Python module based on user input. It handles the configuration,
-    sets up logging, and invokes the appropriate functions based on the flags provided.
-
-    Args:
-        None
+    This function orchestrates the execution of the framework based on the provided command-line
+    arguments. It handles:
+    - Generating Python documentation via `pydoc` if the `--pydoc` flag is passed.
+    - Running a specified Python module if the `--target` flag is provided.
+    - Logging execution details and error handling.
 
     Returns:
-        None: This function does not return any value but performs the required actions based on user input.
+        None: Executes the requested functionality and exits accordingly.
+
+    Behavior:
+        - If `--pydoc` is passed, the script generates documentation for Python files.
+        - If `--target <module>` is passed, it attempts to execute the specified module.
+        - If no flags are provided, it logs a usage message.
+
+    Example:
+        ```bash
+        python run.py --pydoc
+        python run.py --target some_module
+        ```
     """
 
     # Ensure the variable exists globally
@@ -332,8 +202,10 @@ def main():
 
     # Generate documentation if --pydoc flag is passed
     if args.pydoc:
-        # Use current directory as the base for scanning
-        project_path = os.getcwd()
+
+        ## Use current directory as the base for scanning
+        # project_path = os.getcwd()
+        project_path = environment.project_root
 
         if not os.path.isdir(project_path):
             log_utils.log_message(
@@ -343,21 +215,37 @@ def main():
             )
             sys.exit(1)
 
+        file_extensions = [".py"]  ## Defined by CLI flag
+        files_list = collect_files(
+            project_path,
+            file_extensions
+        )
+
         # Base documentation folder should be 'docs/pydoc'
-        base_doc_dir = os.path.join(project_path, 'docs', 'pydoc')
+        base_path = os.path.join(
+            project_path,
+            'docs',
+            'pydoc'
+        )
 
         log_utils.log_message(
             f'Generating documentation for the project at {project_path}...',
             environment.category.debug.id,
             configs=CONFIGS
         )
-        scan_and_generate_docs(project_path, base_doc_dir)
+
+        pydoc_engine.create_pydocs(
+            project_path=project_path,
+            base_path=base_path,
+            files_list=files_list,
+            configs=CONFIGS
+        )
+
         log_utils.log_message(
             f'Documentation generation completed successfully.',
             environment.category.debug.id,
             configs=CONFIGS
         )
-        return
 
     # If --target flag is passed, execute the specified Package/Module or Script
     if args.target:

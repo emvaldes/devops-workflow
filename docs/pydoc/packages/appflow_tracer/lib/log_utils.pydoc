@@ -172,6 +172,9 @@ DATA
     default_indent = 4
     log_levels = {'CALL': 20, 'CRITICAL': 50, 'DEBUG': 10, 'ERROR': 40, 'I...
 
+VERSION
+    0.1.0
+
 FILE
     <project-location>/packages/appflow_tracer/lib/log_utils.py
 

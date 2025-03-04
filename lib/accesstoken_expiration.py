@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# File: ./lib/accesstoken_expiration.py
+# Version: 0.1.0
+
 """
 File: ./lib/accesstoken_expiration.py
 

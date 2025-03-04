@@ -1,5 +1,6 @@
 ### Documentation for tests/test_run.py
 
+[91mDeleted old log: logs/tests/test_run_20250303192906.log[0m
 Help on module tests.test_run in tests:
 
 NAME
@@ -37,3 +38,6 @@ DATA
 
 FILE
     <project-location>/tests/test_run.py
+
+
+

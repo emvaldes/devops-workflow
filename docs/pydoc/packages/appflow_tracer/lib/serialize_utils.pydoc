@@ -124,6 +124,9 @@ DATA
     category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
     default_indent = 4
 
+VERSION
+    0.1.0
+
 FILE
     <project-location>/packages/appflow_tracer/lib/serialize_utils.py
 

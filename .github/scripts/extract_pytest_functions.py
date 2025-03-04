@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: .github/scripts/extract_pytest_functions.py
-# Version: 0.0.2
+# Version: 0.1.0
 
 """
 File: .github/scripts/extract_pytest_functions.py
