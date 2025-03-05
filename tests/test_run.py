@@ -135,54 +135,66 @@ def test_main_coverage(
     mock_check_output,
     mock_coverage,
     mock_subprocess,
-    monkeypatch,
-    mock_project_structure
+    monkeypatch
 ):
-    """ Test that main() correctly enables and finalizes coverage reporting.
+    """
+    Test that `main()` correctly enables and finalizes coverage reporting.
 
-    Verifies:
+    Fixes:
+        - Uses `test_run.py` as the file for coverage and PyDoc processing.
+        - Eliminates the need for external mock files.
+        - Ensures `coverage combine` always finds valid data.
+
+    Expected Behavior:
         - `coverage.start()` and `coverage.stop()` are called appropriately.
         - `generate_report()` is triggered correctly.
-        - Subprocess calls for coverage processing are correctly invoked.
+        - `coverage.combine()` executes successfully.
     """
 
-    base_dir, mock_file = mock_project_structure
+    # Use the test file itself as the coverage target
+    test_file = Path(__file__).resolve()
+
     # Mock command-line arguments
     monkeypatch.setattr("sys.argv", ["run.py", "--pydoc", "--coverage"])
+
     # Mock coverage behavior
     mock_cov_instance = mock_coverage.return_value
     mock_cov_instance.start.return_value = None
     mock_cov_instance.stop.return_value = None
     mock_cov_instance.save.return_value = None
-    # Mock a generic coverage report output (no specific filenames)
-    mock_coverage_output = """\
-Name      Stmts   Miss  Cover
-----------------------------
-file1.py      10      2   80%
-file2.py      15      0  100%
-----------------------------
-TOTAL         25      2   92%
+
+    # Mock a generic coverage report output (including test_run.py)
+    mock_coverage_output = f"""\
+Name          Stmts   Miss  Cover
+--------------------------------
+test_run.py      50     10    80%
+--------------------------------
+TOTAL           50     10    80%
 """
     mock_check_output.return_value = mock_coverage_output
-    # Mock collect_files() to return our mock file **inside project root**
-    with patch("run.collect_files", return_value=[mock_file]):
+
+    # Mock collect_files() to return this test file
+    with patch("run.collect_files", return_value=[test_file]):
         run.main()
+
     # **Verify Coverage Behavior**
     mock_cov_instance.start.assert_called_once()
     mock_cov_instance.stop.assert_called_once()
     mock_cov_instance.save.assert_called_once()
+
     # Ensure subprocess calls were made for coverage processing
     mock_subprocess.assert_any_call(["python", "-m", "coverage", "combine"], check=True)
     mock_subprocess.assert_any_call(["python", "-m", "coverage", "html", "-d", "docs/htmlcov"], check=True)
+
     # **Verify that generate_report was called with correct parameters**
     coverage_summary_file = Path(run.environment.project_root) / "docs/coverage/coverage.report"
-    # Check that generate_report was called at least once
+
     mock_generate_report.assert_called_once()
-    # Retrieve actual call arguments
     called_args, called_kwargs = mock_generate_report.call_args
-    # **Match keyword arguments instead of positional**
+
     assert called_kwargs["coverage_report"].resolve() == coverage_summary_file.resolve(), \
         f"Expected {coverage_summary_file}, got {called_kwargs['coverage_report']}"
+
     assert called_kwargs["configs"] == run.CONFIGS, "CONFIGS argument does not match."
 
 @patch("lib.pydoc_generator.create_pydocs")

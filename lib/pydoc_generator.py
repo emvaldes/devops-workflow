@@ -367,7 +367,7 @@ def generate_pydoc(
 
     finally:
         log_utils.log_message(
-            f'[RESULT] Finished processing: {relative_filepath}',
+            f'[COMPLETE] Finished processing: {relative_filepath}',
             environment.category.returns.id,
             configs=configs
         )
