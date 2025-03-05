@@ -62,9 +62,8 @@ FUNCTIONS
 
         Example:
             ```bash
-            python run.py --pydoc
-            python run.py --yamldoc
-            python run.py --target my_module
+            python run.py --pydoc --coverage
+            python run.py --target module
             ```
 
 DATA

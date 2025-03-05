@@ -43,7 +43,7 @@ FUNCTIONS
             - The function returns the correct path.
             - The `mkdir` method is called to create the directory.
 
-    test_generate_pydoc(mock_configs, temp_doc_dir)
+    test_generate_pydoc(mock_configs, temp_doc_dir, tmp_path)
         Test that `generate_pydoc` executes correctly with valid file paths.
 
         This test verifies:
@@ -53,6 +53,7 @@ FUNCTIONS
         Args:
             mock_configs (dict): The mocked logging and tracing configuration.
             temp_doc_dir (Path): Temporary directory for storing generated docs.
+            tmp_path (Path): A pytest fixture providing a unique temporary directory.
 
     test_generate_pydoc_handles_error(mock_configs, temp_doc_dir)
         Test that `generate_pydoc` handles errors gracefully.

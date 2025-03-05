@@ -103,9 +103,37 @@ def test_create_structure():
         assert result == base_path / package_name
         mock_mkdir.assert_called()
 
+# def test_generate_pydoc(
+#     mock_configs,
+#     temp_doc_dir
+# ):
+#     """
+#     Test that `generate_pydoc` executes correctly with valid file paths.
+#
+#     This test verifies:
+#         - `pydoc` runs without errors.
+#         - The subprocess call is correctly constructed and executed.
+#
+#     Args:
+#         mock_configs (dict): The mocked logging and tracing configuration.
+#         temp_doc_dir (Path): Temporary directory for storing generated docs.
+#     """
+#
+#     project_path = Path("/mock/project")
+#     file_path = project_path / "test_module.py"
+#
+#     with patch("lib.pydoc_generator.subprocess.check_output") as mock_subprocess, \
+#          patch("lib.pydoc_generator.log_utils.log_message"):
+#
+#         mock_subprocess.return_value = "Mock documentation output"
+#         pydoc_generator.generate_pydoc(project_path, file_path, temp_doc_dir, mock_configs)
+#
+#         mock_subprocess.assert_called()
+
 def test_generate_pydoc(
     mock_configs,
-    temp_doc_dir
+    temp_doc_dir,
+    tmp_path  # Add pytest-provided temp directory fixture
 ):
     """
     Test that `generate_pydoc` executes correctly with valid file paths.
@@ -117,10 +145,15 @@ def test_generate_pydoc(
     Args:
         mock_configs (dict): The mocked logging and tracing configuration.
         temp_doc_dir (Path): Temporary directory for storing generated docs.
+        tmp_path (Path): A pytest fixture providing a unique temporary directory.
     """
 
-    project_path = Path("/mock/project")
+    # Use tmp_path instead of a hardcoded read-only path
+    project_path = tmp_path / "mock_project"
+    project_path.mkdir(parents=True, exist_ok=True)  # Ensure the directory exists
+
     file_path = project_path / "test_module.py"
+    file_path.write_text("def mock_function(): pass")  # Ensure a valid Python file exists
 
     with patch("lib.pydoc_generator.subprocess.check_output") as mock_subprocess, \
          patch("lib.pydoc_generator.log_utils.log_message"):

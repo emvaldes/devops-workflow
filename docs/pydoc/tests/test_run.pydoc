@@ -1,5 +1,6 @@
 ### Documentation for tests/test_run.py
 
+[91mDeleted old log: logs/tests/test_run_20250304232411.log[0m
 Help on module tests.test_run in tests:
 
 NAME
@@ -7,21 +8,40 @@ NAME
 
 FUNCTIONS
     mock_configs()
-        Globally mock CONFIGS for all tests.
+        Mock CONFIGS for test isolation.
 
-        This ensures that logging and tracing remain disabled during testing.
+    mock_project_structure()
+        Create a mock directory structure **inside the actual project root**.
 
-    test_main_pydoc()
-        Test `main()` when `--pydoc` is passed.
+    test_collect_files(mock_project_structure)
+        Test that collect_files correctly finds all Python files in the project.
+
+    test_main_coverage(
+        mock_generate_report,
+        mock_check_output,
+        mock_coverage,
+        mock_subprocess,
+        monkeypatch,
+        mock_project_structure
+    )
+        Test that main() correctly enables and finalizes coverage when --coverage is passed.
+
+    test_main_pydoc(mock_subprocess, mock_create_pydocs, monkeypatch, tmp_path)
+        Test that main() correctly executes --pydoc logic.
 
         Expected Behavior:
-            - `pydoc_engine.create_pydocs()` should be invoked.
+            - `create_pydocs()` should be called once with correct arguments.
+            - No unexpected subprocess calls should be made.
 
-    test_main_target()
-        Test `main()` when `--target` is passed.
+        Fixes:
+            - Aligns with updated function signature of `create_pydocs`.
+            - Ensures assertions match the expected behavior.
 
-        Expected Behavior:
-            - `subprocess.run()` should be called with the correct module.
+        Args:
+            mock_subprocess: Mock for `subprocess.run`.
+            mock_create_pydocs: Mock for `lib.pydoc_generator.create_pydocs`.
+            monkeypatch: Fixture to modify `sys.argv`.
+            tmp_path: Temporary path for test file operations.
 
     test_parse_arguments()
         Test `parse_arguments()` with a sample argument set.
@@ -33,7 +53,7 @@ DATA
     ROOT_DIR = PosixPath('<project-location>')
 
 VERSION
-    0.1.0
+    0.1.1
 
 FILE
     <project-location>/tests/test_run.py

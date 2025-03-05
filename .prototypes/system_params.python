@@ -1,0 +1,125 @@
+#!/usr/bin/env python3
+
+import os
+import json
+import logging
+from pathlib import Path
+from dotenv import load_dotenv
+from lib.configure_params import main as configure_params
+from lib.configure_params import load_json_sources
+from system_variables import (
+    project_root,
+    runtime_params_filename,
+    runtime_params_filepath,
+    system_params_filepath,
+    system_params_listing,
+    project_params_filepath,
+    default_params_filepath
+)
+
+def validate_runtime_params(runtime_params_filepath: Path):
+    """
+    Validates the existence and content of the runtime parameters JSON file.
+
+    This function checks whether the specified JSON file exists, is not empty,
+    and contains valid JSON. It raises appropriate exceptions if any of the
+    validation steps fail.
+    """
+    if not os.path.exists(runtime_params_filepath):
+        raise FileNotFoundError(f"{runtime_params_filepath} not found.")
+
+    with open(runtime_params_filepath, 'r') as file:
+        content = file.read().strip()
+        if not content:
+            raise ValueError(f"{runtime_params_filepath} is empty.")
+        try:
+            json.loads(content)  # Check if it's valid JSON
+        except json.JSONDecodeError:
+            raise ValueError(f"{runtime_params_filepath} contains invalid JSON.")
+
+def load_json_config(runtime_params_filepath: Path) -> dict:
+    """
+    Load environment variables from a JSON configuration file.
+    """
+    try:
+        with open(runtime_params_filepath, "r") as file:
+            data = json.load(file)
+            if not data:
+                raise ValueError(f'ERROR: Empty JSON file "{runtime_params_filepath}". Please check the contents.')
+            return data
+    except json.JSONDecodeError as e:
+        raise ValueError(f'ERROR: Invalid JSON structure in "{runtime_params_filepath}".\nDetails: {e}')
+    except Exception as e:
+        raise RuntimeError(f'ERROR: Unable to read "{runtime_params_filepath}". Details: {e}')
+
+def create_runtime_params_if_needed(runtime_params_filepath: Path):
+    """
+    Create runtime parameters file if it doesn't already exist or if it is invalid.
+    """
+    if not runtime_params_filepath.exists():
+        try:
+            missing_files = [path for path in [project_params_filepath, default_params_filepath] if not path.exists()]
+            if missing_files:
+                missing_filenames = ", ".join(str(path) for path in missing_files)
+                raise FileNotFoundError(f'ERROR: The following files are missing: {missing_filenames}.')
+
+            arguments_data = load_json_sources([str(path) for path in system_params_listing], mode="merge")
+
+            initial_defaults = {
+                details["target_env"]: details.get("default", "")
+                for key, details in arguments_data.items()
+                if "target_env" in details
+            }
+
+            with open(runtime_params_filepath, "w") as file:
+                json.dump(initial_defaults, file, indent=4)
+
+            logging.info(f'Successfully created {runtime_params_filename} using sources: {", ".join(str(path.relative_to(project_root)) for path in system_params_listing)}.')
+        except Exception as e:
+            logging.critical(f'ERROR: Unable to create {runtime_params_filename}. Details: {e}')
+            sys.exit(1)
+    else:
+        with open(runtime_params_filepath, "w") as file:
+            file.write("{}")  # Overwrite with an empty JSON object
+        logging.info(f'Flushed {runtime_params_filepath} to ensure a fresh structure.')
+
+def configure_and_load_params():
+    """
+    Configures and loads the system parameters.
+    """
+    try:
+        SYSTEM_PARAMS, RUNTIME_PARAMS = configure_params()
+
+        if not RUNTIME_PARAMS or not isinstance(RUNTIME_PARAMS, dict):
+            logging.warning("WARNING: RUNTIME_PARAMS is empty or not structured as expected, skipping further processing.")
+        else:
+            SECTIONS_VARS = {
+                section: {
+                    key: value.get("default")
+                    for key, value in section_data.get("options", {}).items()
+                }
+                for section, section_data in RUNTIME_PARAMS.items()
+            }
+
+            print(f'Sections Vars type: {type(SECTIONS_VARS)}')
+            print(f'Section Vars: {SECTIONS_VARS}')
+
+    except Exception as e:
+        logging.critical(f'ERROR: Exception occurred while running configure_params: {e}')
+        sys.exit(1)
+
+def main():
+    """
+    Main entry point for managing system parameters.
+    """
+    # Validate the runtime parameters file
+    validate_runtime_params(runtime_params_filepath)
+
+    # If needed, create or refresh the runtime parameters file
+    create_runtime_params_if_needed(runtime_params_filepath)
+
+    # Configure and load system parameters
+    configure_and_load_params()
+
+if __name__ == "__main__":
+    main()

@@ -56,6 +56,20 @@ FUNCTIONS
             - Uses `mkdir(parents=True, exist_ok=True)` to ensure all parent directories exist.
             - Accepts `Path` objects for improved cross-platform compatibility.
 
+    generate_coverage(
+        project_path: pathlib._local.Path,
+        file_path: pathlib._local.Path,
+        base_path: pathlib._local.Path,
+        configs: dict = None
+    )
+        Generate and save coverage data to a structured directory.
+
+        Args:
+            project_path (Path): The root path of the project.
+            file_path (Path): The Python file for which coverage is generated.
+            base_path (Path): The base directory where coverage files are stored.
+            configs (dict, optional): Additional configuration parameters for logging.
+
     generate_pydoc(
         project_path: pathlib._local.Path,
         file_path: pathlib._local.Path,
@@ -65,8 +79,8 @@ FUNCTIONS
         Generate and store PyDoc documentation for a given Python file.
 
         This function invokes `pydoc` to generate documentation for a Python script or module
-        and saves the output in the designated documentation directory. If an error occurs,
-        it logs the failure and stores an error file.
+        and saves the output in the designated documentation directory. Additionally, it appends
+        the test coverage report for the processed file.
 
         Args:
             project_path (Path): The root path of the project.
@@ -91,8 +105,23 @@ FUNCTIONS
             )
             ```
 
+    generate_report(coverage_report: pathlib._local.Path, configs: dict = None)
+        Generates and saves a textual summary of test coverage.
+
+        Args:
+            coverage_report (Path): The output file where the summary will be stored.
+            configs (dict, optional): Logging configurations.
+
+        Behavior:
+            - Runs `coverage report` to generate a textual coverage summary.
+            - Saves the output to `coverage_report`.
+            - If no coverage data is found, logs a warning.
+
+        Raises:
+            CalledProcessError: If the `coverage report` command fails unexpectedly.
+
 VERSION
-    0.1.0
+    0.1.1
 
 FILE
     <project-location>/lib/pydoc_generator.py

@@ -1,0 +1,52 @@
+{
+    "dependencies": [
+        {
+            "package": "azure-identity",
+            "version": {
+                "target": "1.15.0",
+                "installed": "1.15.0",
+                "status": "installed"
+            }
+        },
+        {
+            "package": "azure-mgmt-resource",
+            "version": {
+                "target": "23.0.1",
+                "installed": "23.0.1",
+                "status": "installed"
+            }
+        },
+        {
+            "package": "pytz",
+            "version": {
+                "target": "2025.1",
+                "installed": "2025.1",
+                "status": "installed"
+            }
+        },
+        {
+            "package": "python-dotenv",
+            "version": {
+                "target": "1.0.1",
+                "installed": "1.0.1",
+                "status": "installed"
+            }
+        },
+        {
+            "package": "setuptools",
+            "version": {
+                "target": "75.8.0",
+                "installed": "75.8.0",
+                "status": "installed"
+            }
+        },
+        {
+            "package": "pytest",
+            "version": {
+                "target": "8.3.4",
+                "installed": "8.3.5",
+                "status": "newer"
+            }
+        }
+    ]
+}
