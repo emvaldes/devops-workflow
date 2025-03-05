@@ -423,11 +423,19 @@ def create_pydocs(
             ## Convert to a relative path from the project root
             relative_dir = file_path.parent.relative_to( Path( project_path ) )
 
+            print(
+                f"[DEBUG] relative_dir: {relative_dir}"
+            )  # Add this line
+
             ## Create the directory for the pydoc files
             docs_path = create_structure(
                 base_path=Path(base_path),
                 package_name=str(relative_dir)
             )
+
+            print(
+                f"[DEBUG] create_structure() returned: {docs_path}"
+            )  # Add this line
 
             generate_pydoc(
                 project_path,
