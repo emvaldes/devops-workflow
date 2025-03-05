@@ -87,9 +87,3 @@ FILE
 
 
 
-### Code Coverage
-Name                                             Stmts   Miss  Cover
---------------------------------------------------------------------
-packages/appflow_tracer/lib/serialize_utils.py      41     31    24%
---------------------------------------------------------------------
-TOTAL                                               41     31    24%

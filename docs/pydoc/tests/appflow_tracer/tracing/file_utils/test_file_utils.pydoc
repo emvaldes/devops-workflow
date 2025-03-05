@@ -1,6 +1,5 @@
 ### Documentation for tests/appflow_tracer/tracing/file_utils/test_file_utils.py
 
-[91mDeleted old log: logs/tests/appflow_tracer/tracing/file_utils/test_file_utils_20250304114526.log[0m
 Help on module tests.appflow_tracer.tracing.file_utils.test_file_utils in tests.appflow_tracer.tracing.file_utils:
 
 NAME
@@ -77,5 +76,3 @@ FILE
 
 
 
-### Code Coverage
-[WARNING] No coverage data available.

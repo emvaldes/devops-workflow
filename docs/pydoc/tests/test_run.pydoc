@@ -1,6 +1,5 @@
 ### Documentation for tests/test_run.py
 
-[91mDeleted old log: logs/tests/test_run_20250304115459.log[0m
 Help on module tests.test_run in tests:
 
 NAME
@@ -8,15 +7,16 @@ NAME
 
 FUNCTIONS
     mock_configs()
-        Globally mock CONFIGS for all tests.
+        Mock CONFIGS for test isolation.
 
-        This ensures that logging and tracing remain disabled during testing.
+    mock_project_structure(tmp_path)
+        Create a mock directory structure for testing collect_files().
 
-    test_main_pydoc()
-        Test `main()` when `--pydoc` is passed.
+    test_collect_files(mock_project_structure)
+        Test that collect_files correctly finds all Python files in the project.
 
-        Expected Behavior:
-            - `pydoc_engine.create_pydocs()` should be invoked.
+    test_main_pydoc(mock_subprocess, mock_create_pydocs, monkeypatch, tmp_path)
+        Test that main() correctly executes --pydoc logic.
 
     test_main_target()
         Test `main()` when `--target` is passed.
@@ -34,12 +34,10 @@ DATA
     ROOT_DIR = PosixPath('<project-location>')
 
 VERSION
-    0.1.0
+    0.1.1
 
 FILE
     <project-location>/tests/test_run.py
 
 
 
-### Code Coverage
-[WARNING] No coverage data available.

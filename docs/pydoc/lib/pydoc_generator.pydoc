@@ -56,6 +56,20 @@ FUNCTIONS
             - Uses `mkdir(parents=True, exist_ok=True)` to ensure all parent directories exist.
             - Accepts `Path` objects for improved cross-platform compatibility.
 
+    generate_coverage(
+        project_path: pathlib._local.Path,
+        file_path: pathlib._local.Path,
+        base_path: pathlib._local.Path,
+        configs: dict = None
+    )
+        Generate and save coverage data to a structured directory.
+
+        Args:
+            project_path (Path): The root path of the project.
+            file_path (Path): The Python file for which coverage is generated.
+            base_path (Path): The base directory where coverage files are stored.
+            configs (dict, optional): Additional configuration parameters for logging.
+
     generate_pydoc(
         project_path: pathlib._local.Path,
         file_path: pathlib._local.Path,
@@ -99,5 +113,3 @@ FILE
 
 
 
-### Code Coverage
-[WARNING] No coverage data available.

@@ -114,9 +114,3 @@ FILE
 
 
 
-### Code Coverage
-Name                                        Stmts   Miss  Cover
----------------------------------------------------------------
-packages/appflow_tracer/lib/file_utils.py      42     24    43%
----------------------------------------------------------------
-TOTAL                                          42     24    43%

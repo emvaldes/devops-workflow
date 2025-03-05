@@ -8,7 +8,6 @@ source = packages,lib
 omit =
     */site-packages/*
     */distutils/*
-    */_distutils_hack/*
     */dist-packages/*
     /usr/local/lib/python*/*
     */_distutils_hack/*

@@ -1,15 +1,13 @@
 .DS_Store
 
-#.legacy
-#*--legacy.*
+## .legacy
+## *--legacy.*
 
 .outputs
 .project
 
-#.prototypes
-#*--prototype.*
-
-# packages/requirements/installed.json
+## .prototypes
+## *--prototype.*
 
 logs/
 !logs/.gitkeep  # Keeps the logs directory in Git but ignores its content
@@ -30,7 +28,9 @@ dist/
 downloads/
 eggs/
 .eggs/
-#lib/
+
+## lib/
+
 lib64/
 parts/
 sdist/
@@ -53,11 +53,13 @@ pip-log.txt
 pip-delete-this-directory.txt
 
 # Unit test / coverage reports
-# htmlcov/
+## htmlcov/
 .tox/
 .nox/
 .coverage
-.coverage.*
+
+## .coverage.*
+
 .cache
 nosetests.xml
 coverage.xml
@@ -73,7 +75,7 @@ cover/
 
 # Django stuff:
 
-## Enable: *.log
+## *.log
 
 local_settings.py
 db.sqlite3

@@ -38,12 +38,7 @@ Usage:
 
     To generate Python documentation:
     ```bash
-    python run.py --pydoc
-    ```
-
-    To generate YAML documentation:
-    ```bash
-    python run.py --yamldoc
+    python run.py --pydoc --coverage
     ```
 
     To run an arbitrary module:
@@ -62,7 +57,6 @@ Dependencies:
     - system_variables (for project environment settings)
     - log_utils (for structured logging)
     - pydoc_generator (for documentation generation)
-    - yaml_doc_generator (for YAML documentation extraction)
 
 Exit Codes:
     - `0`: Successful execution.
@@ -78,33 +72,34 @@ import argparse
 import re
 import json
 
-import pydoc
 import pytest
+import pydoc
+import coverage
 
 import logging
 
 from pathlib import Path
 
-# Define base directories
+## Define base directories
 LIB_DIR = Path(__file__).resolve().parent / "lib"
 if str(LIB_DIR) not in sys.path:
     sys.path.insert(0, str(LIB_DIR))  # Dynamically add `lib/` to sys.path only if not present
 
-# # Debugging: Print sys.path to verify import paths
+## Debugging: Print sys.path to verify import paths
 # print("\n[DEBUG] sys.path contains:")
 # for path in sys.path:
 #     print(f'  - {path}')
 
-# # Setup logging configuration
+## Setup logging configuration
 # logging.basicConfig(level=logging.INFO)
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from packages.appflow_tracer import tracing
 from packages.appflow_tracer.lib import log_utils
 
 from lib import system_variables as environment
 from lib import pydoc_generator as pydoc_engine
-
-# from lib import yaml_doc_generator as yamldoc_engine
 
 def collect_files(
     target_dir: str,
@@ -133,10 +128,8 @@ def collect_files(
     """
 
     target_path = Path(target_dir).resolve()
-
     if not target_path.is_dir():
         raise ValueError(f"Error: {target_dir} is not a valid directory.")
-
     # Collect only non-empty matching files
     files = [
         str(file.resolve())
@@ -144,7 +137,6 @@ def collect_files(
         for file in target_path.rglob(f"*{ext}")
         if file.stat().st_size > 0  # Ensure file is not empty
     ]
-
     return files
 
 def parse_arguments() -> argparse.Namespace:
@@ -159,16 +151,15 @@ def parse_arguments() -> argparse.Namespace:
 
     Example:
         ```bash
-        python run.py --pydoc
-        python run.py --yamldoc
-        python run.py --target my_module
+        python run.py --pydoc --coverage
+        python run.py --target module
         ```
     """
 
     parser = argparse.ArgumentParser(
         description="Verify installed dependencies for compliance. "
                     "Use -d/--pydoc to generate documentation."
-                    "Use -y/--yamldoc to generate YAML documentation. "
+                    "Use -c/--coverage to enable test coverage tracking."
                     "Use -t/--target to execute a module."
     )
     parser.add_argument(
@@ -177,9 +168,9 @@ def parse_arguments() -> argparse.Namespace:
         help="Generate documentation for Python files."
     )
     parser.add_argument(
-        "-y", "--yamldoc",
+        "-c", "--coverage",
         action="store_true",
-        help="Generate documentation for YAML files."
+        help="Enable test coverage tracking."
     )
     parser.add_argument(
         "-t", "--target",
@@ -216,21 +207,17 @@ def main():
 
     # Ensure the variable exists globally
     global CONFIGS
-
     # CONFIGS = tracing.setup_logging(events=False)
     CONFIGS = tracing.setup_logging(events=["call", "return", "debug", "error"])
-    print(
-        f'CONFIGS: {json.dumps(
-            CONFIGS, indent=environment.default_indent
-        )}'
-    )
-
+    # print(
+    #     f'CONFIGS: {json.dumps(
+    #         CONFIGS, indent=environment.default_indent
+    #     )}'
+    # )
     args = parse_arguments()
-
     ## Use current directory as the base for scanning
     # project_path = os.getcwd()
     project_path = environment.project_root
-
     if not os.path.isdir(project_path):
         log_utils.log_message(
             f'Error: {project_path} is not a valid directory.',
@@ -238,73 +225,125 @@ def main():
             configs=CONFIGS
         )
         sys.exit(1)
-
-    # Base documentation folder should be 'docs/pydoc'
-    base_path = os.path.join(
-        project_path,
-        'docs',
-        'pydoc'
-    )
-
-    log_utils.log_message(
-        f'Generating project documentation at: {project_path}',
-        environment.category.debug.id,
-        configs=CONFIGS
-    )
-
+    ## If coverage flag is set, enable coverage tracking
+    cov = None
+    if args.coverage:
+        os.environ["COVERAGE_PROCESS_START"] = str(Path(".coveragerc").resolve())
+        cov = coverage.Coverage(branch=True, source=["packages", "lib"])
+        cov.start()
+        log_utils.log_message(
+            "Coverage tracking enabled.",
+            environment.category.debug.id,
+            configs=CONFIGS
+        )
     # Generate documentation if --pydoc flag is passed
     if args.pydoc:
-
+        # Base documentation folder should be 'docs/pydoc'
+        base_path = os.path.join(
+            project_path,
+            'docs',
+            'pydoc'
+        )
+        log_utils.log_message(
+            f'Project documentation at: {project_path}',
+            environment.category.debug.id,
+            configs=CONFIGS
+        )
         file_extensions = [".py"]  ## Defined by CLI flag
         files_list = collect_files(
             project_path,
             file_extensions
         )
-
         pydoc_engine.create_pydocs(
             project_path=project_path,
             base_path=base_path,
             files_list=files_list,
             configs=CONFIGS
         )
-
         log_utils.log_message(
-            f'Documentation generation completed successfully.',
+            f'Documentation completed successfully.',
             environment.category.debug.id,
             configs=CONFIGS
         )
-
-    # if args.yamldoc:
-    #
-    #     files_list = collect_files(
-    #         project_path,
-    #         [".yaml", ".yml"]
-    #     )
-    #
-    #     yamldoc_engine.create_yamldocs(
-    #         project_path=project_path,
-    #         base_path=Path(project_path) / "docs/yamldoc",
-    #         files_list=files_list,
-    #         configs=CONFIGS
-    #     )
-
+        # Finalize coverage tracking if enabled
+        if cov and args.coverage:
+            cov.stop()
+            cov.save()
+            # Check if coverage files exist before combining
+            coverage_files = list(Path("docs/coverage").rglob("*.coverage"))
+            log_utils.log_message(
+                f'Found coverage files: {coverage_files}',
+                environment.category.debug.id,
+                configs=CONFIGS
+            )
+            if coverage_files:
+                # Move `.coverage` files to root for merging
+                for file in coverage_files:
+                    dest_file = Path(".") / file.name
+                    file.rename(dest_file)
+                subprocess.run(
+                    [
+                        "python",
+                        "-m",
+                        "coverage",
+                        "combine"
+                    ], check=True
+                )
+                log_utils.log_message(
+                    f'Generating Coverage Report ...',
+                    environment.category.debug.id,
+                    configs=CONFIGS
+                )
+                try:
+                    htmlcov_dir = Path("docs/htmlcov")
+                    htmlcov_dir.mkdir(parents=True, exist_ok=True)
+                    subprocess.run(
+                        [
+                            "python",
+                            "-m",
+                            "coverage",
+                            "html",
+                            "-d",
+                            str(htmlcov_dir)
+                        ],
+                        check=True
+                    )
+                    log_utils.log_message(
+                        f'Coverage HTML report generated successfully.',
+                        environment.category.debug.id,
+                        configs=CONFIGS
+                    )
+                except subprocess.CalledProcessError as e:
+                    log_utils.log_message(
+                        f'[ERROR] Failed to generate coverage report: {e}',
+                        environment.category.error.id,
+                        configs=CONFIGS
+                    )
+            else:
+                log_utils.log_message(
+                    f'[WARNING] No coverage data found. Skipping HTML report.',
+                    environment.category.warning.id,
+                    configs=CONFIGS
+                )
     # If --target flag is passed, execute the specified Package/Module or Script
     if args.target:
-
         log_utils.log_message(
-            f'Running Package/Module {args.target}...',
+            f'Running Package/Module {args.target} ...',
             environment.category.debug.id,
             configs=CONFIGS
         )
-        subprocess.run([sys.executable, '-m', args.target])
-        return
-
-    # If no flags, print a basic message
-    log_utils.log_message(
-        f'No flags provided. Use --pydoc to generate documentation or --target to run a Package/Module or Script.',
-        environment.category.debug.id,
-        configs=CONFIGS
-    )
-
+        subprocess.run(
+            [
+                sys.executable,
+                '-m',
+                args.target
+            ]
+        )
+    # # If no flags, print a basic message
+    # log_utils.log_message(
+    #     f'No flags provided. Use --pydoc to generate documentation or --target to run a Package/Module or Script.',
+    #     environment.category.debug.id,
+    #     configs=CONFIGS
+    # )
 if __name__ == "__main__":
     main()
