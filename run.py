@@ -232,7 +232,7 @@ def main():
         cov = coverage.Coverage(branch=True, source=["packages", "lib"])
         cov.start()
         log_utils.log_message(
-            "Coverage tracking enabled.",
+            f'\n[ACTION] Coverage tracking enabled.',
             environment.category.debug.id,
             configs=CONFIGS
         )
@@ -245,8 +245,8 @@ def main():
             'pydoc'
         )
         log_utils.log_message(
-            f'Project documentation at: {project_path}',
-            environment.category.debug.id,
+            f'\n[INFO] Project documentation: {project_path}',
+            environment.category.info.id,
             configs=CONFIGS
         )
         file_extensions = [".py"]  ## Defined by CLI flag
@@ -261,8 +261,8 @@ def main():
             configs=CONFIGS
         )
         log_utils.log_message(
-            f'Documentation completed successfully.',
-            environment.category.debug.id,
+            f'\n[INFO] Documentation completed successfully.',
+            environment.category.info.id,
             configs=CONFIGS
         )
         # Finalize coverage tracking if enabled
@@ -273,8 +273,10 @@ def main():
             # Check if coverage files exist before combining
             coverage_files = list(Path(docs_coverage).rglob("*.coverage"))
             log_utils.log_message(
-                f'Found coverage files: {coverage_files}',
-                environment.category.debug.id,
+                f'[INFO] Found coverage files:\n{"\n".join(
+                    f"  - {file}" for file in coverage_files
+                )}\n',
+                environment.category.info.id,
                 configs=CONFIGS
             )
             if coverage_files:
@@ -306,11 +308,11 @@ def main():
                             ],
                             check=True
                         )
-                        log_utils.log_message(
-                            f'Coverage HTML report generated successfully.',
-                            environment.category.debug.id,
-                            configs=CONFIGS
-                        )
+                        # log_utils.log_message(
+                        #     f'Coverage HTML report generated successfully.',
+                        #     environment.category.debug.id,
+                        #     configs=CONFIGS
+                        # )
                     except subprocess.CalledProcessError as e:
                         log_utils.log_message(
                             f'[ERROR] Failed to generate coverage report: {e}',
@@ -319,38 +321,18 @@ def main():
                         )
                     ## Generate Coverage-Report Summary
                     coverage_report = Path(f"{docs_coverage}/coverage.report")
-                    # ## Execute Coverage Report and save output to file
-                    # try:
-                    #     coverage_output = subprocess.check_output(
-                    #         [
-                    #             "python",
-                    #             "-m",
-                    #             "coverage",
-                    #             "report"
-                    #         ],
-                    #         text=True
-                    #     )
-                    #     with open(coverage_report, "w", encoding="utf-8") as summary_file:
-                    #         summary_file.write(coverage_output)
-                    # except subprocess.CalledProcessError as e:
-                    #     log_utils.log_message(
-                    #         f'[ERROR] Failed to generate coverage summary: {e}',
-                    #         environment.category.error.id,
-                    #         configs=CONFIGS
-                    #     )
-                    log_utils.log_message(
-                        f"Generating Coverage Report...",
-                        environment.category.debug.id,
-                        configs=CONFIGS
-                    )
-
-                    # Call the function from pydoc_generator.py
+                    # log_utils.log_message(
+                    #     f"Generating Coverage Report...",
+                    #     environment.category.debug.id,
+                    #     configs=CONFIGS
+                    # )
+                    ## Execute Coverage Report and save output to file
                     pydoc_engine.generate_report(
                         coverage_report=coverage_report,
                         configs=CONFIGS
                     )
                     log_utils.log_message(
-                        f'Coverage summary saved to: {coverage_report}',
+                        f'Coverage summary saved: {coverage_report}',
                         environment.category.debug.id,
                         configs=CONFIGS
                     )
@@ -359,7 +341,7 @@ def main():
                         coverage_output = summary_file.read()
                     log_utils.log_message(
                         f'\nCoverage Report:\n{coverage_output}',
-                        environment.category.debug.id,
+                        environment.category.info.id,
                         configs=CONFIGS
                     )
                 else:

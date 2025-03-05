@@ -1,36 +1,50 @@
 #!/usr/bin/env python3
 
 # File: ./tests/lib/test_pydoc_generator.py
-__version__ = "0.1.0"  ## Package version
+__version__ = "0.1.1"  ## Updated test suite version
 
 """
-File: tests/lib/test_pydoc_generator.py
+Unit Tests for PyDoc Generator (tests/lib/test_pydoc_generator.py)
 
-Description:
-    Unit tests for `lib/pydoc_generator.py`.
+This test suite verifies the functionality of `lib/pydoc_generator.py`,
+ensuring correctness in documentation generation, directory structure handling,
+and error management.
 
-    This module contains unit tests to validate the core functionality of the PyDoc generator.
-    It ensures that:
-    - Documentation is correctly generated for Python modules.
-    - Output directories are properly structured.
-    - Errors and failures are logged as expected.
+## Test Coverage:
+1. **create_structure()**
+   - Validates directory creation and path resolution.
 
-Core Features:
-    - **Documentation Generation**: Verifies `pydoc` command execution.
-    - **Directory Structure Creation**: Ensures that documentation paths are generated correctly.
-    - **Error Handling & Logging**: Ensures graceful failure handling and proper logging.
+2. **generate_pydoc()**
+   - Ensures documentation is correctly generated.
+   - Confirms output files exist with expected content.
 
-Dependencies:
-    - pytest
-    - unittest.mock
-    - pathlib
-    - shutil
+3. **generate_pydoc_handles_error()**
+   - Tests subprocess failure handling.
+   - Ensures errors are logged correctly.
 
-Usage:
-    Run the tests using:
-    ```bash
-    pytest -v tests/lib/test_pydoc_generator.py
-    ```
+4. **generate_report()**
+   - Verifies that `coverage report` runs successfully.
+   - Checks that the coverage summary file is created.
+
+5. **create_pydocs()**
+   - Ensures multiple Python files are documented.
+   - Verifies correct handling of directory structure.
+
+## Improvements:
+- **Dynamic Path Handling**: Uses `tmp_path` to ensure tests remain independent.
+- **Mocking & Assertions**: Uses precise mocks for subprocess and logging.
+- **Robust Error Handling**: Confirms expected failures generate logs.
+
+## Dependencies:
+- pytest
+- unittest.mock
+- pathlib
+- subprocess
+
+## Usage:
+Run the test suite using:
+```bash
+pytest -v tests/lib/test_pydoc_generator.py
 """
 
 import sys
@@ -51,7 +65,7 @@ from lib import pydoc_generator
 @pytest.fixture
 def mock_configs():
     """
-    Fixture to provide a mock `CONFIGS` dictionary for tests.
+    Provides a mock `CONFIGS` dictionary for tests.
 
     Returns:
         dict: A mock configuration dictionary with logging and tracing disabled.
@@ -60,10 +74,10 @@ def mock_configs():
     return {
         "logging": {
             "enable": False,
-            "package_name": __package__,  # Use the actual package name
             "module_name": "test_pydoc_generator",
+            "package_name": "lib"  # <-- Add this line to prevent KeyError
         },
-        "tracing": {"enable": False}
+        "tracing": {"enable": False},
     }
 
 @pytest.fixture
@@ -71,7 +85,7 @@ def temp_doc_dir(
     tmp_path
 ):
     """
-    Fixture to create a temporary directory for storing generated documentation.
+    Creates a temporary directory for storing generated documentation.
 
     Args:
         tmp_path (Path): A pytest fixture providing a unique temporary directory.
@@ -84,132 +98,134 @@ def temp_doc_dir(
     doc_dir.mkdir(parents=True, exist_ok=True)
     return doc_dir
 
-def test_create_structure():
+def test_create_structure(
+    tmp_path
+):
     """
-    Test that `create_structure` properly creates documentation directories.
+    Test that `create_structure()` function properly creates documentation directories.
 
-    This test ensures that the function correctly creates the expected directory
-    structure for storing PyDoc documentation.
-
-    Assertions:
-        - The function returns the correct path.
-        - The `mkdir` method is called to create the directory.
+    Verifies:
+        - The function correctly returns the documentation directory path.
+        - The directory is properly created.
     """
-    base_path = Path("/mock/docs")
+
+    base_path = tmp_path / "mock_docs"
     package_name = Path("mock_package")
-
-    with patch("lib.pydoc_generator.Path.mkdir") as mock_mkdir:
-        result = pydoc_generator.create_structure(base_path, package_name)
-        assert result == base_path / package_name
-        mock_mkdir.assert_called()
-
-# def test_generate_pydoc(
-#     mock_configs,
-#     temp_doc_dir
-# ):
-#     """
-#     Test that `generate_pydoc` executes correctly with valid file paths.
-#
-#     This test verifies:
-#         - `pydoc` runs without errors.
-#         - The subprocess call is correctly constructed and executed.
-#
-#     Args:
-#         mock_configs (dict): The mocked logging and tracing configuration.
-#         temp_doc_dir (Path): Temporary directory for storing generated docs.
-#     """
-#
-#     project_path = Path("/mock/project")
-#     file_path = project_path / "test_module.py"
-#
-#     with patch("lib.pydoc_generator.subprocess.check_output") as mock_subprocess, \
-#          patch("lib.pydoc_generator.log_utils.log_message"):
-#
-#         mock_subprocess.return_value = "Mock documentation output"
-#         pydoc_generator.generate_pydoc(project_path, file_path, temp_doc_dir, mock_configs)
-#
-#         mock_subprocess.assert_called()
+    result = pydoc_generator.create_structure(base_path, package_name)
+    assert result == base_path / package_name
+    assert result.exists()
+    assert result.is_dir()
 
 def test_generate_pydoc(
-    mock_configs,
-    temp_doc_dir,
-    tmp_path  # Add pytest-provided temp directory fixture
+    tmp_path,
+    mock_configs
 ):
     """
-    Test that `generate_pydoc` executes correctly with valid file paths.
+    Test that `generate_pydoc()` function executes correctly with valid file paths.
 
-    This test verifies:
-        - `pydoc` runs without errors.
-        - The subprocess call is correctly constructed and executed.
-
-    Args:
-        mock_configs (dict): The mocked logging and tracing configuration.
-        temp_doc_dir (Path): Temporary directory for storing generated docs.
-        tmp_path (Path): A pytest fixture providing a unique temporary directory.
+    Verifies:
+        - Documentation is successfully generated.
+        - Output file is created with expected content.
     """
 
-    # Use tmp_path instead of a hardcoded read-only path
     project_path = tmp_path / "mock_project"
-    project_path.mkdir(parents=True, exist_ok=True)  # Ensure the directory exists
-
+    project_path.mkdir(parents=True, exist_ok=True)
     file_path = project_path / "test_module.py"
-    file_path.write_text("def mock_function(): pass")  # Ensure a valid Python file exists
-
-    with patch("lib.pydoc_generator.subprocess.check_output") as mock_subprocess, \
+    file_path.write_text("def mock_function(): pass")
+    docs_path = tmp_path / "docs"
+    docs_path.mkdir(parents=True, exist_ok=True)  # Ensure the docs directory exists
+    with patch("lib.pydoc_generator.subprocess.check_output", return_value="Mock documentation output"), \
          patch("lib.pydoc_generator.log_utils.log_message"):
-
-        mock_subprocess.return_value = "Mock documentation output"
-        pydoc_generator.generate_pydoc(project_path, file_path, temp_doc_dir, mock_configs)
-
-        mock_subprocess.assert_called()
+        pydoc_generator.generate_pydoc(project_path, file_path, docs_path, mock_configs)
+    # Verify output file exists
+    output_doc_file = docs_path / f"{file_path.stem}.pydoc"
+    assert output_doc_file.exists(), "Documentation file was not created"
+    # Verify content exists
+    assert output_doc_file.read_text().strip(), "Documentation file is empty"
 
 def test_generate_pydoc_handles_error(
-    mock_configs,
-    temp_doc_dir
+    tmp_path,
+    mock_configs
 ):
     """
-    Test that `generate_pydoc` handles errors gracefully.
+    Test that `generate_pydoc()` function handles subprocess errors properly.
 
-    This test verifies:
-        - The function catches `subprocess.CalledProcessError`.
-        - Error messages are logged correctly.
-
-    Args:
-        mock_configs (dict): The mocked logging and tracing configuration.
-        temp_doc_dir (Path): Temporary directory for storing generated docs.
+    Verifies:
+        - Proper error logging occurs when `pydoc` fails.
+        - An error log file is generated.
     """
 
-    project_path = Path("/mock/project")
+    project_path = tmp_path / "mock_project"
+    project_path.mkdir(parents=True, exist_ok=True)
     file_path = project_path / "test_module.py"
-
+    file_path.write_text("def mock_function(): pass")
+    docs_path = tmp_path / "docs"
+    docs_path.mkdir(parents=True, exist_ok=True)  # Ensure docs directory exists
     with patch("lib.pydoc_generator.subprocess.check_output", side_effect=subprocess.CalledProcessError(1, "pydoc")), \
          patch("lib.pydoc_generator.log_utils.log_message") as mock_log:
+        pydoc_generator.generate_pydoc(project_path, file_path, docs_path, mock_configs)
+    error_file = docs_path / f"{file_path.stem}.pydoc.error"
+    assert error_file.exists(), "Error log file was not created"
+    assert error_file.read_text().strip(), "Error log file is empty"
+    mock_log.assert_called()
 
-        pydoc_generator.generate_pydoc(project_path, file_path, temp_doc_dir, mock_configs)
-        mock_log.assert_called()
-
-def test_create_pydocs(
-    mock_configs,
-    temp_doc_dir
+def test_generate_report(
+    tmp_path,
+    mock_configs
 ):
     """
-    Test that `create_pydocs` processes multiple files correctly.
+    Test that `generate_report()` function correctly produces a coverage summary.
 
-    This test ensures:
-        - Documentation is created for multiple Python files.
-        - The directory structure is properly managed.
-        - The `generate_pydoc` function is invoked as expected.
-
-    Args:
-        mock_configs (dict): The mocked logging and tracing configuration.
-        temp_doc_dir (Path): Temporary directory for storing generated docs.
+    Verifies:
+        - `coverage report` runs without error.
+        - A coverage summary file is created.
     """
 
-    project_path = Path("/mock/project")
-    files_list = [project_path / "module1.py", project_path / "module2.py"]
+    coverage_report = tmp_path / "coverage.report"
+    with patch("lib.pydoc_generator.subprocess.run") as mock_run, \
+         patch("lib.pydoc_generator.log_utils.log_message"):
+        pydoc_generator.generate_report(coverage_report, mock_configs)
+    # Ensure the report file is created
+    assert coverage_report.exists(), "Coverage report file was not created"
+    # Ensure subprocess was called correctly
+    mock_run.assert_called_once()
+    mock_run_args, mock_run_kwargs = mock_run.call_args
+    assert mock_run_args[0] == ["python", "-m", "coverage", "report"], "Unexpected command executed"
+    assert mock_run_kwargs["stderr"] == subprocess.PIPE, "Unexpected stderr parameter"
+    assert mock_run_kwargs["text"] is True, "Unexpected text parameter"
+    assert mock_run_kwargs["check"] is True, "Unexpected check parameter"
 
-    with patch("lib.pydoc_generator.create_structure", side_effect=lambda base_path, package_name: base_path / package_name) as mock_create_structure, \
+def test_create_pydocs(
+    tmp_path,
+    mock_configs
+):
+    """
+    Test that `create_pydocs()` function processes multiple files correctly.
+
+    Verifies:
+        - Documentation is generated for multiple files.
+        - Correct directory structure is maintained.
+    """
+
+    project_path = tmp_path / "mock_project"
+    project_path.mkdir(parents=True, exist_ok=True)
+    file1 = project_path / "module1.py"
+    file2 = project_path / "module2.py"
+    file1.write_text("def mock_function(): pass")
+    file2.write_text("def another_function(): pass")
+    docs_path = tmp_path / "docs"
+    with patch("lib.pydoc_generator.create_structure") as mock_create_structure, \
          patch("lib.pydoc_generator.generate_pydoc") as mock_generate_pydoc:
-
-        pydoc_generator.create_pydocs(project_path, temp_doc_dir, files_list, mock_configs)
-        mock_generate_pydoc.assert_called()
+        pydoc_generator.create_pydocs(project_path, docs_path, [file1, file2], mock_configs)
+    print("\n--- DEBUG: mock_create_structure calls ---")
+    for call in mock_create_structure.call_args_list:
+        print(call)
+    # Verify `create_structure()` was called with the correct relative package names
+    for file in [file1, file2]:
+        relative_dir = str(file.parent.relative_to(project_path))
+        expected_package_name = relative_dir if relative_dir else "."
+        # Corrected validation
+        assert any(
+            call.kwargs == {"base_path": docs_path, "package_name": expected_package_name}
+            for call in mock_create_structure.call_args_list
+        ), f"Expected call to create_structure({docs_path}, {expected_package_name}) not found."

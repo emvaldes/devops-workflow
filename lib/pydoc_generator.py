@@ -129,7 +129,7 @@ def generate_report(
         # Confirm if the report file has content
         if coverage_report.stat().st_size == 0:
             log_utils.log_message(
-                "[WARNING] Coverage report is empty.",
+                f'[WARNING] Generated Coverage Report is empty.',
                 environment.category.warning.id,
                 configs=configs
             )
@@ -179,8 +179,8 @@ def generate_coverage(
     except subprocess.CalledProcessError as e:
         if "No data to report." in e.output:
             log_utils.log_message(
-                f'[INFO] No coverage data available for: "{relative_filepath}". Skipping coverage report.',
-                environment.category.info.id,
+                f'[COVERAGE] No coverage data available: "{relative_filepath}". Skipping coverage report.',
+                environment.category.error.id,
                 configs=configs
             )
             return  # No need to save empty coverage files
@@ -198,8 +198,8 @@ def generate_coverage(
         coverage_file.write(coverage_output)
 
     log_utils.log_message(
-        f'Coverage saved to: {coverage_file_path.relative_to(project_path)}',
-        environment.category.debug.id,
+        f'[COVERAGE] Coverage saved to: {coverage_file_path.relative_to(project_path)}',
+        environment.category.info.id,
         configs=configs
     )
 
@@ -247,8 +247,8 @@ def generate_pydoc(
     relative_filepath = Path(file_path).relative_to(project_path)      ## Ensure it's relative
 
     log_utils.log_message(
-        f'Generating documentation for: {str(relative_filepath)}...',
-        environment.category.debug.id,
+        f'\n[REVIEW] Generating documentation: {str(relative_filepath)} ...',
+        environment.category.calls.id,
         configs=configs
     )
 
@@ -266,18 +266,18 @@ def generate_pydoc(
         f'./{relative_filepath}' if is_script else module_name
     ]
 
+    # log_utils.log_message(
+    #     f'[INFO] Relative File Path: {relative_filepath}',
+    #     environment.category.info.id,
+    #     configs=configs
+    # )
+    # log_utils.log_message(
+    #     f'[INFO] Converted Module Name: {module_name}',
+    #     environment.category.info.id,
+    #     configs=configs
+    # )
     log_utils.log_message(
-        f'Relative File Path: {relative_filepath}',
-        environment.category.debug.id,
-        configs=configs
-    )
-    log_utils.log_message(
-        f'Converted Module Name: {module_name}',
-        environment.category.debug.id,
-        configs=configs
-    )
-    log_utils.log_message(
-        f'Running PyDoc Command: {" ".join(pydoc_command)}',
+        f'[ACTION] PyDoc Command: {" ".join(pydoc_command)}',
         environment.category.debug.id,
         configs=configs
     )
@@ -310,18 +310,13 @@ def generate_pydoc(
             doc_file.write(f"### Documentation for {relative_filepath}\n\n")
             doc_file.write(f"{sanitized_output}\n")
 
-        # log_utils.log_message(
-        #     f'Documentation saved to: {Path( doc_file_path ).relative_to( project_path )}',
-        #     environment.category.debug.id,
-        #     configs=configs
-        # )
         relative_doc_path = (
             doc_file_path.relative_to(project_path)
             if project_path in doc_file_path.parents
             else doc_file_path
         )
         log_utils.log_message(
-            f'Documentation saved to: {relative_doc_path}',
+            f'[PYDOC] Documentation saved to: {relative_doc_path}',
             environment.category.debug.id,
             configs=configs
         )
@@ -329,7 +324,7 @@ def generate_pydoc(
     except subprocess.CalledProcessError as e:
         ## Handle pydoc failures properly
         log_utils.log_message(
-            f'[ERROR] generating pydoc for: {file_path}: {e}',
+            f'[ERROR] Generating PyDoc: {file_path}: {e}',
             environment.category.error.id,
             configs=configs
         )
@@ -372,8 +367,8 @@ def generate_pydoc(
 
     finally:
         log_utils.log_message(
-            f'Finished processing: {relative_filepath}',
-            environment.category.debug.id,
+            f'[RESULT] Finished processing: {relative_filepath}',
+            environment.category.returns.id,
             configs=configs
         )
 
@@ -409,8 +404,10 @@ def create_pydocs(
     """
 
     log_utils.log_message(
-        f'Processing Python files [{files_list}] ...',
-        environment.category.debug.id,
+        f'[INFO] Processing Python files:\n{"\n".join(
+            f"  - {os.path.relpath(file, project_path)}" for file in files_list
+        )}',
+        environment.category.info.id,
         configs=configs
     )
 
@@ -423,19 +420,11 @@ def create_pydocs(
             ## Convert to a relative path from the project root
             relative_dir = file_path.parent.relative_to( Path( project_path ) )
 
-            print(
-                f"[DEBUG] relative_dir: {relative_dir}"
-            )  # Add this line
-
             ## Create the directory for the pydoc files
             docs_path = create_structure(
                 base_path=Path(base_path),
                 package_name=str(relative_dir)
             )
-
-            print(
-                f"[DEBUG] create_structure() returned: {docs_path}"
-            )  # Add this line
 
             generate_pydoc(
                 project_path,
