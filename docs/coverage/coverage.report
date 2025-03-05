@@ -1,0 +1,27 @@
+Name                                             Stmts   Miss Branch BrPart  Cover
+----------------------------------------------------------------------------------
+lib/__init__.py                                      2      2      0      0     0%
+lib/accesstoken_expiration.py                       65     65     12      0     0%
+lib/argument_parser.py                              84     84     34      0     0%
+lib/configure_params.py                            140    140     38      0     0%
+lib/manage_accesstoken.py                           22     22      2      0     0%
+lib/parsing_userinput.py                            57     57     20      0     0%
+lib/pkgconfig_loader.py                             95     95     36      0     0%
+lib/pydoc_generator.py                              73     31      6      1    57%
+lib/system_params.py                                71     71     14      0     0%
+lib/system_variables.py                             32     32      0      0     0%
+lib/timezone_localoffset.py                         43     43      4      0     0%
+packages/__init__.py                                 2      2      0      0     0%
+packages/appflow_tracer/__init__.py                  5      5      0      0     0%
+packages/appflow_tracer/__main__.py                  5      5      2      0     0%
+packages/appflow_tracer/lib/__init__.py              4      4      0      0     0%
+packages/appflow_tracer/lib/file_utils.py           42     42     12      0     0%
+packages/appflow_tracer/lib/log_utils.py            39     27     24      6    29%
+packages/appflow_tracer/lib/serialize_utils.py      41     41     12      0     0%
+packages/appflow_tracer/lib/trace_utils.py         116    116     44      0     0%
+packages/appflow_tracer/tracing.py                  86     80     28      1     6%
+packages/requirements/__init__.py                    4      4      0      0     0%
+packages/requirements/__main__.py                    5      5      2      0     0%
+packages/requirements/dependencies.py              190    190     58      0     0%
+----------------------------------------------------------------------------------
+TOTAL                                             1223   1163    348      8     4%

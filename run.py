@@ -269,62 +269,79 @@ def main():
         if cov and args.coverage:
             cov.stop()
             cov.save()
+            docs_coverage = "docs/coverage"
             # Check if coverage files exist before combining
-            coverage_files = list(Path("docs/coverage").rglob("*.coverage"))
+            coverage_files = list(Path(docs_coverage).rglob("*.coverage"))
             log_utils.log_message(
                 f'Found coverage files: {coverage_files}',
                 environment.category.debug.id,
                 configs=CONFIGS
             )
             if coverage_files:
-                # Move `.coverage` files to root for merging
-                for file in coverage_files:
-                    dest_file = Path(".") / file.name
-                    file.rename(dest_file)
-                subprocess.run(
-                    [
-                        "python",
-                        "-m",
-                        "coverage",
-                        "combine"
-                    ], check=True
-                )
-                log_utils.log_message(
-                    f'Generating Coverage Report ...',
-                    environment.category.debug.id,
-                    configs=CONFIGS
-                )
-                try:
-                    htmlcov_dir = Path("docs/htmlcov")
-                    htmlcov_dir.mkdir(parents=True, exist_ok=True)
+                if Path(".coverage").exists() and Path(".coverage").stat().st_size > 0:
                     subprocess.run(
                         [
                             "python",
                             "-m",
                             "coverage",
-                            "html",
-                            "-d",
-                            str(htmlcov_dir)
-                        ],
-                        check=True
+                            "combine"
+                        ], check=True
                     )
                     log_utils.log_message(
-                        f'Coverage HTML report generated successfully.',
+                        f'Generating Coverage Report ...',
                         environment.category.debug.id,
                         configs=CONFIGS
                     )
-                except subprocess.CalledProcessError as e:
+                    try:
+                        htmlcov_dir = Path("docs/htmlcov")
+                        htmlcov_dir.mkdir(parents=True, exist_ok=True)
+                        subprocess.run(
+                            [
+                                "python",
+                                "-m",
+                                "coverage",
+                                "html",
+                                "-d",
+                                str(htmlcov_dir)
+                            ],
+                            check=True
+                        )
+                        log_utils.log_message(
+                            f'Coverage HTML report generated successfully.',
+                            environment.category.debug.id,
+                            configs=CONFIGS
+                        )
+                    except subprocess.CalledProcessError as e:
+                        log_utils.log_message(
+                            f'[ERROR] Failed to generate coverage report: {e}',
+                            environment.category.error.id,
+                            configs=CONFIGS
+                        )
+                    # Generate Coverage-Report Summary
+                    coverage_summary_file = Path(f"{docs_coverage}/coverage.report")
+                    with open(coverage_summary_file, "w", encoding="utf-8") as summary_file:
+                        subprocess.run(
+                            [
+                                "python",
+                                "-m",
+                                "coverage",
+                                "report"
+                            ],
+                            stdout=summary_file,
+                            text=True,
+                            check=True
+                        )
                     log_utils.log_message(
-                        f'[ERROR] Failed to generate coverage report: {e}',
-                        environment.category.error.id,
+                        f'Coverage summary saved to: {coverage_summary_file}',
+                        environment.category.debug.id,
                         configs=CONFIGS
                     )
-            else:
-                log_utils.log_message(
-                    f'[WARNING] No coverage data found. Skipping HTML report.',
-                    environment.category.warning.id,
-                    configs=CONFIGS
-                )
+                else:
+                    log_utils.log_message(
+                        f'[WARNING] No coverage data found. Skipping HTML report.',
+                        environment.category.warning.id,
+                        configs=CONFIGS
+                    )
     # If --target flag is passed, execute the specified Package/Module or Script
     if args.target:
         log_utils.log_message(
