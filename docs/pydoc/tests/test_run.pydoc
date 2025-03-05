@@ -1,8 +1,82 @@
 ### Documentation for tests/test_run.py
 
-Name          Stmts   Miss  Cover
---------------------------------
-test_run.py      50     10    80%
---------------------------------
-TOTAL           50     10    80%
+[91mDeleted old log: logs/tests/test_run_20250305110412.log[0m
+Help on module tests.test_run in tests:
+
+NAME
+    tests.test_run - # File: ./tests/test_run.py
+
+FUNCTIONS
+    mock_configs()
+        Provides a mock CONFIGS dictionary to isolate logging and tracing.
+
+        Returns:
+            dict: Configuration dictionary with logging and tracing disabled.
+
+    mock_project_structure()
+        Creates a temporary mock project structure inside the actual project root.
+
+        Returns:
+            tuple: (Path to base directory, Path to a mock Python file)
+
+    test_collect_files(mock_project_structure)
+        Test that collect_files() correctly finds all Python files in the given directory.
+
+        Verifies:
+            - Function returns a list of Python files.
+            - Expected files exist in the returned list.
+
+    test_main_coverage(
+        mock_generate_report,
+        mock_check_output,
+        mock_coverage,
+        mock_subprocess,
+        monkeypatch
+    )
+        Test that `main()` correctly enables and finalizes coverage reporting.
+
+        Fixes:
+            - Uses `test_run.py` as the file for coverage and PyDoc processing.
+            - Eliminates the need for external mock files.
+            - Ensures `coverage combine` always finds valid data.
+
+        Expected Behavior:
+            - `coverage.start()` and `coverage.stop()` are called appropriately.
+            - `generate_report()` is triggered correctly.
+            - `coverage.combine()` executes successfully.
+
+    test_main_pydoc(mock_subprocess, mock_create_pydocs, monkeypatch, tmp_path)
+        Test that main() correctly executes --pydoc logic.
+
+        Expected Behavior:
+            - `create_pydocs()` should be called once with correct arguments.
+            - No unexpected subprocess calls should be made.
+
+        Fixes:
+            - Aligns with updated function signature of `create_pydocs`.
+            - Ensures assertions match the expected behavior.
+
+        Args:
+            mock_subprocess: Mock for `subprocess.run`.
+            mock_create_pydocs: Mock for `lib.pydoc_generator.create_pydocs`.
+            monkeypatch: Fixture to modify `sys.argv`.
+            tmp_path: Temporary path for test file operations.
+
+    test_parse_arguments()
+        Test parse_arguments() to verify correct CLI behavior.
+
+        Verifies:
+            - `--help` triggers a SystemExit as expected.
+
+DATA
+    CONFIGS = {'colors': {'CALL': '\x1b[92m', 'CRITICAL': '\x1b[41m', 'DEB...
+    ROOT_DIR = PosixPath('<project-location>')
+
+VERSION
+    0.1.1
+
+FILE
+    <project-location>/tests/test_run.py
+
+
 
