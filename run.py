@@ -269,12 +269,12 @@ def main():
         if cov and args.coverage:
             cov.stop()
             cov.save()
-            docs_coverage = "docs/coverage"
+            docs_coverage = Path("docs") / "coverage"
             # Check if coverage files exist before combining
             coverage_files = list(Path(docs_coverage).rglob("*.coverage"))
             log_utils.log_message(
                 f'[INFO] Found coverage files:\n{"\n".join(
-                    f"  - {file}" for file in coverage_files
+                    f"  - {str(file).replace(f'{docs_coverage}/', "", 1)}" for file in coverage_files
                 )}\n',
                 environment.category.info.id,
                 configs=CONFIGS
@@ -295,7 +295,7 @@ def main():
                         configs=CONFIGS
                     )
                     try:
-                        htmlcov_dir = Path("docs/htmlcov")
+                        htmlcov_dir = Path("docs") / "htmlcov"
                         htmlcov_dir.mkdir(parents=True, exist_ok=True)
                         subprocess.run(
                             [
@@ -320,7 +320,7 @@ def main():
                             configs=CONFIGS
                         )
                     ## Generate Coverage-Report Summary
-                    coverage_report = Path(f"{docs_coverage}/coverage.report")
+                    coverage_report = Path(docs_coverage) / "coverage.report"
                     # log_utils.log_message(
                     #     f"Generating Coverage Report...",
                     #     environment.category.debug.id,

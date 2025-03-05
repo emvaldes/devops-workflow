@@ -294,7 +294,7 @@ def generate_pydoc(
         generate_coverage(
             project_path,
             file_path,
-            base_path=Path(project_path) / "docs/coverage",
+            base_path=Path(project_path) / "docs" / "coverage",
             configs=configs
         )
 
