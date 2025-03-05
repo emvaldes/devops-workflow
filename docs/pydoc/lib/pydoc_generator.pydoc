@@ -105,6 +105,21 @@ FUNCTIONS
             )
             ```
 
+    generate_report(coverage_report: pathlib._local.Path, configs: dict = None)
+        Generates and saves a textual summary of test coverage.
+
+        Args:
+            coverage_report (Path): The output file where the summary will be stored.
+            configs (dict, optional): Logging configurations.
+
+        Behavior:
+            - Runs `coverage report` to generate a textual coverage summary.
+            - Saves the output to `coverage_report`.
+            - If no coverage data is found, logs a warning.
+
+        Raises:
+            CalledProcessError: If the `coverage report` command fails unexpectedly.
+
 VERSION
     0.1.1
 

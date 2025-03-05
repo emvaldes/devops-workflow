@@ -89,6 +89,57 @@ def create_structure(
 
     return doc_dir  ## Returns a Path object
 
+def generate_report(
+    coverage_report: Path,
+    configs: dict = None
+):
+    """
+    Generates and saves a textual summary of test coverage.
+
+    Args:
+        coverage_report (Path): The output file where the summary will be stored.
+        configs (dict, optional): Logging configurations.
+
+    Behavior:
+        - Runs `coverage report` to generate a textual coverage summary.
+        - Saves the output to `coverage_report`.
+        - If no coverage data is found, logs a warning.
+
+    Raises:
+        CalledProcessError: If the `coverage report` command fails unexpectedly.
+    """
+
+    try:
+        # Ensure the directory exists
+        coverage_report.parent.mkdir(parents=True, exist_ok=True)
+        # Generate the coverage summary and save it to a file
+        with open(coverage_report, "w", encoding="utf-8") as summary_file:
+            subprocess.run(
+                [
+                    "python",
+                    "-m",
+                    "coverage",
+                    "report"
+                ],
+                stdout=summary_file,  # Redirect output to file
+                stderr=subprocess.PIPE,  # Capture any errors
+                text=True,
+                check=True
+            )
+        # Confirm if the report file has content
+        if coverage_report.stat().st_size == 0:
+            log_utils.log_message(
+                "[WARNING] Coverage report is empty.",
+                environment.category.warning.id,
+                configs=configs
+            )
+    except subprocess.CalledProcessError as e:
+        log_utils.log_message(
+            f'[ERROR] Failed to generate coverage summary: {e}',
+            environment.category.error.id,
+            configs=configs
+        )
+
 def generate_coverage(
     project_path: Path,
     file_path: Path,
@@ -259,8 +310,18 @@ def generate_pydoc(
             doc_file.write(f"### Documentation for {relative_filepath}\n\n")
             doc_file.write(f"{sanitized_output}\n")
 
+        # log_utils.log_message(
+        #     f'Documentation saved to: {Path( doc_file_path ).relative_to( project_path )}',
+        #     environment.category.debug.id,
+        #     configs=configs
+        # )
+        relative_doc_path = (
+            doc_file_path.relative_to(project_path)
+            if project_path in doc_file_path.parents
+            else doc_file_path
+        )
         log_utils.log_message(
-            f'Documentation saved to: {Path( doc_file_path ).relative_to( project_path )}',
+            f'Documentation saved to: {relative_doc_path}',
             environment.category.debug.id,
             configs=configs
         )

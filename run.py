@@ -317,22 +317,48 @@ def main():
                             environment.category.error.id,
                             configs=CONFIGS
                         )
-                    # Generate Coverage-Report Summary
-                    coverage_summary_file = Path(f"{docs_coverage}/coverage.report")
-                    with open(coverage_summary_file, "w", encoding="utf-8") as summary_file:
-                        subprocess.run(
-                            [
-                                "python",
-                                "-m",
-                                "coverage",
-                                "report"
-                            ],
-                            stdout=summary_file,
-                            text=True,
-                            check=True
-                        )
+                    ## Generate Coverage-Report Summary
+                    coverage_report = Path(f"{docs_coverage}/coverage.report")
+                    # ## Execute Coverage Report and save output to file
+                    # try:
+                    #     coverage_output = subprocess.check_output(
+                    #         [
+                    #             "python",
+                    #             "-m",
+                    #             "coverage",
+                    #             "report"
+                    #         ],
+                    #         text=True
+                    #     )
+                    #     with open(coverage_report, "w", encoding="utf-8") as summary_file:
+                    #         summary_file.write(coverage_output)
+                    # except subprocess.CalledProcessError as e:
+                    #     log_utils.log_message(
+                    #         f'[ERROR] Failed to generate coverage summary: {e}',
+                    #         environment.category.error.id,
+                    #         configs=CONFIGS
+                    #     )
                     log_utils.log_message(
-                        f'Coverage summary saved to: {coverage_summary_file}',
+                        f"Generating Coverage Report...",
+                        environment.category.debug.id,
+                        configs=CONFIGS
+                    )
+
+                    # Call the function from pydoc_generator.py
+                    pydoc_engine.generate_report(
+                        coverage_report=coverage_report,
+                        configs=CONFIGS
+                    )
+                    log_utils.log_message(
+                        f'Coverage summary saved to: {coverage_report}',
+                        environment.category.debug.id,
+                        configs=CONFIGS
+                    )
+                    # Read the file and print its content
+                    with open(coverage_report, "r", encoding="utf-8") as summary_file:
+                        coverage_output = summary_file.read()
+                    log_utils.log_message(
+                        f'\nCoverage Report:\n{coverage_output}',
                         environment.category.debug.id,
                         configs=CONFIGS
                     )
