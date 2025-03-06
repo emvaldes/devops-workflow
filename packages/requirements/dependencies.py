@@ -141,10 +141,12 @@ def check_brew_availability() -> bool:
     """
     Check if Homebrew is available on macOS.
 
-    Runs once at startup and stores the result in a global variable.
+    This function detects whether Homebrew is installed and operational
+    on macOS systems. It runs once at startup and caches the result
+    to prevent redundant checks.
 
     Returns:
-        bool: True if Brew is available on macOS, otherwise False.
+        bool: True if Homebrew is available, otherwise False.
     """
 
     if sys.platform != "darwin":
@@ -169,29 +171,40 @@ def check_brew_availability() -> bool:
 
 def get_installed_filepath(configs: dict) -> Path:
     """
-    Retrieve the installed.json file path from CONFIGS safely.
+    Retrieve the installed.json file path from the CONFIGS dictionary.
+
+    This function safely extracts the configured path for the `installed.json` file
+    where dependency statuses are stored.
 
     Args:
         configs (dict): The configuration dictionary.
 
     Returns:
-        Path: The path to installed.json.
+        Path: The path to installed.json, or None if not configured.
     """
+
     return configs.get("packages", {}).get("installation", {}).get("configs", None)
 
 ## -----------------------------------------------------------------------------
 
-def detect_python_environment(
-    brew_available: bool
-) -> dict:
+def detect_python_environment(brew_available: bool) -> dict:
     """
     Detects the Python installation method and whether it is externally managed.
 
+    This function checks whether Python is installed via:
+        - Homebrew (macOS)
+        - System package managers (APT/DNF)
+        - Microsoft Store (Windows)
+        - Standalone installation
+
     Args:
-        brew_available (bool): Whether Homebrew is available (determined in main()).
+        brew_available (bool): Whether Homebrew is available (determined at runtime).
 
     Returns:
-        dict: A dictionary containing `INSTALL_METHOD`, `EXTERNALLY_MANAGED`, and `BREW_AVAILABLE`.
+        dict: A dictionary containing:
+            - `INSTALL_METHOD` (str): How Python was installed (brew, system, standalone, microsoft_store).
+            - `EXTERNALLY_MANAGED` (bool): Whether Pip installations are restricted.
+            - `BREW_AVAILABLE` (bool): Whether Homebrew is installed.
     """
 
     env_info = {
@@ -260,14 +273,19 @@ def detect_python_environment(
 @lru_cache(maxsize=None)  # Cache results for efficiency
 def installed_version(package: str, configs: dict) -> Optional[str]:
     """
-    Return the installed version of a package, checking Pip first, then OS-specific package managers.
+    Retrieve the installed version of a package.
+
+    This function checks the installed package version using:
+        - Pip (if permitted)
+        - Homebrew (if applicable)
+        - System package managers (APT, DNF, Microsoft Store)
 
     Args:
-        package (str): The name of the package to check.
-        configs (dict): The configuration dictionary containing environment details.
+        package (str): The name of the package.
+        configs (dict): Configuration dictionary containing environment details.
 
     Returns:
-        Optional[str]: The installed version of the package as a string if found, otherwise None.
+        Optional[str]: The installed version as a string if found, otherwise None.
     """
 
     env = configs.get("environment", {})
@@ -295,7 +313,16 @@ def installed_version(package: str, configs: dict) -> Optional[str]:
 # ------------------------------------------------------
 
 def get_brew_version(package: str) -> Optional[str]:
-    """Retrieve the installed version of a package via Homebrew."""
+    """
+    Retrieve the installed version of a package via Homebrew.
+
+    Args:
+        package (str): The package name.
+
+    Returns:
+        Optional[str]: The installed version, or None if not installed.
+    """
+
     try:
         result = subprocess.run(
             [ "brew", "list", "--versions", package ],
@@ -310,7 +337,16 @@ def get_brew_version(package: str) -> Optional[str]:
 # ------------------------------------------------------
 
 def get_linux_version(package: str) -> Optional[str]:
-    """Retrieve the installed version of a package via APT or DNF."""
+    """
+    Retrieve the installed version of a package via APT (Debian-based) or DNF (Fedora).
+
+    Args:
+        package (str): The package name.
+
+    Returns:
+        Optional[str]: The installed version, or None if not found.
+    """
+
     try:
         result = subprocess.run(
             [ "dpkg", "-s", package ],
@@ -338,7 +374,16 @@ def get_linux_version(package: str) -> Optional[str]:
 # ------------------------------------------------------
 
 def get_windows_version(package: str) -> Optional[str]:
-    """Retrieve the installed version of a package via Microsoft Store."""
+    """
+    Retrieve the installed version of a package via Microsoft Store.
+
+    Args:
+        package (str): The package name.
+
+    Returns:
+        Optional[str]: The installed version, or None if not installed.
+    """
+
     try:
         result = subprocess.run(
             [ "powershell", "-Command", f"(Get-AppxPackage -Name {package}).Version" ],
@@ -353,7 +398,16 @@ def get_windows_version(package: str) -> Optional[str]:
 ## -----------------------------------------------------------------------------
 
 def get_brew_latest_version(package: str) -> Optional[str]:
-    """Retrieve the latest available version of a package via Homebrew."""
+    """
+    Retrieve the latest available version of a package via Homebrew.
+
+    Args:
+        package (str): The package name.
+
+    Returns:
+        Optional[str]: The latest available version, or None if unknown.
+    """
+
     try:
         result = subprocess.run(
             [ "brew", "info", package ],
@@ -388,7 +442,16 @@ def get_pip_latest_version(package: str) -> Optional[str]:
 ## -----------------------------------------------------------------------------
 
 def get_linux_latest_version(package: str) -> Optional[str]:
-    """Retrieve the latest available version of a package via APT or DNF."""
+    """
+    Retrieve the latest available version of a package via APT or DNF.
+
+    Args:
+        package (str): The package name.
+
+    Returns:
+        Optional[str]: The latest available version, or None if unknown.
+    """
+
     try:
         result = subprocess.run(
             [ "apt-cache", "madison", package ],
@@ -416,7 +479,16 @@ def get_linux_latest_version(package: str) -> Optional[str]:
 ## -----------------------------------------------------------------------------
 
 def get_windows_latest_version(package: str) -> Optional[str]:
-    """Retrieve the latest available version of a package via Microsoft Store."""
+    """
+    Retrieve the latest available version of a package via Microsoft Store.
+
+    Args:
+        package (str): The package name.
+
+    Returns:
+        Optional[str]: The latest available version, or None if unknown.
+    """
+
     try:
         result = subprocess.run(
             [ "powershell", "-Command", f"(Find-Package -Name {package}).Version" ],
@@ -433,14 +505,17 @@ def get_windows_latest_version(package: str) -> Optional[str]:
 @lru_cache(maxsize=None)  # Cache results for efficiency
 def latest_version(package: str, configs: dict) -> Optional[str]:
     """
-    Fetches the latest available version of a package using Pip or OS-specific package managers.
+    Retrieve the latest available version of a package.
+
+    This function queries Pip or system package managers to determine the latest
+    available version of a given package.
 
     Args:
-        package (str): The package name to check.
-        configs (dict): The configuration dictionary containing environment details.
+        package (str): The package name.
+        configs (dict): The configuration dictionary.
 
     Returns:
-        Optional[str]: The latest available version as a string if found, otherwise None.
+        Optional[str]: The latest available version, or None if unknown.
     """
 
     env = configs.get("environment", {})
@@ -468,14 +543,17 @@ def latest_version(package: str, configs: dict) -> Optional[str]:
 
 def install_packages(config_filepath: str, configs: dict) -> None:
     """
-    Update the status of installed packages and write them to the installed JSON file.
+    Updates the installed package statuses and writes them to `installed.json`.
+
+    This function checks all installed dependencies, determines their status
+    (installed, outdated, missing), and updates the JSON file accordingly.
 
     Args:
-        config_filepath (str): The path to the installed.json file.
-        configs (dict): Configuration dictionary used for logging.
+        config_filepath (str): Path to `installed.json`.
+        configs (dict): Configuration dictionary.
 
     Returns:
-        None: Updates the installed package statuses and writes the data to installed.json.
+        None: Updates the installed package data.
     """
 
     env = configs.get("environment", {})
@@ -520,16 +598,16 @@ def install_packages(config_filepath: str, configs: dict) -> None:
 
 def install_requirements(configs: dict) -> None:
     """
-    Installs, upgrades, or downgrades dependencies based on `policy_management()` results.
+    Installs, upgrades, or downgrades dependencies based on policy rules.
 
-    This function processes the `requirements` list stored in `CONFIGS`, applies
-    necessary package actions, and writes updated package statuses to `installed.json`.
+    This function processes dependencies listed in the `CONFIGS["requirements"]`
+    and applies necessary package actions (install, upgrade, downgrade).
 
     Args:
-        configs (dict): Configuration dictionary used for logging.
+        configs (dict): Configuration dictionary.
 
     Returns:
-        None: Performs installations/upgrades/downgrades based on policy decisions.
+        None: Executes the necessary package installations.
     """
 
     log_utils.log_message(
@@ -600,18 +678,20 @@ def install_requirements(configs: dict) -> None:
         configs=configs
     )
 
+## -----------------------------------------------------------------------------
+
 def print_installed_packages(configs: dict) -> None:
     """
-    Print the installed dependencies in a readable format.
+    Prints the installed dependencies in a readable format.
 
-    This function reads the installed packages from the `installed.json` file and logs
-    their names, required versions, installed versions, and current status.
+    This function reads `installed.json` and logs package names, required versions,
+    installed versions, and compliance status.
 
     Args:
-        configs (dict): Configuration dictionary used for logging.
+        configs (dict): Configuration dictionary.
 
     Returns:
-        None: This function prints the installed package details but does not return any value.
+        None: Prints the installed package details.
     """
 
     installed_filepath = get_installed_filepath(configs)  # ✅ Fetch dynamically
@@ -655,27 +735,25 @@ def print_installed_packages(configs: dict) -> None:
             configs=configs
         )
 
-def package_management(
-    package: str,
-    version: Optional[str] = None,
-    configs: dict = None
-) -> None:
+## -----------------------------------------------------------------------------
+
+def package_management(package: str, version: Optional[str] = None, configs: dict = None) -> None:
     """
     Install or update a package using Brew (if available) or Pip.
 
-    - If Brew is available and managing Python, use Brew to install the package.
-    - If Brew does NOT have the package, fall back to Pip:
-      - If the environment is controlled and `--force` is NOT set, print instructions.
-      - If `--force` is set, use Pip with `--break-system-packages`.
-      - Otherwise, install via Pip with `--user` (default behavior).
+    - Uses Brew if Python is managed via Homebrew and the package exists in Brew.
+    - Falls back to Pip with different behaviors:
+        - Uses `--user` for standalone installations.
+        - Uses `--break-system-packages` if `--force` is set in externally managed environments.
+        - Otherwise, prints manual installation instructions.
 
     Args:
         package (str): The package name.
-        version (Optional[str], default=None): The required version of the package.
-        configs (dict): Configuration dictionary used for logging.
+        version (Optional[str]): The required version, if specified.
+        configs (dict): Configuration dictionary.
 
     Returns:
-        None: This function installs or updates the package, but does not return any value.
+        None: Handles the installation process.
     """
 
     # ✅ Fetch environment details
@@ -750,11 +828,14 @@ def policy_management(configs: dict) -> list:
     """
     Evaluates package installation policies and updates the status of each dependency.
 
+    This function determines if a package should be installed, upgraded, downgraded,
+    or skipped based on predefined policies.
+
     Args:
-        configs (dict): Configuration dictionary used for logging.
+        configs (dict): Configuration dictionary.
 
     Returns:
-        list: The updated `requirements` list reflecting policy decisions.
+        list: Updated `requirements` list reflecting installation policies.
     """
 
     dependencies = configs["requirements"]  # ✅ Use already-loaded requirements
@@ -847,6 +928,11 @@ def parse_arguments() -> argparse.Namespace:
     Parse command-line arguments for specifying the requirements file
     and displaying the installed dependencies.
 
+    Supports:
+        - `-c/--config`: Path to a custom JSON requirements file.
+        - `-f/--force`: Forces Pip installations using `--break-system-packages`.
+        - `--show-installed`: Displays installed dependencies.
+
     Args:
         None
 
@@ -889,9 +975,11 @@ def main() -> None:
     and installs or updates dependencies from a JSON requirements file.
 
     This function:
-        - Detects the Python environment (Brew, system-managed, standalone).
-        - Determines if Pip installations require `--force`.
-        - Loads the configuration file and processes package installations.
+        - Parses command-line arguments.
+        - Loads configuration settings.
+        - Detects Python environment.
+        - Determines dependency policies.
+        - Installs or updates required packages.
 
     Args:
         None
