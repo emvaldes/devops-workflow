@@ -59,8 +59,11 @@ import subprocess
 import importlib.metadata
 
 import pytest
-from unittest.mock import patch
 
+from unittest.mock import (
+    patch,
+    MagicMock
+)
 from pathlib import Path
 
 # Ensure the root project directory is in sys.path
@@ -238,39 +241,68 @@ def test_load_requirements_valid(
         }
     ]
 
-@patch(
-    "packages.requirements.dependencies.get_installed_version",
-    return_value="2.28.1"
-)
-def test_install_or_update_package(
-    mock_version,
-    mock_configs
-):
+from unittest.mock import MagicMock
+
+@patch('packages.requirements.dependencies.get_installed_version')
+@patch('packages.requirements.dependencies.is_brew_available', return_value=True)
+@patch('subprocess.run')
+def test_package_management(mock_subproc, mock_brew_available, mock_version, mock_configs, tmp_path):
     """
-    Test that `dependencies.install_or_update_package` does not attempt installation
-    if the package is already installed with the correct version.
+    Test that `dependencies.package_management` does not attempt installation
+    if the package is already installed with the correct version, dynamically fetched from `requirements.json`.
 
     This test ensures:
+    - The correct version is retrieved from `requirements.json`.
     - If the package is already installed with the correct version, no installation is attempted.
 
     Args:
+        mock_subproc (MagicMock): Mock version of `subprocess.run` to prevent actual system calls.
+        mock_brew_available (MagicMock): Mock version of `is_brew_available` to always return True.
         mock_version (MagicMock): Mock version of `get_installed_version` to simulate the installed version of the package.
         mock_configs (dict): Mock configuration used for the installation process.
+        tmp_path (Path): Temporary directory provided by pytest for creating test files.
 
     Returns:
         None: This test does not return any value but asserts that the installation is not triggered if the version matches.
     """
+    req_file = tmp_path / 'requirements.json'
+    req_data = {'dependencies': [{'package': 'requests', 'version': {'target': '2.28.1'}}]}
+    req_file.write_text(json.dumps(req_data))
 
-    with patch("subprocess.run") as mock_subproc:
-        dependencies.install_or_update_package(
-            "requests",
-            "2.28.1",
-            configs=mock_configs
-        )
-        mock_subproc.assert_not_called()  # Should not run installation if version matches
+    with open(req_file, 'r') as f:
+        requirements = json.load(f)
 
-@patch("packages.requirements.dependencies.install_or_update_package")  # Prevents real installations
-@patch("packages.requirements.dependencies.get_installed_version")
+    package_info = next((pkg for pkg in requirements['dependencies'] if pkg['package'] == 'requests'), None)
+    expected_version = package_info['version']['target'] if package_info else 'latest'
+
+    mock_version.return_value = expected_version
+
+    # Mock subprocess behavior to allow `brew list --versions` but prevent installation commands
+    def mock_subprocess_call(cmd, **kwargs):
+        cmd_str = " ".join(cmd)
+        if cmd_str.startswith("brew info requests"):
+            return MagicMock(stdout="requests: stable 2.28.1")
+        elif cmd_str.startswith("brew list --versions requests"):
+            return MagicMock(stdout=f"requests {expected_version}\n")
+        elif cmd_str.startswith("brew upgrade") or cmd_str.startswith("brew install"):
+            raise RuntimeError(f"Unexpected subprocess call: {cmd_str}")
+        return MagicMock(stdout="")
+
+    mock_subproc.side_effect = mock_subprocess_call  # Direct assignment
+
+    dependencies.package_management('requests', expected_version, configs=mock_configs)
+
+    # Ensure subprocess.run was not called for installation
+    for call_args in mock_subproc.call_args_list:
+        cmd = " ".join(call_args[0][0])
+        assert not (cmd.startswith("brew upgrade") or cmd.startswith("brew install")), f"Unexpected install call: {cmd}"
+
+import json
+from unittest.mock import patch
+from packages.requirements import dependencies
+
+@patch('packages.requirements.dependencies.package_management')
+@patch('packages.requirements.dependencies.get_installed_version')
 def test_install_requirements(
     mock_get_version,
     mock_install,
@@ -283,50 +315,43 @@ def test_install_requirements(
     when the package is missing.
 
     This test verifies:
+    - The correct version is retrieved from `requirements.json`.
     - That the installation is skipped if the correct version is already installed.
     - That installation is triggered if the package is missing.
-
-    Args:
-        mock_get_version (MagicMock): Mock version of `get_installed_version` to simulate the installed version of the package.
-        mock_install (MagicMock): Mock version of `install_or_update_package` to simulate the installation process.
-        tmp_path (Path): Temporary directory provided by pytest for creating test files.
-        mock_configs (dict): Mock configuration used for the installation process.
-
-    Returns:
-        None: This test does not return any value but asserts that installation behavior matches expectations.
     """
-
-    req_file = tmp_path / "requirements.json"
-    req_data = {
-        "dependencies": [{
-            "package": "requests",
-            "version": {
-                "target": "2.28.1"
-            }
-        }]
-    }
+    req_file = tmp_path / 'requirements.json'
+    req_data = {'dependencies': [{'package': 'requests', 'version': {'target': '2.28.1'}}]}
     req_file.write_text(json.dumps(req_data))
-    # Simulate scenario where the package is already installed
-    mock_get_version.return_value = "2.28.1"
-    dependencies.install_requirements(
-        str(req_file),
-        configs=mock_configs
-    )
-    # Ensure `dependencies.install_or_update_package` is NOT called when package is already installed
+
+    with open(req_file, 'r') as f:
+        requirements = json.load(f)
+
+    package_info = next((pkg for pkg in requirements['dependencies'] if pkg['package'] == 'requests'), None)
+    expected_version = package_info['version']['target'] if package_info else 'latest'
+
+    print(f"[DEBUG] Expected Version: {expected_version}")
+
+    # Simulate package is installed with correct version
+    mock_get_version.return_value = expected_version
+    print("[DEBUG] Running install_requirements with installed package")
+    dependencies.install_requirements(str(req_file), configs=mock_configs)
     mock_install.assert_not_called()
-    # 🔄 Simulate package missing scenario
-    mock_get_version.return_value = None
-    dependencies.install_requirements(
-        str(req_file),
-        configs=mock_configs
-    )
-    # Ensure install is triggered when package is missing
-    # mock_install.assert_called_once_with("requests", "2.28.1", configs=mock_configs)
-    mock_install.assert_called_once()
-    args, kwargs = mock_install.call_args
-    assert kwargs["package"] == "requests"
-    assert kwargs["version"] == "2.28.1"
-    assert kwargs["configs"] == mock_configs
+
+    # Simulate package is missing
+    mock_get_version.return_value = None  # Package is not installed
+    print("[DEBUG] Simulating missing package")
+    dependencies.install_requirements(str(req_file), configs=mock_configs)
+
+    # Debugging: Capture ALL calls
+    print(f"[DEBUG] Mock Call Count: {mock_install.call_count}")
+    print(f"[DEBUG] Mock Calls: {mock_install.call_args_list}")
+
+    # Ensure package_management is now called to install the package
+    if mock_install.call_count == 0:
+        print("[ERROR] package_management was NOT called when it should have been!")
+
+    # Explicitly check that it was called with expected arguments
+    mock_install.assert_called_once_with('requests', expected_version, configs=mock_configs)
 
 @patch("subprocess.check_call")  # Prevents actual package installations
 @patch(
@@ -381,14 +406,10 @@ def test_parse_arguments_custom():
         None: This test does not return any value but asserts that the custom requirements file path is correctly recognized.
     """
 
-    with patch(
-        "sys.argv",
-        ["dependencies.py",
-         "-f",
-         "custom.json"]
-    ):
+    with patch('sys.argv', ['dependencies.py', '-c', 'custom.json']):
         args = dependencies.parse_arguments()
-        assert args.requirements_file == "custom.json"
+        assert hasattr(args, 'requirements_file')
+        assert args.requirements_file == 'custom.json'
 
 def test_parse_arguments_default():
     """
