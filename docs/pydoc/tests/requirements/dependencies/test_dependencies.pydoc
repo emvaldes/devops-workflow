@@ -1,6 +1,5 @@
 ### Documentation for tests/requirements/dependencies/test_dependencies.py
 
-[91mDeleted old log: logs/tests/requirements/dependencies/test_dependencies_20250305104758.log[0m
 Help on module tests.requirements.dependencies.test_dependencies in tests.requirements.dependencies:
 
 NAME
@@ -37,20 +36,6 @@ FUNCTIONS
         Returns:
             None: This test does not return any value. It asserts that the package version returned matches the expected version.
 
-    test_install_or_update_package(mock_version, mock_configs)
-        Test that `dependencies.install_or_update_package` does not attempt installation
-        if the package is already installed with the correct version.
-
-        This test ensures:
-        - If the package is already installed with the correct version, no installation is attempted.
-
-        Args:
-            mock_version (MagicMock): Mock version of `get_installed_version` to simulate the installed version of the package.
-            mock_configs (dict): Mock configuration used for the installation process.
-
-        Returns:
-            None: This test does not return any value but asserts that the installation is not triggered if the version matches.
-
     test_install_requirements(
         mock_get_version,
         mock_install,
@@ -62,17 +47,9 @@ FUNCTIONS
         when the package is missing.
 
         This test verifies:
+        - The correct version is retrieved from `requirements.json`.
         - That the installation is skipped if the correct version is already installed.
         - That installation is triggered if the package is missing.
-
-        Args:
-            mock_get_version (MagicMock): Mock version of `get_installed_version` to simulate the installed version of the package.
-            mock_install (MagicMock): Mock version of `install_or_update_package` to simulate the installation process.
-            tmp_path (Path): Temporary directory provided by pytest for creating test files.
-            mock_configs (dict): Mock configuration used for the installation process.
-
-        Returns:
-            None: This test does not return any value but asserts that installation behavior matches expectations.
 
     test_is_package_installed(mock_version, mock_subproc_call, mock_configs)
         Test that `dependencies.is_package_installed` correctly checks if a package is installed.
@@ -126,6 +103,30 @@ FUNCTIONS
 
         Returns:
             None: This test does not return any value but asserts that the loaded data matches the expected format.
+
+    test_package_management(
+        mock_subproc,
+        mock_brew_available,
+        mock_version,
+        mock_configs,
+        tmp_path
+    )
+        Test that `dependencies.package_management` does not attempt installation
+        if the package is already installed with the correct version, dynamically fetched from `requirements.json`.
+
+        This test ensures:
+        - The correct version is retrieved from `requirements.json`.
+        - If the package is already installed with the correct version, no installation is attempted.
+
+        Args:
+            mock_subproc (MagicMock): Mock version of `subprocess.run` to prevent actual system calls.
+            mock_brew_available (MagicMock): Mock version of `is_brew_available` to always return True.
+            mock_version (MagicMock): Mock version of `get_installed_version` to simulate the installed version of the package.
+            mock_configs (dict): Mock configuration used for the installation process.
+            tmp_path (Path): Temporary directory provided by pytest for creating test files.
+
+        Returns:
+            None: This test does not return any value but asserts that the installation is not triggered if the version matches.
 
     test_parse_arguments_custom()
         Test that the custom requirements file argument is correctly parsed.

@@ -13,7 +13,7 @@
             "package": "fastapi",
             "version": {
                 "policy": "latest",
-                "target": "0.90.0",
+                "target": "0.115.11",
                 "latest": false,
                 "status": false
             }

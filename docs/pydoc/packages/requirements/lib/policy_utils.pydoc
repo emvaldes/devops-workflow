@@ -1,0 +1,122 @@
+### Documentation for packages/requirements/lib/policy_utils.py
+
+Help on module packages.requirements.lib.policy_utils in packages.requirements.lib:
+
+NAME
+    packages.requirements.lib.policy_utils - # Environment and Policy Management Utilities
+
+DESCRIPTION
+    ## Overview
+        This module provides functions for managing package policies and evaluating dependency
+        installation requirements within the dependency management system. It ensures that packages
+        are installed, upgraded, or downgraded based on predefined policies while maintaining compliance
+        with system constraints.
+
+    ## Features
+        - **Policy-Based Dependency Evaluation:** Determines whether a package should be installed, upgraded, downgraded, or skipped.
+        - **Automated Compliance Checking:** Compares installed versions against target and latest versions.
+        - **Dynamic Policy Enforcement:** Adapts installation actions based on policies such as `"latest"` or `"restricted"`.
+        - **Structured Logging:** Provides detailed debugging and compliance logs for better traceability.
+        - **Integration with Installed Package Records:** Updates `installed.json` dynamically.
+
+    ## Usage
+    This module is invoked by the dependency management workflow to analyze package states and
+    apply policy-driven installation decisions.
+
+    ## Dependencies
+        - `subprocess`: For executing system commands.
+        - `json`: For handling structured package configurations.
+        - `platform`: For system detection.
+        - `importlib.metadata`: For retrieving installed package versions.
+        - `pathlib`: For managing configuration file paths.
+        - `log_utils`: Custom logging module for structured output.
+        - `package_utils`: Provides package management functions such as retrieving `installed.json`.
+        - `version_utils`: Handles installed and latest package version retrieval.
+
+    ## Notes
+        - This module ensures a **structured decision-making** process for package installations.
+        - It dynamically adapts to the system's constraints, ensuring **safe package management**.
+
+FUNCTIONS
+    policy_management(configs: dict) -> list
+        Evaluate package installation policies and update dependency statuses.
+
+        This function analyzes each package in the dependency list, comparing its installed
+        version against the target and latest available versions. Based on the specified
+        policy, it determines whether the package should be installed, upgraded, downgraded,
+        or skipped.
+
+        ## Args:
+            - `configs` (`dict`): The configuration dictionary containing dependency policies.
+
+        ## Returns:
+            - `list`: The updated list of dependencies with policy-based statuses.
+
+        ## Policy Decision Logic:
+            1. **Missing Package (`status = "installing"`)**
+               - If the package is not installed, it is marked for installation.
+               - Installs either the `"latest"` or `"target"` version based on policy.
+
+            2. **Outdated Package (`status = "outdated" | "upgrading"`)**
+               - If installed version < target version:
+                 - `"latest"` policy → Upgrade to latest available version.
+                 - `"restricted"` policy → Keep outdated but log warning.
+
+            3. **Target Version Matched (`status = "matched"`)**
+               - If installed version == target version:
+                 - `"latest"` policy → Check if a newer version exists; mark as `"outdated"`.
+                 - Otherwise, mark as `"matched"` (no action needed).
+
+            4. **Upgraded Version Installed (`status = "downgraded" | "upgraded"`)**
+               - If installed version > target version:
+                 - `"restricted"` policy → Downgrade to target version.
+                 - `"latest"` policy → Keep upgraded.
+
+        ## Logging:
+            - Each package's evaluation is logged, showing its target, installed, and latest versions.
+            - Policy enforcement decisions are logged with detailed status messages.
+
+        ## Notes:
+            - This function modifies `configs["requirements"]` and updates `installed.json`.
+            - Ensures structured compliance before initiating installation processes.
+
+DATA
+    LIB_DIR = PosixPath('<project-location>/packages/...
+    Optional = typing.Optional
+        Optional[X] is equivalent to Union[X, None].
+
+    Union = typing.Union
+        Union type; Union[X, Y] means either X or Y.
+
+        On Python 3.10 and higher, the | operator
+        can also be used to denote unions;
+        X | Y means the same thing to the type checker as Union[X, Y].
+
+        To define a union, use e.g. Union[int, str]. Details:
+        - The arguments must be types and there must be at least one.
+        - None as an argument is a special case and is replaced by
+          type(None).
+        - Unions of unions are flattened, e.g.::
+
+            assert Union[Union[int, str], float] == Union[int, str, float]
+
+        - Unions of a single argument vanish, e.g.::
+
+            assert Union[int] == int  # The constructor actually returns int
+
+        - Redundant arguments are skipped, e.g.::
+
+            assert Union[int, str, int] == Union[int, str]
+
+        - When comparing unions, the argument order is ignored, e.g.::
+
+            assert Union[int, str] == Union[str, int]
+
+        - You cannot subclass or instantiate a union.
+        - You can use Optional[X] as a shorthand for Union[X, None].
+
+FILE
+    <project-location>/packages/requirements/lib/policy_utils.py
+
+
+

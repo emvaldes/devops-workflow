@@ -25,17 +25,17 @@
         }
     },
     "events": {
-        "call": true,
+        "call": false,
         "critical": false,
         "debug": false,
         "error": false,
         "import": false,
         "info": false,
-        "return": true,
+        "return": false,
         "warning": false
     },
     "stats": {
         "created": "2025-03-03T18:12:57.579484+00:00",
-        "updated": "2025-03-07T03:24:43.842557+00:00"
+        "updated": "2025-03-07T19:02:12.003882+00:00"
     }
 }
