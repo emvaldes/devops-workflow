@@ -37,7 +37,7 @@
 import sys
 import subprocess
 import shutil
-
+import re
 import json
 import argparse
 import platform
@@ -248,15 +248,31 @@ def latest_version(package: str) -> Optional[str]:
         - If the command fails or the package is not found, it returns `None`.
     """
 
+    # try:
+    #     result = subprocess.run(
+    #         [ "brew", "info", package ],
+    #         capture_output=True,
+    #         text=True,
+    #         check=True
+    #     )
+    #     for line in result.stdout.splitlines():
+    #         if "stable" in line:
+    #             return line.split()[1]  # Extract version
+    # except subprocess.CalledProcessError:
+    #     return None  # Brew failed
+
     try:
         result = subprocess.run(
-            [ "brew", "info", package ],
+            ["brew", "info", package],
             capture_output=True,
             text=True,
             check=True
         )
         for line in result.stdout.splitlines():
-            if "stable" in line:
-                return line.split()[1]  # Extract version
+            match = re.search(r"stable (\d+\.\d+\.\d+)", line)
+            if match:
+                return match.group(1)  # Extract the version number
     except subprocess.CalledProcessError:
         return None  # Brew failed
+
+    return None  # No version found

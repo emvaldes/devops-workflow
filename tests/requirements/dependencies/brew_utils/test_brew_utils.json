@@ -13,10 +13,10 @@
     "logging": {
         "enable": true,
         "max_logfiles": 5,
-        "package_name": "tests",
-        "module_name": "test_run",
-        "logs_dirname": "logs/tests",
-        "log_filename": "logs/tests/test_run.log"
+        "package_name": "tests/requirements/dependencies/brew_utils",
+        "module_name": "test_brew_utils",
+        "logs_dirname": "logs/tests/requirements/dependencies/brew_utils",
+        "log_filename": "logs/tests/requirements/dependencies/brew_utils/test_brew_utils.log"
     },
     "tracing": {
         "enable": true,
@@ -35,7 +35,7 @@
         "warning": false
     },
     "stats": {
-        "created": "2025-03-03T20:35:05.184785+00:00",
-        "updated": "2025-03-07T20:52:34.595542+00:00"
+        "created": "2025-03-07T20:01:21.791672+00:00",
+        "updated": "2025-03-07T20:52:42.969604+00:00"
     }
 }

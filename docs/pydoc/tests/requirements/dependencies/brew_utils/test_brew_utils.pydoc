@@ -1,0 +1,92 @@
+### Documentation for tests/requirements/dependencies/brew_utils/test_brew_utils.py
+
+[91mDeleted old log: logs/tests/requirements/dependencies/brew_utils/test_brew_utils_20250307132627.log[0m
+Help on module tests.requirements.dependencies.brew_utils.test_brew_utils in tests.requirements.dependencies.brew_utils:
+
+NAME
+    tests.requirements.dependencies.brew_utils.test_brew_utils - # File: ./packages/appflow_tracer/lib/brew_utils.py
+
+FUNCTIONS
+    test_check_availability_failure()
+
+    test_check_availability_success()
+        Verify that `check_availability()` correctly detects Homebrew when installed.
+
+        **Test Strategy:**
+            - Mocks `shutil.which` to return a valid Homebrew binary path.
+            - Simulates a successful subprocess call (`brew --version`).
+            - Asserts that the function returns `True`.
+
+        Expected Output:
+            - `True` if Homebrew is installed.
+
+    test_detect_environment_brew()
+        Validate that `detect_environment()` correctly identifies a Homebrew-managed Python environment.
+
+        **Test Strategy:**
+            - Mocks `check_availability()` to return `True`.
+            - Simulates a successful subprocess call to confirm Python is installed via Brew.
+
+        Expected Output:
+            - `"INSTALL_METHOD": "brew"`
+            - `"BREW_AVAILABLE": True`
+
+    test_detect_environment_standalone()
+        Ensure `detect_environment()` correctly detects a standalone Python installation when Homebrew is unavailable.
+
+        **Test Strategy:**
+            - Mocks `check_availability()` to return `False`.
+
+        Expected Output:
+            - `"INSTALL_METHOD": "standalone"`
+            - `"BREW_AVAILABLE": False`
+
+    test_latest_version_failure()
+        Ensure `latest_version()` returns `None` when the package does not exist in Homebrew.
+
+        **Test Strategy:**
+            - Mocks `subprocess.run` to raise `subprocess.CalledProcessError`.
+
+        Expected Output:
+            - `None` when the package is not found.
+
+    test_latest_version_success()
+        Validate that `latest_version()` correctly extracts the latest stable version of a Homebrew package.
+
+        **Test Strategy:**
+            - Mocks `subprocess.run` to return `brew info` output.
+            - Extracts version string using parsing logic.
+
+        Expected Output:
+            - `"1.6.10"` for a valid package.
+
+    test_version_installed()
+        Validate that `version()` correctly retrieves the installed version of a Homebrew package.
+
+        **Test Strategy:**
+            - Mocks `subprocess.run` to return a simulated `brew list --versions` output.
+
+        Expected Output:
+            - `"1.6.10"` when the package is installed.
+
+    test_version_not_installed()
+        Ensure `version()` returns `None` when the package is not installed.
+
+        **Test Strategy:**
+            - Mocks `subprocess.run` to raise `subprocess.CalledProcessError`, simulating an unavailable package.
+
+        Expected Output:
+            - `None` when the package is not found.
+
+DATA
+    CONFIGS = {'colors': {'CALL': '\x1b[92m', 'CRITICAL': '\x1b[41m', 'DEB...
+    ROOT_DIR = PosixPath('<project-location>')
+
+VERSION
+    0.1.0
+
+FILE
+    <project-location>/tests/requirements/dependencies/brew_utils/test_brew_utils.py
+
+
+

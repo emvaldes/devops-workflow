@@ -4,39 +4,39 @@
 __version__ = "0.1.0"  ## Package version
 
 """
-Test Module: ./tests/appflow_tracer/tracing/test_serialize_utils.py
+PyTest Module: ./tests/appflow_tracer/tracing/test_serialize_utils.py
 
 This module contains unit tests for the `serialize_utils.py` module in `appflow_tracer.lib`.
 It ensures that serialization and string sanitization functions operate correctly, including:
 
-- **Safe JSON serialization** for various Python data types.
-- **Handling of non-serializable objects** by providing fallback representations.
-- **String sanitization** to strip inline comments from code strings.
+    - **Safe JSON serialization** for various Python data types.
+    - **Handling of non-serializable objects** by providing fallback representations.
+    - **String sanitization** to strip inline comments from code strings.
 
 ## Use Cases:
-1. **Validate JSON serialization with `serialize_utils.safe_serialize()`**
-   - Ensures standard Python objects serialize correctly to JSON.
-   - Handles **primitive types**, **lists**, and **dictionaries** without modification.
-   - Converts **non-serializable objects** into structured error responses.
-   - Verifies `verbose=True` outputs formatted JSON.
+    1. **Validate JSON serialization with `serialize_utils.safe_serialize()`**
+       - Ensures standard Python objects serialize correctly to JSON.
+       - Handles **primitive types**, **lists**, and **dictionaries** without modification.
+       - Converts **non-serializable objects** into structured error responses.
+       - Verifies `verbose=True` outputs formatted JSON.
 
-2. **Ensure `serialize_utils.sanitize_token_string()` removes inline comments**
-   - Strips comments while preserving meaningful code.
-   - Handles various edge cases, including:
-     - **Full-line comments**
-     - **Trailing inline comments**
-     - **Empty or whitespace-only inputs**
-     - **Special character handling**
+    2. **Ensure `serialize_utils.sanitize_token_string()` removes inline comments**
+       - Strips comments while preserving meaningful code.
+       - Handles various edge cases, including:
+         - **Full-line comments**
+         - **Trailing inline comments**
+         - **Empty or whitespace-only inputs**
+         - **Special character handling**
 
 ## Improvements Implemented:
-- `serialize_utils.safe_serialize()` now **detects and reports non-serializable objects** without crashing.
-- `serialize_utils.sanitize_token_string()` **properly removes comments** without affecting valid code.
-- Tests are **isolated from logging/tracing** by disabling these features in `CONFIGS`.
+    - `serialize_utils.safe_serialize()` now **detects and reports non-serializable objects** without crashing.
+    - `serialize_utils.sanitize_token_string()` **properly removes comments** without affecting valid code.
+    - Tests are **isolated from logging/tracing** by disabling these features in `CONFIGS`.
 
 ## Expected Behavior:
-- **Valid JSON is returned for serializable objects**.
-- **Non-serializable objects return structured fallback representations**.
-- **Inline comments are removed while preserving valid code structure**.
+    - **Valid JSON is returned for serializable objects**.
+    - **Non-serializable objects return structured fallback representations**.
+    - **Inline comments are removed while preserving valid code structure**.
 
 """
 
