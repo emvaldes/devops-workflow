@@ -69,7 +69,7 @@ Primary Functions:
     - **Environment & Dependency Management**:
         - `check_brew_availability()`: Detects if Brew is installed on macOS.
         - `detect_python_environment(brew_available)`: Identifies Python installation method and package management constraints.
-        - `installed_version(package, configs)`: Returns the installed version of a package.
+        - `get_installed_version(package, configs)`: Returns the installed version of a package.
         - `latest_version(package, configs)`: Fetches the latest available version of a package.
 
     - **Package Installation & Handling**:
@@ -169,24 +169,6 @@ def check_brew_availability() -> bool:
 
 ## -----------------------------------------------------------------------------
 
-def get_installed_filepath(configs: dict) -> Path:
-    """
-    Retrieve the installed.json file path from the CONFIGS dictionary.
-
-    This function safely extracts the configured path for the `installed.json` file
-    where dependency statuses are stored.
-
-    Args:
-        configs (dict): The configuration dictionary.
-
-    Returns:
-        Path: The path to installed.json, or None if not configured.
-    """
-
-    return configs.get("packages", {}).get("installation", {}).get("configs", None)
-
-## -----------------------------------------------------------------------------
-
 def detect_python_environment(brew_available: bool) -> dict:
     """
     Detects the Python installation method and whether it is externally managed.
@@ -215,7 +197,7 @@ def detect_python_environment(brew_available: bool) -> dict:
     }
 
     # Check for EXTERNALLY-MANAGED marker (Linux/macOS)
-    external_marker = Path(sys.prefix) / "lib" / f"python{sys.version_info.major}.{sys.version_info.minor}" / "EXTERNALLY-MANAGED"
+    external_marker = Path(sys.prefix) / "lib" / f'python{sys.version_info.major}.{sys.version_info.minor}' / "EXTERNALLY-MANAGED"
     if external_marker.exists():
         env_info["EXTERNALLY_MANAGED"] = True
 
@@ -267,49 +249,6 @@ def detect_python_environment(brew_available: bool) -> dict:
             pass
 
     return env_info
-
-## -----------------------------------------------------------------------------
-
-@lru_cache(maxsize=None)  # Cache results for efficiency
-def installed_version(package: str, configs: dict) -> Optional[str]:
-    """
-    Retrieve the installed version of a package.
-
-    This function checks the installed package version using:
-        - Pip (if permitted)
-        - Homebrew (if applicable)
-        - System package managers (APT, DNF, Microsoft Store)
-
-    Args:
-        package (str): The name of the package.
-        configs (dict): Configuration dictionary containing environment details.
-
-    Returns:
-        Optional[str]: The installed version as a string if found, otherwise None.
-    """
-
-    env = configs.get("environment", {})
-
-    # ✅ 1. Check Pip (if allowed)
-    if not env.get("EXTERNALLY_MANAGED", False):  # Only check Pip if not externally managed
-        try:
-            return importlib.metadata.version(package)
-        except importlib.metadata.PackageNotFoundError:
-            pass  # Continue to OS-specific package managers
-
-    # ✅ 2. Use the correct package manager based on INSTALL_METHOD
-    install_method = env.get("INSTALL_METHOD")
-
-    match install_method:
-        case "brew":
-            return get_brew_version(package)
-        case "system":
-            return get_linux_version(package)
-        case "microsoft_store":
-            return get_windows_version(package)
-
-    return None  # Package not found via any method
-
 # ------------------------------------------------------
 
 def get_brew_version(package: str) -> Optional[str]:
@@ -334,7 +273,72 @@ def get_brew_version(package: str) -> Optional[str]:
     except subprocess.CalledProcessError:
         return None  # Brew package not found
 
+## -----------------------------------------------------------------------------
+
+def get_brew_latest_version(package: str) -> Optional[str]:
+    """
+    Retrieve the latest available version of a package via Homebrew.
+
+    Args:
+        package (str): The package name.
+
+    Returns:
+        Optional[str]: The latest available version, or None if unknown.
+    """
+
+    try:
+        result = subprocess.run(
+            [ "brew", "info", package ],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        for line in result.stdout.splitlines():
+            if "stable" in line:
+                return line.split()[1]  # Extract version
+    except subprocess.CalledProcessError:
+        return None  # Brew failed
+
 # ------------------------------------------------------
+
+def get_latest_version(package: str, configs: dict) -> Optional[str]:
+    """
+    Fetches the latest available version of a package using the appropriate package manager.
+
+    This function dispatches the request to the correct function based on the environment:
+        - Pip (Default for all platforms)
+        - Brew (macOS, if Python is managed by Brew)
+        - APT/DNF (Linux, if applicable)
+        - Windows Package Manager (Microsoft Store)
+
+    Args:
+        package (str): The package name to check.
+        configs (dict): Configuration dictionary used for logging.
+
+    Returns:
+        Optional[str]: The latest available version as a string if found, otherwise None.
+    """
+
+    env_info = configs.get("environment", {})
+    install_method = env_info.get("INSTALL_METHOD")
+
+    # ✅ 1️⃣ Default: Always check Pip first
+    latest_pip_version = get_pip_latest_version(package)
+    if latest_pip_version:
+        return latest_pip_version  # ✅ Return immediately if Pip has it
+
+    # ✅ 2️⃣ Dispatch to correct package manager
+    match install_method:
+        case "brew":
+            return get_brew_latest_version(package)
+        case "system":
+            return get_linux_latest_version(package)
+        case "microsoft_store":
+            return get_windows_latest_version(package)
+
+    return None  # ✅ No version found
+
+## -----------------------------------------------------------------------------
 
 def get_linux_version(package: str) -> Optional[str]:
     """
@@ -370,74 +374,6 @@ def get_linux_version(package: str) -> Optional[str]:
         return result.stdout.strip() if result.returncode == 0 else None
     except FileNotFoundError:
         return None  # RPM also not found
-
-# ------------------------------------------------------
-
-def get_windows_version(package: str) -> Optional[str]:
-    """
-    Retrieve the installed version of a package via Microsoft Store.
-
-    Args:
-        package (str): The package name.
-
-    Returns:
-        Optional[str]: The installed version, or None if not installed.
-    """
-
-    try:
-        result = subprocess.run(
-            [ "powershell", "-Command", f"(Get-AppxPackage -Name {package}).Version" ],
-            capture_output=True,
-            text=True,
-            check=True
-        )
-        return result.stdout.strip() if result.stdout else None
-    except subprocess.CalledProcessError:
-        return None  # Package not found in Microsoft Store
-
-## -----------------------------------------------------------------------------
-
-def get_brew_latest_version(package: str) -> Optional[str]:
-    """
-    Retrieve the latest available version of a package via Homebrew.
-
-    Args:
-        package (str): The package name.
-
-    Returns:
-        Optional[str]: The latest available version, or None if unknown.
-    """
-
-    try:
-        result = subprocess.run(
-            [ "brew", "info", package ],
-            capture_output=True,
-            text=True,
-            check=True
-        )
-        for line in result.stdout.splitlines():
-            if "stable" in line:
-                return line.split()[1]  # Extract version
-    except subprocess.CalledProcessError:
-        return None  # Brew failed
-
-## -----------------------------------------------------------------------------
-
-def get_pip_latest_version(package: str) -> Optional[str]:
-    """Retrieve the latest available version of a package via Pip."""
-    try:
-        result = subprocess.run(
-            [ sys.executable, "-m", "pip", "index", "versions", package ],
-            capture_output=True,
-            text=True,
-            check=True
-        )
-        for line in result.stdout.splitlines():
-            if "Available versions:" in line:
-                versions = line.split(":")[1].strip().split(", ")
-                return versions[0] if versions else None
-    except subprocess.CalledProcessError:
-        return None  # Pip failed
 
 ## -----------------------------------------------------------------------------
 
@@ -478,6 +414,48 @@ def get_linux_latest_version(package: str) -> Optional[str]:
 
 ## -----------------------------------------------------------------------------
 
+def get_installed_filepath(configs: dict) -> Path:
+    """
+    Retrieve the installed.json file path from the CONFIGS dictionary.
+
+    This function safely extracts the configured path for the `installed.json` file
+    where dependency statuses are stored.
+
+    Args:
+        configs (dict): The configuration dictionary.
+
+    Returns:
+        Path: The path to installed.json, or None if not configured.
+    """
+
+    return configs.get("packages", {}).get("installation", {}).get("configs", None)
+
+# ------------------------------------------------------
+
+def get_windows_version(package: str) -> Optional[str]:
+    """
+    Retrieve the installed version of a package via Microsoft Store.
+
+    Args:
+        package (str): The package name.
+
+    Returns:
+        Optional[str]: The installed version, or None if not installed.
+    """
+
+    try:
+        result = subprocess.run(
+            [ "powershell", "-Command", f'(Get-AppxPackage -Name {package}).Version' ],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        return result.stdout.strip() if result.stdout else None
+    except subprocess.CalledProcessError:
+        return None  # Package not found in Microsoft Store
+
+## -----------------------------------------------------------------------------
+
 def get_windows_latest_version(package: str) -> Optional[str]:
     """
     Retrieve the latest available version of a package via Microsoft Store.
@@ -491,7 +469,7 @@ def get_windows_latest_version(package: str) -> Optional[str]:
 
     try:
         result = subprocess.run(
-            [ "powershell", "-Command", f"(Find-Package -Name {package}).Version" ],
+            [ "powershell", "-Command", f'(Find-Package -Name {package}).Version' ],
             capture_output=True,
             text=True,
             check=True
@@ -502,42 +480,137 @@ def get_windows_latest_version(package: str) -> Optional[str]:
 
 ## -----------------------------------------------------------------------------
 
-@lru_cache(maxsize=None)  # Cache results for efficiency
-def latest_version(package: str, configs: dict) -> Optional[str]:
+def get_installed_version(package: str, configs: dict) -> Optional[str]:
     """
-    Retrieve the latest available version of a package.
+    Retrieve the installed version of a package.
 
-    This function queries Pip or system package managers to determine the latest
-    available version of a given package.
+    This function determines the installed package version using the following priority order:
+        1️⃣ Pip (`pip list --format=json`) - Best for detecting all packages, including namespace packages.
+        2️⃣ Pip (`importlib.metadata.version()`) - Falls back to checking individual package metadata.
+        3️⃣ Homebrew (if applicable).
+        4️⃣ APT/DNF (if applicable on Linux).
+        5️⃣ Windows Package Manager (Microsoft Store).
 
     Args:
-        package (str): The package name.
-        configs (dict): The configuration dictionary.
+        package (str): The name of the package to check.
+        configs (dict): Configuration dictionary containing environment details.
 
     Returns:
-        Optional[str]: The latest available version, or None if unknown.
+        Optional[str]: The installed version as a string if found, otherwise None.
     """
 
     env = configs.get("environment", {})
-
-    # ✅ 1. Check Pip (if allowed)
-    if not env.get("EXTERNALLY_MANAGED", False):  # Only check Pip if not externally managed
-        latest_pip = get_pip_latest_version(package)
-        if latest_pip:
-            return latest_pip  # Return immediately if found
-
-    # ✅ 2. Use the correct package manager based on INSTALL_METHOD
     install_method = env.get("INSTALL_METHOD")
 
+    debug_package = f'[DEBUG]   Package "{package}"'
+
+    # ✅ 1️⃣ Check Pip First (Preferred)
+    if not env.get("EXTERNALLY_MANAGED", False):  # Only check Pip if not externally managed
+        try:
+            # Fetch list of installed packages in JSON format
+            result = subprocess.run(
+                [sys.executable, "-m", "pip", "list", "--format=json"],
+                capture_output=True,
+                text=True,
+                check=True
+            )
+
+            installed_packages = json.loads(result.stdout)
+            package_versions = {pkg["name"].lower(): pkg["version"] for pkg in installed_packages}
+
+            if package.lower() in package_versions:
+                version = package_versions[package.lower()]
+                log_utils.log_message(
+                    f'{debug_package} detected via Pip list: {version}',
+                    environment.category.debug.id,
+                    configs=configs
+                )
+                return version
+            else:
+                log_utils.log_message(
+                    f'{debug_package} NOT found via Pip list.',
+                    environment.category.debug.id,
+                    configs=configs
+                )
+
+        except (subprocess.CalledProcessError, json.JSONDecodeError) as e:
+            log_utils.log_message(
+                f'[ERROR] Pip list failed: {e}',
+                configs=configs
+            )
+
+    # ✅ 2️⃣ If not found, fallback to `importlib.metadata.version()`
+    try:
+        version = importlib.metadata.version(package)
+        log_utils.log_message(
+            f'\n{debug_package} detected via importlib: {version}',
+            environment.category.debug.id,
+            configs=configs
+        )
+        return version
+    except importlib.metadata.PackageNotFoundError:
+        log_utils.log_message(
+            f'{debug_package} NOT found via importlib.',
+            environment.category.debug.id,
+            configs=configs
+        )
+
+    debug_checking = f'[DEBUG]   Checking "{package}"'
+    # ✅ 3️⃣ Use the correct package manager based on INSTALL_METHOD
     match install_method:
         case "brew":
-            return get_brew_latest_version(package)
-        case "system":
-            return get_linux_latest_version(package)
-        case "microsoft_store":
-            return get_windows_latest_version(package)
+            version = get_brew_version(package)
+            log_utils.log_message(
+                f'{debug_checking} via Brew: {version}',
+                environment.category.debug.id,
+                configs=configs
+            )
+            return version
 
-    return None  # No version found
+        case "system":
+            version = get_linux_version(package)
+            log_utils.log_message(
+                f'{debug_checking} via APT/DNF: {version}',
+                environment.category.debug.id,
+                configs=configs
+            )
+            return version
+
+        case "microsoft_store":
+            version = get_windows_version(package)
+            log_utils.log_message(
+                f'{debug_checking} via Microsoft Store: {version}',
+                environment.category.debug.id,
+                configs=configs
+            )
+            return version
+
+    error_package = f'[ERROR] Package "{package}"'
+    log_utils.log_message(
+        f'{error_package} was NOT found in any method!',
+        environment.category.error.id,
+        configs=configs
+    )
+
+    return None  # Package not found via any method
+
+## -----------------------------------------------------------------------------
+
+def get_pip_latest_version(package: str) -> Optional[str]:
+    """Retrieve the latest available version of a package via Pip."""
+    try:
+        result = subprocess.run(
+            [ sys.executable, "-m", "pip", "index", "versions", package ],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        for line in result.stdout.splitlines():
+            if "Available versions:" in line:
+                versions = line.split(":")[1].strip().split(", ")
+                return versions[0] if versions else None
+    except subprocess.CalledProcessError:
+        return None  # Pip failed
 
 ## -----------------------------------------------------------------------------
 
@@ -564,14 +637,14 @@ def install_packages(config_filepath: str, configs: dict) -> None:
         package = dep["package"]
         target_version = dep["version"]["target"]
 
-        installed_version = installed_version(package, configs)
+        get_installed_version = get_installed_version(package, configs)
 
         # ✅ Determine package status
-        if installed_version == target_version:
+        if get_installed_version == target_version:
             status = "installed"
-        elif installed_version and installed_version > target_version:
+        elif get_installed_version and get_installed_version > target_version:
             status = "newer"
-        elif installed_version and installed_version < target_version:
+        elif get_installed_version and get_installed_version < target_version:
             status = "outdated"
         else:
             status = False  # Not installed
@@ -580,7 +653,7 @@ def install_packages(config_filepath: str, configs: dict) -> None:
             "package": package,
             "version": {
                 "target": target_version,
-                "installed": installed_version,
+                "installed": get_installed_version,
                 "status": status
             }
         })
@@ -591,6 +664,7 @@ def install_packages(config_filepath: str, configs: dict) -> None:
 
     log_utils.log_message(
         f'[INSTALL] Installed package status updated in {config_filepath}',
+        environment.category.error.id,
         configs=configs
     )
 
@@ -611,14 +685,15 @@ def install_requirements(configs: dict) -> None:
     """
 
     log_utils.log_message(
-        f"[INSTALL] Starting installation process...",
+        f'\n[INSTALL] Starting installation process...',
+        environment.category.error.id,
         configs=configs
     )
 
     installed_filepath = get_installed_filepath(configs)  # ✅ Fetch dynamically
     if not installed_filepath.exists():
         log_utils.log_message(
-            f"[ERROR] Missing installed.json path in CONFIGS.",
+            f'[ERROR] Missing installed.json path in CONFIGS.',
             configs=CONFIGS
         )
         sys.exit(1)  # Exit to prevent further failures
@@ -636,104 +711,51 @@ def install_requirements(configs: dict) -> None:
 
         if status == "installing":
             log_utils.log_message(
-                f"[INSTALL] Installing {package} ({'latest' if policy_mode == 'latest' else target_version})...",
+                f'[INSTALL] Installing {package} ({'latest' if policy_mode == 'latest' else target_version})...',
+                environment.category.error.id,
                 configs=configs
             )
-            # package_management(
-            #     package,
-            #     latest_version if policy_mode == "latest" else target_version,
-            #     configs
-            # )
+            package_management(
+                package,
+                latest_version if policy_mode == "latest" else target_version,
+                configs
+            )
 
         elif status == "upgrading":
             log_utils.log_message(
-                f"[UPGRADE] Upgrading {package} to latest version ({latest_version})...",
+                f'\n[UPGRADE] Upgrading "{package}" to latest version ({latest_version})...',
                 configs=configs
             )
-            # package_management(package, None, configs)  # None means latest
+            package_management(package, None, configs)  # None means latest
 
         elif status == "downgraded":
             log_utils.log_message(
-                f"[DOWNGRADE] Downgrading {package} to {target_version}...",
+                f'[DOWNGRADE] Downgrading "{package}" to {target_version}...',
                 configs=configs
             )
-            # package_management(package, target_version, configs)
+            package_management(package, target_version, configs)
 
         elif status in ["restricted", "matched"]:
             log_utils.log_message(
-                f"[SKIP] {package} is {status}, no changes needed.",
+                f'[SKIP]    Skipping "{package}" is {status}, no changes needed.',
+                environment.category.warning.id,
                 configs=configs
             )
 
     # ✅ Write back to `installed.json` **only once** after processing all packages
     with installed_filepath.open("w") as f:
-        json.dump({"dependencies": requirements}, f, indent=4)
+        json.dump({ "dependencies": requirements }, f, indent=4)
 
     log_utils.log_message(
-        f"[INSTALL] Installed.json updated at {installed_filepath}",
+        f'\n[INSTALL] Package Configuration updated at {installed_filepath}',
+        environment.category.error.id,
         configs=configs
     )
     log_utils.log_message(
-        f"[INSTALL] Installation process completed.",
+        f'\n[INSTALL] Installation process completed.',
+        environment.category.error.id,
         configs=configs
     )
-
-## -----------------------------------------------------------------------------
-
-def print_installed_packages(configs: dict) -> None:
-    """
-    Prints the installed dependencies in a readable format.
-
-    This function reads `installed.json` and logs package names, required versions,
-    installed versions, and compliance status.
-
-    Args:
-        configs (dict): Configuration dictionary.
-
-    Returns:
-        None: Prints the installed package details.
-    """
-
-    installed_filepath = get_installed_filepath(configs)  # ✅ Fetch dynamically
-
-    if not installed_filepath or not installed_filepath.exists():
-        log_utils.log_message(
-            f'[WARNING] Installed package file not found: {installed_filepath}',
-            configs=configs
-        )
-        return
-
-    try:
-        with installed_filepath.open("r") as f:
-            installed_data = json.load(f)
-
-        dependencies = installed_data.get("dependencies", [])
-
-        if not dependencies:
-            log_utils.log_message(
-                "[INFO] No installed packages found.",
-                configs=configs
-            )
-            return
-
-        log_utils.log_message("\n[INSTALLED PACKAGES]", configs=configs)
-
-        for dep in dependencies:
-            package = dep.get("package", "Unknown")
-            target_version = dep.get("version", {}).get("target", "N/A")
-            installed_version = dep.get("version", {}).get("installed", "Not Installed")
-            status = dep.get("version", {}).get("status", "Unknown")
-
-            log_utils.log_message(
-                f'- {package} (Target: {target_version}, Installed: {installed_version}, Status: {status})',
-                configs=configs
-            )
-
-    except json.JSONDecodeError:
-        log_utils.log_message(
-            f'[ERROR] Invalid JSON structure in {installed_filepath}.',
-            configs=configs
-        )
 
 ## -----------------------------------------------------------------------------
 
@@ -777,7 +799,8 @@ def package_management(package: str, version: Optional[str] = None, configs: dic
         if "Error:" not in brew_list.stderr:
             # ✅ If Brew has the package, install it
             log_utils.log_message(
-                f'[INSTALL] Installing "{package}" via Homebrew...',
+                f'\n[INSTALL] Installing "{package}" via Homebrew...',
+                environment.category.error.id,
                 configs=configs
             )
             subprocess.run(["brew", "install", package], check=False)
@@ -801,6 +824,7 @@ def package_management(package: str, version: Optional[str] = None, configs: dic
         if forced_install:
             log_utils.log_message(
                 f'[INSTALL] Installing "{package}" via Pip using `--break-system-packages` (forced mode)...',
+                environment.category.error.id,
                 configs=configs
             )
             pip_install_cmd.append("--break-system-packages")
@@ -816,110 +840,12 @@ def package_management(package: str, version: Optional[str] = None, configs: dic
         # ✅ 2B: Normal Pip installation (default)
         log_utils.log_message(
             f'[INSTALL] Installing "{package}" via Pip (default mode)...',
+            environment.category.error.id,
             configs=configs
         )
         subprocess.run(pip_install_cmd, check=False)
 
     return  # ✅ Exit after installation
-
-## -----------------------------------------------------------------------------
-
-def policy_management(configs: dict) -> list:
-    """
-    Evaluates package installation policies and updates the status of each dependency.
-
-    This function determines if a package should be installed, upgraded, downgraded,
-    or skipped based on predefined policies.
-
-    Args:
-        configs (dict): Configuration dictionary.
-
-    Returns:
-        list: Updated `requirements` list reflecting installation policies.
-    """
-
-    dependencies = configs["requirements"]  # ✅ Use already-loaded requirements
-    installed_filepath = get_installed_filepath(configs)  # ✅ Fetch dynamically
-
-    for dep in dependencies:
-        package = dep["package"]
-        version_info = dep["version"]
-
-        policy_mode = version_info.get("policy", "latest")  # Default to "latest"
-        target_version = version_info.get("target")
-
-        installed_ver = installed_version(package, configs)  # ✅ Get installed version
-        available_ver = latest_version(package, configs)  # ✅ Get latest available version
-
-        # ✅ Update version keys in `CONFIGS["requirements"]`
-        version_info["latest"] = available_ver  # ✅ Store the latest available version
-        version_info["status"] = False  # Default status before processing
-
-        # ✅ Debugging
-        print(f"\n[DEBUG] Evaluating package: {package}")
-        print(f"        Target Version : {target_version}")
-        print(f"        Installed Ver. : {installed_ver if installed_ver else 'Not Installed'}")
-        print(f"        Latest Ver.    : {available_ver if available_ver else 'Unknown'}")
-        print(f"        Policy Mode    : {policy_mode}")
-
-        log_message = ""
-
-        # Policy decision-making
-        if not installed_ver:
-            version_info["status"] = "installing"
-            log_message = f"[POLICY] {package} is missing. Installing {'latest' if policy_mode == 'latest' else target_version}."
-
-        elif installed_ver < target_version:
-            if policy_mode == "latest":
-                version_info["status"] = "upgrading"
-                log_message = f"[POLICY] {package} is outdated ({installed_ver} < {target_version}). Upgrading..."
-            else:
-                version_info["status"] = "restricted"
-                log_message = f"[POLICY] {package} is below target ({installed_ver} < {target_version}), but policy is restricted."
-
-        elif installed_ver == target_version:
-            if policy_mode == "latest" and available_ver > installed_ver:
-                version_info["status"] = "outdated"
-                log_message = f"[POLICY] {package} matches target but a newer version is available. Marking as outdated."
-            else:
-                version_info["status"] = "matched"
-                log_message = f"[POLICY] {package} matches the target version. No action needed."
-
-        else:  # installed_ver > target_version
-            if policy_mode == "restricted":
-                version_info["status"] = "downgraded"
-                log_message = f"[POLICY] {package} is above target ({installed_ver} > {target_version}). Downgrading..."
-            else:
-                version_info["status"] = "upgraded"
-                log_message = f"[POLICY] {package} is above target but latest policy applies. Keeping as upgraded."
-
-        # ✅ Log once per package
-        if log_message:
-            log_utils.log_message(
-                log_message,
-                configs=configs
-            )
-
-    # ✅ Save modified `requirements` to `installed.json`
-    try:
-        with open(installed_filepath, "w") as f:
-            json.dump({"dependencies": dependencies}, f, indent=4)
-        log_message = f"[DEBUG] Installed.json updated at {installed_filepath}"
-        print(log_message)
-        log_utils.log_message(
-            log_message,
-            configs=configs
-        )
-    except Exception as e:
-        error_message = f"[ERROR] Failed to write installed.json: {e}"
-        print(error_message)
-        log_utils.log_message(
-            error_message,
-            environment.category.error.id,
-            configs=configs
-        )
-
-    return dependencies  # ✅ Explicitly return the modified requirements list
 
 ## -----------------------------------------------------------------------------
 
@@ -969,6 +895,170 @@ def parse_arguments() -> argparse.Namespace:
 
 ## -----------------------------------------------------------------------------
 
+def policy_management(configs: dict) -> list:
+    """
+    Evaluates package installation policies and updates the status of each dependency.
+
+    This function determines if a package should be installed, upgraded, downgraded,
+    or skipped based on predefined policies.
+
+    Args:
+        configs (dict): Configuration dictionary.
+
+    Returns:
+        list: Updated `requirements` list reflecting installation policies.
+    """
+
+    dependencies = configs["requirements"]  # ✅ Use already-loaded requirements
+    installed_filepath = get_installed_filepath(configs)  # ✅ Fetch dynamically
+
+    for dep in dependencies:
+        package = dep["package"]
+        version_info = dep["version"]
+
+        policy_mode = version_info.get("policy", "latest")  # Default to "latest"
+        target_version = version_info.get("target")
+
+        installed_ver = get_installed_version(package, configs)  # ✅ Get installed version
+        available_ver = get_latest_version(package, configs)  # ✅ Get latest available version
+
+        # ✅ Update version keys in `CONFIGS["requirements"]`
+        version_info["latest"] = available_ver  # ✅ Store the latest available version
+        version_info["status"] = False  # Default status before processing
+
+        # # ✅ Debugging
+        # Collect log messages in a list
+        log_messages = [
+            f'[DEBUG]   Evaluating package: {package}',
+            f'          Target Version : {target_version}',
+            f'          Installed Ver. : {installed_ver if installed_ver else "Not Installed"}',
+            f'          Latest Ver.    : {available_ver if available_ver else "Unknown"}',
+            f'          Policy Mode    : {policy_mode}'
+        ]
+
+        # Convert list into a single string and log it
+        log_utils.log_message(
+            "\n".join(log_messages),
+            environment.category.debug.id,
+            configs=configs
+        )
+
+        policy_header = f'[POLICY]  Package "{package}"'
+        log_message = ""
+
+        # Policy decision-making
+        if not installed_ver:
+            version_info["status"] = "installing"
+            log_message = f'{policy_header} is missing. Installing {'latest' if policy_mode == 'latest' else target_version}.'
+        elif installed_ver < target_version:
+            if policy_mode == "latest":
+                version_info["status"] = "upgrading"
+                log_message = f'{policy_header} is outdated ({installed_ver} < {target_version}). Upgrading...\n'
+            else:
+                version_info["status"] = "restricted"
+                log_message = f'{policy_header} is below target ({installed_ver} < {target_version}), but policy is restricted.'
+        elif installed_ver == target_version:
+            if policy_mode == "latest" and available_ver > installed_ver:
+                version_info["status"] = "outdated"
+                log_message = f'{policy_header} matches target but a newer version is available. Marking as outdated.'
+            else:
+                version_info["status"] = "matched"
+                log_message = f'{policy_header} matches the target version. No action needed.'
+        else:  # installed_ver > target_version
+            if policy_mode == "restricted":
+                version_info["status"] = "downgraded"
+                log_message = f'{policy_header} is above target ({installed_ver} > {target_version}). Downgrading...'
+            else:
+                version_info["status"] = "upgraded"
+                log_message = f'{policy_header} is above target but latest policy applies. Keeping as upgraded.'
+
+        # ✅ Log once per package
+        if log_message:
+            log_utils.log_message(
+                log_message,
+                configs=configs
+            )
+
+    # ✅ Save modified `requirements` to `installed.json`
+    try:
+        with open(installed_filepath, "w") as f:
+            json.dump({"dependencies": dependencies}, f, indent=4)
+        log_message = f'\n[DEBUG]   Package Configuration updated at {installed_filepath}'
+        log_utils.log_message(
+            log_message,
+            environment.category.debug.id,
+            configs=configs
+        )
+    except Exception as e:
+        error_message = f'[ERROR] Failed to write installed.json: {e}'
+        print(error_message)
+        log_utils.log_message(
+            error_message,
+            environment.category.error.id,
+            configs=configs
+        )
+
+    return dependencies  # ✅ Explicitly return the modified requirements list
+
+## -----------------------------------------------------------------------------
+
+def print_installed_packages(configs: dict) -> None:
+    """
+    Prints the installed dependencies in a readable format.
+
+    This function reads `installed.json` and logs package names, required versions,
+    installed versions, and compliance status.
+
+    Args:
+        configs (dict): Configuration dictionary.
+
+    Returns:
+        None: Prints the installed package details.
+    """
+
+    installed_filepath = get_installed_filepath(configs)  # ✅ Fetch dynamically
+
+    if not installed_filepath or not installed_filepath.exists():
+        log_utils.log_message(
+            f'[WARNING] Installed package file not found: {installed_filepath}',
+            configs=configs
+        )
+        return
+
+    try:
+        with installed_filepath.open("r") as f:
+            installed_data = json.load(f)
+
+        dependencies = installed_data.get("dependencies", [])
+
+        if not dependencies:
+            log_utils.log_message(
+                "[INFO] No installed packages found.",
+                configs=configs
+            )
+            return
+
+        log_utils.log_message("\n[INSTALLED PACKAGES]", configs=configs)
+
+        for dep in dependencies:
+            package = dep.get("package", "Unknown")
+            target_version = dep.get("version", {}).get("target", "N/A")
+            get_installed_version = dep.get("version", {}).get("installed", "Not Installed")
+            status = dep.get("version", {}).get("status", "Unknown")
+
+            log_utils.log_message(
+                f'- {package} (Target: {target_version}, Installed: {get_installed_version}, Status: {status})',
+                configs=configs
+            )
+
+    except json.JSONDecodeError:
+        log_utils.log_message(
+            f'[ERROR] Invalid JSON structure in {installed_filepath}.',
+            configs=configs
+        )
+
+## -----------------------------------------------------------------------------
+
 def main() -> None:
     """
     Entry point for the package installer. Sets up logging, processes command-line arguments,
@@ -994,8 +1084,8 @@ def main() -> None:
 
     args = parse_arguments()
 
-    CONFIGS = tracing.setup_logging(events=False)
-    # CONFIGS = tracing.setup_logging(events=["call", "return"])
+    # CONFIGS = tracing.setup_logging(events=False)
+    CONFIGS = tracing.setup_logging(events=["call", "return"])
 
     # Load the JSON file contents before passing to policy_management
     location = Path(args.requirements)
@@ -1011,17 +1101,18 @@ def main() -> None:
         CONFIGS["requirements"] = json.load(f).get("dependencies", [])
 
     log_utils.log_message(
-        "Initializing Package Dependencies Management process...",
+        f'\nInitializing Package Dependencies Management process...',
         configs=CONFIGS
     )
 
     # ✅ Get the directory of `requirements.json`
+    # installed_filepath = str(location.parent / "installed.json")  # ✅ Ensure it's always a string
     installed_filepath = location.parent / "installed.json"  # ✅ Ensures the correct file path
 
     # ✅ Ensure the file exists; if not, create an empty JSON object
     if not installed_filepath.exists():
         log_utils.log_message(
-            f"[INFO] Creating missing installed.json at {installed_filepath}",
+            f'[INFO] Creating missing installed.json at {installed_filepath}',
             configs=CONFIGS
         )
         installed_filepath.parent.mkdir(
@@ -1042,15 +1133,15 @@ def main() -> None:
             with installed_filepath.open("r") as f:
                 print(json.dumps(json.load(f), indent=4))
         else:
-            print(f"[INFO] No {installed_filepath} found.")
+            print(f'[INFO] No {installed_filepath} found.')
         return  # Exit after showing installed packages
 
     BREW_AVAILABLE = check_brew_availability()  # Run once at startup
-    print(f"[DEBUG] Brew Available?: {BREW_AVAILABLE}")
+    # print(f'[DEBUG] Brew Available?: {BREW_AVAILABLE}')
 
     environment_info = detect_python_environment(brew_available=BREW_AVAILABLE)
     log_utils.log_message(
-        f"[ENVIRONMENT] Detected Python Environment: {json.dumps(environment_info, indent=4)}",
+        f'\n[ENVIRONMENT] Detected Python Environment: {json.dumps(environment_info, indent=4)}',
         configs=CONFIGS
     )
     CONFIGS.setdefault("environment", {}).update(environment_info)
@@ -1064,8 +1155,10 @@ def main() -> None:
     print(
         f'CONFIGS: {json.dumps(
             CONFIGS,
-            indent=environment.default_indent
-        )}')
+            indent=environment.default_indent,
+            default=str  # ✅ Fix: Convert `PosixPath` to string
+        )}'
+    )
 
     # install_packages(
     #     requirements=args.requirements,
