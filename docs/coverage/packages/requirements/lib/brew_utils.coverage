@@ -1,5 +1,5 @@
 Name                                      Stmts   Miss Branch BrPart  Cover
 ---------------------------------------------------------------------------
-packages/requirements/lib/brew_utils.py      79     79     26      0     0%
+packages/requirements/lib/brew_utils.py      87     87     28      0     0%
 ---------------------------------------------------------------------------
-TOTAL                                        79     79     26      0     0%
+TOTAL                                        87     87     28      0     0%

@@ -1,49 +1,384 @@
-$ pytest -v tests/
-==================================================================== test session starts ====================================================================
+$ pytest -xsv tests/ ;
+
+=== test session starts ===
 platform darwin -- Python 3.13.2, pytest-8.3.5, pluggy-1.5.0 -- /usr/local/opt/python@3.13/bin/python3.13
 cachedir: .pytest_cache
 rootdir: /Users/emvaldes/.repos/devops/workflows
-collected 40 items
+plugins: cov-6.0.0, anyio-4.8.0
+collected 61 items
+tests/appflow_tracer/tracing/file_utils/test_file_utils.py::test_is_project_file PASSED
+tests/appflow_tracer/tracing/file_utils/test_file_utils.py::test_manage_logfiles PASSED
+tests/appflow_tracer/tracing/file_utils/test_file_utils.py::test_relative_path PASSED
+tests/appflow_tracer/tracing/file_utils/test_file_utils.py::test_remove_ansi_escape_codes PASSED
+tests/appflow_tracer/tracing/log_utils/test_log_utils.py::test_log_message PASSED
+tests/appflow_tracer/tracing/log_utils/test_log_utils.py::test_output_logfile PASSED
+tests/appflow_tracer/tracing/log_utils/test_log_utils.py::test_output_console[True-{"alert":"true"}-True] PASSED
+tests/appflow_tracer/tracing/log_utils/test_log_utils.py::test_output_console[False-{\n    "alert": "true"\n}-True] PASSED
+tests/appflow_tracer/tracing/log_utils/test_log_utils.py::test_output_console[None-None-False] PASSED
+tests/appflow_tracer/tracing/serialize_utils/test_serialize_utils.py::test_safe_serialize PASSED
+tests/appflow_tracer/tracing/serialize_utils/test_serialize_utils.py::test_sanitize_token_string PASSED
+tests/appflow_tracer/tracing/test_tracing.py::test_setup_logging PASSED
+tests/appflow_tracer/tracing/test_tracing.py::test_print_capture PASSED
+tests/appflow_tracer/tracing/test_tracing.py::test_ansi_file_handler PASSED
+tests/appflow_tracer/tracing/trace_utils/test_trace_utils.py::test_start_tracing PASSED
+tests/appflow_tracer/tracing/trace_utils/test_trace_utils.py::test_start_tracing_disabled PASSED
+tests/appflow_tracer/tracing/trace_utils/test_trace_utils.py::test_trace_all PASSED
+tests/appflow_tracer/tracing/trace_utils/test_trace_utils.py::test_call_events PASSED
+tests/appflow_tracer/tracing/trace_utils/test_trace_utils.py::test_return_events PASSED
+tests/lib/test_pydoc_generator.py::test_create_structure PASSED
+tests/lib/test_pydoc_generator.py::test_generate_pydoc PASSED
+tests/lib/test_pydoc_generator.py::test_generate_pydoc_handles_error PASSED
+tests/lib/test_pydoc_generator.py::test_generate_report PASSED
+tests/lib/test_pydoc_generator.py::test_create_pydocs PASSED
+tests/requirements/dependencies/brew_utils/test_brew_utils.py::test_check_availability_success PASSED
+tests/requirements/dependencies/brew_utils/test_brew_utils.py::test_check_availability_failure PASSED
+tests/requirements/dependencies/brew_utils/test_brew_utils.py::test_brew_package_not_found PASSED
+tests/requirements/dependencies/brew_utils/test_brew_utils.py::test_detect_environment_brew PASSED
+tests/requirements/dependencies/brew_utils/test_brew_utils.py::test_detect_environment_standalone PASSED
+tests/requirements/dependencies/brew_utils/test_brew_utils.py::test_version_installed PASSED
+tests/requirements/dependencies/brew_utils/test_brew_utils.py::test_version_not_installed PASSED
+tests/requirements/dependencies/brew_utils/test_brew_utils.py::test_latest_version_success PASSED
+tests/requirements/dependencies/brew_utils/test_brew_utils.py::test_latest_version_failure PASSED
+tests/requirements/dependencies/package_utils/test_package_utils.py::test_backup_packages PASSED
+tests/requirements/dependencies/package_utils/test_package_utils.py::test_install_package_pip PASSED
+tests/requirements/dependencies/package_utils/test_package_utils.py::test_install_package_brew PASSED
+tests/requirements/dependencies/package_utils/test_package_utils.py::test_install_requirements PASSED
+tests/requirements/dependencies/package_utils/test_package_utils.py::test_install_requirements_adhoc PASSED
+tests/requirements/dependencies/package_utils/test_package_utils.py::test_restore_packages PASSED
+tests/requirements/dependencies/package_utils/test_package_utils.py::test_review_packages PASSED
+tests/requirements/dependencies/policy_utils/test_policy_utils.py::test_policy_management PASSED
+tests/requirements/dependencies/policy_utils/test_policy_utils.py::test_installed_configfile PASSED
+tests/requirements/dependencies/test_dependencies.py::test_parse_arguments[args0-./packages/requirements/requirements.json] PASSED
+tests/requirements/dependencies/test_dependencies.py::test_parse_arguments[args1-custom_requirements.json] PASSED
+tests/requirements/dependencies/test_dependencies.py::test_main CONFIGS: {
+    "colors": {
+        "CALL": "\u001b[92m",
+        "CRITICAL": "\u001b[41m",
+        "DEBUG": "\u001b[96m",
+        "ERROR": "\u001b[31m",
+        "IMPORT": "\u001b[94m",
+        "INFO": "\u001b[97m",
+        "RETURN": "\u001b[93m",
+        "WARNING": "\u001b[91m",
+        "RESET": "\u001b[0m"
+    },
+    "logging": {
+        "enable": true,
+        "max_logfiles": 5,
+        "package_name": "requirements",
+        "module_name": "dependencies",
+        "logs_dirname": "logs/requirements",
+        "log_filename": "logs/requirements/dependencies_20250307224150.log"
+    },
+    "tracing": {
+        "enable": true,
+        "json": {
+            "compressed": true
+        }
+    },
+    "events": {
+        "call": true,
+        "critical": false,
+        "debug": false,
+        "error": false,
+        "import": false,
+        "info": false,
+        "return": true,
+        "warning": false
+    },
+    "stats": {
+        "created": "2025-03-03T18:12:57.579484+00:00",
+        "updated": "2025-03-08T05:42:17.040734+00:00"
+    },
+    "requirements": [
+        {
+            "package": "requests",
+            "version": {
+                "policy": "latest",
+                "target": "2.28.0",
+                "latest": "2.28.1",
+                "status": "outdated"
+            }
+        }
+    ],
+    "packages": {
+        "installation": {
+            "forced": false,
+            "configs": "packages/requirements/installed.json"
+        }
+    },
+    "environment": {
+        "OS": "darwin",
+        "INSTALL_METHOD": "standalone",
+        "EXTERNALLY_MANAGED": true,
+        "BREW_AVAILABLE": false
+    }
+}
+PASSED
+tests/requirements/dependencies/test_dependencies.py::test_main_restore PASSED
+tests/requirements/dependencies/test_dependencies.py::test_main_migration CONFIGS: {
+    "colors": {
+        "CALL": "\u001b[92m",
+        "CRITICAL": "\u001b[41m",
+        "DEBUG": "\u001b[96m",
+        "ERROR": "\u001b[31m",
+        "IMPORT": "\u001b[94m",
+        "INFO": "\u001b[97m",
+        "RETURN": "\u001b[93m",
+        "WARNING": "\u001b[91m",
+        "RESET": "\u001b[0m"
+    },
+    "logging": {
+        "enable": true,
+        "max_logfiles": 5,
+        "package_name": "requirements",
+        "module_name": "dependencies",
+        "logs_dirname": "logs/requirements",
+        "log_filename": "logs/requirements/dependencies_20250307224150.log"
+    },
+    "tracing": {
+        "enable": true,
+        "json": {
+            "compressed": true
+        }
+    },
+    "events": {
+        "call": true,
+        "critical": false,
+        "debug": false,
+        "error": false,
+        "import": false,
+        "info": false,
+        "return": true,
+        "warning": false
+    },
+    "stats": {
+        "created": "2025-03-03T18:12:57.579484+00:00",
+        "updated": "2025-03-08T05:42:29.201466+00:00"
+    },
+    "requirements": [
+        {
+            "package": "rich",
+            "version": {
+                "policy": "latest",
+                "target": "12.0.0",
+                "latest": "13.9.4",
+                "status": "upgraded"
+            }
+        },
+        {
+            "package": "fastapi",
+            "version": {
+                "policy": "latest",
+                "target": "0.115.11",
+                "latest": null,
+                "status": "missing"
+            }
+        },
+        {
+            "package": "typer",
+            "version": {
+                "policy": "latest",
+                "target": "0.6.0",
+                "latest": "0.15.2",
+                "status": "outdated"
+            }
+        },
+        {
+            "package": "httpx",
+            "version": {
+                "policy": "latest",
+                "target": "0.28.0",
+                "latest": null,
+                "status": "missing"
+            }
+        },
+        {
+            "package": "azure-identity",
+            "version": {
+                "policy": "latest",
+                "target": "1.15.0",
+                "latest": "1.20.0",
+                "status": "upgraded"
+            }
+        },
+        {
+            "package": "azure-mgmt-resource",
+            "version": {
+                "policy": "latest",
+                "target": "23.0.1",
+                "latest": "23.3.0",
+                "status": "upgraded"
+            }
+        },
+        {
+            "package": "pytz",
+            "version": {
+                "policy": "latest",
+                "target": "2025.1",
+                "latest": "2025.1",
+                "status": "latest"
+            }
+        },
+        {
+            "package": "python-dotenv",
+            "version": {
+                "policy": "latest",
+                "target": "1.0.1",
+                "latest": "1.0.1",
+                "status": "latest"
+            }
+        },
+        {
+            "package": "setuptools",
+            "version": {
+                "policy": "latest",
+                "target": "75.8.0",
+                "latest": "75.8.2",
+                "status": "upgraded"
+            }
+        },
+        {
+            "package": "pytest",
+            "version": {
+                "policy": "latest",
+                "target": "8.3.4",
+                "latest": "8.3.5",
+                "status": "upgraded"
+            }
+        },
+        {
+            "package": "coverage",
+            "version": {
+                "policy": "latest",
+                "target": "7.4.4",
+                "latest": "7.6.12",
+                "status": "upgraded"
+            }
+        }
+    ],
+    "packages": {
+        "installation": {
+            "forced": false,
+            "configs": "packages/requirements/installed.json"
+        }
+    },
+    "environment": {
+        "OS": "darwin",
+        "INSTALL_METHOD": "standalone",
+        "EXTERNALLY_MANAGED": true,
+        "BREW_AVAILABLE": false
+    }
+}
+PASSED
+tests/requirements/dependencies/version_utils/test_version_utils.py::test_installed_version[requests-2.26.0] PASSED
+tests/requirements/dependencies/version_utils/test_version_utils.py::test_installed_version[numpy-None] PASSED
+tests/requirements/dependencies/version_utils/test_version_utils.py::test_latest_version[requests-2.28.0] PASSED
+tests/requirements/dependencies/version_utils/test_version_utils.py::test_latest_version[numpy-1.23.4] PASSED
+tests/requirements/dependencies/version_utils/test_version_utils.py::test_linux_version[curl-7.68.0] PASSED
+tests/requirements/dependencies/version_utils/test_version_utils.py::test_linux_version[vim-None] PASSED
+tests/requirements/dependencies/version_utils/test_version_utils.py::test_windows_version[MicrosoftTeams-1.5.00.33362] PASSED
+tests/requirements/dependencies/version_utils/test_version_utils.py::test_windows_version[NonExistentPackage-None] PASSED
+tests/requirements/dependencies/version_utils/test_version_utils.py::test_pip_latest_version[requests-2.28.0] PASSED
+tests/requirements/dependencies/version_utils/test_version_utils.py::test_pip_latest_version[numpy-None] PASSED
+tests/test_run.py::test_collect_files
+Mock Directory Structure:
+/Users/emvaldes/.repos/devops/workflows/tests/mock_project/mock_file.py
 
-tests/appflow_tracer/tracing/file_utils/test_file_utils.py::test_is_project_file PASSED                                                               [  2%]
-tests/appflow_tracer/tracing/file_utils/test_file_utils.py::test_manage_logfiles PASSED                                                               [  5%]
-tests/appflow_tracer/tracing/file_utils/test_file_utils.py::test_relative_path PASSED                                                                 [  7%]
-tests/appflow_tracer/tracing/file_utils/test_file_utils.py::test_remove_ansi_escape_codes PASSED                                                      [ 10%]
-tests/appflow_tracer/tracing/log_utils/test_log_utils.py::test_log_message PASSED                                                                     [ 12%]
-tests/appflow_tracer/tracing/log_utils/test_log_utils.py::test_output_logfile PASSED                                                                  [ 15%]
-tests/appflow_tracer/tracing/log_utils/test_log_utils.py::test_output_console[True-{"alert":"true"}-True] PASSED                                      [ 17%]
-tests/appflow_tracer/tracing/log_utils/test_log_utils.py::test_output_console[False-{\n    "alert": "true"\n}-True] PASSED                            [ 20%]
-tests/appflow_tracer/tracing/log_utils/test_log_utils.py::test_output_console[None-None-False] PASSED                                                 [ 22%]
-tests/appflow_tracer/tracing/serialize_utils/test_serialize_utils.py::test_safe_serialize PASSED                                                      [ 25%]
-tests/appflow_tracer/tracing/serialize_utils/test_serialize_utils.py::test_sanitize_token_string PASSED                                               [ 27%]
-tests/appflow_tracer/tracing/test_tracing.py::test_setup_logging PASSED                                                                               [ 30%]
-tests/appflow_tracer/tracing/test_tracing.py::test_print_capture PASSED                                                                               [ 32%]
-tests/appflow_tracer/tracing/test_tracing.py::test_ansi_file_handler PASSED                                                                           [ 35%]
-tests/appflow_tracer/tracing/trace_utils/test_trace_utils.py::test_start_tracing PASSED                                                               [ 37%]
-tests/appflow_tracer/tracing/trace_utils/test_trace_utils.py::test_start_tracing_disabled PASSED                                                      [ 40%]
-tests/appflow_tracer/tracing/trace_utils/test_trace_utils.py::test_trace_all PASSED                                                                   [ 42%]
-tests/appflow_tracer/tracing/trace_utils/test_trace_utils.py::test_call_events PASSED                                                                 [ 45%]
-tests/appflow_tracer/tracing/trace_utils/test_trace_utils.py::test_return_events PASSED                                                               [ 47%]
-tests/lib/test_pydoc_generator.py::test_create_structure PASSED                                                                                       [ 50%]
-tests/lib/test_pydoc_generator.py::test_generate_pydoc PASSED                                                                                         [ 52%]
-tests/lib/test_pydoc_generator.py::test_generate_pydoc_handles_error PASSED                                                                           [ 55%]
-tests/lib/test_pydoc_generator.py::test_generate_report PASSED                                                                                        [ 57%]
-tests/lib/test_pydoc_generator.py::test_create_pydocs PASSED                                                                                          [ 60%]
-tests/requirements/dependencies/test_dependencies.py::test_debug_installation[requests-2.28.1] PASSED                                                 [ 62%]
-tests/requirements/dependencies/test_dependencies.py::test_debug_installation[nonexistent-package-None] PASSED                                        [ 65%]
-tests/requirements/dependencies/test_dependencies.py::test_load_requirements_invalid_json PASSED                                                      [ 67%]
-tests/requirements/dependencies/test_dependencies.py::test_load_requirements_missing PASSED                                                           [ 70%]
-tests/requirements/dependencies/test_dependencies.py::test_load_requirements_valid PASSED                                                             [ 72%]
-tests/requirements/dependencies/test_dependencies.py::test_install_or_update_package PASSED                                                           [ 75%]
-tests/requirements/dependencies/test_dependencies.py::test_install_requirements PASSED                                                                [ 77%]
-tests/requirements/dependencies/test_dependencies.py::test_is_package_installed PASSED                                                                [ 80%]
-tests/requirements/dependencies/test_dependencies.py::test_parse_arguments_custom PASSED                                                              [ 82%]
-tests/requirements/dependencies/test_dependencies.py::test_parse_arguments_default PASSED                                                             [ 85%]
-tests/requirements/dependencies/test_dependencies.py::test_print_installed_packages PASSED                                                            [ 87%]
-tests/requirements/dependencies/test_dependencies.py::test_update_installed_packages PASSED                                                           [ 90%]
-tests/test_run.py::test_collect_files PASSED                                                                                                          [ 92%]
-tests/test_run.py::test_parse_arguments PASSED                                                                                                        [ 95%]
-tests/test_run.py::test_main_coverage PASSED                                                                                                          [ 97%]
-tests/test_run.py::test_main_pydoc PASSED                                                                                                             [100%]
+Collected Files by collect_files():
+/Users/emvaldes/.repos/devops/workflows/tests/mock_project/mock_file.py
+PASSED
+tests/test_run.py::test_parse_arguments usage: run.py [-h] [-d] [-c] [-t TARGET]
 
-==================================================================== 40 passed in 27.78s ====================================================================
+Verify installed dependencies for compliance. Use -d/--pydoc to generate documentation.Use -c/--coverage to enable test coverage tracking.Use -t/--target to execute a module.
+
+options:
+  -h, --help           show this help message and exit
+  -d, --pydoc          Generate documentation for Python files.
+  -c, --coverage       Enable test coverage tracking.
+  -t, --target TARGET  Execute target Package/Module or Script
+PASSED
+tests/test_run.py::test_main_coverage
+[ACTION] Coverage tracking enabled.
+
+[INFO] Project documentation: /Users/emvaldes/.repos/devops/workflows
+[INFO] Processing Python files:
+  - tests/test_run.py
+
+[REVIEW] Generating documentation: tests/test_run.py ...
+[ACTION] PyDoc Command: python -m pydoc tests.test_run
+[COVERAGE] Coverage saved to: docs/coverage/tests/test_run.coverage
+[PYDOC] Documentation saved to: docs/pydoc/tests/test_run.pydoc
+[COMPLETE] Finished processing: tests/test_run.py
+
+[INFO] Documentation completed successfully.
+[INFO] Found coverage files:
+  - tests/test_run.coverage
+  - packages/__init__.coverage
+  - lib/pkgconfig_loader.coverage
+  - lib/system_variables.coverage
+  - lib/system_params.coverage
+  - lib/timezone_localoffset.coverage
+  - lib/pydoc_generator.coverage
+  - lib/__init__.coverage
+  - lib/argument_parser.coverage
+  - lib/parsing_userinput.coverage
+  - lib/manage_accesstoken.coverage
+  - lib/configure_params.coverage
+  - lib/accesstoken_expiration.coverage
+  - packages/appflow_tracer/__main__.coverage
+  - packages/appflow_tracer/__init__.coverage
+  - packages/appflow_tracer/tracing.coverage
+  - packages/requirements/__main__.coverage
+  - packages/requirements/__init__.coverage
+  - packages/requirements/dependencies.coverage
+  - packages/requirements/lib/brew_utils.coverage
+  - packages/requirements/lib/version_utils.coverage
+  - packages/requirements/lib/__init__.coverage
+  - packages/requirements/lib/policy_utils.coverage
+  - packages/requirements/lib/package_utils.coverage
+  - packages/appflow_tracer/lib/__init__.coverage
+  - packages/appflow_tracer/lib/trace_utils.coverage
+  - packages/appflow_tracer/lib/serialize_utils.coverage
+  - packages/appflow_tracer/lib/log_utils.coverage
+  - packages/appflow_tracer/lib/file_utils.coverage
+
+Generating Coverage Report ...
+Coverage summary saved: docs/coverage/coverage.report
+
+Coverage Report:
+Name                                             Stmts   Miss Branch BrPart  Cover
+----------------------------------------------------------------------------------
+lib/__init__.py                                      2      2      0      0     0%
+lib/accesstoken_expiration.py                       65     65     12      0     0%
+lib/argument_parser.py                              84     84     34      0     0%
+lib/configure_params.py                            140    140     38      0     0%
+lib/manage_accesstoken.py                           22     22      2      0     0%
+lib/parsing_userinput.py                            57     57     20      0     0%
+lib/pkgconfig_loader.py                             95     95     36      0     0%
+lib/pydoc_generator.py                              81     40      8      1    49%
+lib/system_params.py                                71     71     14      0     0%
+lib/system_variables.py                             32     32      0      0     0%
+lib/timezone_localoffset.py                         43     43      4      0     0%
+packages/__init__.py                                 2      2      0      0     0%
+packages/appflow_tracer/__init__.py                  5      5      0      0     0%
+packages/appflow_tracer/__main__.py                  5      5      2      0     0%
+packages/appflow_tracer/lib/__init__.py              4      4      0      0     0%
+packages/appflow_tracer/lib/file_utils.py           42     42     12      0     0%
+packages/appflow_tracer/lib/log_utils.py            39     27     24      6    29%
+packages/appflow_tracer/lib/serialize_utils.py      41     41     12      0     0%
+packages/appflow_tracer/lib/trace_utils.py         116    116     44      0     0%
+packages/appflow_tracer/tracing.py                  86     80     28      1     6%
+packages/requirements/__init__.py                    4      4      0      0     0%
+packages/requirements/__main__.py                    5      5      2      0     0%
+packages/requirements/dependencies.py               69     69     18      0     0%
+packages/requirements/lib/__init__.py                3      3      0      0     0%
+packages/requirements/lib/brew_utils.py             79     79     26      0     0%
+packages/requirements/lib/package_utils.py         176    176     54      0     0%
+packages/requirements/lib/policy_utils.py           65     65     18      0     0%
+packages/requirements/lib/version_utils.py         118    118     32      0     0%
+----------------------------------------------------------------------------------
+TOTAL                                             1551   1492    440      8     3%
+
+PASSED
+tests/test_run.py::test_main_pydoc PASSED

@@ -115,8 +115,28 @@ def test_check_availability_failure():
         - `False` when Homebrew is not detected.
     """
 
-    with patch("shutil.which", return_value=None):
-        assert brew_utils.check_availability() is False
+    brew_utils.check_availability.cache_clear()  # ✅ Clear LRU cache before running test
+
+    with patch("shutil.which", return_value=None):  # ✅ Simulate Homebrew not installed
+        result = brew_utils.check_availability()
+        assert result is False  # ✅ Expect False since Homebrew is missing
+
+def test_brew_package_not_found():
+    """
+    Ensure `brew_info()` correctly handles non-existent packages.
+
+    **Test Strategy:**
+        - Mocks `subprocess.run` to simulate `brew info` failing.
+
+    Expected Output:
+        - `None` when the package is not found.
+    """
+
+    with patch("subprocess.run") as mock_run:
+        mock_run.return_value.stderr = "Error: No formula found"
+        # ✅ Ensure the correct function name is used
+        result = brew_utils.brew_info("nonexistent_package")
+        assert result is None  # ✅ Expect `None` for missing packages
 
 # -----------------------------------------------------------------------------
 # Test: detect_environment()

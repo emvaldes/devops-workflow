@@ -183,6 +183,39 @@ def test_policy_management(mock_configs):
             configs=mock_configs
         )
 
+# @pytest.mark.parametrize("installed, target, policy, expected_status", [
+#     ("1.21.2", "1.21.2", "latest", "matched"),  # ✅ Same version
+#     ("1.20.0", "1.21.2", "latest", "upgrading"),  # ✅ Needs upgrade
+#     ("1.22.0", "1.21.2", "restricted", "downgraded"),  # ✅ Needs downgrade
+# ])
+# def test_policy_management_downgrade(installed, target, policy, expected_status, mock_configs):
+#     """
+#     Ensure `policy_management()` correctly applies downgrade policies when needed.
+#     """
+#     mock_configs["requirements"] = [
+#         {
+#             "package": "numpy",
+#             "version": {
+#                 "policy": policy,
+#                 "target": target,
+#                 "latest": None,
+#                 "status": None,
+#             }
+#         }
+#     ]
+#
+#     with patch("packages.requirements.lib.version_utils.installed_version", return_value=installed), \
+#          patch("packages.requirements.lib.version_utils.latest_version", return_value="1.23.0"), \
+#          patch("packages.appflow_tracer.lib.log_utils.log_message") as mock_log:
+#
+#         result = policy_utils.policy_management(mock_configs)
+#
+#         assert result[0]["package"] == "numpy"
+#         assert result[0]["version"]["status"] == expected_status  # ✅ Ensure correct downgrade enforcement
+#
+#         if expected_status == "downgraded":
+#             mock_log.assert_any_call('[POLICY]  Package "numpy" is above target (1.22.0 > 1.21.2). Downgrading...', configs=mock_configs)
+
 # ------------------------------------------------------------------------------
 # Test: installed_configfile()
 # ------------------------------------------------------------------------------

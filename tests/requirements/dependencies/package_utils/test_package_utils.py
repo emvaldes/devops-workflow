@@ -260,11 +260,21 @@ def test_install_package_pip():
         - `pip install` is executed with the correct package name.
     """
 
-    with patch("subprocess.run") as mock_run:
+    with patch("subprocess.run") as mock_run, \
+         patch("packages.appflow_tracer.lib.log_utils.log_message") as mock_log:
+
         package_utils.install_package("requests", configs=CONFIGS)
+
         mock_run.assert_called_with(
             [sys.executable, "-m", "pip", "install", "--quiet", "--user", "requests"],
             check=False
+        )
+
+        # ✅ Ensure `[INSTALL]` log message is generated
+        mock_log.assert_any_call(
+            '[INSTALL] Installing "requests" via Pip (default mode)...',
+            environment.category.error.id,
+            configs=CONFIGS
         )
 
 def test_install_package_brew():

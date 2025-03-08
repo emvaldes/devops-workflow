@@ -106,6 +106,42 @@ def check_availability() -> bool:
 
 ## -----------------------------------------------------------------------------
 
+def brew_info(package: str) -> Optional[str]:
+    """
+    Retrieve information about a Homebrew package.
+
+    This function queries Homebrew to determine if a package exists and fetches its version.
+
+    ## Args:
+        - `package` (`str`): The name of the package to check.
+
+    ## Returns:
+        - `Optional[str]`: The package version if found, otherwise `None`.
+
+    ## Notes:
+        - This function runs `brew info <package>` and parses the output.
+        - If Homebrew returns an error (`No formula found`), it returns `None`.
+    """
+    try:
+        result = subprocess.run(
+            ["brew", "info", package],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+
+        # If error message appears, package does not exist
+        if "Error: No formula found" in result.stderr:
+            return None
+
+        # Extract the version from Brew's output (first line)
+        return result.stdout.split("\n")[0].split()[1]  # Example: "example_package 1.2.3" → "1.2.3"
+
+    except subprocess.CalledProcessError:
+        return None  # Return None if the command fails
+
+## -----------------------------------------------------------------------------
+
 def detect_environment() -> dict:
     """
     Detect the Python installation method and determine if it is externally managed.

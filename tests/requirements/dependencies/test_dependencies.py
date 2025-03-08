@@ -1,69 +1,61 @@
 #!/usr/bin/env python3
 
-# File: ./tests/test_dependencies.py
+# File: ./tests/requirements/dependencies/test_dependencies_utils.py
 __version__ = "0.1.0"  ## Package version
 
 """
-File: packages/requirements/dependencies.py
+PyTest Module: test_dependencies.py
 
-Description:
-    Dependency Management Module
+This module contains unit tests for `dependencies.py`, which serves as the core of the **AppFlow Tracer - Dependency Management System**.
+It ensures proper command-line argument parsing and structured execution of dependency management functions.
 
-    This module provides functionality for managing dependencies within the project. It ensures
-    that required packages are installed, updated, and validated against specified versions.
-    The module supports reading dependencies from JSON configuration files, checking installed
-    versions, and performing installations or updates when necessary.
+## Test Coverage:
+    1. `parse_arguments()`
+       - Validates command-line argument parsing.
+       - Ensures default values and overrides work correctly.
 
-Core Features:
-    - **Dependency Validation**: Checks if required packages are installed with the correct versions.
-    - **Automated Installation**: Installs missing dependencies and updates outdated ones.
-    - **JSON-based Configuration**: Reads package requirements from structured JSON files.
-    - **Logging & Debugging**: Integrates with structured logging for traceability.
-    - **Command-line Interface (CLI)**: Allows execution via command-line arguments.
+    2. `main()`
+       - Mocks package utilities and policy management functions.
+       - Simulates command execution (backup, restore, migrate, install).
+       - Ensures correct logging and configuration initialization.
 
-Usage:
-    To verify installed dependencies and install missing ones:
-    ```bash
-    python packages/requirements/dependencies.py
-    ```
+## Mocking Strategy:
+    - `policy_utils.policy_management()` – Simulate policy enforcement logic.
+    - `package_utils.install_requirements()` – Mock package installation logic.
+    - `package_utils.backup_packages()` – Ensure backups execute correctly.
+    - `package_utils.restore_packages()` – Ensure restores execute correctly.
+    - `package_utils.migrate_packages()` – Validate migration workflow.
+    - `log_utils.log_message()` – Verify structured logging messages.
 
-    To specify a custom requirements file:
-    ```bash
-    python packages/requirements/dependencies.py -f custom_requirements.json
-    ```
-
-Dependencies:
-    - `sys` (for system interaction)
-    - `json` (for reading configuration files)
-    - `subprocess` (for executing installation commands)
-    - `importlib.metadata` (for checking installed package versions)
-    - `pathlib` (for handling file paths)
-    - `pytest` (for unit testing)
-    - `unittest.mock` (for mocking during tests)
-
-Exit Codes:
-    - `0`: Execution completed successfully.
-    - `1`: Failure due to missing or invalid dependencies.
-    - `2`: Invalid or corrupted requirements file.
-
-Example:
-    ```bash
-    python -m packages.requirements.dependencies --help
-    ```
+## Expected Behavior:
+    - Dependencies are processed based on user-provided arguments.
+    - Logs are generated for major execution steps.
+    - Backup, restore, and migration options execute correctly.
+    - `installed.json` is managed as expected.
 
 """
 
 import sys
-import json
-import subprocess
-import importlib.metadata
+import os
 
+import argparse
+import json
+import logging
+import logging
 import pytest
+import re
+
+from datetime import (
+    datetime,
+    timezone
+)
 
 from unittest.mock import (
     patch,
-    MagicMock
+    MagicMock,
+    ANY
 )
+
 from pathlib import Path
 
 # Ensure the root project directory is in sys.path
@@ -71,461 +63,193 @@ ROOT_DIR = Path(__file__).resolve().parents[3]  # Adjust the number based on fol
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))  # Add root directory to sys.path
 
+from packages.requirements import dependencies
 from packages.appflow_tracer import tracing
-from packages.requirements import dependencies
+from packages.appflow_tracer.lib import log_utils
 
-try:
-  CONFIGS = tracing.setup_logging(
-      logname_override='logs/tests/test_dependencies.log'
-  )
-  CONFIGS["logging"]["enable"] = False  # Disable logging for test isolation
-  CONFIGS["tracing"]["enable"] = False  # Disable tracing to prevent unintended prints
-except NameError:
-    CONFIGS = {
-        "logging": {"enable": False},
-        "tracing": {"enable": False},
-        "events": {"install": True, "update": True},
-    }
-
-@pytest.fixture(autouse=True)
-def mock_configs():
-    """
-    Mock `CONFIGS` globally for all tests if it has not been initialized.
-
-    This fixture ensures that the `CONFIGS` object is available globally for all tests. If `CONFIGS` has not been
-    previously initialized, it will set it to a default configuration with logging and tracing disabled, and
-    events for `install` and `update` enabled. This provides a consistent set of configuration values for all
-    tests that require `CONFIGS`.
-
-    This fixture is automatically used for all tests due to the `autouse=True` flag, so it doesn't need to be explicitly
-    requested in each test.
-
-    Returns:
-        dict: The `CONFIGS` dictionary containing configuration values for logging, tracing, and events.
-    """
-
-    global CONFIGS
-    if CONFIGS is None:
-        CONFIGS = {
-            "logging": {"enable": False},
-            "tracing": {"enable": False},
-            "events": {"install": True, "update": True},
-        }
-    return CONFIGS  # Explicitly returns CONFIGS
-
-@pytest.mark.parametrize(
-    "package, expected_version", [
-        ("requests", "2.28.1"),
-        ("nonexistent-package", None)
-    ]
+from packages.requirements.lib import (
+    package_utils,
+    policy_utils
 )
-@patch("packages.requirements.dependencies.get_installed_version")
-def test_debug_installation(
-    mock_get_version,
-    package,
-    expected_version
-):
-    """
-    Debugging test to check whether the package installation check
-    is returning expected results.
 
-    This test verifies:
-    - That `get_installed_version` returns the correct version for a given package.
-    - It prints debugging information to show the expected and actual versions.
+CONFIGS = tracing.setup_logging(
+    logname_override='logs/tests/test_dependencies.log'
+)
+CONFIGS["logging"]["enable"] = False  # Disable logging for test isolation
+CONFIGS["tracing"]["enable"] = False  # Disable tracing to prevent unintended prints
 
-    Args:
-        mock_get_version (MagicMock): Mock version of `get_installed_version` to simulate package version checking.
-        package (str): The name of the package to check.
-        expected_version (str or None): The expected version of the package.
+# ------------------------------------------------------------------------------
+# Test: parse_arguments()
+# ------------------------------------------------------------------------------
 
-    Returns:
-        None: This test does not return any value. It asserts that the package version returned matches the expected version.
-    """
-
-    mock_get_version.return_value = expected_version
-    result = mock_get_version(package)
-    # Print debug information
-    print(f'Testing package: {package}, Expected Version: {expected_version}, Got: {result}')
-    assert result == expected_version
-
-def test_load_requirements_invalid_json(
-    tmp_path,
-    mock_configs
-):
-    """
-    Test that loading a malformed JSON file raises a ValueError.
-
-    This test ensures that:
-    - A `ValueError` is raised when the requirements file contains invalid JSON.
-
-    Args:
-        tmp_path (Path): Temporary directory provided by pytest for creating test files.
-        mock_configs (dict): Mock configuration used for loading the requirements file.
-
-    Returns:
-        None: This test does not return any value but raises an exception if the JSON is invalid.
-    """
-
-    req_file = tmp_path / "requirements.json"
-    req_file.write_text(
-        "{invalid_json}"
-    )
-    with pytest.raises(ValueError):
-        dependencies.load_requirements(
-            str(req_file),
-            configs=mock_configs
-        )
-
-def test_load_requirements_missing(
-    mock_configs
-):
-    """
-    Test that loading a missing requirements file raises a FileNotFoundError.
-
-    This test ensures that:
-    - A `FileNotFoundError` is raised when the requirements file does not exist.
-
-    Args:
-        mock_configs (dict): Mock configuration used for loading the requirements file.
-
-    Returns:
-        None: This test does not return any value but raises an exception if the file is not found.
-    """
-
-    with pytest.raises(FileNotFoundError):
-        dependencies.load_requirements(
-            "nonexistent.json",
-            configs=mock_configs
-        )
-
-def test_load_requirements_valid(
-    tmp_path,
-    mock_configs
-):
-    """
-    Test that a valid requirements file is correctly loaded.
-
-    This test verifies:
-    - That a valid JSON file containing package information is loaded correctly.
-
-    Args:
-        tmp_path (Path): Temporary directory provided by pytest for creating test files.
-        mock_configs (dict): Mock configuration used for loading the requirements file.
-
-    Returns:
-        None: This test does not return any value but asserts that the loaded data matches the expected format.
-    """
-
-    req_file = tmp_path / "requirements.json"
-    req_data = {
-        "dependencies": [{
-            "package": "requests",
-            "version": {
-                "target": "2.28.1"
-            }
-        }]
-    }
-    req_file.write_text(
-        json.dumps(req_data)
-    )
-    result = dependencies.load_requirements(
-        str(req_file),
-        configs=mock_configs
-    )
-    assert result == [
-        {
-            "package": "requests",
-            "version": {
-                "target": "2.28.1"
-            }
-        }
-    ]
-
-from unittest.mock import MagicMock
-
-@patch('packages.requirements.dependencies.get_installed_version')
-@patch('packages.requirements.dependencies.is_brew_available', return_value=True)
-@patch('subprocess.run')
-def test_package_management(mock_subproc, mock_brew_available, mock_version, mock_configs, tmp_path):
-    """
-    Test that `dependencies.package_management` does not attempt installation
-    if the package is already installed with the correct version, dynamically fetched from `requirements.json`.
-
-    This test ensures:
-    - The correct version is retrieved from `requirements.json`.
-    - If the package is already installed with the correct version, no installation is attempted.
-
-    Args:
-        mock_subproc (MagicMock): Mock version of `subprocess.run` to prevent actual system calls.
-        mock_brew_available (MagicMock): Mock version of `is_brew_available` to always return True.
-        mock_version (MagicMock): Mock version of `get_installed_version` to simulate the installed version of the package.
-        mock_configs (dict): Mock configuration used for the installation process.
-        tmp_path (Path): Temporary directory provided by pytest for creating test files.
-
-    Returns:
-        None: This test does not return any value but asserts that the installation is not triggered if the version matches.
-    """
-    req_file = tmp_path / 'requirements.json'
-    req_data = {'dependencies': [{'package': 'requests', 'version': {'target': '2.28.1'}}]}
-    req_file.write_text(json.dumps(req_data))
-
-    with open(req_file, 'r') as f:
-        requirements = json.load(f)
-
-    package_info = next((pkg for pkg in requirements['dependencies'] if pkg['package'] == 'requests'), None)
-    expected_version = package_info['version']['target'] if package_info else 'latest'
-
-    mock_version.return_value = expected_version
-
-    # Mock subprocess behavior to allow `brew list --versions` but prevent installation commands
-    def mock_subprocess_call(cmd, **kwargs):
-        cmd_str = " ".join(cmd)
-        if cmd_str.startswith("brew info requests"):
-            return MagicMock(stdout="requests: stable 2.28.1")
-        elif cmd_str.startswith("brew list --versions requests"):
-            return MagicMock(stdout=f"requests {expected_version}\n")
-        elif cmd_str.startswith("brew upgrade") or cmd_str.startswith("brew install"):
-            raise RuntimeError(f"Unexpected subprocess call: {cmd_str}")
-        return MagicMock(stdout="")
-
-    mock_subproc.side_effect = mock_subprocess_call  # Direct assignment
-
-    dependencies.package_management('requests', expected_version, configs=mock_configs)
-
-    # Ensure subprocess.run was not called for installation
-    for call_args in mock_subproc.call_args_list:
-        cmd = " ".join(call_args[0][0])
-        assert not (cmd.startswith("brew upgrade") or cmd.startswith("brew install")), f"Unexpected install call: {cmd}"
-
-import json
+import sys
+import pytest
+import argparse
 from unittest.mock import patch
-from packages.requirements import dependencies
+from packages.requirements.dependencies import parse_arguments  # ✅ Ensure correct import
 
-@patch('packages.requirements.dependencies.package_management')
-@patch('packages.requirements.dependencies.get_installed_version')
-def test_install_requirements(
-    mock_get_version,
-    mock_install,
-    tmp_path,
-    mock_configs
-):
+@pytest.mark.parametrize("args, expected", [
+    ([], "./packages/requirements/requirements.json"),  # ✅ Default value
+    (["-c", "custom_requirements.json"], "custom_requirements.json"),  # ✅ Custom value
+])
+def test_parse_arguments(args, expected):
     """
-    Test that `dependencies.install_requirements` correctly skips installation if
-    the required version is already installed, and triggers installation
-    when the package is missing.
+    Ensure `parse_arguments()` correctly handles command-line arguments.
 
-    This test verifies:
-    - The correct version is retrieved from `requirements.json`.
-    - That the installation is skipped if the correct version is already installed.
-    - That installation is triggered if the package is missing.
-    """
-    req_file = tmp_path / 'requirements.json'
-    req_data = {'dependencies': [{'package': 'requests', 'version': {'target': '2.28.1'}}]}
-    req_file.write_text(json.dumps(req_data))
+    **Fix Strategy:**
+    - Patch `sys.argv` to prevent argparse from exiting unexpectedly.
+    - Mock `sys.exit` to catch any unwanted exits.
+    - Validate that `--config` is correctly assigned.
 
-    with open(req_file, 'r') as f:
-        requirements = json.load(f)
-
-    package_info = next((pkg for pkg in requirements['dependencies'] if pkg['package'] == 'requests'), None)
-    expected_version = package_info['version']['target'] if package_info else 'latest'
-
-    print(f"[DEBUG] Expected Version: {expected_version}")
-
-    # Simulate package is installed with correct version
-    mock_get_version.return_value = expected_version
-    print("[DEBUG] Running install_requirements with installed package")
-    dependencies.install_requirements(str(req_file), configs=mock_configs)
-    mock_install.assert_not_called()
-
-    # Simulate package is missing
-    mock_get_version.return_value = None  # Package is not installed
-    print("[DEBUG] Simulating missing package")
-    dependencies.install_requirements(str(req_file), configs=mock_configs)
-
-    # Debugging: Capture ALL calls
-    print(f"[DEBUG] Mock Call Count: {mock_install.call_count}")
-    print(f"[DEBUG] Mock Calls: {mock_install.call_args_list}")
-
-    # Ensure package_management is now called to install the package
-    if mock_install.call_count == 0:
-        print("[ERROR] package_management was NOT called when it should have been!")
-
-    # Explicitly check that it was called with expected arguments
-    mock_install.assert_called_once_with('requests', expected_version, configs=mock_configs)
-
-@patch("subprocess.check_call")  # Prevents actual package installations
-@patch(
-    "importlib.metadata.version",
-    return_value="2.28.1"
-)
-def test_is_package_installed(
-    mock_version,
-    mock_subproc_call,
-    mock_configs
-):
-    """
-    Test that `dependencies.is_package_installed` correctly checks if a package is installed.
-
-    This test ensures:
-    - That the function correctly returns `True` if the package is installed with the expected version.
-    - That the function returns `False` if the package is not installed or if the version does not match.
-
-    Args:
-        mock_version (MagicMock): Mock version of `importlib.metadata.version` to simulate the installed version of the package.
-        mock_subproc_call (MagicMock): Mock subprocess call to prevent actual installations.
-        mock_configs (dict): Mock configuration used for the installation check.
-
-    Returns:
-        None: This test does not return any value but asserts that the function returns the expected boolean result.
+    **Expected Behavior:**
+    - `requirements.json` is used as default if no `-c` argument is provided.
+    - If `-c <file>` is passed, it should override the default.
     """
 
-    assert dependencies.is_package_installed(
-        "requests",
-        {"target": "2.28.1"},
-        configs=mock_configs
-    ) is True
-    assert dependencies.is_package_installed(
-        "nonexistent",
-        {"target": "1.0.0"},
-        configs=mock_configs
-    ) is False
-    assert dependencies.is_package_installed(
-        "requests",
-        {"target": "2.27.0"},
-        configs=mock_configs
-    ) is False
+    test_args = ["dependencies.py"] + args  # ✅ Ensure script name is included
 
-def test_parse_arguments_custom():
+    with patch.object(sys, "argv", test_args), \
+         patch("sys.exit") as mock_exit:  # ✅ Prevent argparse from exiting
+
+        parsed_args = parse_arguments()  # ✅ Correctly call the function
+        assert parsed_args.requirements == expected  # ✅ Validate parsed argument
+        mock_exit.assert_not_called()  # ✅ Ensure no forced exit happened
+
+# ------------------------------------------------------------------------------
+# Test: main()
+# ------------------------------------------------------------------------------
+
+@pytest.fixture
+def mock_config():
     """
-    Test that the custom requirements file argument is correctly parsed.
-
-    This test verifies:
-    - That when a custom file path is provided via command line arguments, it is correctly parsed by `parse_arguments()`.
-
-    Returns:
-        None: This test does not return any value but asserts that the custom requirements file path is correctly recognized.
+    Create a mock CONFIGS dictionary to simulate package management settings.
     """
 
-    with patch('sys.argv', ['dependencies.py', '-c', 'custom.json']):
-        args = dependencies.parse_arguments()
-        assert hasattr(args, 'requirements_file')
-        assert args.requirements_file == 'custom.json'
+    return {
+        "packages": {"installation": {"forced": False, "configs": Path("/tmp/test_installed.json")}},
+        "environment": {"INSTALL_METHOD": "pip", "EXTERNALLY_MANAGED": False},
+        "logging": {"package_name": "requirements", "module_name": "dependencies", "enable": False},
+        "tracing": {"enable": False},
+        "requirements": [
+            {"package": "requests", "version": {"policy": "latest", "target": "2.28.0", "latest": None, "status": None}}
+        ],
+    }
 
-def test_parse_arguments_default():
+# ------------------------------------------------------------------------------
+
+def test_main(mock_config):
     """
-    Test that the default requirements file path is used when no custom argument is provided.
+    Ensure `main()` executes correctly with mocked dependencies, focusing on critical functionality.
 
-    This test verifies:
-    - That when no custom file path is provided via command line arguments, the default path is used.
+    **Test Strategy:**
+        - Mocks command-line arguments (`--backup-packages`, `--restore-packages`, etc.).
+        - Ensures package installation is executed as expected.
+        - Verifies that logging messages are generated.
 
-    Returns:
-        None: This test does not return any value but asserts that the default requirements file path is used when necessary.
-    """
-
-    with patch(
-        "sys.argv",
-        ["dependencies.py"]
-    ):
-        args = dependencies.parse_arguments()
-        assert args.requirements_file == "./packages/requirements/requirements.json"
-
-@patch("packages.appflow_tracer.lib.log_utils.log_message")
-def test_print_installed_packages(
-    mock_log_message,
-    tmp_path,
-    mock_configs
-):
-    """
-    Test that `dependencies.print_installed_packages` correctly prints the installed packages.
-
-    This test verifies:
-    - That installed package details are logged correctly, including package name, required version, and installed version.
-
-    Args:
-        mock_log_message (MagicMock): Mock version of `log_message` to verify the logging behavior.
-        tmp_path (Path): Temporary directory provided by pytest for creating test files.
-        mock_configs (dict): Mock configuration used for the printing process.
-
-    Returns:
-        None: This test does not return any value but asserts that the log message is correctly called.
+    **Expected Behavior:**
+        - `policy_management()` is called for dependency policy enforcement.
+        - `install_requirements()` installs packages based on evaluated policies.
+        - Backup, restore, and migration options execute correctly when passed.
+        - `installed.json` is properly updated.
     """
 
-    installed_file = tmp_path / "installed.json"
-    installed_data = {
+    temp_installed_file = mock_config["packages"]["installation"]["configs"]
+
+    # ✅ Simulate existing installed.json
+    installed_mock = {
         "dependencies": [
             {
                 "package": "requests",
                 "version": {
-                    "target": "2.28.1",
-                    "installed": "2.28.1",
-                    "status": "installed"
+                    "policy": "latest",
+                    "target": "2.28.0",
+                    "latest": "2.28.1",
+                    "status": "outdated"
                 }
             }
         ]
     }
-    installed_file.write_text(
-        json.dumps(installed_data, indent=4)
-    )
-    dependencies.print_installed_packages(
-        str(installed_file),
-        configs=mock_configs
-    )
-    # Ensure log messages were called correctly
-    mock_log_message.assert_any_call(
-        "\nInstalled Packages:\n",
-        configs=mock_configs
-    )
-    mock_log_message.assert_any_call(
-        "requests (Required: 2.28.1, Installed: 2.28.1)",
-        configs=mock_configs
+    temp_installed_file.write_text(
+        json.dumps(installed_mock, indent=4)
     )
 
-@patch(
-    "importlib.metadata.version",
-    side_effect=lambda pkg: "2.28.1" if pkg == "requests" else None
-)
-def test_update_installed_packages(
-    mock_version,
-    tmp_path,
-    mock_configs
-):
+    # ✅ Mock command-line arguments
+    with patch.object(sys, "argv", ["dependencies.py", "--backup-packages", "backup.json"]), \
+         patch("packages.requirements.lib.policy_utils.policy_management", return_value=mock_config.get("requirements", [])) as mock_policy, \
+         patch("packages.requirements.lib.package_utils.install_requirements", return_value=installed_mock["dependencies"]) as mock_install, \
+         patch("packages.requirements.lib.package_utils.backup_packages") as mock_backup, \
+         patch("packages.requirements.lib.package_utils.restore_packages") as mock_restore, \
+         patch("packages.requirements.lib.package_utils.migrate_packages") as mock_migrate, \
+         patch("packages.appflow_tracer.lib.log_utils.log_message") as mock_log:
+
+        dependencies.main()  # ✅ Execute main()
+
+        # ✅ Ensure `policy_management()` was called
+        mock_policy.assert_called_once()
+
+        # ✅ Ensure `install_requirements()` was called
+        mock_install.assert_called_once()
+
+        # ✅ Ensure optional backup, restore, and migration calls (if requested)
+        mock_backup.assert_any_call(file_path="backup.json", configs=ANY)
+        mock_restore.assert_not_called()  # ✅ Expected to be unused in this test
+        mock_migrate.assert_not_called()  # ✅ Expected to be unused in this test
+
+        # ✅ Ensure logging was used
+        mock_log.assert_any_call(ANY, configs=ANY)
+
+# ------------------------------------------------------------------------------
+
+def test_main_restore(mock_config):
     """
-    Test that `dependencies.update_installed_packages` correctly updates the installed package status.
+    Ensure `main()` executes restore functionality correctly.
 
-    This test ensures:
-    - That the installed version of packages is updated correctly in the installed file.
+    **Test Strategy:**
+        - Mocks `--restore-packages` argument.
+        - Ensures `restore_packages()` is executed as expected.
+        - Verifies correct logging behavior.
 
-    Args:
-        mock_version (MagicMock): Mock version of `importlib.metadata.version` to simulate the installed version.
-        tmp_path (Path): Temporary directory provided by pytest for creating test files.
-        mock_configs (dict): Mock configuration used for updating the installed package status.
-
-    Returns:
-        None: This test does not return any value but asserts that the installed package data is correctly updated.
+    **Expected Behavior:**
+        - Restore operation is triggered.
+        - No installation occurs if only `--restore-packages` is provided.
     """
 
-    req_file = tmp_path / "requirements.json"
-    installed_file = tmp_path / "installed.json"
-    req_data = {
-        "dependencies": [
-            {
-                "package": "requests",
-                "version": {
-                    "target": "2.28.1"
-                }
-            }
-        ]
-    }
-    req_file.write_text(
-        json.dumps(req_data)
-    )
-    dependencies.update_installed_packages(
-        str(req_file),
-        str(installed_file),
-        configs=mock_configs
-    )
-    installed_data = json.loads(
-        installed_file.read_text()
-    )
-    assert installed_data["dependencies"][0]["package"] == "requests"
-    assert installed_data["dependencies"][0]["version"]["installed"] == "2.28.1"
+    with patch.object(sys, "argv", ["dependencies.py", "--restore-packages", "restore.json"]), \
+         patch("packages.requirements.lib.package_utils.restore_packages") as mock_restore, \
+         patch("packages.appflow_tracer.lib.log_utils.log_message") as mock_log:
+
+        dependencies.main()  # ✅ Execute main()
+
+        # ✅ Ensure `restore_packages()` was called with the expected arguments
+        mock_restore.assert_called_once_with(file_path="restore.json", configs=ANY)
+
+        # ✅ Ensure logging was triggered
+        mock_log.assert_any_call(ANY, configs=ANY)
+
+# ------------------------------------------------------------------------------
+
+def test_main_migration(mock_config):
+    """
+    Ensure `main()` executes migration functionality correctly.
+
+    **Test Strategy:**
+        - Mocks `--migrate-packages` argument.
+        - Ensures `migrate_packages()` is executed as expected.
+        - Verifies correct logging behavior.
+
+    **Expected Behavior:**
+        - Migration operation is triggered.
+        - No installation occurs if only `--migrate-packages` is provided.
+    """
+
+    with patch.object(sys, "argv", ["dependencies.py", "--migrate-packages", "migrate.json"]), \
+         patch("packages.requirements.lib.package_utils.migrate_packages") as mock_migrate, \
+         patch("packages.appflow_tracer.lib.log_utils.log_message") as mock_log:
+
+        dependencies.main()
+
+        # ✅ Fix: Use `ANY` for dynamic `configs`
+        mock_migrate.assert_called_once_with(file_path="migrate.json", configs=ANY)
+
+        # ✅ Ensure logging was triggered
+        mock_log.assert_any_call(ANY, configs=ANY)

@@ -24,9 +24,9 @@ packages/requirements/__init__.py                    4      4      0      0     
 packages/requirements/__main__.py                    5      5      2      0     0%
 packages/requirements/dependencies.py               69     69     18      0     0%
 packages/requirements/lib/__init__.py                3      3      0      0     0%
-packages/requirements/lib/brew_utils.py             79     79     26      0     0%
+packages/requirements/lib/brew_utils.py             87     87     28      0     0%
 packages/requirements/lib/package_utils.py         176    176     54      0     0%
 packages/requirements/lib/policy_utils.py           65     65     18      0     0%
-packages/requirements/lib/version_utils.py         118    118     32      0     0%
+packages/requirements/lib/version_utils.py         119    119     32      0     0%
 ----------------------------------------------------------------------------------
-TOTAL                                             1551   1492    440      8     3%
+TOTAL                                             1560   1501    442      8     3%

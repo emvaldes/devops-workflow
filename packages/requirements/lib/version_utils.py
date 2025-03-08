@@ -141,8 +141,8 @@ def linux_version(package: str) -> Optional[str]:
         for line in result.stdout.splitlines():
             if line.startswith("Version:"):
                 return line.split(":")[1].strip()
-    except FileNotFoundError:
-        pass  # DPKG not found, try RPM
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        pass  # DPKG not found or package missing, try RPM
 
     try:
         result = subprocess.run(
@@ -152,8 +152,8 @@ def linux_version(package: str) -> Optional[str]:
             check=True
         )
         return result.stdout.strip() if result.returncode == 0 else None
-    except FileNotFoundError:
-        return None  # RPM also not found
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        return None  # RPM also not found or package missing
 
 ## -----------------------------------------------------------------------------
 
@@ -225,9 +225,10 @@ def windows_version(package: str) -> Optional[str]:
             text=True,
             check=True
         )
-        return result.stdout.strip() if result.stdout else None
+        version = result.stdout.strip()
+        return version if version else None  # ✅ Return None if no output is found
     except subprocess.CalledProcessError:
-        return None  # Package not found in Microsoft Store
+        return None  # ✅ If the command fails, the package is missing
 
 ## -----------------------------------------------------------------------------
 
@@ -408,6 +409,6 @@ def pip_latest_version(package: str) -> Optional[str]:
         for line in result.stdout.splitlines():
             if "Available versions:" in line:
                 versions = line.split(":")[1].strip().split(", ")
-                return versions[0] if versions else None
+                return versions[0] if versions and versions[0] != "None" else None  # ✅ Ensure `NoneType` is returned properly
     except subprocess.CalledProcessError:
-        return None  # Pip failed
+        return None

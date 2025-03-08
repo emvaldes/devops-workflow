@@ -14,8 +14,8 @@
             "version": {
                 "policy": "latest",
                 "target": "0.115.11",
-                "latest": "0.115.11_1",
-                "status": "upgraded"
+                "latest": null,
+                "status": "missing"
             }
         },
         {
@@ -32,8 +32,8 @@
             "version": {
                 "policy": "latest",
                 "target": "0.28.0",
-                "latest": "1.6.10",
-                "status": "upgraded"
+                "latest": null,
+                "status": "missing"
             }
         },
         {

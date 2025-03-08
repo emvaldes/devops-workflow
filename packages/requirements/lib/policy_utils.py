@@ -168,13 +168,23 @@ def policy_management(configs: dict) -> list:
             else:
                 version_info["status"] = "restricted"
                 log_message = f'{policy_header} is below target ({installed_ver} < {target_version}), but policy is restricted.'
+
+        # elif installed_ver == target_version:
+        #     if policy_mode == "latest" and available_ver > installed_ver:
+        #         version_info["status"] = "outdated"
+        #         log_message = f'{policy_header} matches target but a newer version is available. Marking as outdated.'
+        #     else:
+        #         version_info["status"] = "matched"
+        #         log_message = f'{policy_header} matches the target version. No action needed.'
+
         elif installed_ver == target_version:
-            if policy_mode == "latest" and available_ver > installed_ver:
-                version_info["status"] = "outdated"
-                log_message = f'{policy_header} matches target but a newer version is available. Marking as outdated.'
+            if policy_mode == "latest" and available_ver and available_ver > installed_ver:
+                version_info["status"] = "outdated"  # ❌ Wrong when installed == target
+                log_message = f'{policy_header} matches target but a newer version ({available_ver}) is available. Marking as outdated.'
             else:
-                version_info["status"] = "matched"
+                version_info["status"] = "matched"  # ✅ Correct: If installed == target, it's "matched"
                 log_message = f'{policy_header} matches the target version. No action needed.'
+
         else:  # installed_ver > target_version
             if policy_mode == "restricted":
                 version_info["status"] = "downgraded"

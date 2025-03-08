@@ -34,6 +34,21 @@ DESCRIPTION
         - The `detect_environment()` function ensures that externally managed environments are respected.
 
 FUNCTIONS
+    brew_info(package: str) -> Optional[str]
+        Retrieve information about a Homebrew package.
+
+        This function queries Homebrew to determine if a package exists and fetches its version.
+
+        ## Args:
+            - `package` (`str`): The name of the package to check.
+
+        ## Returns:
+            - `Optional[str]`: The package version if found, otherwise `None`.
+
+        ## Notes:
+            - This function runs `brew info <package>` and parses the output.
+            - If Homebrew returns an error (`No formula found`), it returns `None`.
+
     check_availability() -> bool
         Check if Homebrew is available on macOS.
 

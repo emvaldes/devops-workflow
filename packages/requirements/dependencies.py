@@ -292,7 +292,7 @@ def main() -> None:
         log_utils.log_message(
             f'[INFO] Running backup with file: "{args.backup_packages}"',
             environment.category.info.id,
-            configs=configs
+            configs=CONFIGS
         )
         package_utils.backup_packages(
             file_path=args.backup_packages,
@@ -303,7 +303,7 @@ def main() -> None:
         log_utils.log_message(
             f'[INFO] Running restore from file: "{args.restore_packages}"',
             environment.category.info.id,
-            configs=configs
+            configs=CONFIGS
         )
         package_utils.restore_packages(
             file_path=args.restore_packages,
@@ -314,7 +314,7 @@ def main() -> None:
         log_utils.log_message(
             f'[INFO] Running migration and saving to file: "{args.migrate_packages}"',
             environment.category.info.id,
-            configs=configs
+            configs=CONFIGS
         )
         package_utils.migrate_packages(
             file_path=args.migrate_packages,
@@ -329,7 +329,7 @@ def main() -> None:
             log_utils.log_message(
                 f'[INFO] Configuration: {installed_filepath} was not found.',
                 environment.category.info.id,
-                configs=configs
+                configs=CONFIGS
             )
         return  # Exit after showing installed packages
 
@@ -345,6 +345,8 @@ def main() -> None:
         configs=CONFIGS
     )
 
+    CONFIGS["requirements"] = package_utils.install_requirements( configs=CONFIGS )
+
     print(
         f'CONFIGS: {json.dumps(
             CONFIGS,
@@ -352,16 +354,6 @@ def main() -> None:
             default=str  # Fix: Convert `PosixPath` to string
         )}'
     )
-
-    CONFIGS["requirements"] = package_utils.install_requirements( configs=CONFIGS )
-
-    # print(
-    #     f'CONFIGS: {json.dumps(
-    #         CONFIGS,
-    #         indent=environment.default_indent,
-    #         default=str  # Fix: Convert `PosixPath` to string
-    #     )}'
-    # )
 
     # log_utils.log_message(
     #     f'Logs are being saved in: {CONFIGS["logging"].get("log_filename")}',
