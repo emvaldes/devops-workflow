@@ -443,7 +443,7 @@ def test_install_requirements_adhoc(mock_config):
         patch(
             "packages.requirements.lib.package_utils.installed_configfile",
             return_value=Path("/tmp/installed.json")
-        ), \  # ✅ Mock Path to prevent failure
+        ), \
         patch(
             "packages.appflow_tracer.lib.log_utils.log_message"
         ) as mock_log:

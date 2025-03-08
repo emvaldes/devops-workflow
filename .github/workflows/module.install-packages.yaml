@@ -100,7 +100,7 @@ jobs:
         run: |
 
           pip freeze > final-requirements.txt ;
-          echo -e "Generated final-requirements.txt: " ;
+          echo -e "Generated\nfinal-requirements.txt: " ;
           cat final-requirements.txt ;
 
       - name: Upload requirements.txt
