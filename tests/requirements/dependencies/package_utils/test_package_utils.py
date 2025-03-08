@@ -118,6 +118,81 @@ CONFIGS["logging"]["enable"] = False  # Disable logging for test isolation
 CONFIGS["tracing"]["enable"] = False  # Disable tracing to prevent unintended prints
 
 # ------------------------------------------------------------------------------
+
+@pytest.fixture
+def mock_config():
+    """
+    Creates a temporary directory for test configuration files.
+    Ensures that `requirements.json` and `installed.json` are stored in a non-persistent temp location.
+
+    Returns:
+        dict: A fully structured CONFIGS dictionary with paths to temp JSON files.
+    """
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_dir_path = Path(temp_dir)
+
+        # ✅ Correctly create temp JSON files
+        temp_requirements_file = temp_dir_path / "requirements.json"
+        temp_installed_file = temp_dir_path / "installed.json"
+
+        # ✅ Mock requirements.json data
+        requirements_mock = {
+            "dependencies": [
+                {
+                    "package": "setuptools",
+                    "version": {
+                        "policy": "latest",
+                        "target": "75.8.0",
+                        "latest": False,
+                        "status": "installing",
+                    }
+                }
+            ]
+        }
+
+        # ✅ Mock installed.json data
+        installed_mock = {
+            "dependencies": [
+                {
+                    "package": "setuptools",
+                    "version": {
+                        "policy": "latest",
+                        "target": "75.8.0",
+                        "latest": "75.8.2",
+                        "status": "upgraded"
+                    }
+                }
+            ]
+        }
+
+        # ✅ Write the mock JSON files inside the temp directory
+        temp_requirements_file.write_text(json.dumps(requirements_mock, indent=4))
+        temp_installed_file.write_text(json.dumps(installed_mock, indent=4))
+
+        # ✅ Return CONFIGS with dynamically generated file paths
+        config = {
+            "packages": {
+                "installation": {
+                    "forced": False,
+                    "configs": temp_installed_file,  # ✅ Use temp installed.json path
+                }
+            },
+            "environment": {
+                "INSTALL_METHOD": "pip",
+                "EXTERNALLY_MANAGED": False
+            },
+            "logging": {
+                "package_name": "requirements",
+                "module_name": "package_utils",
+                "enable": False
+            },
+            "tracing": {"enable": False},
+            "requirements": requirements_mock["dependencies"],  # ✅ Inject mocked dependencies
+        }
+
+        yield config  # ✅ Ensure temporary files are automatically cleaned up after test execution
+
+# ------------------------------------------------------------------------------
 # Test: backup_packages()
 # ------------------------------------------------------------------------------
 

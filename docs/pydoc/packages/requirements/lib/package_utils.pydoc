@@ -79,7 +79,7 @@ FUNCTIONS
             - Ensures safe installation, respecting system constraints.
             - Uses structured logging to report installation status.
 
-    install_requirements(configs: dict) -> None
+    install_requirements(configs: dict, bypass: bool = False) -> None
         Install, upgrade, or downgrade dependencies based on policy rules.
 
         This function processes dependencies listed in `configs["requirements"]` and applies
@@ -88,6 +88,7 @@ FUNCTIONS
 
         ## Args:
             - `configs` (`dict`): Configuration dictionary containing dependency requirements.
+            - `force_install` (`bool`): If True, all packages are installed immediately, ignoring policy.
 
         ## Returns:
             - `None`: Executes the required package installations.
