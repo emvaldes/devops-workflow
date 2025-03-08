@@ -245,8 +245,8 @@ def main() -> None:
 
     args = parse_arguments()
 
-    CONFIGS = tracing.setup_logging(events=False)
-    # CONFIGS = tracing.setup_logging(events=["call", "return"])
+    # CONFIGS = tracing.setup_logging(events=False)
+    CONFIGS = tracing.setup_logging(events=["call", "return"])
 
     # Load the JSON file contents before passing to policy_utils.policy_management
     location = Path(args.requirements)

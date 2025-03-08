@@ -1,0 +1,62 @@
+### Documentation for tests/requirements/dependencies/policy_utils/test_policy_utils.py
+
+Help on module tests.requirements.dependencies.policy_utils.test_policy_utils in tests.requirements.dependencies.policy_utils:
+
+NAME
+    tests.requirements.dependencies.policy_utils.test_policy_utils - # File: ./tests/requirements/dependencies/policy_utils/test_policy_utils.py
+
+FUNCTIONS
+    mock_configs()
+        Creates a mock CONFIGS dictionary containing test dependencies.
+
+        **Purpose:**
+            - Simulates a dependency management environment.
+            - Ensures `requirements.json` and `installed.json` structures are valid.
+            - Prevents direct system modifications during test execution.
+
+        ## Returns:
+            - `dict`: A structured mock CONFIGS object with dependency configurations.
+
+    test_installed_configfile(mock_configs)
+        Ensure `installed_configfile()` returns the correct `installed.json` path.
+
+        **Test Strategy:**
+            - Uses `mock_configs` to simulate package installation settings.
+            - Calls `installed_configfile()` to ensure correct file path retrieval.
+
+        ## Expected Behavior:
+            - The function should return the correct path to `installed.json`.
+
+    test_policy_management(mock_configs)
+        Validate that `policy_management()` correctly applies package policies.
+
+        **Test Strategy:**
+            - Mocks `installed_version()` and `latest_version()` to simulate system state.
+            - Ensures correct status assignment (`installing`, `upgrading`, `matched`, etc.).
+            - Verifies that policy decisions are correctly logged.
+
+        ## Mocking Details:
+            - **Installed Versions:** `installed_version()` returns simulated package states.
+            - **Available Versions:** `latest_version()` returns latest version from mock data.
+            - **File Handling:** `installed_configfile()` is mocked to return `/tmp/test_installed.json`.
+
+        ## Expected Behavior:
+            - Dependencies are assigned correct statuses based on version comparison.
+            - `[POLICY]` log messages are generated for each package decision.
+
+        ## Assertions:
+            - `requests` should be **marked as `matched`**.
+            - `numpy` should be **marked as `installing`**.
+
+DATA
+    CONFIGS = {'colors': {'CALL': '\x1b[92m', 'CRITICAL': '\x1b[41m', 'DEB...
+    ROOT_DIR = PosixPath('<project-location>')
+
+VERSION
+    0.1.0
+
+FILE
+    <project-location>/tests/requirements/dependencies/policy_utils/test_policy_utils.py
+
+
+

@@ -13,10 +13,10 @@
     "logging": {
         "enable": true,
         "max_logfiles": 5,
-        "package_name": "tests/appflow_tracer/tracing/trace_utils",
-        "module_name": "test_trace_utils",
-        "logs_dirname": "logs/tests/appflow_tracer/tracing/trace_utils",
-        "log_filename": "logs/tests/appflow_tracer/tracing/trace_utils/test_trace_utils.log"
+        "package_name": "tests/requirements/dependencies/policy_utils",
+        "module_name": "test_policy_utils",
+        "logs_dirname": "logs/tests/requirements/dependencies/policy_utils",
+        "log_filename": "logs/tests/requirements/dependencies/policy_utils/test_policy_utils.log"
     },
     "tracing": {
         "enable": true,
@@ -35,7 +35,7 @@
         "warning": false
     },
     "stats": {
-        "created": "2025-03-03T18:10:47.896763+00:00",
-        "updated": "2025-03-08T02:05:49.977288+00:00"
+        "created": "2025-03-08T01:52:10.471875+00:00",
+        "updated": "2025-03-08T02:05:59.408917+00:00"
     }
 }

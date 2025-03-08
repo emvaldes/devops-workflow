@@ -4,7 +4,7 @@
 __version__ = "0.1.0"  ## Test Module version
 
 """
-Pytest Module: tests/requirements/dependencies/package_utils/test_package_utils.py
+PyTest Module: tests/requirements/dependencies/package_utils/test_package_utils.py
 
 This module contains unit tests for the `package_utils.py` submodule within `packages.requirements.lib`.
 

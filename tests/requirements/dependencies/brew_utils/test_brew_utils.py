@@ -4,7 +4,7 @@
 __version__ = "0.1.0"  ## Package version
 
 """
-Pytest Module: tests/requirements/dependencies/brew_utils/test_brew_utils.py
+PyTest Module: tests/requirements/dependencies/brew_utils/test_brew_utils.py
 
 This module provides comprehensive unit tests for the `brew_utils.py` submodule within `packages.requirements.lib`.
 
