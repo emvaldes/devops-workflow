@@ -52,8 +52,8 @@ import sys
 import os
 
 import json
-
 import pytest
+
 from unittest.mock import patch
 
 from pathlib import Path
@@ -64,6 +64,7 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))  # Add root directory to sys.path
 
 from lib import system_variables as environment
+
 from packages.appflow_tracer import tracing
 from packages.appflow_tracer.lib import file_utils
 

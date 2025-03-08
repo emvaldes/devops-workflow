@@ -53,11 +53,13 @@ This module provides comprehensive unit tests for the `brew_utils.py` submodule 
 
 """
 
+import sys
 
 import pytest
-import sys
 import subprocess
+
 from unittest.mock import patch
+
 from pathlib import Path
 
 # Ensure the root project directory is in sys.path
@@ -66,6 +68,7 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))  # Add root directory to sys.path
 
 from lib import system_variables as environment
+
 from packages.appflow_tracer import tracing
 from packages.appflow_tracer.lib import log_utils
 

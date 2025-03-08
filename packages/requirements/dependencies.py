@@ -345,8 +345,6 @@ def main() -> None:
         configs=CONFIGS
     )
 
-    CONFIGS["requirements"] = package_utils.install_requirements( configs=CONFIGS )
-
     print(
         f'CONFIGS: {json.dumps(
             CONFIGS,
@@ -354,6 +352,16 @@ def main() -> None:
             default=str  # Fix: Convert `PosixPath` to string
         )}'
     )
+
+    CONFIGS["requirements"] = package_utils.install_requirements( configs=CONFIGS )
+
+    # print(
+    #     f'CONFIGS: {json.dumps(
+    #         CONFIGS,
+    #         indent=environment.default_indent,
+    #         default=str  # Fix: Convert `PosixPath` to string
+    #     )}'
+    # )
 
     # log_utils.log_message(
     #     f'Logs are being saved in: {CONFIGS["logging"].get("log_filename")}',

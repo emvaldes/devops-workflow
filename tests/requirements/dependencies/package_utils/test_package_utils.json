@@ -13,10 +13,10 @@
     "logging": {
         "enable": true,
         "max_logfiles": 5,
-        "package_name": "requirements",
-        "module_name": "dependencies",
-        "logs_dirname": "logs/requirements",
-        "log_filename": "logs/requirements/dependencies.log"
+        "package_name": "tests/requirements/dependencies/package_utils",
+        "module_name": "test_package_utils",
+        "logs_dirname": "logs/tests/requirements/dependencies/package_utils",
+        "log_filename": "logs/tests/requirements/dependencies/package_utils/test_package_utils.log"
     },
     "tracing": {
         "enable": true,
@@ -35,7 +35,7 @@
         "warning": false
     },
     "stats": {
-        "created": "2025-03-03T18:12:57.579484+00:00",
-        "updated": "2025-03-07T23:57:36.651735+00:00"
+        "created": "2025-03-07T21:12:12.376380+00:00",
+        "updated": "2025-03-08T00:56:34.680792+00:00"
     }
 }

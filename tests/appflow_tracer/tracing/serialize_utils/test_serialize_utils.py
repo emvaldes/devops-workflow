@@ -54,6 +54,7 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))  # Add root directory to sys.path
 
 from lib.system_variables import category
+
 from packages.appflow_tracer import tracing
 from packages.appflow_tracer.lib import serialize_utils
 

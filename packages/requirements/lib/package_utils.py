@@ -206,7 +206,7 @@ def install_package(package: str, version: Optional[str] = None, configs: dict =
 
 ## -----------------------------------------------------------------------------
 
-def install_requirements(configs: dict) -> None:
+def install_requirements(configs: dict, bypass: bool = False) -> None:
     """
     Install, upgrade, or downgrade dependencies based on policy rules.
 
@@ -216,6 +216,7 @@ def install_requirements(configs: dict) -> None:
 
     ## Args:
         - `configs` (`dict`): Configuration dictionary containing dependency requirements.
+        - `force_install` (`bool`): If True, all packages are installed immediately, ignoring policy.
 
     ## Returns:
         - `None`: Executes the required package installations.
@@ -251,6 +252,10 @@ def install_requirements(configs: dict) -> None:
         latest_version = version_info["latest"]
         policy_mode = version_info["policy"]
 
+        # ✅ NEW: If force_install is True, override status to "adhoc"
+        if bypass:
+            status = "adhoc"
+
         # Policy-driven installation decisions
         if status == "installing" or status == "missing":
             log_utils.log_message(
@@ -284,6 +289,13 @@ def install_requirements(configs: dict) -> None:
                 environment.category.warning.id,
                 configs=configs
             )
+        # ✅ NEW: ELSE CLAUSE FOR FORCED INSTALLATION
+        else:
+            log_utils.log_message(
+                f'[AD-HOC] Forcing "{package}" installation (bypassing policy checks) ...',
+                configs=configs
+            )
+            install_package(package, None, configs)
 
     # Write back to `installed.json` **only once** after processing all packages
     with installed_filepath.open("w") as f:
