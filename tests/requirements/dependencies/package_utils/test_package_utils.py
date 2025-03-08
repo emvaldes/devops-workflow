@@ -428,10 +428,25 @@ def test_install_requirements_adhoc(mock_config):
     # ✅ Modify `CONFIGS["requirements"]` so the package is forced to install
     mock_config["requirements"][0]["version"]["status"] = "adhoc"
 
-    with patch("packages.requirements.lib.policy_utils.policy_management", return_value=mock_config["requirements"]), \
-         patch("packages.requirements.lib.package_utils.install_package") as mock_install, \
-         patch("packages.requirements.lib.package_utils.installed_configfile", return_value=mock_config["packages"]["installation"]["configs"]), \
-         patch("packages.appflow_tracer.lib.log_utils.log_message") as mock_log:
+    # with patch("packages.requirements.lib.policy_utils.policy_management", return_value=mock_config["requirements"]), \
+    #      patch("packages.requirements.lib.package_utils.install_package") as mock_install, \
+    #      patch("packages.requirements.lib.package_utils.installed_configfile", return_value=mock_config["packages"]["installation"]["configs"]), \
+    #      patch("packages.appflow_tracer.lib.log_utils.log_message") as mock_log:
+
+    with patch(
+            "packages.requirements.lib.policy_utils.policy_management",
+            return_value=mock_config["requirements"]
+        ), \
+        patch(
+            "packages.requirements.lib.package_utils.install_package"
+        ) as mock_install, \
+        patch(
+            "packages.requirements.lib.package_utils.installed_configfile",
+            return_value=Path("/tmp/installed.json")
+        ), \  # ✅ Mock Path to prevent failure
+        patch(
+            "packages.appflow_tracer.lib.log_utils.log_message"
+        ) as mock_log:
 
         # ✅ Apply policy management (same as `main()`)
         mock_config["requirements"] = policy_utils.policy_management(mock_config)
