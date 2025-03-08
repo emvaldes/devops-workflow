@@ -86,11 +86,12 @@ def check_availability() -> bool:
         - Returns `False` immediately if the system is not macOS.
     """
 
-    if sys.platform != "darwin":
-        return False  # Not macOS, so Brew isn't available
+    if sys.platform != "darwin":  # ✅ Ensure it only runs on macOS
+        return False  # ✅ Prevents false positives on Ubuntu runners
 
     # Fast check: If Brew binary is not found, return False immediately
-    if not shutil.which("brew"):
+    brew_path = shutil.which("brew")
+    if not brew_path:
         return False
 
     try:
@@ -211,6 +212,10 @@ def detect_environment() -> dict:
                     env_info["INSTALL_METHOD"] = "system"  # DNF-managed
             except FileNotFoundError:
                 pass
+
+        # Ensure standalone classification if not system-managed
+        if env_info["INSTALL_METHOD"] == "system" and not (Path("/usr/bin/python3").exists() or Path("/usr/local/bin/python3").exists()):
+            env_info["INSTALL_METHOD"] = "standalone"
 
     # Windows: Check if Python is from Microsoft Store
     elif env_info["OS"] == "windows":
