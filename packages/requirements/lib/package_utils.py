@@ -259,7 +259,7 @@ def install_requirements(configs: dict, bypass: bool = False) -> None:
         # Policy-driven installation decisions
         if status == "installing" or status == "missing":
             log_utils.log_message(
-                f'[INSTALL] Installing "{package}" ({'latest' if policy_mode == 'latest' else target_version})...',
+                f'[INSTALL] Installing "{package}" ({"latest" if policy_mode == "latest" else target_version})...',
                 environment.category.error.id,
                 configs=configs
             )
@@ -359,7 +359,7 @@ def install_requirements__legacy(configs: dict) -> None:
 
         if status == "installing":
             log_utils.log_message(
-                f'[INSTALL] Installing {package} ({'latest' if policy_mode == 'latest' else target_version})...',
+                f'[INSTALL] Installing {package} ({"latest" if policy_mode == "latest" else target_version})...',
                 environment.category.error.id,
                 configs=configs
             )

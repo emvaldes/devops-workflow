@@ -160,7 +160,7 @@ def policy_management(configs: dict) -> list:
         # Policy decision-making
         if not installed_ver:
             version_info["status"] = "installing"
-            log_message = f'{policy_header} is missing. Installing {'latest' if policy_mode == 'latest' else target_version}.'
+            log_message = f'{policy_header} is missing. Installing {"latest" if policy_mode == "latest" else target_version}.'
         elif installed_ver < target_version:
             if policy_mode == "latest":
                 version_info["status"] = "upgrading"
