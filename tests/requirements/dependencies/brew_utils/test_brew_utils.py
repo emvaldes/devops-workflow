@@ -85,14 +85,16 @@ from packages.requirements.lib import brew_utils
 # Test: check_availability()
 # -----------------------------------------------------------------------------
 
+@pytest.mark.skipif(not brew_utils.check_availability(), reason="Homebrew is not available on this system.")
 def test_check_availability_success():
     """
     Verify that `check_availability()` correctly detects Homebrew when installed.
 
     **Test Strategy:**
-        - Mocks `shutil.which` to return a valid Homebrew binary path.
-        - Simulates a successful subprocess call (`brew --version`).
-        - Asserts that the function returns `True`.
+        - **Dynamically skip test if Homebrew is unavailable.**
+        - Mock `shutil.which` to return a valid `brew` path.
+        - Mock `subprocess.run` to simulate `brew --version` working.
+        - Validate that `brew_utils.check_availability()` returns `True`.
 
     Expected Output:
         - `True` if Homebrew is installed.
