@@ -348,11 +348,8 @@ def main() -> None:
     CONFIGS["requirements"] = package_utils.install_requirements( configs=CONFIGS )
 
     print(
-        f'CONFIGS: {json.dumps(
-            CONFIGS,
-            indent=environment.default_indent,
-            default=str  # Fix: Convert `PosixPath` to string
-        )}'
+        f'CONFIGS:\n',
+        f'{json.dumps(CONFIGS, indent=environment.default_indent, default=str)}'
     )
 
     # log_utils.log_message(
