@@ -6,25 +6,30 @@ NAME
     run - # File: ./run.py
 
 FUNCTIONS
-    collect_files(target_dir: str, extensions: list[str]) -> list[str]
+    collect_files(
+        target_dir: str,
+        extensions: list[str],
+        ignore_list: list[str] = None
+    ) -> list[str]
         Recursively scans a directory for non-empty files matching the specified extensions.
 
-        This function ensures that only files with actual content are collected, preventing
-        the processing of empty or irrelevant files.
+        This function ensures that only files with actual content are collected,
+        preventing the processing of empty or irrelevant files.
 
-        Args:
-            target_dir (str): The directory to scan.
-            extensions (List[str]): A list of file extensions to filter.
+        ## Args:
+            - `target_dir` (`str`): The directory to scan.
+            - `extensions` (`List[str]`): A list of file extensions to filter.
+            - `ignore_list` (`List[str]`, optional): A list of filenames, patterns, or directories to ignore.
 
-        Returns:
-            List[str]: A list of absolute file paths that match the specified extensions.
+        ## Returns:
+            - `List[str]`: A list of absolute file paths that match the specified extensions.
 
-        Raises:
-            ValueError: If the provided target directory does not exist.
+        ## Raises:
+            - `ValueError`: If the provided target directory does not exist.
 
-        Example:
+        ## Example:
             ```python
-            python_files = collect_files("/project/src", [".py"])
+            python_files = collect_files("/project/src", [".py"], ignore_list=["conftest.py", "tests/mocks"])
             ```
 
     main()

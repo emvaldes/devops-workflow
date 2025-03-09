@@ -103,39 +103,45 @@ from lib import pydoc_generator as pydoc_engine
 
 def collect_files(
     target_dir: str,
-    extensions: list[str]
+    extensions: list[str],
+    ignore_list: list[str] = None
 ) -> list[str]:
     """
     Recursively scans a directory for non-empty files matching the specified extensions.
 
-    This function ensures that only files with actual content are collected, preventing
-    the processing of empty or irrelevant files.
+    This function ensures that only files with actual content are collected,
+    preventing the processing of empty or irrelevant files.
 
-    Args:
-        target_dir (str): The directory to scan.
-        extensions (List[str]): A list of file extensions to filter.
+    ## Args:
+        - `target_dir` (`str`): The directory to scan.
+        - `extensions` (`List[str]`): A list of file extensions to filter.
+        - `ignore_list` (`List[str]`, optional): A list of filenames, patterns, or directories to ignore.
 
-    Returns:
-        List[str]: A list of absolute file paths that match the specified extensions.
+    ## Returns:
+        - `List[str]`: A list of absolute file paths that match the specified extensions.
 
-    Raises:
-        ValueError: If the provided target directory does not exist.
+    ## Raises:
+        - `ValueError`: If the provided target directory does not exist.
 
-    Example:
+    ## Example:
         ```python
-        python_files = collect_files("/project/src", [".py"])
+        python_files = collect_files("/project/src", [".py"], ignore_list=["conftest.py", "tests/mocks"])
         ```
     """
 
     target_path = Path(target_dir).resolve()
     if not target_path.is_dir():
         raise ValueError(f"Error: {target_dir} is not a valid directory.")
-    # Collect only non-empty matching files
+
+    ignore_set = set(ignore_list) if ignore_list else set()  # ✅ Convert to set for faster lookups
+
+    # ✅ Collect only non-empty matching files
     files = [
         str(file.resolve())
         for ext in extensions
         for file in target_path.rglob(f"*{ext}")
-        if file.stat().st_size > 0  # Ensure file is not empty
+        if file.stat().st_size > 0  # ✅ Ensure file is not empty
+        and not any(file.match(pattern) for pattern in ignore_set)  # ✅ Ignore files in `ignore_list`
     ]
     return files
 
@@ -249,11 +255,19 @@ def main():
             environment.category.info.id,
             configs=CONFIGS
         )
+
         file_extensions = [".py"]  ## Defined by CLI flag
+        ignore_list = ["conftest.py", "tests/mocks", "*.test.py"]  # ✅ Ignore conftest.py & test-related paths
+        # files_list = collect_files(
+        #     project_path,
+        #     file_extensions
+        # )
         files_list = collect_files(
-            project_path,
-            file_extensions
+            target_dir=project_path,
+            extensions=file_extensions,
+            ignore_list=ignore_list
         )
+
         pydoc_engine.create_pydocs(
             project_path=project_path,
             base_path=base_path,
