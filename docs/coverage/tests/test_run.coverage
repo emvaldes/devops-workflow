@@ -1,8 +1,5 @@
-### Documentation for tests/test_run.py
-
 Name          Stmts   Miss  Cover
 --------------------------------
 test_run.py      50     10    80%
 --------------------------------
 TOTAL           50     10    80%
-

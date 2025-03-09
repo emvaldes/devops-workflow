@@ -407,26 +407,28 @@ def install_requirements__legacy(configs: dict) -> None:
 
 ## -----------------------------------------------------------------------------
 
+from pathlib import Path
+
 def installed_configfile(configs: dict) -> Path:
     """
-    Migrate installed packages from the current Python environment to a new one.
+    Retrieve the configured path to `installed.json`.
 
-    This function retrieves the list of installed packages using `pip list --format=freeze`,
-    saves it to the specified file, and reinstalls each package in the new environment.
+    Args:
+        configs (dict): Configuration dictionary.
 
-    ## Args:
-        - `file_path` (`str`): The file path where the package list will be saved.
-        - `configs` (`dict`): Configuration dictionary used for logging.
+    Returns:
+        Path: Path object pointing to `installed.json`.
 
-    ## Raises:
-        - `subprocess.CalledProcessError`: If retrieving the package list fails.
-
-    ## Notes:
-        - The migration process ensures a smooth transition between Python versions or environments.
-        - Before reinstalling, the function saves the package list for reference.
+    Raises:
+        KeyError: If `configs["packages"]["installation"]["configs"]` is missing.
     """
 
-    return configs.get("packages", {}).get("installation", {}).get("configs", None)
+    # return configs.get("packages", {}).get("installation", {}).get("configs", None)
+    try:
+        installed_path = configs["packages"]["installation"]["configs"]
+        return Path(installed_path) if isinstance(installed_path, str) else installed_path
+    except KeyError:
+        raise KeyError("Missing 'packages.installation.configs' in CONFIGS")
 
 ## -----------------------------------------------------------------------------
 

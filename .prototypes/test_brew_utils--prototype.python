@@ -1,0 +1,165 @@
+#!/usr/bin/env python3
+
+# File: ./packages/appflow_tracer/lib/brew_utils.py
+__version__ = "0.1.0"  ## Package version
+
+"""
+"""
+
+import sys
+
+import pytest
+import subprocess
+
+from unittest.mock import patch
+
+from pathlib import Path
+
+# Ensure the root project directory is in sys.path
+ROOT_DIR = Path(__file__).resolve().parents[4]  # Adjust based on folder depth
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))  # Add root directory to sys.path
+
+from lib import system_variables as environment
+
+from packages.appflow_tracer import tracing
+from packages.appflow_tracer.lib import log_utils
+
+from packages.utils.doc_loader import load_doc
+
+# ✅ Load documentation dynamically
+MODULE_DOCSTRING, FUNCTION_DOCSTRINGS = load_doc(__file__)
+
+# ✅ Assign module-level docstring
+__doc__ = MODULE_DOCSTRING
+
+# Initialize CONFIGS
+CONFIGS = tracing.setup_logging(
+    logname_override='logs/tests/test_brew_utils.log'
+)
+CONFIGS["logging"]["enable"] = False  # Disable logging for test isolation
+CONFIGS["tracing"]["enable"] = False  # Disable tracing to prevent unintended prints
+
+CONFIGS_DIR = Path(__file__).resolve().parents[2] / "configs"
+
+from packages.requirements.lib import brew_utils
+
+# ✅ Skip the entire test suite if Homebrew is unavailable
+pytestmark = pytest.mark.skipif(
+    not brew_utils.check_availability(),
+    reason="Homebrew is not available on this system."
+)
+
+# -----------------------------------------------------------------------------
+# Test: check_availability()
+# -----------------------------------------------------------------------------
+
+@pytest.mark.skipif(not brew_utils.check_availability(), reason="Homebrew is not available on this system.")
+def test_check_availability_success():
+    """
+    """ + FUNCTION_DOCSTRINGS.get("test_check_availability_success", "No documentation available.")
+
+    with patch("shutil.which", return_value="/usr/local/bin/brew"), \
+         patch("subprocess.run", return_value=subprocess.CompletedProcess(args=[], returncode=0)):
+        assert brew_utils.check_availability() is True
+
+# -----------------------------------------------------------------------------
+
+def test_check_availability_failure():
+    """
+    """ + FUNCTION_DOCSTRINGS.get("test_check_availability_failure", "No documentation available.")
+
+    brew_utils.check_availability.cache_clear()  # ✅ Clear cache BEFORE calling the function.
+
+    with patch("shutil.which", return_value=None):
+        result = brew_utils.check_availability()
+        assert result is False  # ✅ Expect False if Homebrew is missing
+
+# -----------------------------------------------------------------------------
+
+def test_brew_package_not_found():
+    """
+    """ + FUNCTION_DOCSTRINGS.get("test_brew_package_not_found", "No documentation available.")
+
+    with patch("subprocess.run") as mock_run:
+        mock_run.return_value.stderr = "Error: No formula found"
+        # ✅ Ensure the correct function name is used
+        result = brew_utils.brew_info("nonexistent_package")
+        assert result is None  # ✅ Expect `None` for missing packages
+
+# -----------------------------------------------------------------------------
+# Test: detect_environment()
+# -----------------------------------------------------------------------------
+
+def test_detect_environment_brew():
+    """
+    """ + FUNCTION_DOCSTRINGS.get("test_detect_environment_brew", "No documentation available.")
+
+    with patch("packages.requirements.lib.brew_utils.check_availability", return_value=True), \
+         patch("subprocess.run", return_value=subprocess.CompletedProcess(args=[], returncode=0)):
+        env = brew_utils.detect_environment()
+        assert env["INSTALL_METHOD"] == "brew"
+        assert env["BREW_AVAILABLE"] is True
+
+# -----------------------------------------------------------------------------
+
+def test_detect_environment_standalone():
+    """
+    """ + FUNCTION_DOCSTRINGS.get("test_detect_environment_standalone", "No documentation available.")
+
+    with patch("packages.requirements.lib.brew_utils.check_availability", return_value=False):
+        env = brew_utils.detect_environment()
+        assert env["INSTALL_METHOD"] in ["standalone", "system"]
+        assert env["BREW_AVAILABLE"] is False  # ✅ Confirm Homebrew is unavailable
+
+# -----------------------------------------------------------------------------
+# Test: version(package)
+# -----------------------------------------------------------------------------
+
+def test_version_installed(requirements_config):
+    """
+    """ + FUNCTION_DOCSTRINGS.get("test_version_installed", "No documentation available.")
+
+    package_name = requirements_config["dependencies"][0]["package"]  # Get first package from config
+    expected_version = requirements_config["dependencies"][0]["version"]["target"]
+
+    with patch("subprocess.run", return_value=subprocess.CompletedProcess(args=[], returncode=0, stdout=f"{package_name} {expected_version}")):
+        assert brew_utils.version(package_name) == expected_version
+
+# -----------------------------------------------------------------------------
+
+def test_version_not_installed():
+    """
+    """ + FUNCTION_DOCSTRINGS.get("test_version_not_installed", "No documentation available.")
+
+    with patch("subprocess.run", side_effect=subprocess.CalledProcessError(1, "brew")):
+        assert brew_utils.version("nonexistent-package") is None
+
+# -----------------------------------------------------------------------------
+# Test: latest_version(package)
+# -----------------------------------------------------------------------------
+
+def test_latest_version_success(installed_config):
+    """
+    """ + FUNCTION_DOCSTRINGS.get("test_latest_version_success", "No documentation available.")
+
+    package_name = installed_config["dependencies"][0]["package"]
+    latest_version = installed_config["dependencies"][0]["version"]["latest"]  # ✅ Pull latest from installed.json
+
+    # Ensure latest_version is not `False`
+    assert latest_version and isinstance(latest_version, str), f"Invalid latest_version value in mock_installed.json: {latest_version}"
+
+    brew_output = f"""{package_name}: stable {latest_version} (bottled)
+https://formulae.brew.sh/formula/{package_name}"""
+
+    with patch("subprocess.run", return_value=subprocess.CompletedProcess(args=[], returncode=0, stdout=brew_output)):
+        assert brew_utils.latest_version(package_name) == latest_version
+
+# -----------------------------------------------------------------------------
+
+def test_latest_version_failure():
+    """
+    """ + FUNCTION_DOCSTRINGS.get("test_latest_version_failure", "No documentation available.")
+
+    with patch("subprocess.run", side_effect=subprocess.CalledProcessError(1, "brew")):
+        assert brew_utils.latest_version("nonexistent-package") is None

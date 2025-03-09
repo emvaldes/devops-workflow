@@ -1,86 +1,63 @@
 #!/usr/bin/env python3
 
 # File: ./tests/requirements/dependencies/version_utils/test_version_utils.py
-__version__ = "0.1.0"  ## Test Module version
+
+__package_name__ = "requirements"
+__module_name__ = "version_utils"
+
+__version__ = "0.1.1"  ## Updated Test Module version
 
 """
-# Pytest Module: tests/requirements/dependencies/version_utils/test_version_utils.py
+# PyTest Module: tests/requirements/dependencies/version_utils/test_version_utils.py
 
 ## Overview:
-This module contains unit tests for `version_utils.py`, which is responsible for retrieving
-installed and latest package versions from various sources, including:
+    This module contains unit tests for `version_utils.py`, which is responsible for:
 
-- **Pip (`pip list`, `pip index versions`)**
-- **Homebrew (`brew info`, `brew list`)**
-- **APT/DNF (`dpkg -s`, `apt-cache`, `dnf list available`)**
-- **Windows Package Manager (`Get-AppxPackage`, `Find-Package`)**
+    - **Retrieving installed package versions** via Pip, Homebrew, Linux package managers, and Windows.
+    - **Determining the latest available version** of a package.
+    - **Ensuring correct version retrieval logic across multiple package managers**.
 
 ## Test Coverage:
-1. `installed_version(package, configs)`
-   - Retrieves the installed package version using Pip, Brew, APT, or Windows Store.
-   - Ensures **multi-platform support**.
+    1. `installed_version(package, configs)`
+       - Retrieves installed package versions dynamically from system package managers.
 
-2. `latest_version(package, configs)`
-   - Fetches the latest available version of a package from the appropriate source.
+    2. `latest_version(package, configs)`
+       - Fetches the latest available package version from package repositories.
 
-3. `pip_latest_version(package)`
-   - Uses `pip index versions` to fetch the latest available package version.
+    3. `linux_version(package)`
+       - Retrieves package versions via APT or DNF.
 
-4. `linux_version(package)`
-   - Retrieves the installed version of a package via **APT/DNF**.
+    4. `windows_version(package)`
+       - Retrieves package versions via PowerShell.
 
-5. `linux_latest_version(package)`
-   - Queries the latest available version of a package via **APT/DNF**.
-
-6. `windows_version(package)`
-   - Retrieves the installed package version via **Windows Package Manager**.
-
-7. `windows_latest_version(package)`
-   - Fetches the latest available version of a package from **Windows Package Manager**.
+    5. `pip_latest_version(package)`
+       - Uses Pip to fetch the latest available package version.
 
 ## Mocking Strategy:
-- **Pip Commands (`pip list`, `pip index versions`)** – Mocked using `subprocess.run`.
-- **Homebrew (`brew list`, `brew info`)** – Simulated package version responses.
-- **APT/DNF (`dpkg -s`, `apt-cache`)** – Mocked Linux package manager queries.
-- **Windows Package Manager (`powershell Get-AppxPackage`)** – Mocked Windows queries.
+    - `subprocess.run()` → Mocks CLI calls for `pip list`, `dpkg -s`, `powershell`, etc.
+    - `importlib.metadata.version()` → Mocks package version retrieval for Python packages.
+    - `log_utils.log_message()` → Mocks structured logging calls.
 
 ## Expected Behavior:
-- Correctly retrieves installed versions across multiple platforms.
-- Accurately fetches the latest package versions when available.
-- Returns `None` when a package is not found.
+    - Installed package versions are retrieved correctly.
+    - Latest versions are fetched from the appropriate package manager.
+    - Logging is correctly triggered for each function.
 """
 
 import sys
 import json
-import logging
 import pytest
 import subprocess
-
-from unittest.mock import patch
+from unittest.mock import patch, ANY
 from pathlib import Path
 
 # Ensure the root project directory is in sys.path
-ROOT_DIR = Path(__file__).resolve().parents[4]  # Adjust based on folder depth
+ROOT_DIR = Path(__file__).resolve().parents[4]
 if str(ROOT_DIR) not in sys.path:
-    sys.path.insert(0, str(ROOT_DIR))  # Add root directory to sys.path
+    sys.path.insert(0, str(ROOT_DIR))
 
-from lib import system_variables as environment
-
-from packages.appflow_tracer import tracing
-from packages.appflow_tracer.lib import log_utils
-
-from packages.requirements.lib import (
-    package_utils,
-    policy_utils,
-    version_utils
-)
-
-# Initialize CONFIGS
-CONFIGS = tracing.setup_logging(
-    logname_override='logs/tests/test_version_utils.log'
-)
-CONFIGS["logging"]["enable"] = False  # Disable logging for test isolation
-CONFIGS["tracing"]["enable"] = False  # Disable tracing to prevent unintended prints
+from tests.mocks.config_loader import load_mock_requirements, load_mock_installed
+from packages.requirements.lib import version_utils, brew_utils
 
 # ------------------------------------------------------------------------------
 # Test: installed_version()
@@ -90,7 +67,7 @@ CONFIGS["tracing"]["enable"] = False  # Disable tracing to prevent unintended pr
     ("requests", "2.26.0"),
     ("numpy", None),  # Simulate package not installed
 ])
-def test_installed_version(package, installed_version):
+def test_installed_version(package, installed_version, requirements_config):
     """
     Ensure `installed_version()` correctly retrieves the installed package version.
 
@@ -98,14 +75,6 @@ def test_installed_version(package, installed_version):
         - Mocks `pip list --format=json` to simulate installed packages.
         - Ensures correct version retrieval from Pip.
         - Ensures `None` is returned if the package is not installed.
-
-    ## Args:
-        - `package` (`str`): The package name being tested.
-        - `installed_version` (`Optional[str]`): The expected installed version or `None` if the package is missing.
-
-    ## Expected Behavior:
-        - Returns the correct installed version if the package exists.
-        - Returns `None` if the package is not installed.
     """
 
     mock_pip_list = json.dumps([
@@ -122,12 +91,9 @@ def test_installed_version(package, installed_version):
         # Ensure `importlib.metadata.version()` is used for fallback
         mock_metadata.side_effect = lambda pkg: {"requests": "2.26.0", "pandas": "1.4.2"}.get(pkg.lower(), None)
 
-        result = version_utils.installed_version(package, CONFIGS)
+        result = version_utils.installed_version(package, requirements_config)
 
-        if installed_version is None:
-            assert result is None  # ✅ Ensure missing package returns None
-        else:
-            assert result == installed_version  # ✅ Ensure correct version is returned
+        assert result == installed_version, f"Expected {installed_version}, but got {result}"
 
 # ------------------------------------------------------------------------------
 # Test: latest_version()
@@ -137,7 +103,7 @@ def test_installed_version(package, installed_version):
     ("requests", "2.28.0"),
     ("numpy", "1.23.4"),
 ])
-def test_latest_version(package, latest_version):
+def test_latest_version(package, latest_version, requirements_config):
     """
     Ensure `latest_version()` correctly fetches the latest available package version.
 
@@ -151,8 +117,8 @@ def test_latest_version(package, latest_version):
     with patch("subprocess.run") as mock_run:
         mock_run.return_value.stdout = mock_pip_versions
 
-        result = version_utils.latest_version(package, CONFIGS)
-        assert result == latest_version
+        result = version_utils.latest_version(package, requirements_config)
+        assert result == latest_version, f"Expected {latest_version}, but got {result}"
 
 # ------------------------------------------------------------------------------
 # Test: linux_version()
@@ -165,26 +131,17 @@ def test_latest_version(package, latest_version):
 def test_linux_version(package, installed_version):
     """
     Ensure `linux_version()` correctly retrieves installed package versions via APT or DNF.
-
-    **Test Strategy:**
-        - Mocks `dpkg -s <package>` to simulate package installation status.
-        - Ensures correct version retrieval or `None` if package is missing.
     """
 
-    # ✅ Mock output for installed package
     mock_dpkg_output = f"Package: {package}\nVersion: 7.68.0"
 
     with patch("subprocess.run") as mock_run:
         if installed_version is not None:
-            # ✅ Simulate package found via dpkg
             mock_run.return_value.stdout = mock_dpkg_output
         else:
-            # ✅ Simulate package NOT found (dpkg should fail)
             mock_run.side_effect = subprocess.CalledProcessError(1, "dpkg")
 
         result = version_utils.linux_version(package)
-
-        # ✅ Ensure correct behavior for installed & missing packages
         assert result == installed_version, f"Expected {installed_version}, but got {result}"
 
 # ------------------------------------------------------------------------------
@@ -198,26 +155,15 @@ def test_linux_version(package, installed_version):
 def test_windows_version(package, installed_version):
     """
     Ensure `windows_version()` correctly retrieves installed package versions via PowerShell.
-
-    **Test Strategy:**
-        - Mocks `powershell Get-AppxPackage -Name <package>` command output.
-        - Ensures correct version retrieval or `None` if package is missing.
     """
 
-    # ✅ Simulate correct PowerShell behavior
-    mock_powershell_output = (
-        "1.5.00.33362" if package == "MicrosoftTeams" else ""  # Return empty string for missing package
-    )
+    mock_powershell_output = "1.5.00.33362" if package == "MicrosoftTeams" else ""
 
     with patch("subprocess.run") as mock_run:
         mock_run.return_value.stdout = mock_powershell_output
 
         result = version_utils.windows_version(package)
-
-        if installed_version is None:
-            assert result is None  # ✅ Ensure missing package returns None
-        else:
-            assert result == installed_version  # ✅ Ensure correct version is returned
+        assert result == installed_version, f"Expected {installed_version}, but got {result}"
 
 # ------------------------------------------------------------------------------
 # Test: pip_latest_version()
@@ -242,4 +188,21 @@ def test_pip_latest_version(package, latest_version):
         mock_run.return_value.stdout = mock_pip_versions
 
         result = version_utils.pip_latest_version(package)
-        assert result == latest_version
+        assert result == latest_version, f"Expected {latest_version}, but got {result}"
+
+# ------------------------------------------------------------------------------
+# Test: Brew version retrieval
+# ------------------------------------------------------------------------------
+
+@pytest.mark.parametrize("package, latest_version", [
+    ("wget", "1.21.3"),
+    ("openssl", "3.0.8"),
+])
+def test_brew_latest_version(package, latest_version):
+    """
+    Ensure `brew_utils.latest_version()` correctly retrieves the latest Homebrew package version.
+    """
+
+    with patch("packages.requirements.lib.brew_utils.latest_version", return_value=latest_version):
+        result = brew_utils.latest_version(package)
+        assert result == latest_version, f"Expected {latest_version}, but got {result}"

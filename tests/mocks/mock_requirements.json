@@ -1,0 +1,51 @@
+{
+    "logging": {
+        "enable": true,
+        "max_logfiles": 5,
+        "package_name": "<package-name>",
+        "module_name": "<module-name>",
+        "logs_dirname": "logs/<package-name>",
+        "log_filename": "logs/<package-name>/<module-name>.log"
+    },
+    "tracing": {
+        "enable": false,
+        "json": {
+            "compressed": false
+        }
+    },
+    "requirements": [
+        {
+            "package": "setuptools",
+            "version": {
+                "policy": "latest",
+                "target": "75.8.0",
+                "latest": false,
+                "status": false
+            }
+        },
+        {
+            "package": "pytest",
+            "version": {
+                "policy": "latest",
+                "target": "8.3.4",
+                "latest": false,
+                "status": false
+            }
+        },
+        {
+            "package": "coverage",
+            "version": {
+                "policy": "latest",
+                "target": "7.4.4",
+                "latest": false,
+                "status": false
+            }
+        }
+    ],
+    "environment": {
+        "OS": "",
+        "INSTALL_METHOD": "",
+        "EXTERNALLY_MANAGED": false,
+        "BREW_AVAILABLE": false
+    }
+}
