@@ -1,0 +1,47 @@
+### Documentation for tests/appflow_tracer/tracing/serialize_utils/test_serialize_utils.py
+
+Help on module tests.appflow_tracer.tracing.serialize_utils.test_serialize_utils in tests.appflow_tracer.tracing.serialize_utils:
+
+NAME
+    tests.appflow_tracer.tracing.serialize_utils.test_serialize_utils - # File: ./tests/appflow_tracer/tracing/test_serialize_utils.py
+
+FUNCTIONS
+    test_safe_serialize() -> None
+        Ensure `serialize_utils.safe_serialize()` correctly converts objects to JSON strings with metadata.
+
+        This test verifies:
+        - Standard Python data types (dicts, lists, numbers) serialize correctly.
+        - Handles verbose output for formatted JSON.
+        - Properly handles **non-serializable objects**, returning structured fallback data.
+        - Includes **error messages** for failed serializations.
+
+        Returns:
+            None: This test function does not return a value. It asserts that the serialization works correctly for various object types.
+
+    test_sanitize_token_string() -> None
+        Ensure `serialize_utils.sanitize_token_string()` removes comments while keeping code intact.
+
+        This test checks:
+        - Removal of **inline comments** while preserving the rest of the code.
+        - Removal of **full-line comments**.
+        - Proper handling of edge cases:
+          - Empty strings
+          - Strings with only whitespace
+          - Special characters before the comment symbol (`#`).
+
+        Returns:
+            None: This test function does not return a value. It validates that the function correctly sanitizes code strings by removing comments.
+
+DATA
+    CONFIGS = {'colors': {'CALL': '\x1b[92m', 'CRITICAL': '\x1b[41m', 'DEB...
+    ROOT_DIR = PosixPath('<project-location>')
+    category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
+
+VERSION
+    0.1.0
+
+FILE
+    <project-location>/tests/appflow_tracer/tracing/serialize_utils/test_serialize_utils.py
+
+
+

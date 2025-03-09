@@ -1,0 +1,125 @@
+### Documentation for packages/appflow_tracer/lib/trace_utils.py
+
+Help on module packages.appflow_tracer.lib.trace_utils in packages.appflow_tracer.lib:
+
+NAME
+    packages.appflow_tracer.lib.trace_utils - # File: ./packages/appflow_tracer/lib/trace_utils.py
+
+FUNCTIONS
+    call_events(
+        logger: logging.Logger,
+        frame: frame,
+        filename: str,
+        arg: object,
+        configs: dict
+    ) -> None
+        Handles logging of function call events.
+
+        This function:
+        - **Extracts caller details** including filename and function name.
+        - **Logs function invocation metadata** such as arguments and execution flow.
+        - **Filters out system and non-project calls** to keep logs relevant.
+
+        Args:
+            logger (logging.Logger): Logger instance for logging structured execution.
+            frame (FrameType): The execution frame where the function call occurred.
+            filename (str): The source file where the function call was invoked.
+            arg (object): The arguments passed to the function.
+            configs (dict): The configuration dictionary.
+
+        Returns:
+            None
+
+    return_events(
+        logger: logging.Logger,
+        frame: frame,
+        filename: str,
+        arg: object,
+        configs: dict
+    ) -> None
+        Handles logging of function return events.
+
+        This function:
+        - **Captures return values** including their data type.
+        - **Serializes complex return values** for structured logging.
+        - **Logs execution flow and prevents excessive logging** for system functions.
+
+        Args:
+            logger (logging.Logger): Logger instance for logging structured execution.
+            frame (FrameType): The execution frame where the function return occurred.
+            filename (str): The source file where the return event occurred.
+            arg (object): The function's return value.
+            configs (dict): The configuration dictionary.
+
+        Returns:
+            None
+
+    start_tracing(logger: logging.Logger = None, configs: dict = None) -> None
+        Initialize and activate function call tracing.
+
+        This function sets up **function execution tracing**, ensuring:
+        - **Function call and return events** are logged in a structured manner.
+        - **Only project-specific files** are traced, excluding system libraries.
+        - **Logging is enabled dynamically** based on the provided configuration.
+
+        Args:
+            logger (logging.Logger, optional): Logger instance for structured logging. If None, a default logger is used.
+            configs (dict, optional): A dictionary containing tracing configurations. If None, the global CONFIGS will be used.
+
+        Raises:
+            RuntimeError: If tracing fails due to invalid configurations.
+
+        Returns:
+            None
+
+        Example:
+            >>> start_tracing()
+            # Tracing begins using the global configuration.
+
+    trace_all(logger: logging.Logger, configs: dict) -> Callable
+        Generate a function that traces execution flow within project-specific files.
+
+        This function returns a **callable trace handler** that:
+        - **Logs function calls and returns**, including caller context.
+        - **Ensures logging is project-restricted**, excluding non-project dependencies.
+        - **Filters system function calls and internal logging utilities.**
+
+        Args:
+            logger (logging.Logger): Logger instance for structured logging.
+            configs (dict): The configuration dictionary that controls tracing behavior.
+
+        Raises:
+            ValueError: If tracing configurations are missing or invalid.
+
+        Returns:
+            Callable: A trace function that can be passed to `sys.settrace()`.
+
+        Example:
+            >>> sys.settrace(trace_all(logger, configs))
+            # Tracing starts using the provided configuration.
+
+DATA
+    Callable = typing.Callable
+        Deprecated alias to collections.abc.Callable.
+
+        Callable[[int], str] signifies a function that takes a single
+        parameter of type int and returns a str.
+
+        The subscription syntax must always be used with exactly two
+        values: the argument list and the return type.
+        The argument list must be a list of types, a ParamSpec,
+        Concatenate or ellipsis. The return type must be a single type.
+
+        There is no syntax to indicate optional or keyword arguments;
+        such function types are rarely used as callback types.
+
+    category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
+
+VERSION
+    0.1.0
+
+FILE
+    <project-location>/packages/appflow_tracer/lib/trace_utils.py
+
+
+

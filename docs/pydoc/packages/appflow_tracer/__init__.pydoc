@@ -1,0 +1,58 @@
+### Documentation for packages/appflow_tracer/__init__.py
+
+Help on module packages.appflow_tracer.__init__ in packages.appflow_tracer:
+
+NAME
+    packages.appflow_tracer.__init__ - # File: ./packages/appflow_tracer/__init__.py
+
+FUNCTIONS
+    setup_logging(
+        configs: Optional[dict] = None,
+        logname_override: Optional[str] = None,
+        events: Union[bool, dict, NoneType] = None
+    ) -> Union[bool, dict]
+        Configures and initializes the global logging system.
+
+        This function sets up the logging environment, creating log files and adding handlers
+        for both file-based and console-based logging. It ensures proper logging behavior
+        even when no configuration is provided.
+
+        Args:
+            configs (dict, optional): A dictionary containing logging configurations.
+                If None, the default global configurations are used.
+            logname_override (str, optional): A custom name for the log file.
+                If None, the log file name is derived from the calling script.
+            events (bool, list, or dict, optional):
+                - `None` / `False` → Disables all event logging.
+                - `True` → Enables all event logging.
+                - `list` → Enables only specified events (e.g., ["call", "return"]).
+                - `dict` → Enables/disables events per user settings (e.g., {"call": True, "return": False}).
+
+        Raises:
+            ValueError: If the provided logging configurations are not in a dictionary format.
+
+        Returns:
+            dict: The effective logging configuration after applying defaults.
+
+        Example:
+            >>> setup_logging()
+            {
+                "logging": {
+                    "log_filename": "/path/to/logfile.log",
+                    "max_logfiles": 5,
+                    ...
+                },
+                ...
+            }
+
+DATA
+    __all__ = ['setup_logging', 'file_utils', 'log_utils', 'serialize_util...
+
+VERSION
+    0.1.0
+
+FILE
+    <project-location>/packages/appflow_tracer/__init__.py
+
+
+

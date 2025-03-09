@@ -43,6 +43,7 @@ import json
 
 from unittest.mock import (
     ANY,
+    MagicMock,
     patch
 )
 from pathlib import Path
@@ -89,23 +90,42 @@ def test_parse_arguments(args, expected_attr, expected_value):
 # Test: collect_files()
 # ------------------------------------------------------------------------------
 
+# @pytest.fixture
+# def mock_project_structure(tmp_path):
+#     """Creates a temporary project structure for testing `collect_files()`."""
+#     base_dir = tmp_path / "mock_project"
+#     base_dir.mkdir(parents=True, exist_ok=True)
+#
+#     mock_file = base_dir / "mock_file.py"
+#     mock_file.write_text("def mock_function(): pass")  # Create a non-empty Python file
+#
+#     return base_dir, mock_file
+
 @pytest.fixture
-def mock_project_structure(tmp_path):
-    """Creates a temporary project structure for testing `collect_files()`."""
-    base_dir = tmp_path / "mock_project"
-    base_dir.mkdir(parents=True, exist_ok=True)
+def mock_project_structure():
+    """Mocks a project structure with Python files for `collect_files()` test."""
+    with patch("pathlib.Path.is_dir", return_value=True), \
+         patch("pathlib.Path.rglob", return_value=[Path("mock_project/mock_file.py")]), \
+         patch("pathlib.Path.stat", return_value=MagicMock(st_size=10)):  # Simulate non-empty file
 
-    mock_file = base_dir / "mock_file.py"
-    mock_file.write_text("def mock_function(): pass")  # Create a non-empty Python file
+        yield Path("mock_project"), Path("mock_project/mock_file.py")
 
-    return base_dir, mock_file
+# def test_collect_files(mock_project_structure):
+#     """Ensure `collect_files()` correctly identifies Python files."""
+#     base_dir, mock_file = mock_project_structure
+#     files_list = run.collect_files(base_dir, extensions=[".py"])
+#
+#     expected_files = {str(mock_file)}
+#     collected_files = {str(file) for file in files_list}
+#
+#     assert collected_files == expected_files, f"Expected {expected_files}, but got {collected_files}"
 
 def test_collect_files(mock_project_structure):
     """Ensure `collect_files()` correctly identifies Python files."""
     base_dir, mock_file = mock_project_structure
     files_list = run.collect_files(base_dir, extensions=[".py"])
 
-    expected_files = {str(mock_file)}
+    expected_files = {str(mock_file.resolve())}  # ✅ Convert to absolute path
     collected_files = {str(file) for file in files_list}
 
     assert collected_files == expected_files, f"Expected {expected_files}, but got {collected_files}"

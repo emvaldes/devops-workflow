@@ -1,0 +1,137 @@
+### Documentation for .github/scripts/extract_pytest_functions.py
+
+Help on module extract_pytest_functions:
+
+NAME
+    extract_pytest_functions - # File: .github/scripts/extract_pytest_functions.py
+
+FUNCTIONS
+    extract_pytest_functions(pytest_files: List[str]) -> Union[Dict[str, List[str]], bool]
+        Extracts pytest test function names from the given list of test files.
+
+        Args:
+            pytest_files (List[str]): A list of pytest test file paths to be processed.
+
+        Returns:
+            Dict[str, List[str]]: A dictionary where:
+                - Keys are file paths of pytest test scripts.
+                - Values are lists of extracted function names matching pytest's naming convention.
+
+            bool: Returns False if no valid test functions are found in any file.
+
+        Raises:
+            IOError: If a file cannot be opened or read.
+            Exception: If an unexpected error occurs while processing the files.
+
+        Extraction Process:
+            - Reads each file and searches for function names matching the pattern `test_*`.
+            - Uses regex to extract function names: `^def (test_[a-zA-Z0-9_]+)`.
+            - Skips unreadable or missing files, issuing warnings instead of failing outright.
+
+        Notes:
+            - If no valid functions are found, the function returns `False` instead of an empty dictionary.
+            - The output dictionary only includes files that contain at least one valid test function.
+
+    main() -> None
+        Main function to orchestrate the extraction and validation of pytest test functions.
+
+        Workflow:
+            1. Parses command-line arguments.
+            2. Reads a JSON-formatted list of pytest test file paths.
+            3. Calls `extract_pytest_functions()` to scan the test files.
+            4. Saves the extracted function names to a JSON file.
+            5. Calls `validate_json_output()` to ensure the output is structured correctly.
+
+        Command-Line Arguments:
+            pytest_listing (str): JSON list containing pytest test file paths.
+            pytest_mapping (str): Path to save the extracted test function names (JSON).
+
+        Returns:
+            None: This function does not return any values. It either exits successfully or terminates with an error.
+
+        Exit Codes:
+            1 - Failure (invalid JSON input, missing files, extraction failure, or validation errors).
+            0 - Success (functions extracted and validated successfully).
+
+        Notes:
+            - If `pytest_mapping` is not specified, it defaults to `"pytest_functions.json"`.
+            - If extraction or validation fails, the script exits with status code 1.
+
+    validate_json_output(pytest_mapping: str) -> bool
+        Validates the structure and content of the generated JSON output file.
+
+        Args:
+            pytest_mapping (str): Path to the JSON file containing pytest function mappings.
+
+        Returns:
+            bool:
+                - True if the JSON file exists, follows the correct structure, and contains valid data.
+                - False if the file is missing, empty, or improperly formatted.
+
+        Raises:
+            json.JSONDecodeError: If the JSON file is corrupted or contains invalid JSON.
+            IOError: If the file cannot be accessed.
+            Exception: If any other unexpected error occurs.
+
+        Validation Process:
+            1. Checks if the file exists and is not empty.
+            2. Ensures the JSON structure follows the expected format:
+               ```json
+               {
+                   "pytest_functions": {
+                       "file_path.py": ["test_function_1", "test_function_2"]
+                   }
+               }
+               ```
+            3. Confirms that extracted function names are stored as lists under corresponding file paths.
+            4. Reports malformed entries or structural issues.
+
+        Notes:
+            - If the JSON file does not exist or is empty, the function returns `False`.
+            - If validation fails, descriptive error messages are printed to stderr.
+
+DATA
+    Dict = typing.Dict
+        A generic version of dict.
+
+    List = typing.List
+        A generic version of list.
+
+    Union = typing.Union
+        Union type; Union[X, Y] means either X or Y.
+
+        On Python 3.10 and higher, the | operator
+        can also be used to denote unions;
+        X | Y means the same thing to the type checker as Union[X, Y].
+
+        To define a union, use e.g. Union[int, str]. Details:
+        - The arguments must be types and there must be at least one.
+        - None as an argument is a special case and is replaced by
+          type(None).
+        - Unions of unions are flattened, e.g.::
+
+            assert Union[Union[int, str], float] == Union[int, str, float]
+
+        - Unions of a single argument vanish, e.g.::
+
+            assert Union[int] == int  # The constructor actually returns int
+
+        - Redundant arguments are skipped, e.g.::
+
+            assert Union[int, str, int] == Union[int, str]
+
+        - When comparing unions, the argument order is ignored, e.g.::
+
+            assert Union[int, str] == Union[str, int]
+
+        - You cannot subclass or instantiate a union.
+        - You can use Optional[X] as a shorthand for Union[X, None].
+
+VERSION
+    0.1.0
+
+FILE
+    <project-location>/.github/scripts/extract_pytest_functions.py
+
+
+

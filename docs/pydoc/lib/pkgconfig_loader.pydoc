@@ -1,0 +1,131 @@
+### Documentation for lib/pkgconfig_loader.py
+
+Help on module lib.pkgconfig_loader in lib:
+
+NAME
+    lib.pkgconfig_loader - # File: ./lib/pkgconfig_loader.py
+
+FUNCTIONS
+    config_logfile(config: dict, caller_log_path: Optional[str] = None) -> pathlib._local.Path
+        Determine the correct log file path based on the caller module's request or self-inspection.
+
+        This function generates a log file path based on the provided configuration. If a
+        specific caller log path is provided, it resolves the path accordingly; otherwise,
+        it defaults to the logging directory specified in the configuration.
+
+        Args:
+            config (dict): The configuration dictionary containing logging settings.
+            caller_log_path (Optional[str], optional): A specific log directory path requested by the caller.
+
+        Returns:
+            Path: The resolved path for the log file.
+
+        Notes:
+            - If `caller_log_path` is provided, the function ensures the log file is stored there.
+            - If no caller path is provided, it defaults to the package-specific logging directory.
+
+    package_configs(overrides: Optional[dict] = None) -> dict
+        Load package configuration from a JSON file, or generate a default configuration if missing.
+
+        This function attempts to load a package-specific configuration file. If the file is
+        not found or is corrupted, a default configuration is generated, ensuring consistency
+        across packages. The function supports overriding specific configuration keys.
+
+        Args:
+            overrides (Optional[dict], optional): A dictionary containing configuration values to override defaults.
+
+        Raises:
+            FileNotFoundError: If the JSON file is not found.
+            json.JSONDecodeError: If the JSON file contains invalid syntax.
+
+        Returns:
+            dict: The loaded or generated package configuration.
+
+        Notes:
+            - If the configuration file is missing, the function regenerates a default configuration.
+            - If an override dictionary is provided, its values take precedence over the defaults.
+
+    setup_configs(
+        absolute_path: pathlib._local.Path,
+        logname_override: Optional[str] = None,
+        events: Union[bool, list, dict, NoneType] = None
+    ) -> dict
+        Dynamically initialize and update logging configuration for the calling module.
+
+        This function identifies the calling module, determines its package structure,
+        and ensures logging configuration is properly set up, including log directory
+        creation and configuration file management.
+
+        Args:
+            absolute_path (Path): The absolute path of the module requesting logging setup.
+            logname_override (Optional[str], optional): A custom name for the log file, if needed.
+            events (Optional[Union[bool, list, dict]], optional): Events control settings.
+
+        Raises:
+            RuntimeError: If the function is called in an environment where the module path cannot be determined.
+            OSError: If an error occurs while reading or writing the configuration file.
+
+        Returns:
+            dict: The updated logging configuration for the module.
+
+        Workflow:
+            1. Identifies the calling module's file path and extracts package details.
+            2. Determines the appropriate configuration file for logging.
+            3. Loads the configuration file if it exists; otherwise, regenerates it.
+            4. Updates logging settings and event controls.
+            5. Saves the updated configuration to disk.
+
+        Notes:
+            - This function ensures uniform logging behavior across different modules.
+            - Supports logging customization via `logname_override` and `events` parameters.
+
+DATA
+    Optional = typing.Optional
+        Optional[X] is equivalent to Union[X, None].
+
+    Union = typing.Union
+        Union type; Union[X, Y] means either X or Y.
+
+        On Python 3.10 and higher, the | operator
+        can also be used to denote unions;
+        X | Y means the same thing to the type checker as Union[X, Y].
+
+        To define a union, use e.g. Union[int, str]. Details:
+        - The arguments must be types and there must be at least one.
+        - None as an argument is a special case and is replaced by
+          type(None).
+        - Unions of unions are flattened, e.g.::
+
+            assert Union[Union[int, str], float] == Union[int, str, float]
+
+        - Unions of a single argument vanish, e.g.::
+
+            assert Union[int] == int  # The constructor actually returns int
+
+        - Redundant arguments are skipped, e.g.::
+
+            assert Union[int, str, int] == Union[int, str]
+
+        - When comparing unions, the argument order is ignored, e.g.::
+
+            assert Union[int, str] == Union[str, int]
+
+        - You cannot subclass or instantiate a union.
+        - You can use Optional[X] as a shorthand for Union[X, None].
+
+    category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
+    default_indent = 4
+    max_logfiles = 5
+    project_logs = PosixPath('<project-location>/logs...
+    project_packages = PosixPath('<project-location>/...
+    project_root = PosixPath('<project-location>')
+    timestamp = '20250308201323'
+
+VERSION
+    0.1.0
+
+FILE
+    <project-location>/lib/pkgconfig_loader.py
+
+
+

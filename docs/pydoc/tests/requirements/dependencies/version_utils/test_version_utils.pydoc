@@ -1,0 +1,53 @@
+### Documentation for tests/requirements/dependencies/version_utils/test_version_utils.py
+
+Help on module tests.requirements.dependencies.version_utils.test_version_utils in tests.requirements.dependencies.version_utils:
+
+NAME
+    tests.requirements.dependencies.version_utils.test_version_utils - # File: ./tests/requirements/dependencies/version_utils/test_version_utils.py
+
+FUNCTIONS
+    test_brew_latest_version(package, latest_version)
+        Ensure `brew_utils.latest_version()` correctly retrieves the latest Homebrew package version.
+
+    test_installed_version(package, installed_version, requirements_config)
+        Ensure `installed_version()` correctly retrieves the installed package version.
+
+        **Test Strategy:**
+            - Mocks `pip list --format=json` to simulate installed packages.
+            - Ensures correct version retrieval from Pip.
+            - Ensures `None` is returned if the package is not installed.
+
+    test_latest_version(package, latest_version, requirements_config)
+        Ensure `latest_version()` correctly fetches the latest available package version.
+
+        **Test Strategy:**
+            - Mocks `pip index versions <package>` to simulate the latest version retrieval.
+            - Ensures correct version extraction from Pip.
+
+    test_linux_version(package, installed_version)
+        Ensure `linux_version()` correctly retrieves installed package versions via APT or DNF.
+
+    test_pip_latest_version(package, latest_version)
+        Ensure `pip_latest_version()` retrieves the correct latest package version.
+
+        **Test Strategy:**
+        - Mocks `pip index versions <package>` to simulate version retrieval.
+        - Ensures correct parsing of available versions.
+
+    test_windows_version(package, installed_version)
+        Ensure `windows_version()` correctly retrieves installed package versions via PowerShell.
+
+DATA
+    ANY = <ANY>
+    ROOT_DIR = PosixPath('<project-location>')
+    __module_name__ = 'version_utils'
+    __package_name__ = 'requirements'
+
+VERSION
+    0.1.1
+
+FILE
+    <project-location>/tests/requirements/dependencies/version_utils/test_version_utils.py
+
+
+

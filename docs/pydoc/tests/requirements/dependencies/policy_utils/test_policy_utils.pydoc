@@ -1,0 +1,44 @@
+### Documentation for tests/requirements/dependencies/policy_utils/test_policy_utils.py
+
+Help on module tests.requirements.dependencies.policy_utils.test_policy_utils in tests.requirements.dependencies.policy_utils:
+
+NAME
+    tests.requirements.dependencies.policy_utils.test_policy_utils - # File: ./tests/requirements/dependencies/policy_utils/test_policy_utils.py
+
+FUNCTIONS
+    test_installed_configfile(requirements_config)
+        Ensure `installed_configfile()` returns the correct `installed.json` path.
+
+        **Test Strategy:**
+            - Uses `requirements_config` to simulate package installation settings.
+            - Calls `installed_configfile()` to ensure correct file path retrieval.
+
+        ## Expected Behavior:
+            - The function should return the correct path to `installed.json`.
+
+    test_policy_management(requirements_config, installed_config)
+        Validate `policy_management()` correctly applies package policies using `mock_requirements.json`.
+
+        **Test Strategy:**
+            - **Mocks** `installed_version()` & `latest_version()` to simulate system state.
+            - **Ensures correct status assignment** (`installing`, `upgrading`, `matched`, etc.).
+            - **Verifies structured logging** without requiring exact message matching.
+
+        ## Assertions:
+            - `setuptools` should be **marked as `upgraded`**.
+            - `pytest` should be **marked as `matched`**.
+            - `coverage` should be **marked as `installing` or `upgraded`**.
+
+DATA
+    ROOT_DIR = PosixPath('<project-location>')
+    __module_name__ = 'policy_utils'
+    __package_name__ = 'requirements'
+
+VERSION
+    0.1.0
+
+FILE
+    <project-location>/tests/requirements/dependencies/policy_utils/test_policy_utils.py
+
+
+

@@ -1,0 +1,67 @@
+### Documentation for tests/requirements/dependencies/package_utils/test_package_utils.py
+
+Help on module tests.requirements.dependencies.package_utils.test_package_utils in tests.requirements.dependencies.package_utils:
+
+NAME
+    tests.requirements.dependencies.package_utils.test_package_utils - # File: ./tests/requirements/dependencies/package_utils/test_package_utils.py
+
+FUNCTIONS
+    test_backup_packages(requirements_config)
+        Validate that `backup_packages()` correctly saves the list of installed packages.
+
+        **Mocked Components**:
+            - `subprocess.run()` to simulate `pip freeze`.
+            - `open()` to avoid writing to an actual file.
+            - `log_utils.log_message()` to prevent dependency on `configs["logging"]`.
+
+        **Expected Behavior**:
+            - Ensures `pip freeze` runs correctly.
+            - Writes package output to a file.
+
+    test_install_package_brew(installed_config)
+        Ensure `install_package()` installs a package using Homebrew dynamically from `mock_installed.json`.
+
+        **Fix:**
+            - Uses `installed_config` from `mock_installed.json` instead of `mock_requirements.json`.
+            - Dynamically sets `"package_name"` and `"module_name"` in logging.
+            - Mocks `brew_utils.check_availability()` to simulate Brew availability.
+            - Mocks `subprocess.run` to prevent real package installations.
+            - Mocks `log_message()` to prevent `KeyError`.
+
+    test_install_package_pip(requirements_config)
+        Ensure `install_package()` installs a package using Pip dynamically from `mock_requirements.json`.
+
+        **Fix:**
+            - Uses `requirements_config` to provide a structured config.
+            - Mocks `subprocess.run` to avoid real installations.
+            - Mocks `log_utils.log_message()` to prevent KeyError.
+
+    test_install_requirements(requirements_config)
+        Ensure `install_requirements()` correctly installs dependencies based on `mock_requirements.json`.
+
+    test_install_requirements_adhoc(requirements_config)
+        Ensure `install_requirements()` correctly bypasses policy checks when `status="adhoc"`.
+
+    test_installed_configfile(installed_config)
+        Ensure `installed_configfile()` returns the correct `installed.json` path.
+
+    test_restore_packages(requirements_config)
+        Ensure `restore_packages()` reinstalls packages from a backup file.
+
+    test_review_packages(installed_config)
+        Ensure `review_packages()` correctly evaluates installed package versions using `mock_installed.json`.
+
+DATA
+    ANY = <ANY>
+    ROOT_DIR = PosixPath('<project-location>')
+    __module_name__ = 'package_utils'
+    __package_name__ = 'requirements'
+
+VERSION
+    0.1.0
+
+FILE
+    <project-location>/tests/requirements/dependencies/package_utils/test_package_utils.py
+
+
+

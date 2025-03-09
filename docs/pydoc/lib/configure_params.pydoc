@@ -1,0 +1,224 @@
+### Documentation for lib/configure_params.py
+
+Help on module lib.configure_params in lib:
+
+NAME
+    lib.configure_params - # File: ./lib/configure_params.py
+
+FUNCTIONS
+    fetching_runtime_variables() -> Dict[str, Dict[str, Union[str, Dict[str, str]]]]
+        Retrieve runtime variables categorized by section.
+
+        Loads structured system parameters and extracts `target_env` values categorized by section.
+
+        Raises:
+            TypeError: If `options` inside a section is not a dictionary.
+            SystemExit: If an error occurs during retrieval.
+
+        Returns:
+            Dict[str, Dict[str, Union[str, Dict[str, str]]]]:
+                - A dictionary mapping section names to their titles and option key-value pairs.
+
+        Notes:
+            - The function reads system-wide configuration files and extracts relevant parameters.
+            - If `options` in a section is not a dictionary, the function raises an error.
+
+    initialize_env_file() -> None
+        Ensure the `.env` file exists and contains valid content.
+
+        If the file is missing or invalid, it will be recreated and populated.
+
+        Raises:
+            SystemExit: If the `.env` file cannot be populated.
+
+        Notes:
+            - Calls `validate_env_file()` to check for existing valid `.env` file.
+            - Calls `populate_env_file()` if the `.env` file is missing or invalid.
+
+    initialize_runtime_file() -> None
+        Ensure the `runtime-params.json` file exists and contains valid content.
+
+        If the file is missing or invalid, it will be recreated and populated.
+
+        Raises:
+            SystemExit: If the `runtime-params.json` file cannot be populated.
+
+        Notes:
+            - Calls `validate_runtime_file()` to check for existing valid `runtime-params.json` file.
+            - Calls `populate_runtime_file()` if the file is missing or invalid.
+
+    load_json_sources(filepaths: List[str], mode: str = 'merge') -> Union[Dict, Tuple[Dict]]
+        Loads JSON configuration files and merges them or returns them separately.
+
+        This function reads multiple JSON files and either merges them into a single dictionary
+        (`merge` mode) or returns them separately as a tuple of dictionaries (`fetch` mode).
+
+        Args:
+            filepaths (List[str]): A list of JSON file paths to load.
+            mode (str, optional): Determines the return format. Either "merge" (default) or "fetch".
+
+        Raises:
+            ValueError: If a JSON file is not structured as a dictionary.
+            ValueError: If the JSON structure is invalid.
+            RuntimeError: If there's an issue reading the file.
+
+        Returns:
+            Union[Dict, Tuple[Dict]]:
+                - If `mode="merge"`, returns a single merged dictionary.
+                - If `mode="fetch"`, returns a tuple containing individual dictionaries.
+
+        Notes:
+            - This function ensures that only dictionary-structured JSON files are processed.
+            - If `mode="fetch"`, returns the original structure of each file separately.
+
+    main() -> Tuple[Dict, Dict]
+        Processes environment configurations by integrating `.env` with `runtime-params.json`.
+
+        This function:
+        - Ensures `.env` and `runtime-params.json` exist and are valid.
+        - Loads system parameters and runtime parameters.
+
+        Raises:
+            Exception: If an error occurs while processing environment configurations.
+
+        Returns:
+            Tuple[Dict, Dict]:
+                - A tuple containing system parameters and runtime parameters.
+
+        Notes:
+            - Calls `initialize_env_file()` and `initialize_runtime_file()`.
+            - Loads system parameters from JSON files.
+
+    populate_env_file() -> bool
+        Writes environment variables dynamically to the `.env` file.
+
+        Retrieves structured runtime parameters and formats them for `.env` storage.
+
+        Raises:
+            Exception: If there is an error during file population.
+
+        Returns:
+            bool:
+                - True if the `.env` file is successfully populated and validated.
+                - False otherwise.
+
+        Notes:
+            - Loads runtime variables using `fetching_runtime_variables()`.
+            - Writes structured environment variables to the `.env` file.
+            - Calls `validate_env_file()` to verify successful updates.
+
+    populate_runtime_file() -> bool
+        Generates structured runtime parameters by merging system parameters with `.env` values.
+
+        Updates `runtime-params.json` by:
+        - Extracting runtime variables.
+        - Merging environment variables.
+        - Removing unnecessary titles.
+
+        Raises:
+            SystemExit: If the runtime parameters cannot be initialized.
+
+        Returns:
+            bool:
+                - True if `runtime-params.json` is successfully updated.
+                - False otherwise.
+
+        Notes:
+            - Reads `runtime-params.json` and updates values based on `.env` contents.
+            - Calls `fetching_runtime_variables()` to retrieve runtime variables.
+
+    validate_env_file() -> bool
+        Validate the existence and integrity of the `.env` file.
+
+        Ensures that the `.env` file exists and contains valid content. If the file is empty
+        or only contains a header, it is considered invalid.
+
+        Returns:
+            bool:
+                - True if the file exists and is valid.
+                - False otherwise.
+
+        Notes:
+            - Reads the `.env` file and checks for meaningful content.
+            - If the file exists but is empty, logs a warning.
+
+    validate_runtime_file() -> bool
+        Validate the existence and integrity of the `runtime-params.json` file.
+
+        Ensures that the `runtime-params.json` file exists and contains valid content.
+        If the file is empty or contains an invalid structure, it is considered invalid.
+
+        Returns:
+            bool:
+                - True if the file exists and is valid.
+                - False otherwise.
+
+        Notes:
+            - Reads the `runtime-params.json` file and verifies its content.
+            - If the file is empty or contains invalid JSON, logs an error.
+
+DATA
+    Dict = typing.Dict
+        A generic version of dict.
+
+    List = typing.List
+        A generic version of list.
+
+    Tuple = typing.Tuple
+        Deprecated alias to builtins.tuple.
+
+        Tuple[X, Y] is the cross-product type of X and Y.
+
+        Example: Tuple[T1, T2] is a tuple of two elements corresponding
+        to type variables T1 and T2.  Tuple[int, float, str] is a tuple
+        of an int, a float and a string.
+
+        To specify a variable-length tuple of homogeneous type, use Tuple[T, ...].
+
+    Union = typing.Union
+        Union type; Union[X, Y] means either X or Y.
+
+        On Python 3.10 and higher, the | operator
+        can also be used to denote unions;
+        X | Y means the same thing to the type checker as Union[X, Y].
+
+        To define a union, use e.g. Union[int, str]. Details:
+        - The arguments must be types and there must be at least one.
+        - None as an argument is a special case and is replaced by
+          type(None).
+        - Unions of unions are flattened, e.g.::
+
+            assert Union[Union[int, str], float] == Union[int, str, float]
+
+        - Unions of a single argument vanish, e.g.::
+
+            assert Union[int] == int  # The constructor actually returns int
+
+        - Redundant arguments are skipped, e.g.::
+
+            assert Union[int, str, int] == Union[int, str]
+
+        - When comparing unions, the argument order is ignored, e.g.::
+
+            assert Union[int, str] == Union[str, int]
+
+        - You cannot subclass or instantiate a union.
+        - You can use Optional[X] as a shorthand for Union[X, None].
+
+    env_file_header = '## Environment variables (auto-generated)\n\n'
+    env_filepath = PosixPath('<project-location>/.env...
+    project_root = PosixPath('<project-location>')
+    runtime_params_filename = 'runtime-params.json'
+    runtime_params_filepath = PosixPath('<user-home>/.repos/devops/wor...
+    system_params_filename = 'system-params.json'
+    system_params_filepath = PosixPath('<user-home>/.repos/devops/work...
+    system_params_listing = [PosixPath('<user-home>/.repos/devops/work...
+
+VERSION
+    0.1.0
+
+FILE
+    <project-location>/lib/configure_params.py
+
+
+

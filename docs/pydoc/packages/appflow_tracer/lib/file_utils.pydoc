@@ -1,0 +1,116 @@
+### Documentation for packages/appflow_tracer/lib/file_utils.py
+
+Help on module packages.appflow_tracer.lib.file_utils in packages.appflow_tracer.lib:
+
+NAME
+    packages.appflow_tracer.lib.file_utils - # File: ./packages/appflow_tracer/lib/file_utils.py
+
+FUNCTIONS
+    is_project_file(filename: str) -> bool
+        Determine if a given file path belongs to the project directory structure.
+
+        This function verifies whether the specified `filename` is located within
+        the project's root directory and is not an external dependency.
+
+        Args:
+            filename (str): The absolute or relative file path to be checked.
+
+        Returns:
+            bool: True if the file is within the project directory, False otherwise.
+
+        Example:
+            >>> is_project_file("appflow_tracer/tracing.py")
+            True
+            >>> is_project_file("/usr/lib/python3.8/external.py")
+            False
+
+        Notes:
+            - If the filename is `None` or an empty string, the function returns `False`.
+            - The function safely resolves the absolute path before performing the check.
+
+    manage_logfiles(configs: dict = None) -> list
+        Manage log file storage by removing old logs if the number exceeds a configured limit.
+
+        This function prevents log directories from growing indefinitely by:
+        - Checking the current number of log files in each log subdirectory.
+        - Deleting the oldest logs **only if** the total count exceeds the allowed limit.
+
+        Args:
+            configs (dict, optional): Configuration dictionary that specifies:
+                - `"max_logfiles"`: Maximum number of log files to retain.
+                Defaults to `None`, in which case the global `max_logfiles` setting is used.
+
+        Raises:
+            OSError: If an error occurs while attempting to delete log files.
+
+        Returns:
+            list: A list of deleted log file paths.
+
+        Workflow:
+            1. Sorts log files by modification time (oldest first).
+            2. Identifies files exceeding the limit.
+            3. Deletes excess log files.
+            4. Logs deletions using `log_utils.log_message()`.
+
+        Notes:
+            - The function ensures logging operations respect the `configs["logging"]["enable"]` flag.
+            - If no logs exceed the threshold, no deletions occur, and an empty list is returned.
+
+    relative_path(filepath: str) -> str
+        Convert an absolute file path into a project-relative path.
+
+        This function maps the given absolute path to the project’s directory structure.
+        If the file is outside the project, it returns the original path as a fallback.
+        The `.py` extension is removed from the resulting path for consistency.
+
+        Args:
+            filepath (str): The absolute file path to convert.
+
+        Returns:
+            str: The relative path within the project, or the original path if it
+            cannot be converted.
+
+        Example:
+            >>> relative_path("/path/to/project/module.py")
+            "module"
+
+        Notes:
+            - If the file is not within the project directory, the original path is returned.
+            - The `.py` extension is removed for consistency in logging and output formatting.
+
+    remove_ansi_escape_codes(text: str) -> str
+        Remove ANSI escape sequences from a string.
+
+        This function is used to clean up log messages or terminal output by
+        stripping out escape codes that produce colored or formatted text.
+        The resulting string contains only plain text.
+
+        Args:
+            text (str): The input string that may contain ANSI escape codes.
+
+        Returns:
+            str: A new string with all ANSI escape codes removed.
+
+        Example:
+            >>> remove_ansi_escape_codes("[31mThis is red text[0m")
+            "This is red text"
+
+        Notes:
+            - ANSI escape codes are commonly used for terminal colorization.
+            - The function ensures that formatted messages remain readable.
+
+DATA
+    category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
+    default_indent = 4
+    max_logfiles = 5
+    project_logs = PosixPath('<project-location>/logs...
+    project_root = PosixPath('<project-location>')
+
+VERSION
+    0.1.0
+
+FILE
+    <project-location>/packages/appflow_tracer/lib/file_utils.py
+
+
+

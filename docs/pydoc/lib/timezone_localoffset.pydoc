@@ -1,0 +1,73 @@
+### Documentation for lib/timezone_localoffset.py
+
+Help on module lib.timezone_localoffset in lib:
+
+NAME
+    lib.timezone_localoffset - # File: ./lib/timezone_localoffset.py
+
+FUNCTIONS
+    get_local_offset(debug: bool = False) -> float
+        Retrieves and calculates the local time zone offset from UTC.
+
+        This function:
+        - Determines the local time zone using `pytz`.
+        - Computes the time difference (offset) between local time and UTC.
+        - Prints local and UTC time information in a structured format.
+
+        Args:
+            debug (bool, optional): Enables additional debugging output. Defaults to False.
+
+        Raises:
+            Exception: If there is an error retrieving the time zone or calculating the offset.
+
+        Returns:
+            float: The UTC offset of the local time zone in hours.
+
+        Workflow:
+            1. Detects the system's local time zone using `pytz`.
+            2. Retrieves the current local time and UTC time.
+            3. Computes the time offset in hours.
+            4. Prints formatted output for debugging if `debug` is enabled.
+
+        Notes:
+            - The default time zone is set to `"America/Creston"`, but it should be dynamically
+              determined for broader applicability.
+            - If an error occurs, it is printed to `stderr`, and the function exits with a failure code.
+
+    main(debug: bool = False) -> None
+        Main entry point for processing time zone offset calculations.
+
+        This function:
+        - Calls `get_local_offset()` to retrieve the local time zone and UTC offset.
+        - Handles exceptions that may arise during execution.
+
+        Args:
+            debug (bool, optional): Enables additional debugging output. Defaults to False.
+
+        Raises:
+            SystemExit: If an error occurs during time zone retrieval, the script exits with status `1`.
+
+        Returns:
+            None: This function does not return a value; it handles execution flow.
+
+        Workflow:
+            1. Calls `get_local_offset()` with the `debug` flag.
+            2. Captures and logs any errors.
+            3. Exits with a non-zero status code if an error occurs.
+
+        Notes:
+            - The function can be triggered via the command-line interface (CLI).
+            - Debug mode prints additional details about the local time zone.
+
+DATA
+    LocalOffset = None
+    LocalTimeZone = None
+
+VERSION
+    0.1.0
+
+FILE
+    <project-location>/lib/timezone_localoffset.py
+
+
+

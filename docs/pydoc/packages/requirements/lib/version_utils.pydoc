@@ -1,0 +1,195 @@
+### Documentation for packages/requirements/lib/version_utils.py
+
+Help on module packages.requirements.lib.version_utils in packages.requirements.lib:
+
+NAME
+    packages.requirements.lib.version_utils - # Version Management Utilities for Dependency Handling
+
+DESCRIPTION
+    ## Overview
+        This module provides utilities for retrieving and managing package versions across
+        various package managers. It supports version detection for Python packages installed
+        via Pip, Homebrew, APT, DNF, and Windows Package Manager (Microsoft Store).
+
+    ## Features
+        - **Retrieve Installed Package Versions:** Determines the currently installed version of a package.
+        - **Check Latest Available Versions:** Queries the latest available package versions from the appropriate source.
+        - **Multi-Platform Support:** Detects package versions across macOS (Homebrew), Linux (APT/DNF), and Windows (Microsoft Store).
+        - **Optimized Performance:** Uses caching and structured queries to minimize redundant operations.
+        - **Logging & Debugging:** Provides detailed debug logs for package evaluations.
+
+    ## Usage
+        This module is used internally by the dependency management system to dynamically
+        assess package versions before applying installation policies.
+
+    ## Dependencies
+        - `subprocess`: For executing package manager commands.
+        - `json`: For parsing structured package data.
+        - `importlib.metadata`: For retrieving installed Python package versions.
+        - `pathlib`: For managing system paths.
+        - `log_utils`: Custom logging module for structured output.
+        - `brew_utils`: Handles Homebrew-specific package version retrieval.
+
+    ## Notes
+        - This module prioritizes Pip-based queries before falling back to system-level package managers.
+        - It ensures **structured decision-making** when evaluating package versions.
+
+FUNCTIONS
+    installed_version(package: str, configs: dict) -> Optional[str]
+        Retrieve the installed version of a package.
+
+        This function checks for an installed package version using the following priority order:
+            1. **Pip (`pip list --format=json`)** - Best for detecting all installed packages.
+            2. **Pip (`importlib.metadata.version()`)** - Fallback for retrieving individual package metadata.
+            3. **Homebrew (`brew list --versions`)** - If applicable on macOS.
+            4. **APT/DNF (`dpkg -s` or `rpm -q`)** - If applicable on Linux.
+            5. **Windows Package Manager (`powershell Get-AppxPackage`)** - If applicable on Windows.
+
+        ## Args:
+            - `package` (`str`): The package name to check.
+            - `configs` (`dict`): Configuration dictionary containing system environment details.
+
+        ## Returns:
+            - `Optional[str]`: The installed package version if found, otherwise `None`.
+
+        ## Notes:
+            - Uses structured logging to track package version retrieval.
+            - Ensures compatibility with externally managed Python environments.
+
+    latest_version(package: str, configs: dict) -> Optional[str]
+        Fetch the latest available version of a package using the appropriate package manager.
+
+        This function determines the latest available version of a package by querying:
+            1. **Pip** (default for Python packages).
+            2. **Homebrew** (if Python is managed via Brew on macOS).
+            3. **APT/DNF** (if applicable on Linux).
+            4. **Windows Package Manager** (Microsoft Store).
+
+        ## Args:
+            - `package` (`str`): The package name to check.
+            - `configs` (`dict`): Configuration dictionary used for logging and environment detection.
+
+        ## Returns:
+            - `Optional[str]`: The latest available version as a string if found, otherwise `None`.
+
+        ## Notes:
+            - Prioritizes Pip as it provides the most up-to-date package information.
+            - Uses `match` statements to route requests to the correct package manager.
+
+    linux_latest_version(package: str) -> Optional[str]
+        Retrieve the latest available version of a package via APT or DNF.
+
+        This function checks:
+            - `apt-cache madison <package>` for APT (Debian-based systems).
+            - `dnf list available <package>` for DNF (Fedora-based systems).
+
+        ## Args:
+            - `package` (`str`): The package name to check.
+
+        ## Returns:
+            - `Optional[str]`: The latest available version if found, otherwise `None`.
+
+        ## Notes:
+            - If `apt-cache` is unavailable, it falls back to `dnf`.
+
+    linux_version(package: str) -> Optional[str]
+        Retrieve the installed version of a package via APT (Debian-based) or DNF (Fedora).
+
+        This function attempts to determine the installed version using:
+            - `dpkg -s <package>` for APT (Debian-based systems).
+            - `rpm -q <package>` for DNF (Fedora-based systems).
+
+        ## Args:
+            - `package` (`str`): The package name to check.
+
+        ## Returns:
+            - `Optional[str]`: The installed version if found, otherwise `None`.
+
+        ## Notes:
+            - If `dpkg` is unavailable, it falls back to `rpm`.
+
+    pip_latest_version(package: str) -> Optional[str]
+        Retrieve the latest available version of a package via Pip.
+
+        This function executes `pip index versions <package>` to fetch a list of available
+        versions and extracts the latest one.
+
+        ## Args:
+            - `package` (`str`): The package name to check.
+
+        ## Returns:
+            - `Optional[str]`: The latest available version as a string if found, otherwise `None`.
+
+        ## Notes:
+            - Requires internet access to fetch version information from PyPI.
+
+    windows_latest_version(package: str) -> Optional[str]
+        Retrieve the latest available version of a package via Microsoft Store.
+
+        This function runs a PowerShell command to check the latest available version
+        of a package using `Find-Package`.
+
+        ## Args:
+            - `package` (`str`): The package name to check.
+
+        ## Returns:
+            - `Optional[str]`: The latest available version if found, otherwise `None`.
+
+        ## Notes:
+            - Requires PowerShell execution privileges.
+
+    windows_version(package: str) -> Optional[str]
+        Retrieve the installed version of a package via Microsoft Store.
+
+        This function runs a PowerShell command to check the installed version of
+        a package using `Get-AppxPackage`.
+
+        ## Args:
+            - `package` (`str`): The package name to check.
+
+        ## Returns:
+            - `Optional[str]`: The installed version if found, otherwise `None`.
+
+        ## Notes:
+            - Uses PowerShell commands, which require administrator privileges.
+
+DATA
+    LIB_DIR = PosixPath('<project-location>/packages/...
+    Optional = typing.Optional
+        Optional[X] is equivalent to Union[X, None].
+
+    Union = typing.Union
+        Union type; Union[X, Y] means either X or Y.
+
+        On Python 3.10 and higher, the | operator
+        can also be used to denote unions;
+        X | Y means the same thing to the type checker as Union[X, Y].
+
+        To define a union, use e.g. Union[int, str]. Details:
+        - The arguments must be types and there must be at least one.
+        - None as an argument is a special case and is replaced by
+          type(None).
+        - Unions of unions are flattened, e.g.::
+
+            assert Union[Union[int, str], float] == Union[int, str, float]
+
+        - Unions of a single argument vanish, e.g.::
+
+            assert Union[int] == int  # The constructor actually returns int
+
+        - Redundant arguments are skipped, e.g.::
+
+            assert Union[int, str, int] == Union[int, str]
+
+        - When comparing unions, the argument order is ignored, e.g.::
+
+            assert Union[int, str] == Union[str, int]
+
+        - You cannot subclass or instantiate a union.
+        - You can use Optional[X] as a shorthand for Union[X, None].
+
+FILE
+    <project-location>/packages/requirements/lib/version_utils.py
+
+
+

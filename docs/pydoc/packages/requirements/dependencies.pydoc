@@ -1,0 +1,122 @@
+### Documentation for packages/requirements/dependencies.py
+
+Help on module packages.requirements.dependencies in packages.requirements:
+
+NAME
+    packages.requirements.dependencies - # File: ./packages/requirements/dependencies.py
+
+FUNCTIONS
+    main() -> None
+        Entry point for the dependency management system.
+
+        This function initializes logging, processes command-line arguments,
+        and installs or updates dependencies from a JSON requirements file.
+        It dynamically determines the system's Python environment and applies
+        installation policies accordingly.
+
+        ## Workflow:
+        1. **Parse Command-Line Arguments**
+           - Loads configuration settings.
+           - Determines runtime settings.
+
+        2. **Load Requirements File**
+           - Reads `requirements.json` (or custom-specified file).
+           - Extracts dependency data.
+
+        3. **Setup Logging & Environment**
+           - Detects Python installation method.
+           - Logs detected system information.
+
+        4. **Handle Backup & Restore Operations**
+           - Saves a package list for future restoration.
+           - Restores or migrates package environments if specified.
+
+        5. **Determine Dependency Policies**
+           - Calls `policy_utils.policy_management()` to enforce package rules.
+
+        6. **Install Dependencies**
+           - Uses `package_utils.install_requirements()` for installations.
+
+        7. **Display Installed Packages (if requested)**
+           - Shows structured package information from `installed.json`.
+
+        ## Args:
+        - `None`
+
+        ## Returns:
+        - `None`: This function performs actions based on command-line arguments and manages dependencies.
+
+        ## Notes:
+        - If an error occurs (e.g., missing `requirements.json`), the process will exit with `sys.exit(1)`.
+        - The function prevents breaking system-managed environments unless explicitly overridden (`--force`).
+
+    parse_arguments() -> argparse.Namespace
+        Parse command-line arguments for package management.
+
+        This function provides command-line options for managing dependencies,
+        allowing users to specify requirement files, enforce installations,
+        backup, restore, or migrate packages.
+
+        ## Supported Arguments:
+            - `-c/--config`: Specify a custom JSON requirements file.
+            - `-f/--force`: Force Pip installations using `--break-system-packages`.
+            - `--backup-packages`: Save installed package list for future restoration.
+            - `--restore-packages`: Restore packages from a backup file.
+            - `--migrate-packages`: Migrate package environments.
+            - `--show-installed`: Display installed dependencies.
+
+        ## Args:
+            - `None`
+
+        Returns:
+            - `argparse.Namespace`: The parsed arguments object containing selected options.
+
+        Return Type: argparse.Namespace
+            Returns an argparse.Namespace object containing the parsed command-line arguments.
+
+        ## Notes:
+            - This function is critical for enabling dynamic dependency management.
+
+DATA
+    LIB_DIR = PosixPath('<project-location>/lib')
+    Optional = typing.Optional
+        Optional[X] is equivalent to Union[X, None].
+
+    Union = typing.Union
+        Union type; Union[X, Y] means either X or Y.
+
+        On Python 3.10 and higher, the | operator
+        can also be used to denote unions;
+        X | Y means the same thing to the type checker as Union[X, Y].
+
+        To define a union, use e.g. Union[int, str]. Details:
+        - The arguments must be types and there must be at least one.
+        - None as an argument is a special case and is replaced by
+          type(None).
+        - Unions of unions are flattened, e.g.::
+
+            assert Union[Union[int, str], float] == Union[int, str, float]
+
+        - Unions of a single argument vanish, e.g.::
+
+            assert Union[int] == int  # The constructor actually returns int
+
+        - Redundant arguments are skipped, e.g.::
+
+            assert Union[int, str, int] == Union[int, str]
+
+        - When comparing unions, the argument order is ignored, e.g.::
+
+            assert Union[int, str] == Union[str, int]
+
+        - You cannot subclass or instantiate a union.
+        - You can use Optional[X] as a shorthand for Union[X, None].
+
+VERSION
+    0.2.0
+
+FILE
+    <project-location>/packages/requirements/dependencies.py
+
+
+

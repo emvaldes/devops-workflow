@@ -1,0 +1,85 @@
+### Documentation for tests/appflow_tracer/tracing/test_tracing.py
+
+Help on module tests.appflow_tracer.tracing.test_tracing in tests.appflow_tracer.tracing:
+
+NAME
+    tests.appflow_tracer.tracing.test_tracing - # File: ./tests/appflow_tracer/tracing/test_tracing_utils.py
+
+FUNCTIONS
+    mock_configs()
+        Mock the `CONFIGS` object globally for all tests if not already initialized.
+
+        This fixture ensures that the `CONFIGS` object is available globally for all tests. If `CONFIGS` is not
+        initialized, it creates a default configuration with logging and tracing disabled, and events for `install`
+        and `update` enabled. It provides a consistent configuration for all tests that require access to `CONFIGS`.
+
+        The fixture is automatically applied to all tests because of the `autouse=True` flag, eliminating the need to
+        explicitly request it in individual test functions.
+
+        Returns:
+            dict: The `CONFIGS` dictionary, which includes configuration for logging, tracing, and event handling.
+
+    mock_logger() -> unittest.mock.MagicMock
+        Create a mock logger for testing purposes.
+
+        This fixture creates and returns a mock instance of a logger object using `MagicMock`, which simulates the behavior
+        of a `logging.Logger` object. It also ensures that the `handlers` attribute is properly initialized as an empty list.
+
+        This fixture is useful for testing logging functionality without writing actual logs, enabling verification of logging behavior
+        and ensuring that logging methods are called as expected.
+
+        Returns:
+            MagicMock: A mock logger object that mimics the behavior of a `logging.Logger` instance.
+
+    test_ansi_file_handler(mock_logger: unittest.mock.MagicMock) -> None
+        Ensure `tracing.ANSIFileHandler` removes ANSI sequences before writing logs.
+
+        This test:
+        - Verifies that `ANSIFileHandler` strips ANSI escape codes from log messages before writing them to a file.
+        - Uses a helper function to remove ANSI codes and ensures that the final message written to the file does not contain any escape codes.
+
+        Args:
+            mock_logger (MagicMock): Mock logger used to verify the behavior of the file handler.
+
+        Returns:
+            None: This test does not return a value but asserts that ANSI escape codes are correctly stripped before logging to a file.
+
+    test_print_capture(mock_logger: unittest.mock.MagicMock) -> None
+        Ensure `tracing.PrintCapture` properly captures and logs print statements.
+
+        This test ensures:
+        - The `PrintCapture` handler captures print statements directed to `sys.stdout`.
+        - Validates that the captured output is logged as expected.
+
+        Args:
+            mock_logger (MagicMock): Mock logger used to verify the captured logs.
+
+        Returns:
+            None: This test does not return a value but asserts that the print statements are captured and logged correctly.
+
+    test_setup_logging(mock_logger: unittest.mock.MagicMock) -> None
+        Ensure `tracing.setup_logging()` correctly initializes logging configurations.
+
+        This test verifies:
+        - The returned `CONFIGS` contains all expected keys: `colors`, `logging`, `tracing`, and `stats`.
+        - The logging file path is correctly assigned, with a dynamic filename containing the timestamp.
+        - Ensures that `stats.created` remains static while `stats.updated` changes per execution.
+
+        Args:
+            mock_logger (MagicMock): Mock for the logger object to simulate logging behavior.
+
+        Returns:
+            None: This test does not return a value but asserts that logging configurations are set up correctly.
+
+DATA
+    CONFIGS = {'colors': {'CALL': '\x1b[92m', 'CRITICAL': '\x1b[41m', 'DEB...
+    ROOT_DIR = PosixPath('<project-location>')
+
+VERSION
+    0.1.0
+
+FILE
+    <project-location>/tests/appflow_tracer/tracing/test_tracing.py
+
+
+
