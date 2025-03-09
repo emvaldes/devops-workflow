@@ -170,7 +170,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "-c", "--coverage",
         action="store_true",
-        help="Enable test coverage tracking."
+        help="Enable PyTest and Coverage tracking."
     )
     parser.add_argument(
         "-t", "--target",
