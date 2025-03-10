@@ -37,6 +37,7 @@ if str(LIB_DIR) not in sys.path:
 ## Setup logging configuration
 # logging.basicConfig(level=logging.INFO)
 
+# Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from lib import pydoc_generator as pydoc_engine
