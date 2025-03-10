@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+# while true; do rm .coverage.*; rm -rf ./logs/*; pytest -xsv tests/ && sleep 60 && clear; done;
+# while true; do rm -rf ./docs; python run.py --pydoc --coverage && sleep 60 && ctree ./docs && clear; done;
+# while true; do python -m packages.requirements.dependencies && sleep 60 && clear; done;
+
+python -m pydoc lib.__init__ | bat - ;
+
+python -m pydoc lib.accesstoken_expiration | bat - ;
+python -m pydoc lib.argument_parser | bat - ;
+python -m pydoc lib.configure_params | bat - ;
+python -m pydoc lib.manage_accesstoken | bat - ;
+python -m pydoc lib.parsing_userinput | bat - ;
+python -m pydoc lib.pkgconfig_loader | bat - ;
+python -m pydoc lib.pydoc_generator | bat - ;
+python -m pydoc lib.pydoc_loader | bat - ;
+python -m pydoc lib.system_params | bat - ;
+python -m pydoc lib.system_variables | bat - ;
+python -m pydoc lib.timezone_localoffset | bat - ;
+
+python -m pydoc packages.__init__ | bat - ;
+
+python -m pydoc packages.appflow_tracer.__init__ | bat - ;
+python -m pydoc packages.appflow_tracer.__main__ | bat - ;
+
+python -m pydoc packages.appflow_tracer.tracing | bat - ;
+
+python -m pydoc packages.appflow_tracer.lib.__init__ | bat - ;
+python -m pydoc packages.appflow_tracer.lib.file_utils | bat - ;
+python -m pydoc packages.appflow_tracer.lib.log_utils | bat - ;
+python -m pydoc packages.appflow_tracer.lib.serialize_utils | bat - ;
+python -m pydoc packages.appflow_tracer.lib.trace_utils | bat - ;
+
+python -m pydoc packages.requirements.__init__ | bat - ;
+python -m pydoc packages.requirements.__main__ | bat - ;
+
+python -m pydoc packages.requirements.dependencies | bat - ;
+
+python -m pydoc packages.requirements.lib.__init__ | bat - ;
+python -m pydoc packages.requirements.lib.brew_utils | bat - ;
+python -m pydoc packages.requirements.lib.package_utils | bat - ;
+python -m pydoc packages.requirements.lib.policy_utils | bat - ;
+python -m pydoc packages.requirements.lib.version_utils | bat - ;
