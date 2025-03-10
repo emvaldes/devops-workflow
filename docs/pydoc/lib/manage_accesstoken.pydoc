@@ -3,54 +3,69 @@
 Help on module lib.manage_accesstoken in lib:
 
 NAME
-    lib.manage_accesstoken - # File: ./lib/manage_accesstoken.py
+    lib.manage_accesstoken
+
+DESCRIPTION
+    Overview:
+        The manage_accesstoken.py module is responsible for handling Azure authentication
+        and managing access token expiration. It ensures that valid access tokens are available
+        for API interactions while also integrating timezone detection for better session tracking.
+
+        This module provides a command-line interface for checking and managing Azure sessions,
+        retrieving local timezone offsets, and logging authentication details.
+
+    Core Features:
+        - Retrieves and verifies Azure access token expiration.
+        - Integrates with local timezone offset detection.
+        - Provides command-line arguments for debugging and verbosity.
+        - Handles authentication failures gracefully.
+
+    Expected Behavior & Usage:
+        Running the Script:
+            python manage_accesstoken.py --debug
+
+        Example Integration:
+            from lib.manage_accesstoken import manage_accesstoken
+            manage_accesstoken()
+
+    Dependencies:
+        - accesstoken_expiration: Handles Azure authentication and access token expiration.
+        - timezone_localoffset: Retrieves and processes the local timezone offset.
+        - argument_parser: Parses CLI arguments for debug and verbose flags.
 
 FUNCTIONS
     main() -> None
         Main entry point for managing Azure session and token expiration.
 
-        This function:
-        - Parses command-line arguments to configure debug and verbose modes.
-        - Updates global flags (`DEBUG_MODE` and `VERBOSE_MODE`).
-        - Calls `manage_accesstoken()` to validate authentication and session expiration.
+        Behavior:
+            - Parses command-line arguments to configure debug and verbose modes.
+            - Calls manage_accesstoken() to validate authentication and session expiration.
 
         Raises:
-            Exception: If argument parsing or authentication handling fails.
+            - Exception: If argument parsing or authentication handling fails.
 
         Returns:
-            None: This function does not return any values; it orchestrates session management.
+            - None: This function does not return values; it orchestrates session management.
 
-        Workflow:
-            1. Calls `parse_arguments()` to process CLI flags.
-            2. Updates global variables `DEBUG_MODE` and `VERBOSE_MODE` based on user input.
-            3. Calls `manage_accesstoken()` to verify token expiration and timezone offset.
-
-        Notes:
-            - If an error occurs during execution, the script terminates with a non-zero exit code.
-            - Debug mode (`--debug`) enables additional logging for troubleshooting.
+        Example Usage:
+            python manage_accesstoken.py --debug
 
     manage_accesstoken() -> None
         Manages Azure authentication and session expiration handling.
 
-        This function:
-        - Retrieves the Azure access token and checks its expiration.
-        - Retrieves the local timezone offset.
-        - Logs relevant authentication and timezone details.
+        Behavior:
+            - Calls print_token_expiration() to check the Azure token status.
+            - Calls get_local_offset() to determine the local timezone offset.
+            - Logs authentication and timezone details.
 
         Raises:
-            Exception: If an error occurs during token retrieval or timezone processing.
+            - Exception: If an error occurs during token retrieval or timezone processing.
 
         Returns:
-            None: This function does not return any values; it handles session validation.
+            - None: This function does not return values; it handles session validation.
 
-        Workflow:
-            1. Calls `print_token_expiration()` to check the Azure token status.
-            2. Calls `get_local_offset()` to determine the local timezone offset.
-            3. Handles any authentication or timezone-related errors gracefully.
-
-        Notes:
-            - This function relies on the global `DEBUG_MODE` flag to determine logging verbosity.
-            - If an error occurs, execution is halted with a non-zero exit code.
+        Example Usage:
+            manage_accesstoken()
 
 VERSION
     0.1.0

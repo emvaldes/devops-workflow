@@ -1,84 +1,22 @@
 #!/usr/bin/env python3
 
 # File: ./run.py
+
+__module_name__ = "run"
 __version__ = "0.1.0"  ## Package version
 
-"""
-File: ./run.py
-
-Description:
-    Framework Execution Entry Point
-
-    This script serves as the main launcher for the framework, ensuring proper initialization,
-    system validation, and execution of requested operations. It can generate documentation
-    for Python scripts and execute arbitrary Python modules.
-
-Core Features:
-    - **System Validation & Setup**: Ensures the framework environment is correctly configured.
-    - **Python Documentation Generation**: Uses `pydoc` to generate structured documentation.
-    - **Module Execution**: Provides the ability to run specified Python modules or scripts.
-    - **Dynamic File Collection**: Recursively scans the project for non-empty Python files.
-    - **Logging & Debugging**: Captures execution details and potential errors.
-
-Features:
-    - Executes the requested module/script to perform system validation and setup.
-    - Ensures all required dependencies and configurations are initialized.
-    - Provides a single-command entry point for launching the framework.
-    - Integrates functionality for generating documentation for Python and YAML files in a specific path.
-    - Allows running an arbitrary Python module.
-
-Expected Behavior:
-
-
-Usage:
-    To launch the framework:
-    ```bash
-    python run.py
-    ```
-
-    To generate Python documentation:
-    ```bash
-    python run.py --pydoc --coverage
-    ```
-
-    To run an arbitrary module:
-    ```bash
-    python run.py --target <module_name>
-    ```
-
-Dependencies:
-    - os
-    - sys
-    - json
-    - re
-    - argparse (used to handle command-line arguments)
-    - subprocess (used to execute arbitrary scripts/modules)
-    - pathlib
-    - system_variables (for project environment settings)
-    - log_utils (for structured logging)
-    - pydoc_generator (for documentation generation)
-
-Exit Codes:
-    - `0`: Successful execution.
-    - `1`: Failure due to incorrect parameters, invalid paths, or execution errors.
-"""
-
-import os
-import sys
-
-import subprocess
 import argparse
-
-import re
 import json
-
-import pytest
-import pydoc
-import coverage
-
 import logging
-
+import os
+import pydoc
+import re
+import subprocess
+import sys
 from pathlib import Path
+
+import coverage
+import pytest
 
 ## Define base directories
 LIB_DIR = Path(__file__).resolve().parent / "lib"
@@ -95,39 +33,19 @@ if str(LIB_DIR) not in sys.path:
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from lib import pydoc_generator as pydoc_engine
+from lib import system_variables as environment
 from packages.appflow_tracer import tracing
 from packages.appflow_tracer.lib import log_utils
 
-from lib import system_variables as environment
-from lib import pydoc_generator as pydoc_engine
+# Load documentation dynamically
+from lib.pydoc_loader import load_pydocs
 
 def collect_files(
     target_dir: str,
     extensions: list[str],
     ignore_list: list[str] = None
 ) -> list[str]:
-    """
-    Recursively scans a directory for non-empty files matching the specified extensions.
-
-    This function ensures that only files with actual content are collected,
-    preventing the processing of empty or irrelevant files.
-
-    ## Args:
-        - `target_dir` (`str`): The directory to scan.
-        - `extensions` (`List[str]`): A list of file extensions to filter.
-        - `ignore_list` (`List[str]`, optional): A list of filenames, patterns, or directories to ignore.
-
-    ## Returns:
-        - `List[str]`: A list of absolute file paths that match the specified extensions.
-
-    ## Raises:
-        - `ValueError`: If the provided target directory does not exist.
-
-    ## Example:
-        ```python
-        python_files = collect_files("/project/src", [".py"], ignore_list=["conftest.py", "tests/mocks"])
-        ```
-    """
 
     target_path = Path(target_dir).resolve()
     if not target_path.is_dir():
@@ -146,21 +64,6 @@ def collect_files(
     return files
 
 def parse_arguments() -> argparse.Namespace:
-    """
-    Parse command-line arguments for framework execution.
-
-    This function processes command-line flags that determine the execution behavior of
-    the framework, such as generating documentation or executing a target module.
-
-    Returns:
-        argparse.Namespace: The parsed arguments object containing selected options.
-
-    Example:
-        ```bash
-        python run.py --pydoc --coverage
-        python run.py --target module
-        ```
-    """
 
     parser = argparse.ArgumentParser(
         description="Verify installed dependencies for compliance. "
@@ -186,35 +89,11 @@ def parse_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 def main():
-    """
-    Framework Entry Point.
-
-    This function orchestrates the execution of the framework based on the provided command-line
-    arguments. It handles:
-    - Generating Python documentation via `pydoc` if the `--pydoc` flag is passed.
-    - Running a specified Python module if the `--target` flag is provided.
-    - Logging execution details and error handling.
-
-    Returns:
-        None: Executes the requested functionality and exits accordingly.
-
-    Behavior:
-        - If `--pydoc` is passed, the script generates documentation for Python files.
-        - If `--target <module>` is passed, it attempts to execute the specified module.
-        - If no flags are provided, it logs a usage message.
-
-    Example:
-        ```bash
-        python run.py --pydoc
-        python run.py --yamldoc
-        python run.py --target some_module
-        ```
-    """
 
     # Ensure the variable exists globally
     global CONFIGS
     # CONFIGS = tracing.setup_logging(events=False)
-    CONFIGS = tracing.setup_logging(events=["call", "return", "debug", "error"])
+    CONFIGS = tracing.setup_logging(events=["call", "return"])
     # print(
     #     f'CONFIGS: {json.dumps(
     #         CONFIGS, indent=environment.default_indent
@@ -255,9 +134,8 @@ def main():
             environment.category.info.id,
             configs=CONFIGS
         )
-
         file_extensions = [".py"]  ## Defined by CLI flag
-        ignore_list = ["conftest.py", "tests/mocks", "*.test.py"]  # ✅ Ignore conftest.py & test-related paths
+        ignore_list = ["conftest.py", "tests/mocks", ".pydocs/*"]  # ✅ Ignore conftest.py & test-related paths
         # files_list = collect_files(
         #     project_path,
         #     file_extensions
@@ -286,10 +164,10 @@ def main():
             docs_coverage = Path("docs") / "coverage"
             # Check if coverage files exist before combining
             coverage_files = list(Path(docs_coverage).rglob("*.coverage"))
+            # f'[INFO] Found coverage files:\n' + "\n".join(f"  - {str(file).replace(f'{docs_coverage}/', '', 1)}" for file in coverage_files) + '\n'
+            files_listing = "\n".join(f'  - {str(file).replace(f"{docs_coverage}/", "", 1)}' for file in coverage_files )
             log_utils.log_message(
-                f'[INFO] Found coverage files:\n{"\n".join(
-                    f"  - {str(file).replace(f'{docs_coverage}/', "", 1)}" for file in coverage_files
-                )}\n',
+                f'[INFO] Found coverage files:\n{files_listing}\n',
                 environment.category.info.id,
                 configs=CONFIGS
             )
@@ -372,11 +250,7 @@ def main():
             configs=CONFIGS
         )
         subprocess.run(
-            [
-                sys.executable,
-                '-m',
-                args.target
-            ]
+            [sys.executable, '-m', args.target]
         )
     # # If no flags, print a basic message
     # log_utils.log_message(
@@ -384,5 +258,17 @@ def main():
     #     environment.category.debug.id,
     #     configs=CONFIGS
     # )
+
+# # Load documentation dynamically and apply module, function and objects docstrings
+# MODULE_DOCSTRING, FUNCTION_DOCSTRINGS, VARIABLE_DOCSTRINGS = load_pydocs(__file__, sys.modules[__name__])
+# __doc__ = MODULE_DOCSTRING
+load_pydocs(__file__, sys.modules[__name__])
+
 if __name__ == "__main__":
+
+    # print(f'Module Docstring:\n{__doc__}')
+    #
+    # print(f'parse_arguments.__doc__:\n{parse_arguments.__doc__}')
+    # print(f'collect_files.__doc__:\n{collect_files.__doc__}')
+
     main()

@@ -3,34 +3,30 @@
 Help on module lib.parsing_userinput in lib:
 
 NAME
-    lib.parsing_userinput - # File: ./lib/parsing_userinput.py
+    lib.parsing_userinput
+
+DESCRIPTION
+    Overview:
+        The parsing_userinput.py module is responsible for collecting user input interactively.
+        It ensures all required runtime parameters are provided by prompting users dynamically,
+        while also integrating configuration-based input handling.
+
+    Core Features:
+        - Interactive Input Requests: Prompts users for required input dynamically.
+        - Configuration-Based Prompts: Loads argument configurations from a JSON file.
+        - Environment Variable Management: Updates system environment variables at runtime.
+        - Error Handling: Ensures non-interactive environments exit safely with meaningful errors.
+
+    Expected Behavior & Usage:
+        Running the Script:
+            python parsing_userinput.py
+
+        Example Integration:
+            from lib.parsing_userinput import parse_and_collect_user_inputs
+            user_inputs = parse_and_collect_user_inputs("config.json", ["API_KEY", "USERNAME"])
 
 FUNCTIONS
     main() -> None
-        Main entry point for parsing user input and managing runtime parameters.
-
-        This function:
-        - Loads the argument configuration from a JSON file.
-        - Identifies missing required runtime variables.
-        - Prompts the user interactively to collect missing values.
-        - Updates environment variables dynamically.
-
-        Raises:
-            FileNotFoundError: If the argument configuration file is missing.
-            Exception: If an unexpected error occurs during execution.
-
-        Returns:
-            None: This function does not return any values; it manages user input handling.
-
-        Workflow:
-            1. Defines the path to the argument configuration file.
-            2. Identifies missing runtime parameters that need user input.
-            3. Calls `parse_and_collect_user_inputs()` to process required variables.
-            4. Logs the collected user input and updates environment variables dynamically.
-
-        Notes:
-            - If a required argument configuration file is missing, execution is halted.
-            - If running in a **non-interactive** environment, the script exits safely.
 
     parse_and_collect_user_inputs(
         arguments_config_path: str,
@@ -38,64 +34,55 @@ FUNCTIONS
     ) -> dict
         Load argument configuration, identify missing variables, and prompt the user.
 
-        Reads structured argument definitions from a JSON file, checks for missing
-        environment variables, and interacts with the user if required.
-
-        Args:
-            arguments_config_path (str): Path to the JSON configuration file.
-            required_runtime_vars (list): List of required runtime variables.
-
-        Raises:
-            FileNotFoundError: If the argument configuration file is missing.
+        Parameters:
+            - arguments_config_path (str): Path to the JSON configuration file.
+            - required_runtime_vars (list): List of required runtime variables.
 
         Returns:
-            dict: A dictionary of user-provided environment variable values.
+            - dict: A dictionary of user-provided environment variable values.
 
-        Notes:
-            - If the configuration file is missing, logs an error and raises `FileNotFoundError`.
-            - Identifies missing variables by checking against environment variables.
-            - Calls `user_interview()` for interactive input collection.
-            - Updates `os.environ` dynamically based on user input.
+        Behavior:
+            - Loads the argument configuration from a JSON file.
+            - Identifies missing environment variables and prompts the user.
+            - Updates os.environ dynamically based on user input.
+
+        Example Usage:
+            user_inputs = parse_and_collect_user_inputs("config.json", ["API_KEY", "USERNAME"])
 
     request_input(prompt: str, required: bool = True, default: str = None) -> str
         Prompt the user for input with an optional default value.
 
-        This function requests input from the user in an interactive session. If running
-        in a non-interactive environment, it logs an error and exits.
-
-        Args:
-            prompt (str): The message displayed to the user.
-            required (bool, optional): Whether the input is mandatory. Defaults to True.
-            default (str, optional): The default value if no input is provided. Defaults to None.
-
-        Raises:
-            SystemExit: If required input is missing in a non-interactive environment.
-            KeyboardInterrupt: If the user manually interrupts input.
+        Parameters:
+            - prompt (str): The message displayed to the user.
+            - required (bool): Whether the input is mandatory. Defaults to True.
+            - default (str, optional): The default value if no input is provided.
 
         Returns:
-            str: The user-provided input or the default value.
+            - str: The user-provided input or the default value.
 
-        Notes:
-            - If `sys.stdin.isatty()` is `False`, the function logs an error and exits, as interactive input is not possible.
-            - If the user presses Ctrl+C, the function logs the interruption and exits.
+        Behavior:
+            - If sys.stdin.isatty() is False, logs an error and exits since interactive input is not possible.
+            - If the user presses Ctrl+C, logs the interruption and exits.
+
+        Example Usage:
+            user_value = request_input("Enter your name", required=True, default="Guest")
 
     user_interview(arguments_config: dict, missing_vars: list) -> dict
         Collect required user input for missing environment variables.
 
-        Iterates through the list of missing environment variables and prompts the user
-        for their values based on the argument configuration.
-
-        Args:
-            arguments_config (dict): Dictionary containing argument configurations.
-            missing_vars (list): List of required variables that are missing.
+        Parameters:
+            - arguments_config (dict): Dictionary containing argument configurations.
+            - missing_vars (list): List of required variables that are missing.
 
         Returns:
-            dict: A dictionary mapping missing variable names to user-provided values.
+            - dict: A dictionary mapping missing variable names to user-provided values.
 
-        Notes:
-            - This function cross-references `arguments_config` to determine the prompt and default values.
-            - Calls `request_input()` for each missing variable.
-            - The returned dictionary contains user-provided inputs mapped to their respective variables.
+        Behavior:
+            - Cross-references arguments_config to determine the prompt and default values.
+            - Calls request_input() for each missing variable.
+
+        Example Usage:
+            user_inputs = user_interview(config, ["API_KEY", "USERNAME"])
 
 VERSION
     0.1.0

@@ -1,0 +1,109 @@
+#!/usr/bin/env python3
+
+# Python File: ./.github/scripts/extract_pytest_resources.py
+__version__ = "0.1.0"  # Documentation version
+
+# Module-level documentation
+MODULE_DOCSTRING = """
+# Module: extract_pytest_resources.py
+
+## Overview
+The `extract_pytest_resources.py` script is responsible for analyzing Python test files and extracting various PyTest-related resources. These resources may include fixtures, test data, mock objects, and other elements critical for testing automation and execution.
+
+## Core Features:
+- **Static Code Analysis**: Utilizes Python's AST (Abstract Syntax Tree) module to extract resource definitions without executing the code.
+- **Fixture Discovery**: Identifies PyTest fixtures and their scopes (e.g., function, module, session).
+- **Test Resource Collection**: Gathers information about mock objects, parameterized test cases, and reusable components.
+- **Integration Support**: Designed to support automated testing frameworks, reporting, and validation systems.
+
+## Usage Examples:
+```bash
+python extract_pytest_resources.py --file tests/conftest.py
+python extract_pytest_resources.py --dir tests/
+```
+
+The script processes Python test files recursively (if a directory is provided) and outputs the discovered PyTest-related resources.
+"""
+
+# Function-level documentation
+FUNCTION_DOCSTRINGS = {
+    "parse_arguments": """
+    Parses and processes command-line arguments provided to the script.
+
+    ### Returns:
+    - `argparse.Namespace`: Object containing parsed command-line arguments.
+
+    ### Arguments Supported:
+    - `--file <file_path>`: Specifies a single Python test file to analyze.
+    - `--dir <directory_path>`: Specifies a directory to recursively scan for PyTest resources.
+
+    ### Behavior:
+    - Uses `argparse` to handle user input.
+    - Validates the provided file or directory path.
+    - Returns a structured namespace object for further processing.
+
+    ### Example Usage:
+    ```python
+    args = parse_arguments()
+    print(args.file)  # Accessing the provided file name
+    ```
+    """,
+
+    "extract_pytest_fixtures": """
+    Extracts all PyTest fixtures from a given Python test file.
+
+    ### Parameters:
+    - `file_path` (`str`): The absolute or relative path to the Python test file to analyze.
+
+    ### Behavior:
+    - Parses the file using Python's AST (Abstract Syntax Tree) module.
+    - Identifies function definitions decorated with `@pytest.fixture`.
+    - Collects metadata, including fixture names and scopes (function, module, session).
+    - Returns a dictionary of extracted fixture definitions.
+
+    ### Returns:
+    - `Dict[str, str]`: A dictionary where keys are fixture names and values are their scopes.
+
+    ### Example Usage:
+    ```python
+    fixtures = extract_pytest_fixtures("tests/conftest.py")
+    print(fixtures)  # Outputs: {'db_connection': 'session', 'mock_api': 'function'}
+    ```
+    """,
+
+    "process_directory": """
+    Recursively scans a directory for Python test files and extracts PyTest-related resources.
+
+    ### Parameters:
+    - `directory_path` (`str`): The root directory to scan.
+
+    ### Behavior:
+    - Iterates through all Python files in the given directory.
+    - Calls `extract_pytest_fixtures()` on each Python file found.
+    - Aggregates discovered fixture definitions.
+    - Handles invalid or inaccessible directories gracefully.
+
+    ### Returns:
+    - `Dict[str, Dict[str, str]]`: A dictionary where keys are file paths, and values are fixture dictionaries.
+
+    ### Example Usage:
+    ```python
+    fixture_map = process_directory("tests/")
+    print(fixture_map)  # Outputs: {'tests/conftest.py': {'db_connection': 'session'}}
+    ```
+    """,
+
+    "__main__": """
+    The script's main execution entry point.
+
+    ### Responsibilities:
+    - Parses command-line arguments using `parse_arguments()`.
+    - Determines whether to analyze a single file or scan a directory.
+    - Invokes the appropriate extraction function and outputs results.
+
+    ### Example Usage:
+    ```bash
+    python extract_pytest_resources.py --file tests/conftest.py
+    ```
+    """
+}

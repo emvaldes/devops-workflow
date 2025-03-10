@@ -1,0 +1,58 @@
+### Documentation for lib/pydoc_loader.py
+
+Help on module lib.pydoc_loader in lib:
+
+NAME
+    lib.pydoc_loader - # Python File: ./lib/pydoc_loader.py
+
+FUNCTIONS
+    apply_docstrings(module: module, function_docs: Dict[str, str]) -> None
+        Dynamically assigns function docstrings from a loaded `.pydoc` file to a given module.
+
+        Parameters:
+            module (ModuleType): The module in which function docstrings should be applied.
+            function_docs (Dict[str, str]): A dictionary mapping function names to their respective docstrings.
+
+    apply_variable_docstrings(module: module, variable_docs: Dict[str, str]) -> None
+        Stores variable docstrings in a global dictionary instead of modifying __doc__,
+        since primitive types (str, int, list, etc.) do not support docstring assignment.
+
+        Parameters:
+            module (ModuleType): The module in which variable docstrings should be applied.
+            variable_docs (Dict[str, str]): A dictionary mapping variable names to their respective descriptions.
+
+        Behavior:
+            - Stores variable docstrings in a separate dictionary for retrieval.
+            - Ensures variables that cannot have __doc__ modified still have documentation available.
+
+    load_pydocs(script_path: str, module: module) -> None
+        Loads module-level, function-level, and variable-level documentation from an external `.pydoc` file.
+
+        Parameters:
+            script_path (str): The full path of the script whose documentation should be loaded.
+            module (ModuleType): The module in which function and variable docstrings should be applied.
+
+        Behavior:
+            - Searches for a `.pydoc` file matching the script's name in the `.pydocs/` directory.
+            - Loads and parses the module docstring (`MODULE_DOCSTRING`), function docstrings (`FUNCTION_DOCSTRINGS`),
+              and variable docstrings (`VARIABLE_DOCSTRINGS`).
+            - Assigns function and variable docstrings dynamically to the specified module.
+            - Does **not** return `MODULE_DOCSTRING`, `FUNCTION_DOCSTRINGS`, or `VARIABLE_DOCSTRINGS` to prevent them
+              from appearing as global variables in `pydoc` output.
+
+    main() -> None
+
+DATA
+    Dict = typing.Dict
+        A generic version of dict.
+
+    VARIABLE_DOCSTRINGS = {}
+
+VERSION
+    0.1.0
+
+FILE
+    <project-location>/lib/pydoc_loader.py
+
+
+

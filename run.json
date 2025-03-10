@@ -27,8 +27,8 @@
     "events": {
         "call": true,
         "critical": false,
-        "debug": true,
-        "error": true,
+        "debug": false,
+        "error": false,
         "import": false,
         "info": false,
         "return": true,
@@ -36,6 +36,6 @@
     },
     "stats": {
         "created": "2025-03-03T18:10:45.863523+00:00",
-        "updated": "2025-03-09T03:23:58.837995+00:00"
+        "updated": "2025-03-10T01:18:09.143812+00:00"
     }
 }

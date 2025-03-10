@@ -3,50 +3,6 @@
 # File: lib/pydoc_generator.py
 __version__ = "0.1.1"  ## Package version
 
-"""
-File: lib/pydoc_generator.py
-
-Description:
-    Automated Python Documentation Generator (PyDoc)
-
-    This module provides a framework for generating documentation for Python scripts and packages
-    within a project using the `pydoc` module. It ensures that documentation is structured correctly
-    and saved in an organized manner.
-
-Core Features:
-    - **Dynamic Documentation Generation**: Automates the process of generating PyDoc documentation.
-    - **Path Handling**: Uses `pathlib` for robust and cross-platform path operations.
-    - **Error Handling & Logging**: Captures errors and logs messages for debugging.
-    - **Flexible Execution**: Distinguishes between modules and standalone scripts for correct PyDoc execution.
-    - **Output Sanitization**: Redacts sensitive system paths from generated documentation.
-    - **Coverage Integration**: Generates separate `.coverage` files per module.
-
-Usage:
-    To generate PyDoc documentation for all Python files in a project:
-    ```bash
-    python run.py --pydoc
-    ```
-
-Dependencies:
-    - os
-    - sys
-    - re
-    - subprocess
-    - pathlib
-    - system_variables (for project environment settings)
-    - log_utils (for structured logging)
-    - coverage (for tracking execution coverage)
-
-Exit Codes:
-    - `0`: Successful execution.
-    - `1`: Failure due to incorrect file paths or PyDoc errors.
-
-Example:
-    ```bash
-    python -m pydoc lib.pydoc_generator
-    ```
-"""
-
 import sys
 import os
 
@@ -65,24 +21,6 @@ def create_structure(
     base_path: Path,
     package_name: Path
 ) -> Path:
-    """
-    Create the directory structure for storing PyDoc-generated documentation.
-
-    This function ensures that the necessary directory structure exists under the
-    `docs/pydoc` directory to store documentation files. It will create the directories
-    if they do not already exist.
-
-    Args:
-        base_path (Path): The base path where documentation will be stored.
-        package_name (Path): The relative package path that determines the storage directory.
-
-    Returns:
-        Path: The absolute path to the created documentation directory.
-
-    Notes:
-        - Uses `mkdir(parents=True, exist_ok=True)` to ensure all parent directories exist.
-        - Accepts `Path` objects for improved cross-platform compatibility.
-    """
 
     doc_dir = base_path / package_name          ## Use Path operations
     doc_dir.mkdir(parents=True, exist_ok=True)  ## Equivalent to os.makedirs()
@@ -93,21 +31,6 @@ def generate_report(
     coverage_report: Path,
     configs: dict = None
 ):
-    """
-    Generates and saves a textual summary of test coverage.
-
-    Args:
-        coverage_report (Path): The output file where the summary will be stored.
-        configs (dict, optional): Logging configurations.
-
-    Behavior:
-        - Runs `coverage report` to generate a textual coverage summary.
-        - Saves the output to `coverage_report`.
-        - If no coverage data is found, logs a warning.
-
-    Raises:
-        CalledProcessError: If the `coverage report` command fails unexpectedly.
-    """
 
     try:
         # Ensure the directory exists
@@ -115,12 +38,7 @@ def generate_report(
         # Generate the coverage summary and save it to a file
         with open(coverage_report, "w", encoding="utf-8") as summary_file:
             subprocess.run(
-                [
-                    "python",
-                    "-m",
-                    "coverage",
-                    "report"
-                ],
+                ["python", "-m", "coverage", "report"],
                 stdout=summary_file,  # Redirect output to file
                 stderr=subprocess.PIPE,  # Capture any errors
                 text=True,
@@ -146,28 +64,12 @@ def generate_coverage(
     base_path: Path,
     configs: dict = None
 ):
-    """
-    Generate and save coverage data to a structured directory.
-
-    Args:
-        project_path (Path): The root path of the project.
-        file_path (Path): The Python file for which coverage is generated.
-        base_path (Path): The base directory where coverage files are stored.
-        configs (dict, optional): Additional configuration parameters for logging.
-    """
 
     # Convert to relative path
     relative_filepath = file_path.relative_to(project_path)
 
     # Generate coverage report for the specific file
-    coverage_command = [
-        "python",
-        "-m",
-        "coverage",
-        "report",
-        "--include",
-        str(file_path)
-    ]
+    coverage_command = ["python", "-m", "coverage", "report", "--include", str(file_path)]
 
     try:
         coverage_output = subprocess.check_output(
@@ -209,36 +111,6 @@ def generate_pydoc(
     docs_path: Path,
     configs: dict = None
 ):
-    """
-    Generate and store PyDoc documentation for a given Python file.
-
-    This function invokes `pydoc` to generate documentation for a Python script or module
-    and saves the output in the designated documentation directory. Additionally, it appends
-    the test coverage report for the processed file.
-
-    Args:
-        project_path (Path): The root path of the project.
-        file_path (Path): The Python file for which documentation will be generated.
-        docs_path (Path): The directory where the generated documentation will be stored.
-        configs (dict, optional): Additional configuration parameters for logging.
-
-    Returns:
-        None: This function does not return any value but writes documentation or error messages to disk.
-
-    Behavior:
-        - Differentiates between scripts and modules to invoke `pydoc` correctly.
-        - Stores the generated documentation in `docs/pydoc/<module>.pydoc`.
-        - Sanitizes system paths in the output to avoid exposing absolute paths.
-
-    Example:
-        ```python
-        generate_pydoc(
-            Path("<project-location>"),
-            Path("<project-location>/src/module.py"),
-            Path("<project-location>/docs/pydoc")
-        )
-        ```
-    """
 
     file_name = file_path.name  ## Use Path method instead of os.path.basename()
     doc_file_path = docs_path / f"{file_path.stem}.pydoc"  ## Use Pathlib operations
@@ -260,9 +132,7 @@ def generate_pydoc(
 
     ## Processing as either a script or module
     pydoc_command = [
-        'python',
-        '-m',
-        'pydoc',
+        'python', '-m', 'pydoc',
         f'./{relative_filepath}' if is_script else module_name
     ]
 
@@ -378,30 +248,6 @@ def create_pydocs(
     files_list: list[Path],
     configs: dict = None
 ):
-    """
-    Process multiple Python files and generate PyDoc documentation.
-
-    This function iterates through a list of Python files, generates their documentation,
-    and stores them in a structured format inside `docs/pydoc`.
-
-    Args:
-        project_path (Path): The root directory of the project.
-        base_path (Path): The base directory where documentation will be stored.
-        files_list (list[Path]): A list of Python file paths to document.
-        configs (dict, optional): Configuration settings for logging.
-
-    Returns:
-        None: Documentation files are generated and stored in the appropriate directories.
-
-    Example:
-        ```python
-        create_pydocs(
-            Path("<project-location>"),
-            Path("<project-location>/docs/pydoc"),
-            [Path("<project-location>/src/module1.py"), Path("<project-location>/src/module2.py")]
-        )
-        ```
-    """
 
     log_utils.log_message(
         f'[INFO] Processing Python files:\n{"\n".join(
@@ -439,3 +285,13 @@ def create_pydocs(
             environment.category.error.id,
             configs=configs
         )
+
+# Load documentation dynamically and apply module, function and objects docstrings
+from lib.pydoc_loader import load_pydocs
+load_pydocs(__file__, sys.modules[__name__])
+
+def main() -> None:
+    pass
+
+if __name__ == "__main__":
+    main()
