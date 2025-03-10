@@ -1,96 +1,32 @@
 #!/usr/bin/env python3
 
 # File: ./packages/requirements/dependencies.py
-__version__ = "0.2.0"  ## Package version
+__version__ = "0.1.0"  ## Package version
 
-"""
-# Advanced Dependency Management System
-
-## Overview
-    This module serves as the core of the **AppFlow Tracer - Dependency Management System**,
-    providing a structured and policy-driven approach to handling dependencies. It supports
-    both **Homebrew (macOS)** and **Pip (cross-platform)** while ensuring package versioning
-    compliance, safe installation policies, and structured logging.
-
-## Features
-    - **Environment Detection**: Determines how Python is installed (Homebrew, system package managers, or standalone).
-    - **Package Management**: Handles installation, upgrades, downgrades, and compliance with predefined policies.
-    - **Brew & Pip Integration**:
-      - Uses **Homebrew** if Python is managed via Brew.
-      - Uses **Pip** for all other installations, with safe installation handling.
-    - **Policy-Based Installation**:
-      - Installs missing packages.
-      - Upgrades outdated packages to the latest version if policy allows.
-      - Downgrades packages if policy enforces strict versioning.
-    - **Logging & Debugging**:
-      - Logs all package operations, warnings, and errors.
-      - Provides structured debugging messages for troubleshooting.
-    - **Backup & Restore**:
-      - Saves the current list of installed packages for future restoration.
-      - Allows migration of package environments.
-    - **Package Status Reporting**:
-      - Displays installed packages with versioning and compliance details.
-      - Writes results into `installed.json` for tracking.
-
-## Dependencies
-    - `subprocess` - Runs Brew and Pip commands.
-    - `argparse` - Parses command-line arguments.
-    - `json` - Manages structured dependency files.
-    - `importlib.metadata` - Fetches installed package versions.
-    - `pathlib` - Ensures safe file path handling.
-    - `functools.lru_cache` - Optimizes frequently accessed functions.
-    - `brew_utils`, `package_utils`, `policy_utils`, `version_utils` - Sub-modules managing dependency operations.
-
-## Sub-Modules
-    - **`brew_utils.py`**:
-      - Detects if Homebrew is available on macOS.
-      - Retrieves installed and latest package versions from Homebrew.
-
-    - **`package_utils.py`**:
-      - Handles package installations using Brew or Pip.
-      - Implements structured installation logic for policy-driven updates.
-
-    - **`policy_utils.py`**:
-      - Evaluates package policies (install, upgrade, downgrade, skip).
-      - Updates `installed.json` to reflect policy-enforced status.
-
-    - **`version_utils.py`**:
-      - Fetches installed and latest available package versions.
-      - Supports multi-platform version detection (Pip, Brew, APT, DNF, Windows Store).
-
-## Expected Behavior
-    - Dynamically adapts package installation based on system constraints.
-    - Installs, upgrades, or downgrades packages per predefined policies.
-    - Logs all package operations for debugging and troubleshooting.
-    - Prevents unintended system modifications unless explicitly overridden (`--force`).
-
-## Exit Codes
-    - `0`: Execution completed successfully.
-    - `1`: Failure due to installation errors, missing configurations, or dependency issues.
-
-## Example Usage
-    ### **Installing Dependencies**
-    ```python
-    from dependencies import package_utils
-    package_utils.install_requirements(configs=configs)
-"""
-
+# Standard library imports - Core system and OS interaction modules
 import sys
 import subprocess
 import shutil
 
+# Standard library imports - Utility modules
 import json
 import argparse
 import platform
 
+# Standard library imports - Import system
 import importlib.metadata
 
+# Standard library imports - Function tools
 from functools import lru_cache
 
+# Standard library imports - Date and time handling
 from datetime import datetime, timezone
-from typing import Optional, Union
 
+# Standard library imports - File system-related module
 from pathlib import Path
+
+# Standard library imports - Type hinting (kept in a separate group)
+from typing import Optional, Union
 
 # Define base directories
 LIB_DIR = Path(__file__).resolve().parent.parent.parent / "lib"
@@ -101,6 +37,9 @@ if str(LIB_DIR) not in sys.path:
 # print("\n[DEBUG] sys.path contains:")
 # for path in sys.path:
 #     print(f'  - {path}')
+
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from lib import system_variables as environment
 
@@ -118,34 +57,6 @@ from .lib import (
 ## -----------------------------------------------------------------------------
 
 def parse_arguments() -> argparse.Namespace:
-    """
-    Parse command-line arguments for package management.
-
-    This function provides command-line options for managing dependencies,
-    allowing users to specify requirement files, enforce installations,
-    backup, restore, or migrate packages.
-
-    ## Supported Arguments:
-        - `-c/--config`: Specify a custom JSON requirements file.
-        - `-f/--force`: Force Pip installations using `--break-system-packages`.
-        - `--backup-packages`: Save installed package list for future restoration.
-        - `--restore-packages`: Restore packages from a backup file.
-        - `--migrate-packages`: Migrate package environments.
-        - `--show-installed`: Display installed dependencies.
-
-    ## Args:
-        - `None`
-
-    Returns:
-        - `argparse.Namespace`: The parsed arguments object containing selected options.
-
-    Return Type: argparse.Namespace
-        Returns an argparse.Namespace object containing the parsed command-line arguments.
-
-    ## Notes:
-        - This function is critical for enabling dynamic dependency management.
-    """
-
 
     parser = argparse.ArgumentParser(
         description="Manage package dependencies using Brew and PIP using policy management."
@@ -195,50 +106,6 @@ def parse_arguments() -> argparse.Namespace:
 ## -----------------------------------------------------------------------------
 
 def main() -> None:
-    """
-    Entry point for the dependency management system.
-
-    This function initializes logging, processes command-line arguments,
-    and installs or updates dependencies from a JSON requirements file.
-    It dynamically determines the system's Python environment and applies
-    installation policies accordingly.
-
-    ## Workflow:
-    1. **Parse Command-Line Arguments**
-       - Loads configuration settings.
-       - Determines runtime settings.
-
-    2. **Load Requirements File**
-       - Reads `requirements.json` (or custom-specified file).
-       - Extracts dependency data.
-
-    3. **Setup Logging & Environment**
-       - Detects Python installation method.
-       - Logs detected system information.
-
-    4. **Handle Backup & Restore Operations**
-       - Saves a package list for future restoration.
-       - Restores or migrates package environments if specified.
-
-    5. **Determine Dependency Policies**
-       - Calls `policy_utils.policy_management()` to enforce package rules.
-
-    6. **Install Dependencies**
-       - Uses `package_utils.install_requirements()` for installations.
-
-    7. **Display Installed Packages (if requested)**
-       - Shows structured package information from `installed.json`.
-
-    ## Args:
-    - `None`
-
-    ## Returns:
-    - `None`: This function performs actions based on command-line arguments and manages dependencies.
-
-    ## Notes:
-    - If an error occurs (e.g., missing `requirements.json`), the process will exit with `sys.exit(1)`.
-    - The function prevents breaking system-managed environments unless explicitly overridden (`--force`).
-    """
 
     # Ensure the variable exists globally
     global CONFIGS
@@ -357,5 +224,10 @@ def main() -> None:
     #     configs=CONFIGS
     # )
 
+# Load documentation dynamically and apply module, function and objects docstrings
+from lib.pydoc_loader import load_pydocs
+load_pydocs(__file__, sys.modules[__name__])
+
+# Automatically start tracing when executed directly
 if __name__ == "__main__":
     main()

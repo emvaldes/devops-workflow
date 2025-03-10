@@ -3,125 +3,151 @@
 Help on module packages.requirements.lib.brew_utils in packages.requirements.lib:
 
 NAME
-    packages.requirements.lib.brew_utils - # Homebrew Utilities for Dependency Management
+    packages.requirements.lib.brew_utils - File Path: ./packages/requirements/lib/brew_utils.py
 
 DESCRIPTION
-    ## Overview
-        This module provides utility functions for integrating Homebrew package management
-        within the dependency management system. It facilitates checking the availability
-        of Homebrew, detecting Python installation environments, and retrieving installed
-        and latest package versions from Homebrew.
+    Description:
+        The brew_utils.py module provides utility functions for integrating Homebrew
+        package management within the dependency management system. It allows detection
+        of Homebrew availability, identification of Python installation methods, and
+        retrieval of installed and latest package versions.
 
-    ## Features
-        - **Homebrew Availability Check:** Determines whether Homebrew is installed.
-        - **Python Environment Detection:** Identifies how Python is installed (Brew, system, standalone, etc.).
-        - **Package Version Retrieval:** Fetches the installed and latest versions of packages managed by Homebrew.
+    Core Features:
+        - Homebrew Availability Check: Determines whether Homebrew is installed.
+        - Python Environment Detection: Identifies if Python is installed via Brew, system package managers, or standalone.
+        - Package Version Retrieval: Fetches installed and latest versions of Homebrew-managed packages.
 
-    ## Usage
-        The module is used internally by the dependency management system to dynamically
-        detect Python installation methods and ensure compliance with system constraints.
+    Usage:
+        Checking Homebrew Availability:
+            from packages.requirements.lib.brew_utils import check_availability
+            is_brew_installed = check_availability()
 
-    ## Dependencies
-        - `subprocess`: For executing shell commands.
-        - `shutil`: To verify the presence of the `brew` command.
-        - `platform`: To determine the operating system.
-        - `importlib.metadata`: For alternative package version lookups.
-        - `functools.lru_cache`: To optimize repetitive queries.
+        Detecting Python Installation Method:
+            from packages.requirements.lib.brew_utils import detect_environment
+            env_info = detect_environment()
 
-    ## Notes
-        - This module is optimized for macOS but includes environment detection for Linux and Windows.
-        - The `check_availability()` function caches results to minimize system calls.
-        - The `detect_environment()` function ensures that externally managed environments are respected.
+        Fetching Homebrew Package Version:
+            from packages.requirements.lib.brew_utils import brew_info
+            version = brew_info("python3")
+
+    Dependencies:
+        - sys - Handles system-level functions such as process termination.
+        - subprocess - Runs Homebrew commands and captures output.
+        - shutil - Checks if the `brew` command is available.
+        - re - Provides regex-based parsing of command output.
+        - json - Handles structured package information.
+        - argparse - Parses command-line arguments.
+        - platform - Identifies the operating system.
+        - logging - Logs system events and errors.
+        - importlib.metadata - Retrieves installed package versions.
+        - functools.lru_cache - Optimizes function calls by caching results.
+        - pathlib - Ensures safe and platform-independent file path resolution.
+
+    Expected Behavior:
+        - Accurately detects the presence and operational status of Homebrew.
+        - Determines Python installation method (Brew, system-managed, standalone).
+        - Retrieves package version details from Homebrew.
+        - Provides optimized querying with caching.
+
+    Exit Codes:
+        - 0: Execution completed successfully.
+        - 1: Error encountered in environment detection or package retrieval.
 
 FUNCTIONS
     brew_info(package: str) -> Optional[str]
-        Retrieve information about a Homebrew package.
+        Function: brew_info(package: str) -> Optional[str]
+        Description:
+            Queries Homebrew to determine if a package exists and fetches its version.
 
-        This function queries Homebrew to determine if a package exists and fetches its version.
+        Parameters:
+            - package (str): The name of the package to check.
 
-        ## Args:
-            - `package` (`str`): The name of the package to check.
+        Returns:
+            - Optional[str]: The installed version of the package if found, otherwise None.
 
-        ## Returns:
-            - `Optional[str]`: The package version if found, otherwise `None`.
+        Behavior:
+            - Runs 'brew info <package>' and extracts the version from output.
+            - If the package does not exist, returns None.
 
-        ## Notes:
-            - This function runs `brew info <package>` and parses the output.
-            - If Homebrew returns an error (`No formula found`), it returns `None`.
+        Error Handling:
+            - If Homebrew fails to retrieve package info, the function returns None.
 
     check_availability() -> bool
-        Check if Homebrew is available on macOS.
+        Function: check_availability() -> bool
+        Description:
+            Checks if Homebrew is installed and operational on macOS.
 
-        This function determines whether Homebrew is installed and operational. It first
-        checks for the existence of the `brew` binary using `shutil.which()`, then
-        verifies its functionality by running `brew --version`.
+        Returns:
+            - bool:
+              - True if Homebrew is installed and functional.
+              - False if Homebrew is unavailable or the system is not macOS.
 
-        ## Returns:
-            - `bool`:
-              - `True` if Homebrew is installed and operational.
-              - `False` if Homebrew is unavailable or the system is not macOS.
+        Behavior:
+            - Uses shutil.which() to detect the Brew binary.
+            - Runs 'brew --version' to verify Brew functionality.
+            - Uses an LRU cache to avoid redundant system calls.
 
-        ## Notes:
-            - Uses `lru_cache(maxsize=1)` to cache the result, avoiding redundant system calls.
-            - Returns `False` immediately if the system is not macOS.
+        Error Handling:
+            - If Homebrew is missing, the function returns False.
 
     detect_environment() -> dict
-        Detect the Python installation method and determine if it is externally managed.
+        Function: detect_environment() -> dict
+        Description:
+            Detects the Python installation method and determines whether package installations are restricted.
 
-        This function examines the system's Python installation method and whether
-        package installations are restricted. It identifies installations from:
-            - **Homebrew (macOS)**
-            - **System package managers (APT/DNF)**
-            - **Microsoft Store (Windows)**
-            - **Standalone Python installations**
+        Returns:
+            - dict: A dictionary containing:
+              - "OS" (str): The detected operating system ("darwin", "linux", "windows").
+              - "INSTALL_METHOD" (str): How Python is installed ("brew", "system", "standalone", "microsoft_store").
+              - "EXTERNALLY_MANAGED" (bool): Whether the system restricts package installations.
+              - "BREW_AVAILABLE" (bool): Whether Homebrew is installed.
 
-        ## Returns:
-            - `dict`: A dictionary containing:
-              - `"OS"` (`str`): The detected operating system (`"darwin"`, `"linux"`, `"windows"`).
-              - `"INSTALL_METHOD"` (`str`): The detected Python installation method (`"brew"`, `"system"`, `"standalone"`, `"microsoft_store"`).
-              - `"EXTERNALLY_MANAGED"` (`bool`): Indicates whether the system restricts package installations.
-              - `"BREW_AVAILABLE"` (`bool`): Specifies whether Homebrew is installed.
+        Behavior:
+            - Detects if Python was installed via Brew.
+            - Checks for EXTERNALLY-MANAGED markers on Linux/macOS.
+            - Determines if Python is managed by APT/DNF on Linux or Microsoft Store on Windows.
 
-        ## Notes:
-            - The function respects `EXTERNALLY-MANAGED` environments on Linux/macOS.
-            - If Homebrew is available, it attempts to detect whether Python was installed via Brew.
-            - Uses system commands like `dpkg -l`, `rpm -q`, and `ensurepip` to determine installation methods.
+        Error Handling:
+            - Uses subprocess calls to query system information.
+            - Returns a structured dictionary even if detection fails.
 
     latest_version(package: str) -> Optional[str]
-        Retrieve the latest available version of a package from Homebrew.
+        Function: latest_version(package: str) -> Optional[str]
+        Description:
+            Retrieves the latest available version of a Homebrew package.
 
-        This function runs `brew info <package>` to extract the latest stable version
-        of a package from the Homebrew repository.
+        Parameters:
+            - package (str): The name of the package to check.
 
-        ## Args:
-            - `package` (`str`): The name of the package to check.
+        Returns:
+            - Optional[str]: The latest available version from Homebrew, otherwise None.
 
-        ## Returns:
-            - `Optional[str]`:
-              - The latest available version from Homebrew.
-              - `None` if the package is unknown or Brew fails.
+        Behavior:
+            - Runs 'brew info <package>' and extracts the stable version.
+            - Uses regex to parse the latest version from Homebrew output.
 
-        ## Notes:
-            - Parses the output of `brew info` to extract the stable version.
-            - If the command fails or the package is not found, it returns `None`.
+        Error Handling:
+            - If Brew command fails or package is missing, returns None.
+
+    main() -> None
 
     version(package: str) -> Optional[str]
-        Retrieve the installed version of a Homebrew-managed package.
+        Function: version(package: str) -> Optional[str]
+        Description:
+            Retrieves the installed version of a Homebrew-managed package.
 
-        This function executes `brew list --versions <package>` to check whether a package
-        is installed via Homebrew and extracts its version if available.
+        Parameters:
+            - package (str): The name of the package to check.
 
-        ## Args:
-            - `package` (`str`): The name of the package to check.
+        Returns:
+            - Optional[str]: The installed version of the package if found, otherwise None.
 
-        ## Returns:
-            - `Optional[str]`:
-              - The installed version of the package if found.
-              - `None` if the package is not installed via Homebrew.
+        Behavior:
+            - Runs 'brew list --versions <package>' and extracts the installed version.
+            - Returns None if the package is not installed via Homebrew.
 
-        ## Notes:
-            - Uses `subprocess.run()` to query Brew.
-            - Returns `None` if the package is not installed.
+        Error Handling:
+            - If Homebrew fails or the package is missing, the function returns None.
 
 DATA
     LIB_DIR = PosixPath('<project-location>/packages/...

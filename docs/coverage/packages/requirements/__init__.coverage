@@ -1,5 +1,5 @@
 Name                                Stmts   Miss Branch BrPart  Cover
 ---------------------------------------------------------------------
-packages/requirements/__init__.py       4      4      0      0     0%
+packages/requirements/__init__.py       8      8      0      0     0%
 ---------------------------------------------------------------------
-TOTAL                                   4      4      0      0     0%
+TOTAL                                   8      8      0      0     0%

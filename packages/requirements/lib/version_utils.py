@@ -3,55 +3,31 @@
 # File: ./packages/requirements/lib/version_utils.py
 # Version: 0.1.0
 
-"""
-# Version Management Utilities for Dependency Handling
-
-## Overview
-    This module provides utilities for retrieving and managing package versions across
-    various package managers. It supports version detection for Python packages installed
-    via Pip, Homebrew, APT, DNF, and Windows Package Manager (Microsoft Store).
-
-## Features
-    - **Retrieve Installed Package Versions:** Determines the currently installed version of a package.
-    - **Check Latest Available Versions:** Queries the latest available package versions from the appropriate source.
-    - **Multi-Platform Support:** Detects package versions across macOS (Homebrew), Linux (APT/DNF), and Windows (Microsoft Store).
-    - **Optimized Performance:** Uses caching and structured queries to minimize redundant operations.
-    - **Logging & Debugging:** Provides detailed debug logs for package evaluations.
-
-## Usage
-    This module is used internally by the dependency management system to dynamically
-    assess package versions before applying installation policies.
-
-## Dependencies
-    - `subprocess`: For executing package manager commands.
-    - `json`: For parsing structured package data.
-    - `importlib.metadata`: For retrieving installed Python package versions.
-    - `pathlib`: For managing system paths.
-    - `log_utils`: Custom logging module for structured output.
-    - `brew_utils`: Handles Homebrew-specific package version retrieval.
-
-## Notes
-    - This module prioritizes Pip-based queries before falling back to system-level package managers.
-    - It ensures **structured decision-making** when evaluating package versions.
-"""
-
+# Standard library imports - Core system and OS interaction modules
 import sys
 import subprocess
 import shutil
 
+# Standard library imports - Utility modules
 import json
 import argparse
 import platform
 import logging
 
+# Standard library imports - Import system
 import importlib.metadata
 
+# Standard library imports - Function tools
 from functools import lru_cache
 
+# Standard library imports - Date and time handling
 from datetime import datetime, timezone
-from typing import Optional, Union
 
+# Standard library imports - File system-related module
 from pathlib import Path
+
+# Standard library imports - Type hinting (kept in a separate group)
+from typing import Optional, Union
 
 # Define base directories
 LIB_DIR = Path(__file__).resolve().parent.parent.parent / "lib"
@@ -63,6 +39,9 @@ if str(LIB_DIR) not in sys.path:
 # for path in sys.path:
 #     print(f'  - {path}')
 
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
 from lib import system_variables as environment
 from packages.appflow_tracer.lib import log_utils
 
@@ -71,26 +50,6 @@ from . import brew_utils
 # ------------------------------------------------------
 
 def latest_version(package: str, configs: dict) -> Optional[str]:
-    """
-    Fetch the latest available version of a package using the appropriate package manager.
-
-    This function determines the latest available version of a package by querying:
-        1. **Pip** (default for Python packages).
-        2. **Homebrew** (if Python is managed via Brew on macOS).
-        3. **APT/DNF** (if applicable on Linux).
-        4. **Windows Package Manager** (Microsoft Store).
-
-    ## Args:
-        - `package` (`str`): The package name to check.
-        - `configs` (`dict`): Configuration dictionary used for logging and environment detection.
-
-    ## Returns:
-        - `Optional[str]`: The latest available version as a string if found, otherwise `None`.
-
-    ## Notes:
-        - Prioritizes Pip as it provides the most up-to-date package information.
-        - Uses `match` statements to route requests to the correct package manager.
-    """
 
     env_info = configs.get("environment", {})
     install_method = env_info.get("INSTALL_METHOD")
@@ -114,22 +73,6 @@ def latest_version(package: str, configs: dict) -> Optional[str]:
 ## -----------------------------------------------------------------------------
 
 def linux_version(package: str) -> Optional[str]:
-    """
-    Retrieve the installed version of a package via APT (Debian-based) or DNF (Fedora).
-
-    This function attempts to determine the installed version using:
-        - `dpkg -s <package>` for APT (Debian-based systems).
-        - `rpm -q <package>` for DNF (Fedora-based systems).
-
-    ## Args:
-        - `package` (`str`): The package name to check.
-
-    ## Returns:
-        - `Optional[str]`: The installed version if found, otherwise `None`.
-
-    ## Notes:
-        - If `dpkg` is unavailable, it falls back to `rpm`.
-    """
 
     try:
         result = subprocess.run(
@@ -158,22 +101,6 @@ def linux_version(package: str) -> Optional[str]:
 ## -----------------------------------------------------------------------------
 
 def linux_latest_version(package: str) -> Optional[str]:
-    """
-    Retrieve the latest available version of a package via APT or DNF.
-
-    This function checks:
-        - `apt-cache madison <package>` for APT (Debian-based systems).
-        - `dnf list available <package>` for DNF (Fedora-based systems).
-
-    ## Args:
-        - `package` (`str`): The package name to check.
-
-    ## Returns:
-        - `Optional[str]`: The latest available version if found, otherwise `None`.
-
-    ## Notes:
-        - If `apt-cache` is unavailable, it falls back to `dnf`.
-    """
 
     try:
         result = subprocess.run(
@@ -202,21 +129,6 @@ def linux_latest_version(package: str) -> Optional[str]:
 # ------------------------------------------------------
 
 def windows_version(package: str) -> Optional[str]:
-    """
-    Retrieve the installed version of a package via Microsoft Store.
-
-    This function runs a PowerShell command to check the installed version of
-    a package using `Get-AppxPackage`.
-
-    ## Args:
-        - `package` (`str`): The package name to check.
-
-    ## Returns:
-        - `Optional[str]`: The installed version if found, otherwise `None`.
-
-    ## Notes:
-        - Uses PowerShell commands, which require administrator privileges.
-    """
 
     try:
         result = subprocess.run(
@@ -226,28 +138,13 @@ def windows_version(package: str) -> Optional[str]:
             check=True
         )
         version = result.stdout.strip()
-        return version if version else None  # ✅ Return None if no output is found
+        return version if version else None  # Return None if no output is found
     except subprocess.CalledProcessError:
-        return None  # ✅ If the command fails, the package is missing
+        return None  # If the command fails, the package is missing
 
 ## -----------------------------------------------------------------------------
 
 def windows_latest_version(package: str) -> Optional[str]:
-    """
-    Retrieve the latest available version of a package via Microsoft Store.
-
-    This function runs a PowerShell command to check the latest available version
-    of a package using `Find-Package`.
-
-    ## Args:
-        - `package` (`str`): The package name to check.
-
-    ## Returns:
-        - `Optional[str]`: The latest available version if found, otherwise `None`.
-
-    ## Notes:
-        - Requires PowerShell execution privileges.
-    """
 
     try:
         result = subprocess.run(
@@ -263,27 +160,6 @@ def windows_latest_version(package: str) -> Optional[str]:
 ## -----------------------------------------------------------------------------
 
 def installed_version(package: str, configs: dict) -> Optional[str]:
-    """
-    Retrieve the installed version of a package.
-
-    This function checks for an installed package version using the following priority order:
-        1. **Pip (`pip list --format=json`)** - Best for detecting all installed packages.
-        2. **Pip (`importlib.metadata.version()`)** - Fallback for retrieving individual package metadata.
-        3. **Homebrew (`brew list --versions`)** - If applicable on macOS.
-        4. **APT/DNF (`dpkg -s` or `rpm -q`)** - If applicable on Linux.
-        5. **Windows Package Manager (`powershell Get-AppxPackage`)** - If applicable on Windows.
-
-    ## Args:
-        - `package` (`str`): The package name to check.
-        - `configs` (`dict`): Configuration dictionary containing system environment details.
-
-    ## Returns:
-        - `Optional[str]`: The installed package version if found, otherwise `None`.
-
-    ## Notes:
-        - Uses structured logging to track package version retrieval.
-        - Ensures compatibility with externally managed Python environments.
-    """
 
     env = configs.get("environment", {})
     install_method = env.get("INSTALL_METHOD")
@@ -383,21 +259,6 @@ def installed_version(package: str, configs: dict) -> Optional[str]:
 ## -----------------------------------------------------------------------------
 
 def pip_latest_version(package: str) -> Optional[str]:
-    """
-    Retrieve the latest available version of a package via Pip.
-
-    This function executes `pip index versions <package>` to fetch a list of available
-    versions and extracts the latest one.
-
-    ## Args:
-        - `package` (`str`): The package name to check.
-
-    ## Returns:
-        - `Optional[str]`: The latest available version as a string if found, otherwise `None`.
-
-    ## Notes:
-        - Requires internet access to fetch version information from PyPI.
-    """
 
     try:
         result = subprocess.run(
@@ -409,6 +270,16 @@ def pip_latest_version(package: str) -> Optional[str]:
         for line in result.stdout.splitlines():
             if "Available versions:" in line:
                 versions = line.split(":")[1].strip().split(", ")
-                return versions[0] if versions and versions[0] != "None" else None  # ✅ Ensure `NoneType` is returned properly
+                return versions[0] if versions and versions[0] != "None" else None  # Ensure `NoneType` is returned properly
     except subprocess.CalledProcessError:
         return None
+
+# Load documentation dynamically and apply module, function and objects docstrings
+from lib.pydoc_loader import load_pydocs
+load_pydocs(__file__, sys.modules[__name__])
+
+def main() -> None:
+    pass
+
+if __name__ == "__main__":
+    main()

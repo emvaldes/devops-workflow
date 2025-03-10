@@ -3,155 +3,157 @@
 Help on module packages.requirements.lib.version_utils in packages.requirements.lib:
 
 NAME
-    packages.requirements.lib.version_utils - # Version Management Utilities for Dependency Handling
+    packages.requirements.lib.version_utils - File Path: ./packages/requirements/lib/version_utils.py
 
 DESCRIPTION
-    ## Overview
-        This module provides utilities for retrieving and managing package versions across
-        various package managers. It supports version detection for Python packages installed
-        via Pip, Homebrew, APT, DNF, and Windows Package Manager (Microsoft Store).
+    Description:
+        The version_utils.py module provides structured utilities for retrieving and managing package versions.
+        It supports multi-platform package detection across Pip, Homebrew, APT, DNF, and Windows Package Manager.
 
-    ## Features
-        - **Retrieve Installed Package Versions:** Determines the currently installed version of a package.
-        - **Check Latest Available Versions:** Queries the latest available package versions from the appropriate source.
-        - **Multi-Platform Support:** Detects package versions across macOS (Homebrew), Linux (APT/DNF), and Windows (Microsoft Store).
-        - **Optimized Performance:** Uses caching and structured queries to minimize redundant operations.
-        - **Logging & Debugging:** Provides detailed debug logs for package evaluations.
+    Core Features:
+        - Retrieve Installed Package Versions: Determines the currently installed version of a package.
+        - Check Latest Available Versions: Queries the latest available package versions from the appropriate source.
+        - Multi-Platform Support: Detects package versions across macOS (Homebrew), Linux (APT/DNF), and Windows (Microsoft Store).
+        - Optimized Performance: Uses caching and structured queries to minimize redundant operations.
+        - Logging & Debugging: Provides detailed debug logs for package evaluations.
 
-    ## Usage
-        This module is used internally by the dependency management system to dynamically
-        assess package versions before applying installation policies.
+    Usage:
+        Checking Installed Version:
+            from packages.requirements.lib.version_utils import installed_version
+            current_version = installed_version("requests", configs)
 
-    ## Dependencies
-        - `subprocess`: For executing package manager commands.
-        - `json`: For parsing structured package data.
-        - `importlib.metadata`: For retrieving installed Python package versions.
-        - `pathlib`: For managing system paths.
-        - `log_utils`: Custom logging module for structured output.
-        - `brew_utils`: Handles Homebrew-specific package version retrieval.
+        Fetching Latest Available Version:
+            from packages.requirements.lib.version_utils import latest_version
+            latest_pip_version = latest_version("requests", configs)
 
-    ## Notes
-        - This module prioritizes Pip-based queries before falling back to system-level package managers.
-        - It ensures **structured decision-making** when evaluating package versions.
+    Dependencies:
+        - sys - Handles system-level functions such as process termination.
+        - subprocess - Executes shell commands for package management.
+        - json - Handles structured dependency files.
+        - importlib.metadata - Retrieves installed package versions.
+        - functools.lru_cache - Caches function calls for efficiency.
+        - pathlib - Ensures platform-independent file path resolution.
+        - packages.appflow_tracer.lib.log_utils - Provides structured logging.
+        - brew_utils - Retrieves Homebrew-specific package versions.
+
+    Expected Behavior:
+        - Ensures all required packages follow version compliance checks.
+        - Prevents unintended upgrades/downgrades when policy is set to "restricted".
+        - Logs all package version evaluations for debugging and compliance tracking.
+
+    Exit Codes:
+        - 0: Execution completed successfully.
+        - 1: Failure due to missing configurations, package errors, or policy conflicts.
 
 FUNCTIONS
     installed_version(package: str, configs: dict) -> Optional[str]
-        Retrieve the installed version of a package.
+        Function: installed_version(package: str, configs: dict) -> Optional[str]
+        Description:
+            Retrieves the installed version of a package.
 
-        This function checks for an installed package version using the following priority order:
-            1. **Pip (`pip list --format=json`)** - Best for detecting all installed packages.
-            2. **Pip (`importlib.metadata.version()`)** - Fallback for retrieving individual package metadata.
-            3. **Homebrew (`brew list --versions`)** - If applicable on macOS.
-            4. **APT/DNF (`dpkg -s` or `rpm -q`)** - If applicable on Linux.
-            5. **Windows Package Manager (`powershell Get-AppxPackage`)** - If applicable on Windows.
+        Parameters:
+            - package (str): The package name to check.
+            - configs (dict): Configuration dictionary containing system environment details.
 
-        ## Args:
-            - `package` (`str`): The package name to check.
-            - `configs` (`dict`): Configuration dictionary containing system environment details.
+        Returns:
+            - Optional[str]: The installed package version if found, otherwise None.
 
-        ## Returns:
-            - `Optional[str]`: The installed package version if found, otherwise `None`.
-
-        ## Notes:
-            - Uses structured logging to track package version retrieval.
-            - Ensures compatibility with externally managed Python environments.
+        Behavior:
+            - Uses multiple detection methods, prioritizing Pip before system-level package managers.
+            - Logs version evaluation details for debugging.
 
     latest_version(package: str, configs: dict) -> Optional[str]
-        Fetch the latest available version of a package using the appropriate package manager.
+        Function: latest_version(package: str, configs: dict) -> Optional[str]
+        Description:
+            Fetches the latest available version of a package using the appropriate package manager.
 
-        This function determines the latest available version of a package by querying:
-            1. **Pip** (default for Python packages).
-            2. **Homebrew** (if Python is managed via Brew on macOS).
-            3. **APT/DNF** (if applicable on Linux).
-            4. **Windows Package Manager** (Microsoft Store).
+        Parameters:
+            - package (str): The package name to check.
+            - configs (dict): Configuration dictionary used for logging and environment detection.
 
-        ## Args:
-            - `package` (`str`): The package name to check.
-            - `configs` (`dict`): Configuration dictionary used for logging and environment detection.
+        Returns:
+            - Optional[str]: The latest available version as a string if found, otherwise None.
 
-        ## Returns:
-            - `Optional[str]`: The latest available version as a string if found, otherwise `None`.
-
-        ## Notes:
-            - Prioritizes Pip as it provides the most up-to-date package information.
-            - Uses `match` statements to route requests to the correct package manager.
+        Behavior:
+            - Prioritizes Pip for Python packages.
+            - Uses system-level package managers (Homebrew, APT/DNF, Microsoft Store) as applicable.
 
     linux_latest_version(package: str) -> Optional[str]
-        Retrieve the latest available version of a package via APT or DNF.
+        Function: linux_latest_version(package: str) -> Optional[str]
+        Description:
+            Retrieves the latest available version of a package via APT or DNF.
 
-        This function checks:
-            - `apt-cache madison <package>` for APT (Debian-based systems).
-            - `dnf list available <package>` for DNF (Fedora-based systems).
+        Parameters:
+            - package (str): The package name to check.
 
-        ## Args:
-            - `package` (`str`): The package name to check.
+        Returns:
+            - Optional[str]: The latest available version if found, otherwise None.
 
-        ## Returns:
-            - `Optional[str]`: The latest available version if found, otherwise `None`.
-
-        ## Notes:
-            - If `apt-cache` is unavailable, it falls back to `dnf`.
+        Behavior:
+            - Uses `apt-cache madison <package>` for APT and `dnf list available <package>` for DNF.
+            - Ensures compatibility with system package management tools.
 
     linux_version(package: str) -> Optional[str]
-        Retrieve the installed version of a package via APT (Debian-based) or DNF (Fedora).
+        Function: linux_version(package: str) -> Optional[str]
+        Description:
+            Retrieves the installed version of a package via APT (Debian-based) or DNF (Fedora).
 
-        This function attempts to determine the installed version using:
-            - `dpkg -s <package>` for APT (Debian-based systems).
-            - `rpm -q <package>` for DNF (Fedora-based systems).
+        Parameters:
+            - package (str): The package name to check.
 
-        ## Args:
-            - `package` (`str`): The package name to check.
+        Returns:
+            - Optional[str]: The installed version if found, otherwise None.
 
-        ## Returns:
-            - `Optional[str]`: The installed version if found, otherwise `None`.
+        Behavior:
+            - Uses `dpkg -s <package>` for APT and `rpm -q <package>` for DNF.
+            - Ensures compatibility with Linux-based package managers.
 
-        ## Notes:
-            - If `dpkg` is unavailable, it falls back to `rpm`.
+    main() -> None
 
     pip_latest_version(package: str) -> Optional[str]
-        Retrieve the latest available version of a package via Pip.
+        Function: pip_latest_version(package: str) -> Optional[str]
+        Description:
+            Retrieves the latest available version of a package via Pip.
 
-        This function executes `pip index versions <package>` to fetch a list of available
-        versions and extracts the latest one.
+        Parameters:
+            - package (str): The package name to check.
 
-        ## Args:
-            - `package` (`str`): The package name to check.
+        Returns:
+            - Optional[str]: The latest available version as a string if found, otherwise None.
 
-        ## Returns:
-            - `Optional[str]`: The latest available version as a string if found, otherwise `None`.
-
-        ## Notes:
+        Behavior:
+            - Uses `pip index versions <package>` to retrieve the latest available version.
             - Requires internet access to fetch version information from PyPI.
 
     windows_latest_version(package: str) -> Optional[str]
-        Retrieve the latest available version of a package via Microsoft Store.
+        Function: windows_latest_version(package: str) -> Optional[str]
+        Description:
+            Retrieves the latest available version of a package via Microsoft Store.
 
-        This function runs a PowerShell command to check the latest available version
-        of a package using `Find-Package`.
+        Parameters:
+            - package (str): The package name to check.
 
-        ## Args:
-            - `package` (`str`): The package name to check.
+        Returns:
+            - Optional[str]: The latest available version if found, otherwise None.
 
-        ## Returns:
-            - `Optional[str]`: The latest available version if found, otherwise `None`.
-
-        ## Notes:
-            - Requires PowerShell execution privileges.
+        Behavior:
+            - Uses PowerShell `Find-Package` to query available package versions.
+            - Requires administrator privileges for execution.
 
     windows_version(package: str) -> Optional[str]
-        Retrieve the installed version of a package via Microsoft Store.
+        Function: windows_version(package: str) -> Optional[str]
+        Description:
+            Retrieves the installed version of a package via Microsoft Store.
 
-        This function runs a PowerShell command to check the installed version of
-        a package using `Get-AppxPackage`.
+        Parameters:
+            - package (str): The package name to check.
 
-        ## Args:
-            - `package` (`str`): The package name to check.
+        Returns:
+            - Optional[str]: The installed version if found, otherwise None.
 
-        ## Returns:
-            - `Optional[str]`: The installed version if found, otherwise `None`.
-
-        ## Notes:
-            - Uses PowerShell commands, which require administrator privileges.
+        Behavior:
+            - Uses PowerShell `Get-AppxPackage` to check installed package versions.
+            - Requires administrator privileges for execution.
 
 DATA
     LIB_DIR = PosixPath('<project-location>/packages/...
