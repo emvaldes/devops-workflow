@@ -66,6 +66,9 @@ FUNCTIONS
 DATA
     PROJECT_ROOT = PosixPath('<project-location>')
 
+VERSION
+    0.1.0
+
 FILE
     <project-location>/scripts/testing.py
 

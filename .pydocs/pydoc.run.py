@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 # Python File: ./lib/run.py
+
+__module__ = "run"
 __version__ = "0.1.0"  # Documentation version
 
 # Module-level documentation

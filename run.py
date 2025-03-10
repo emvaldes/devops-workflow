@@ -2,8 +2,8 @@
 
 # File: ./run.py
 
-__module_name__ = "run"
-__version__ = "0.1.0"  ## Package version
+__module__ = "run"
+__version__ = "0.1.0"  # Module version
 
 # Standard library imports - Core system and OS interaction modules
 import os

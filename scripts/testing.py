@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 
+# File: ./tests/mocks/config_loader.py
+
+__package__ = "scripts"
+__module__ = "testing"
+
+__version__ = "0.1.0"  # Module version
+
 # Standard library imports - Core system module
 import sys
 

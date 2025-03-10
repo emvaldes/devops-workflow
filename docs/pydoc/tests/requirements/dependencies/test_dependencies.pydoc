@@ -1,5 +1,6 @@
 ### Documentation for tests/requirements/dependencies/test_dependencies.py
 
+⚠️ No .pydoc file found at <project-location>/tests/mocks/.pydocs/pydoc.__init__.py.
 Help on module tests.requirements.dependencies.test_dependencies in tests.requirements.dependencies:
 
 NAME
@@ -65,11 +66,9 @@ FUNCTIONS
 DATA
     ANY = <ANY>
     ROOT_DIR = PosixPath('<project-location>')
-    __module_name__ = 'dependencies'
-    __package_name__ = 'requirements'
 
 VERSION
-    0.1.1
+    0.1.0
 
 FILE
     <project-location>/tests/requirements/dependencies/test_dependencies.py

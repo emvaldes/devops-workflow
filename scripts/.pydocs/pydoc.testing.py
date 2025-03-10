@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 
 # Python File: ./scripts/testing.py
+
+__package__ = "scripts"
+__module__ = "testing"
+
 __version__ = "0.1.0"  # Documentation version
 
 MODULE_DOCSTRING = """
@@ -63,5 +67,31 @@ FUNCTION_DOCSTRINGS = {
             "logging": { ... }
         }
         I am a stand-alone script minding my own business.
+    """
+}
+
+VARIABLE_DOCSTRINGS = {
+    "PROJECT_ROOT": """
+    - Description: The root directory of the project, dynamically resolved.
+    - Type: Path
+    - Usage: Ensures the project's root directory is included in sys.path for imports.
+    """,
+
+    "CONFIGS": """
+    - Description: The global configuration dictionary containing logging and tracing settings.
+    - Type: dict
+    - Usage: Stores logging setup details, event configurations, and structured logging parameters.
+    """,
+
+    "LOGGING": """
+    - Description: Stores logging-related configuration settings.
+    - Type: dict
+    - Usage: Used for managing structured logging settings dynamically.
+    """,
+
+    "logger": """
+    - Description: The logging instance used for structured log messages.
+    - Type: logging.Logger
+    - Usage: Provides logging capabilities for debugging and structured event logging.
     """
 }

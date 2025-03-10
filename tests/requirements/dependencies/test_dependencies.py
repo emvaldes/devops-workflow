@@ -2,10 +2,10 @@
 
 # File: ./tests/requirements/dependencies/test_dependencies_utils.py
 
-__package_name__ = "requirements"
-__module_name__ = "dependencies"
+__package__ = "tests.requirements"
+__module__ = "dependencies"
 
-__version__ = "0.1.1"  ## Updated Test Module version
+__version__ = "0.1.0"  ## Updated Test Module version
 
 """
 # PyTest Module: test_dependencies_utils.py

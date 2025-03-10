@@ -2,8 +2,10 @@
 
 # File: ./tests/test_run.py
 
-__module_name__ = "test_run"
-__version__ = "0.1.2"  ## Updated Test Module version
+__package__ = "tests"
+__module__ = "test_run"
+
+__version__ = "0.1.0"  # PyTest version
 
 # Standard library imports - Core system module
 import sys

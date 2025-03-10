@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 
 # Python File: ./packages/__init__.py
+
+__package__ = "packages"
+__module__ = "__init__"
+
 __version__ = "0.1.0"  # Documentation version
 
 MODULE_DOCSTRING = """
