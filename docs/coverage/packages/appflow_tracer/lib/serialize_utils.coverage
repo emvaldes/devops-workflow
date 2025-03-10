@@ -1,5 +1,5 @@
 Name                                             Stmts   Miss Branch BrPart  Cover
 ----------------------------------------------------------------------------------
-packages/appflow_tracer/lib/serialize_utils.py      41     41     12      0     0%
+packages/appflow_tracer/lib/serialize_utils.py      48     48     14      0     0%
 ----------------------------------------------------------------------------------
-TOTAL                                               41     41     12      0     0%
+TOTAL                                               48     48     14      0     0%

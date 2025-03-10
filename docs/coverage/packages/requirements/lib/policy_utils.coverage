@@ -1,5 +1,5 @@
 Name                                        Stmts   Miss Branch BrPart  Cover
 -----------------------------------------------------------------------------
-packages/requirements/lib/policy_utils.py      65     65     18      0     0%
+packages/requirements/lib/policy_utils.py      72     72     20      0     0%
 -----------------------------------------------------------------------------
-TOTAL                                          65     65     18      0     0%
+TOTAL                                          72     72     20      0     0%

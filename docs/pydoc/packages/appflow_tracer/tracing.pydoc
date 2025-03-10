@@ -3,7 +3,117 @@
 Help on module packages.appflow_tracer.tracing in packages.appflow_tracer:
 
 NAME
-    packages.appflow_tracer.tracing - # File: ./packages/appflow_tracer/tracing.py
+    packages.appflow_tracer.tracing - File Path: packages/appflow_tracer/tracing.py
+
+DESCRIPTION
+    Description:
+        AppFlow Tracing System
+        This module provides structured logging and function call tracing, enabling
+        automatic function execution monitoring with minimal intrusion. It integrates
+        logging and tracing functionalities, ensuring accurate tracking of function
+        calls, return values, and execution flow.
+
+    Core Features:
+        - **Function Call Tracing**: Automatically captures function calls, arguments, and return values.
+        - **Structured Logging**: Logs execution details in JSON format for debugging and auditing.
+        - **Self-Inspection**: When executed directly, logs its own execution for analysis.
+        - **Automatic Log Management**: Removes old log files to maintain storage efficiency.
+        - **Configurable Event Filtering**: Allows selective tracing of function calls and returns.
+        - **Console and File Logging**: Captures print statements and ensures logs do not contain ANSI escape sequences.
+
+    Usage:
+        To enable function call tracing:
+            import tracing
+            tracing.setup_logging()
+
+        To run the tracing system as a standalone tool:
+            python tracing.py
+
+    Dependencies:
+        - `sys` - Provides system-level operations, including path management.
+        - `json` - Enables structured logging in JSON format.
+        - `inspect` - Used for function introspection and execution tracing.
+        - `logging` - Handles structured logging and message formatting.
+        - `builtins` - Overrides `print` statements for structured logging.
+        - `pathlib.Path` - Resolves file and directory paths dynamically.
+        - `datetime` - Used for timestamping and log file management.
+        - `lib.system_variables` - Provides global project-wide configurations.
+        - `lib.pkgconfig_loader` - Loads and manages logging and tracing configurations.
+        - `lib.file_utils` - Handles log file cleanup and path resolution.
+        - `lib.log_utils` - Provides structured logging utilities.
+        - `lib.trace_utils` - Implements function call tracing and execution flow monitoring.
+
+    Global Variables:
+        - `LOGGING` (bool): Flag indicating whether logging has been initialized.
+        - `CONFIGS` (dict): Stores the effective logging and tracing configurations.
+        - `logger` (logging.Logger): Global logger instance used for structured logging.
+
+    Primary Functions:
+        - `setup_logging(configs, logname_override, events)`: Initializes structured logging.
+        - `main()`: Entry point for standalone execution, setting up tracing and logging.
+        - `PrintCapture.emit(record)`: Captures print statements and redirects them to logs.
+        - `ANSIFileHandler.emit(record)`: Ensures log files do not contain ANSI escape sequences.
+
+    Expected Behavior:
+        - Logs execution details when tracing is enabled.
+        - Logs function calls with arguments and return values.
+        - Maintains structured logs for debugging and execution tracking.
+        - Automatically removes older log files when exceeding retention limits.
+
+    Exit Codes:
+        - `0`: Successful execution.
+        - `1`: Failure due to configuration or logging setup errors.
+
+    Example:
+        Importing the tracing system and enabling structured logging:
+            from tracing import setup_logging
+            setup_logging()
+
+    class PrintCapture(logging.StreamHandler):
+
+        Custom logging handler that captures print statements and logs them
+        while ensuring they are displayed in the console.
+
+        This ensures that print statements are properly logged without affecting
+        real-time console output.
+
+        def emit(self, record: logging.LogRecord) -> None:
+
+            Custom logging handler that captures print statements and logs them
+            while ensuring they are displayed in the console.
+
+            This ensures that print statements are properly logged without affecting
+            real-time console output.
+
+            Args:
+                record (logging.LogRecord): The log record that contains information
+                    about the log message to be captured and displayed.
+
+            Returns:
+                None
+
+    class ANSIFileHandler(logging.FileHandler):
+
+        Custom FileHandler that removes ANSI codes from log output
+        and filters out logs from the internal Python logging module.
+
+        This prevents unnecessary ANSI escape codes from appearing in log files
+        and ensures only relevant logs are recorded.
+
+        def emit(self, record: logging.LogRecord) -> None:
+
+            Custom FileHandler that removes ANSI codes from log output
+            and filters out logs from the internal Python logging module.
+
+            This prevents unnecessary ANSI escape codes from appearing in log files
+            and ensures only relevant logs are recorded.
+
+            Args:
+                record (logging.LogRecord): The log record to be emitted, including
+                    log message and additional context for filtering.
+
+            Returns:
+                None
 
 CLASSES
     logging.FileHandler(logging.StreamHandler)
@@ -13,12 +123,6 @@ CLASSES
 
     class ANSIFileHandler(logging.FileHandler)
      |  ANSIFileHandler(filename, mode='a', encoding=None, delay=False, errors=None)
-     |
-     |  Custom FileHandler that removes ANSI codes from log output
-     |  and filters out logs from the internal Python logging module.
-     |
-     |  This prevents unnecessary ANSI escape codes from appearing in log files
-     |  and ensures only relevant logs are recorded.
      |
      |  Method resolution order:
      |      ANSIFileHandler
@@ -31,18 +135,13 @@ CLASSES
      |  Methods defined here:
      |
      |  emit(self, record: logging.LogRecord) -> None
-     |      Custom FileHandler that removes ANSI codes from log output
-     |      and filters out logs from the internal Python logging module.
+     |      Emit a record.
      |
-     |      This prevents unnecessary ANSI escape codes from appearing in log files
-     |      and ensures only relevant logs are recorded.
+     |      If the stream was not opened because 'delay' was specified in the
+     |      constructor, open it before calling the superclass's emit.
      |
-     |      Args:
-     |          record (logging.LogRecord): The log record to be emitted, including
-     |              log message and additional context for filtering.
-     |
-     |      Returns:
-     |          None
+     |      If stream is not open, current mode is 'w' and `_closed=True`, record
+     |      will not be emitted (see Issue #42378).
      |
      |  ----------------------------------------------------------------------
      |  Methods inherited from logging.FileHandler:
@@ -181,12 +280,6 @@ CLASSES
     class PrintCapture(logging.StreamHandler)
      |  PrintCapture(stream=None)
      |
-     |  Custom logging handler that captures print statements and logs them
-     |  while ensuring they are displayed in the console.
-     |
-     |  This ensures that print statements are properly logged without affecting
-     |  real-time console output.
-     |
      |  Method resolution order:
      |      PrintCapture
      |      logging.StreamHandler
@@ -197,18 +290,14 @@ CLASSES
      |  Methods defined here:
      |
      |  emit(self, record: logging.LogRecord) -> None
-     |      Custom logging handler that captures print statements and logs them
-     |      while ensuring they are displayed in the console.
+     |      Emit a record.
      |
-     |      This ensures that print statements are properly logged without affecting
-     |      real-time console output.
-     |
-     |      Args:
-     |          record (logging.LogRecord): The log record that contains information
-     |              about the log message to be captured and displayed.
-     |
-     |      Returns:
-     |          None
+     |      If a formatter is specified, it is used to format the record.
+     |      The record is then written to the stream with a trailing newline.  If
+     |      exception information is present, it is formatted using
+     |      traceback.print_exception and appended to the stream.  If the stream
+     |      has an 'encoding' attribute, it is used to determine how to do the
+     |      output to the stream.
      |
      |  ----------------------------------------------------------------------
      |  Methods inherited from logging.StreamHandler:
@@ -371,39 +460,22 @@ FUNCTIONS
         logname_override: Optional[str] = None,
         events: Union[bool, dict, NoneType] = None
     ) -> Union[bool, dict]
-        Configures and initializes the global logging system.
+        Configures and initializes structured logging for the framework.
 
-        This function sets up the logging environment, creating log files and adding handlers
-        for both file-based and console-based logging. It ensures proper logging behavior
-        even when no configuration is provided.
+        This function sets up logging with file and console handlers, ensuring structured
+        log output. It integrates function call tracing and manages log file retention.
 
         Args:
-            configs (dict, optional): A dictionary containing logging configurations.
-                If None, the default global configurations are used.
-            logname_override (str, optional): A custom name for the log file.
-                If None, the log file name is derived from the calling script.
-            events (bool, list, or dict, optional):
-                - `None` / `False` → Disables all event logging.
-                - `True` → Enables all event logging.
-                - `list` → Enables only specified events (e.g., ["call", "return"]).
-                - `dict` → Enables/disables events per user settings (e.g., {"call": True, "return": False}).
-
-        Raises:
-            ValueError: If the provided logging configurations are not in a dictionary format.
+            configs (dict, optional): Logging configuration dictionary.
+            logname_override (str, optional): Custom log file name.
+            events (bool, list, dict, optional): Controls which events are logged.
 
         Returns:
-            dict: The effective logging configuration after applying defaults.
+            dict: The effective logging configuration.
 
         Example:
-            >>> setup_logging()
-            {
-                "logging": {
-                    "log_filename": "/path/to/logfile.log",
-                    "max_logfiles": 5,
-                    ...
-                },
-                ...
-            }
+            >>> from packages.appflow_tracer import setup_logging
+            >>> CONFIGS = setup_logging()
 
 DATA
     CONFIGS = None

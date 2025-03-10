@@ -3,7 +3,59 @@
 Help on module packages.appflow_tracer.__init__ in packages.appflow_tracer:
 
 NAME
-    packages.appflow_tracer.__init__ - # File: ./packages/appflow_tracer/__init__.py
+    packages.appflow_tracer.__init__ - File Path: packages/appflow_tracer/__init__.py
+
+DESCRIPTION
+    Description:
+        AppFlow Tracing Package Initialization
+
+        This module serves as the entry point for the `appflow_tracer` package, ensuring
+        the package is correctly recognized and exposing core functionalities for structured
+        logging and function execution tracing.
+
+    Core Features:
+        - **Package Initialization**: Marks `appflow_tracer` as a Python package, enabling imports.
+        - **Logging Setup**: Provides `setup_logging` for configuring structured logging.
+        - **Utility Exposure**: Imports and exposes core framework utilities for tracing, file handling, and logging.
+        - **Modular Structure**: Ensures clean and organized access to tracing functionalities.
+
+    Submodules:
+        - `tracing`: Handles structured event-based logging and tracing.
+        - `lib.file_utils`: Provides file and directory management utilities.
+        - `lib.log_utils`: Facilitates structured logging and debugging.
+        - `lib.trace_utils`: Supports runtime tracing and performance monitoring.
+        - `lib.serialize_utils`: Manages data serialization and deserialization.
+
+    Usage:
+        Importing and initializing logging:
+            from packages.appflow_tracer import setup_logging
+            CONFIGS = setup_logging()
+
+        Logging messages:
+            from packages.appflow_tracer import log_utils
+            log_utils.log_message("This is a test log message.")
+
+        Accessing tracing utilities:
+            from packages.appflow_tracer import trace_utils
+            trace_utils.start_tracing()
+
+    Dependencies:
+        - `tracing` - Manages function execution tracing and structured event logging.
+        - `log_utils` - Handles structured logging, formatting, and log management.
+        - `file_utils` - Provides file and directory-related utilities.
+        - `serialize_utils` - Ensures proper data serialization and deserialization.
+        - `trace_utils` - Supports real-time function call monitoring and execution tracing.
+
+    Exit Codes:
+        - `0`: Successful package initialization.
+        - `1`: Failure due to import errors or incorrect setup.
+
+    Example:
+        Initializing the AppFlow Tracer system:
+            from packages.appflow_tracer import setup_logging, log_utils
+
+            CONFIGS = setup_logging()
+            log_utils.log_message("Framework initialized successfully.")
 
 FUNCTIONS
     setup_logging(
@@ -11,39 +63,22 @@ FUNCTIONS
         logname_override: Optional[str] = None,
         events: Union[bool, dict, NoneType] = None
     ) -> Union[bool, dict]
-        Configures and initializes the global logging system.
+        Configures and initializes structured logging for the framework.
 
-        This function sets up the logging environment, creating log files and adding handlers
-        for both file-based and console-based logging. It ensures proper logging behavior
-        even when no configuration is provided.
+        This function sets up logging with file and console handlers, ensuring structured
+        log output. It integrates function call tracing and manages log file retention.
 
         Args:
-            configs (dict, optional): A dictionary containing logging configurations.
-                If None, the default global configurations are used.
-            logname_override (str, optional): A custom name for the log file.
-                If None, the log file name is derived from the calling script.
-            events (bool, list, or dict, optional):
-                - `None` / `False` → Disables all event logging.
-                - `True` → Enables all event logging.
-                - `list` → Enables only specified events (e.g., ["call", "return"]).
-                - `dict` → Enables/disables events per user settings (e.g., {"call": True, "return": False}).
-
-        Raises:
-            ValueError: If the provided logging configurations are not in a dictionary format.
+            configs (dict, optional): Logging configuration dictionary.
+            logname_override (str, optional): Custom log file name.
+            events (bool, list, dict, optional): Controls which events are logged.
 
         Returns:
-            dict: The effective logging configuration after applying defaults.
+            dict: The effective logging configuration.
 
         Example:
-            >>> setup_logging()
-            {
-                "logging": {
-                    "log_filename": "/path/to/logfile.log",
-                    "max_logfiles": 5,
-                    ...
-                },
-                ...
-            }
+            >>> from packages.appflow_tracer import setup_logging
+            >>> CONFIGS = setup_logging()
 
 DATA
     __all__ = ['setup_logging', 'file_utils', 'log_utils', 'serialize_util...

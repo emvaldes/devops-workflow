@@ -3,16 +3,20 @@
 # File: ./lib/argument_parser.py
 __version__ = "0.1.0"  ## Package version
 
+# Standard library imports - Core system modules
 import sys
 import os
 
+# Standard library imports - Utility modules
+import argparse
 import json
 import logging
-import argparse
 
-from typing import Dict, Any
-
+# Standard library imports - File system-related module
 from pathlib import Path
+
+# Standard library imports - Type hinting (should be in a separate group)
+from typing import Any, Dict
 
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))

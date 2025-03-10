@@ -3,88 +3,26 @@
 # File: ./packages/appflow_tracer/tracing.py
 __version__ = "0.1.0"  ## Package version
 
-"""
-File Path: packages/appflow_tracer/tracing.py
-
-Description:
-    AppFlow Tracing System
-    This module provides structured logging and function call tracing, enabling
-    automatic function execution monitoring with minimal intrusion. It integrates
-    logging and tracing functionalities, ensuring accurate tracking of function
-    calls, return values, and execution flow.
-
-Core Features:
-    - **Function Call Tracing**: Automatically captures function calls, arguments, and return values.
-    - **Structured Logging**: Logs execution details in JSON format for debugging and auditing.
-    - **Self-Inspection**: When executed directly, logs its own execution for analysis.
-    - **Automatic Log Management**: Removes old log files to maintain storage efficiency.
-    - **Configurable Event Filtering**: Allows selective tracing of function calls and returns.
-
-Usage:
-    To enable function call tracing:
-    ```python
-    import tracing
-    tracing.setup_logging()
-    ```
-
-    To run the tracing system as a standalone tool:
-    ```bash
-    python tracing.py
-    ```
-
-Dependencies:
-    - sys
-    - json
-    - inspect
-    - logging
-    - builtins
-    - pathlib
-    - datetime
-    - lib.system_variables (for project-wide configurations)
-    - lib.pkgconfig_loader (for configuration handling)
-    - lib.file_utils (for log file management)
-    - lib.log_utils (for structured logging)
-    - lib.trace_utils (for function call tracing)
-
-Global Variables:
-    - `LOGGING`: Boolean flag indicating whether logging has been initialized.
-    - `CONFIGS`: Stores the effective logging and tracing configurations.
-    - `logger`: Global logger instance used for structured logging.
-
-Primary Functions:
-    - `setup_logging(configs, logname_override, events)`: Initializes structured logging.
-    - `main()`: Entry point for standalone execution, setting up tracing and logging.
-    - `PrintCapture.emit(record)`: Captures print statements and redirects them to logs.
-    - `ANSIFileHandler.emit(record)`: Ensures log files do not contain ANSI escape sequences.
-
-Expected Behavior:
-    - Logs execution details when tracing is enabled.
-    - Logs function calls with arguments and return values.
-    - Maintains structured logs for debugging and execution tracking.
-    - Automatically removes older log files when exceeding retention limits.
-
-Exit Codes:
-    - `0`: Successful execution.
-    - `1`: Failure due to configuration or logging setup errors.
-
-Example:
-    ```python
-    from tracing import setup_logging
-    setup_logging()
-    ```
-"""
-
+# Standard library imports - Core system module
 import sys
-import json
-import inspect
-import logging
+
+# Standard library imports - Built-in utilities
 import builtins
 import warnings
 
-from datetime import datetime
-from typing import Optional, Union
+# Standard library imports - Utility modules
+import json
+import inspect
+import logging
 
+# Standard library imports - Date and time handling
+from datetime import datetime
+
+# Standard library imports - File system-related module
 from pathlib import Path
+
+# Standard library imports - Type hinting (kept in a separate group)
+from typing import Optional, Union
 
 # Define base directories
 LIB_DIR = Path(__file__).resolve().parent.parent.parent / "lib"
@@ -95,6 +33,9 @@ if str(LIB_DIR) not in sys.path:
 # print("\n[DEBUG] sys.path contains:")
 # for path in sys.path:
 #     print(f'  - {path}')
+
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 # Import system_variables from lib.system_variables
 from lib.system_variables import (
@@ -121,41 +62,6 @@ def setup_logging(
     logname_override: Optional[str] = None,
     events: Optional[Union[bool, dict]] = None
 ) -> Union[bool, dict]:
-    """
-    Configures and initializes the global logging system.
-
-    This function sets up the logging environment, creating log files and adding handlers
-    for both file-based and console-based logging. It ensures proper logging behavior
-    even when no configuration is provided.
-
-    Args:
-        configs (dict, optional): A dictionary containing logging configurations.
-            If None, the default global configurations are used.
-        logname_override (str, optional): A custom name for the log file.
-            If None, the log file name is derived from the calling script.
-        events (bool, list, or dict, optional):
-            - `None` / `False` → Disables all event logging.
-            - `True` → Enables all event logging.
-            - `list` → Enables only specified events (e.g., ["call", "return"]).
-            - `dict` → Enables/disables events per user settings (e.g., {"call": True, "return": False}).
-
-    Raises:
-        ValueError: If the provided logging configurations are not in a dictionary format.
-
-    Returns:
-        dict: The effective logging configuration after applying defaults.
-
-    Example:
-        >>> setup_logging()
-        {
-            "logging": {
-                "log_filename": "/path/to/logfile.log",
-                "max_logfiles": 5,
-                ...
-            },
-            ...
-        }
-    """
 
     # Ensure the variable exists globally
     global LOGGING, CONFIGS, logger
@@ -256,30 +162,9 @@ def setup_logging(
     return CONFIGS
 
 class PrintCapture(logging.StreamHandler):
-    """
-    Custom logging handler that captures print statements and logs them
-    while ensuring they are displayed in the console.
-
-    This ensures that print statements are properly logged without affecting
-    real-time console output.
-    """
 
     # def emit(self, record):
     def emit(self, record: logging.LogRecord) -> None:
-        """
-        Custom logging handler that captures print statements and logs them
-        while ensuring they are displayed in the console.
-
-        This ensures that print statements are properly logged without affecting
-        real-time console output.
-
-        Args:
-            record (logging.LogRecord): The log record that contains information
-                about the log message to be captured and displayed.
-
-        Returns:
-            None
-        """
 
         log_entry = self.format(record)
         sys.__stdout__.write(log_entry + "\n")  # Write to actual stdout
@@ -291,30 +176,9 @@ class PrintCapture(logging.StreamHandler):
     #     sys.__stdout__.flush()  # Ensure immediate flushing
 
 class ANSIFileHandler(logging.FileHandler):
-    """
-    Custom FileHandler that removes ANSI codes from log output
-    and filters out logs from the internal Python logging module.
-
-    This prevents unnecessary ANSI escape codes from appearing in log files
-    and ensures only relevant logs are recorded.
-    """
 
     # def emit(self, record):
     def emit(self, record: logging.LogRecord) -> None:
-        """
-        Custom FileHandler that removes ANSI codes from log output
-        and filters out logs from the internal Python logging module.
-
-        This prevents unnecessary ANSI escape codes from appearing in log files
-        and ensures only relevant logs are recorded.
-
-        Args:
-            record (logging.LogRecord): The log record to be emitted, including
-                log message and additional context for filtering.
-
-        Returns:
-            None
-        """
 
         # Ensure only Python's internal logging system is ignored
         if "logging/__init__.py" in record.pathname:
@@ -330,23 +194,6 @@ logger = None  # Global logger instance
 # ---------- Module operations:
 
 def main() -> None:
-    """
-    Entry point for running the tracing module as a standalone program.
-
-    This function initializes the logging environment, manages log files, and
-    optionally starts the tracing system when executed directly. It helps with
-    self-inspection and ensures the module operates correctly in isolation.
-
-    Raises:
-        Exception: If logging setup fails or an unexpected error occurs.
-
-    Returns:
-        None
-
-    Example:
-        >>> python tracing.py
-        # Sets up logging, manages logs, and starts tracing.
-    """
 
     global LOGGING, CONFIGS, logger  # Ensure CONFIGS is globally accessible
 
@@ -354,6 +201,10 @@ def main() -> None:
     CONFIGS = setup_logging(events=["call", "return"])
     # CONFIGS = setup_logging(events={"call": True, "return": False})
     # print( f'CONFIGS: {json.dumps(CONFIGS, indent=default_indent)}' )
+
+# Load documentation dynamically and apply module, function and objects docstrings
+from lib.pydoc_loader import load_pydocs
+load_pydocs(__file__, sys.modules[__name__])
 
 # Automatically start tracing when executed directly
 if __name__ == "__main__":

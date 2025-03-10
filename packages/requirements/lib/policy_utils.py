@@ -3,58 +3,31 @@
 # File: ./packages/requirements/lib/policy_utils.py
 # Version: 0.1.0
 
-"""
-# Environment and Policy Management Utilities
-
-## Overview
-    This module provides functions for managing package policies and evaluating dependency
-    installation requirements within the dependency management system. It ensures that packages
-    are installed, upgraded, or downgraded based on predefined policies while maintaining compliance
-    with system constraints.
-
-## Features
-    - **Policy-Based Dependency Evaluation:** Determines whether a package should be installed, upgraded, downgraded, or skipped.
-    - **Automated Compliance Checking:** Compares installed versions against target and latest versions.
-    - **Dynamic Policy Enforcement:** Adapts installation actions based on policies such as `"latest"` or `"restricted"`.
-    - **Structured Logging:** Provides detailed debugging and compliance logs for better traceability.
-    - **Integration with Installed Package Records:** Updates `installed.json` dynamically.
-
-## Usage
-This module is invoked by the dependency management workflow to analyze package states and
-apply policy-driven installation decisions.
-
-## Dependencies
-    - `subprocess`: For executing system commands.
-    - `json`: For handling structured package configurations.
-    - `platform`: For system detection.
-    - `importlib.metadata`: For retrieving installed package versions.
-    - `pathlib`: For managing configuration file paths.
-    - `log_utils`: Custom logging module for structured output.
-    - `package_utils`: Provides package management functions such as retrieving `installed.json`.
-    - `version_utils`: Handles installed and latest package version retrieval.
-
-## Notes
-    - This module ensures a **structured decision-making** process for package installations.
-    - It dynamically adapts to the system's constraints, ensuring **safe package management**.
-"""
-
+# Standard library imports - Core system and OS interaction modules
 import sys
 import subprocess
 import shutil
 
+# Standard library imports - Utility modules
 import json
 import argparse
 import platform
 import logging
 
+# Standard library imports - Import system
 import importlib.metadata
 
+# Standard library imports - Function tools
 from functools import lru_cache
 
+# Standard library imports - Date and time handling
 from datetime import datetime, timezone
-from typing import Optional, Union
 
+# Standard library imports - File system-related module
 from pathlib import Path
+
+# Standard library imports - Type hinting (kept in a separate group)
+from typing import Optional, Union
 
 # Define base directories
 LIB_DIR = Path(__file__).resolve().parent.parent.parent / "lib"
@@ -65,6 +38,9 @@ if str(LIB_DIR) not in sys.path:
 # print("\n[DEBUG] sys.path contains:")
 # for path in sys.path:
 #     print(f'  - {path}')
+
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from lib import system_variables as environment
 from packages.appflow_tracer.lib import log_utils
@@ -77,48 +53,6 @@ from . import (
 ## -----------------------------------------------------------------------------
 
 def policy_management(configs: dict) -> list:
-    """
-    Evaluate package installation policies and update dependency statuses.
-
-    This function analyzes each package in the dependency list, comparing its installed
-    version against the target and latest available versions. Based on the specified
-    policy, it determines whether the package should be installed, upgraded, downgraded,
-    or skipped.
-
-    ## Args:
-        - `configs` (`dict`): The configuration dictionary containing dependency policies.
-
-    ## Returns:
-        - `list`: The updated list of dependencies with policy-based statuses.
-
-    ## Policy Decision Logic:
-        1. **Missing Package (`status = "installing"`)**
-           - If the package is not installed, it is marked for installation.
-           - Installs either the `"latest"` or `"target"` version based on policy.
-
-        2. **Outdated Package (`status = "outdated" | "upgrading"`)**
-           - If installed version < target version:
-             - `"latest"` policy → Upgrade to latest available version.
-             - `"restricted"` policy → Keep outdated but log warning.
-
-        3. **Target Version Matched (`status = "matched"`)**
-           - If installed version == target version:
-             - `"latest"` policy → Check if a newer version exists; mark as `"outdated"`.
-             - Otherwise, mark as `"matched"` (no action needed).
-
-        4. **Upgraded Version Installed (`status = "downgraded" | "upgraded"`)**
-           - If installed version > target version:
-             - `"restricted"` policy → Downgrade to target version.
-             - `"latest"` policy → Keep upgraded.
-
-    ## Logging:
-        - Each package's evaluation is logged, showing its target, installed, and latest versions.
-        - Policy enforcement decisions are logged with detailed status messages.
-
-    ## Notes:
-        - This function modifies `configs["requirements"]` and updates `installed.json`.
-        - Ensures structured compliance before initiating installation processes.
-    """
 
     dependencies = configs["requirements"]  # Use already-loaded requirements
     installed_filepath = package_utils.installed_configfile(configs)  # Fetch dynamically
@@ -219,3 +153,13 @@ def policy_management(configs: dict) -> list:
         )
 
     return dependencies  # Explicitly return the modified requirements list
+
+# Load documentation dynamically and apply module, function and objects docstrings
+from lib.pydoc_loader import load_pydocs
+load_pydocs(__file__, sys.modules[__name__])
+
+def main() -> None:
+    pass
+
+if __name__ == "__main__":
+    main()

@@ -3,56 +3,14 @@
 # File: ./packages/appflow_tracer/__init__.py
 __version__ = "0.1.0"  ## Package version
 
-"""
-File Path: packages/appflow_tracer/__init__.py
+# Standard library imports - Core system module
+import sys
 
-Description:
-    AppFlow Tracing Package Initialization
+# Standard library imports - File system-related module
+from pathlib import Path
 
-    This file defines the `appflow_tracer` package and ensures it is properly recognized
-    as a Python package. It serves as the main entry point for tracing and logging functionalities
-    by exposing the core `setup_logging` function along with key utilities.
-
-Core Features:
-    - **Package Initialization**: Marks `appflow_tracer` as a valid Python package.
-    - **Logging Setup**: Provides `setup_logging` for configuring structured logging.
-    - **Utility Exposure**: Imports and exposes core framework utilities for tracing, file handling, and logging.
-    - **Modular Structure**: Ensures clean and organized access to tracing functionalities.
-
-Submodules:
-    - `tracing`: Handles structured event-based logging and tracing.
-    - `lib.file_utils`: Provides file and directory management utilities.
-    - `lib.log_utils`: Facilitates structured logging and debugging.
-    - `lib.trace_utils`: Supports runtime tracing and performance monitoring.
-    - `lib.serialize_utils`: Manages data serialization and deserialization.
-
-Usage:
-    To initialize logging within the framework:
-    ```python
-    from packages.appflow_tracer import setup_logging
-    CONFIGS = setup_logging()
-    ```
-
-    To log messages:
-    ```python
-    from packages.appflow_tracer import log_utils
-    log_utils.log_message("This is a test log message.")
-    ```
-
-Dependencies:
-    - tracing (for structured event tracing)
-    - log_utils (for logging and debugging)
-    - file_utils (for file operations)
-    - serialize_utils (for serialization handling)
-
-Example:
-    ```python
-    from packages.appflow_tracer import setup_logging, log_utils
-
-    CONFIGS = setup_logging()
-    log_utils.log_message("Framework initialized successfully.")
-    ```
-"""
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 # from .tracing import (
 from packages.appflow_tracer.tracing import (
@@ -75,3 +33,7 @@ __all__ = [
     "serialize_utils",
     "trace_utils"
 ]
+
+# Load documentation dynamically and apply module, function and objects docstrings
+from lib.pydoc_loader import load_pydocs
+load_pydocs(__file__, sys.modules[__name__])

@@ -3,79 +3,113 @@
 Help on module packages.requirements.dependencies in packages.requirements:
 
 NAME
-    packages.requirements.dependencies - # File: ./packages/requirements/dependencies.py
+    packages.requirements.dependencies - File Path: ./packages/requirements/dependencies.py
+
+DESCRIPTION
+    Description:
+        The dependencies.py module is the core of the AppFlow Tracer - Dependency Management System,
+        providing structured and policy-driven package management. It integrates Homebrew (macOS)
+        and Pip (cross-platform) to ensure compliance with package versioning,
+        safe installations, and structured logging.
+
+    Core Features:
+        - Environment Detection: Determines Python installation method (Homebrew, system-managed, or standalone).
+        - Package Management: Handles installation, upgrades, downgrades, and policy enforcement.
+        - Brew & Pip Integration:
+            - Uses Homebrew if Python is managed via Brew.
+            - Uses Pip for all other installations with controlled system package handling.
+        - Policy-Based Installation:
+            - Installs missing dependencies.
+            - Upgrades outdated packages if policy allows.
+            - Downgrades packages if strict versioning is required.
+        - Logging & Debugging:
+            - Captures package operations, warnings, and errors.
+            - Provides structured debugging messages.
+        - Backup & Restore:
+            - Saves the current package list for future restoration.
+            - Supports migration of package environments.
+        - Package Status Reporting:
+            - Displays installed dependencies, versions, and compliance details.
+            - Outputs structured reports to installed.json.
+
+    Usage:
+        Parsing Command-Line Arguments:
+            from packages.requirements.dependencies import parse_arguments
+            args = parse_arguments()
+
+        Installing Dependencies:
+            from packages.requirements.dependencies import main
+            main()
+
+    Dependencies:
+        - sys - Manages system paths and process control.
+        - subprocess - Runs Homebrew and Pip commands.
+        - json - Handles structured storage of dependency data.
+        - pathlib - Ensures safe file path handling.
+        - functools - Optimizes frequently accessed functions with caching.
+        - argparse - Parses command-line arguments.
+        - platform - Detects system platform details.
+        - importlib.metadata - Retrieves installed package versions.
+        - brew_utils, package_utils, policy_utils, version_utils - Sub-modules managing dependency operations.
+
+    Sub-Modules:
+        - brew_utils.py: Detects Homebrew availability and retrieves package versions.
+        - package_utils.py: Handles dependency installation using Brew or Pip.
+        - policy_utils.py: Enforces policy-driven installation, upgrades, and downgrades.
+        - version_utils.py: Fetches installed and latest package versions across multiple package managers.
+
+    Expected Behavior:
+        - Dynamically adapts package installation based on system constraints.
+        - Installs, upgrades, or downgrades dependencies per predefined policies.
+        - Logs all package operations for debugging.
+        - Prevents unintended system modifications unless explicitly overridden (--force).
+
+    Exit Codes:
+        - 0: Execution completed successfully.
+        - 1: Failure due to installation errors, missing configurations, or dependency issues.
 
 FUNCTIONS
     main() -> None
-        Entry point for the dependency management system.
+        Function: main() -> None
+        Description:
+            Entry point for the dependency management system.
 
-        This function initializes logging, processes command-line arguments,
-        and installs or updates dependencies from a JSON requirements file.
-        It dynamically determines the system's Python environment and applies
-        installation policies accordingly.
-
-        ## Workflow:
-        1. **Parse Command-Line Arguments**
-           - Loads configuration settings.
-           - Determines runtime settings.
-
-        2. **Load Requirements File**
-           - Reads `requirements.json` (or custom-specified file).
-           - Extracts dependency data.
-
-        3. **Setup Logging & Environment**
-           - Detects Python installation method.
-           - Logs detected system information.
-
-        4. **Handle Backup & Restore Operations**
-           - Saves a package list for future restoration.
-           - Restores or migrates package environments if specified.
-
-        5. **Determine Dependency Policies**
-           - Calls `policy_utils.policy_management()` to enforce package rules.
-
-        6. **Install Dependencies**
-           - Uses `package_utils.install_requirements()` for installations.
-
-        7. **Display Installed Packages (if requested)**
-           - Shows structured package information from `installed.json`.
-
-        ## Args:
-        - `None`
-
-        ## Returns:
-        - `None`: This function performs actions based on command-line arguments and manages dependencies.
-
-        ## Notes:
-        - If an error occurs (e.g., missing `requirements.json`), the process will exit with `sys.exit(1)`.
-        - The function prevents breaking system-managed environments unless explicitly overridden (`--force`).
-
-    parse_arguments() -> argparse.Namespace
-        Parse command-line arguments for package management.
-
-        This function provides command-line options for managing dependencies,
-        allowing users to specify requirement files, enforce installations,
-        backup, restore, or migrate packages.
-
-        ## Supported Arguments:
-            - `-c/--config`: Specify a custom JSON requirements file.
-            - `-f/--force`: Force Pip installations using `--break-system-packages`.
-            - `--backup-packages`: Save installed package list for future restoration.
-            - `--restore-packages`: Restore packages from a backup file.
-            - `--migrate-packages`: Migrate package environments.
-            - `--show-installed`: Display installed dependencies.
-
-        ## Args:
-            - `None`
+        Parameters:
+            - None
 
         Returns:
-            - `argparse.Namespace`: The parsed arguments object containing selected options.
+            - None: Executes dependency installation and policy enforcement.
 
-        Return Type: argparse.Namespace
-            Returns an argparse.Namespace object containing the parsed command-line arguments.
+        Behavior:
+            - Reads and processes package requirements from `requirements.json`.
+            - Installs, upgrades, or downgrades dependencies based on policies.
+            - Logs package operations for debugging and compliance tracking.
 
-        ## Notes:
-            - This function is critical for enabling dynamic dependency management.
+    parse_arguments() -> argparse.Namespace
+        Function: parse_arguments() -> argparse.Namespace
+        Description:
+            Parses command-line arguments for package management, allowing users to define requirement files, enforce installations,
+            backup, restore, or migrate packages.
+
+        Returns:
+            - argparse.Namespace: Parsed arguments object containing selected options.
+
+        Behavior:
+            - Supports JSON configuration for package management.
+            - Allows forcing installations with --force.
+            - Supports backup, restore, and migration of package environments.
+            - Enables listing installed packages.
+
+        Supported Arguments:
+            - -c/--config: Specify a custom JSON requirements file.
+            - -f/--force: Force Pip installations with --break-system-packages.
+            - --backup-packages: Save installed packages for restoration.
+            - --restore-packages: Restore package environment from a backup file.
+            - --migrate-packages: Migrate legacy package environments.
+            - --show-installed: Display installed dependencies.
+
+        Error Handling:
+            - Provides structured logging for missing configurations or invalid input.
 
 DATA
     LIB_DIR = PosixPath('<project-location>/lib')
@@ -113,7 +147,7 @@ DATA
         - You can use Optional[X] as a shorthand for Union[X, None].
 
 VERSION
-    0.2.0
+    0.1.0
 
 FILE
     <project-location>/packages/requirements/dependencies.py

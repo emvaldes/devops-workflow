@@ -3,52 +3,59 @@
 Help on module packages.requirements.__init__ in packages.requirements:
 
 NAME
-    packages.requirements.__init__ - # File: ./packages/requirements/__init__.py
+    packages.requirements.__init__ - File Path: packages/requirements/__init__.py
+
+DESCRIPTION
+    Description:
+        This file initializes the `requirements` package, ensuring it is correctly recognized
+        as a Python package. It provides an entry point for dependency management by exposing
+        the `main` function from `dependencies.py`.
+
+    Core Features:
+        - **Package Initialization**:
+          - Marks `requirements/` as a valid Python package.
+          - Ensures explicit module control, preventing unintended imports.
+        - **Dependency Management**:
+          - Exposes `main()` from `dependencies.py` for managing package installations.
+          - Facilitates structured and policy-driven dependency handling.
+
+    Usage:
+        Importing and executing dependency management:
+
+            from packages.requirements import main
+            main()
+
+        Example execution:
+            python -m packages.requirements
+
+    Dependencies:
+        - dependencies.py (Handles package dependency management)
+
+    Expected Behavior:
+        - The package remains passive until explicitly invoked.
+        - Calling `main()` triggers the dependency installation process.
+        - No automatic execution occurs upon import.
+
+    Exit Codes:
+        - 0: Execution completed successfully.
+        - 1: Failure due to dependency issues, missing configurations, or package errors.
 
 FUNCTIONS
     main() -> None
-        Entry point for the dependency management system.
+        Function: main() -> None
+        Description:
+            Entry point for the dependency management system.
 
-        This function initializes logging, processes command-line arguments,
-        and installs or updates dependencies from a JSON requirements file.
-        It dynamically determines the system's Python environment and applies
-        installation policies accordingly.
+        Parameters:
+            - None
 
-        ## Workflow:
-        1. **Parse Command-Line Arguments**
-           - Loads configuration settings.
-           - Determines runtime settings.
+        Returns:
+            - None: Executes dependency installation and policy enforcement.
 
-        2. **Load Requirements File**
-           - Reads `requirements.json` (or custom-specified file).
-           - Extracts dependency data.
-
-        3. **Setup Logging & Environment**
-           - Detects Python installation method.
-           - Logs detected system information.
-
-        4. **Handle Backup & Restore Operations**
-           - Saves a package list for future restoration.
-           - Restores or migrates package environments if specified.
-
-        5. **Determine Dependency Policies**
-           - Calls `policy_utils.policy_management()` to enforce package rules.
-
-        6. **Install Dependencies**
-           - Uses `package_utils.install_requirements()` for installations.
-
-        7. **Display Installed Packages (if requested)**
-           - Shows structured package information from `installed.json`.
-
-        ## Args:
-        - `None`
-
-        ## Returns:
-        - `None`: This function performs actions based on command-line arguments and manages dependencies.
-
-        ## Notes:
-        - If an error occurs (e.g., missing `requirements.json`), the process will exit with `sys.exit(1)`.
-        - The function prevents breaking system-managed environments unless explicitly overridden (`--force`).
+        Behavior:
+            - Reads and processes package requirements from `requirements.json`.
+            - Installs, upgrades, or downgrades dependencies based on policies.
+            - Logs package operations for debugging and compliance tracking.
 
 DATA
     __all__ = ['main']

@@ -3,81 +3,89 @@
 Help on module packages.requirements.lib.policy_utils in packages.requirements.lib:
 
 NAME
-    packages.requirements.lib.policy_utils - # Environment and Policy Management Utilities
+    packages.requirements.lib.policy_utils - File Path: ./packages/requirements/lib/policy_utils.py
 
 DESCRIPTION
-    ## Overview
-        This module provides functions for managing package policies and evaluating dependency
-        installation requirements within the dependency management system. It ensures that packages
-        are installed, upgraded, or downgraded based on predefined policies while maintaining compliance
-        with system constraints.
+    Description:
+        The policy_utils.py module provides structured policy evaluation for package management.
+        It ensures that packages are installed, upgraded, or downgraded according to predefined policies.
 
-    ## Features
-        - **Policy-Based Dependency Evaluation:** Determines whether a package should be installed, upgraded, downgraded, or skipped.
-        - **Automated Compliance Checking:** Compares installed versions against target and latest versions.
-        - **Dynamic Policy Enforcement:** Adapts installation actions based on policies such as `"latest"` or `"restricted"`.
-        - **Structured Logging:** Provides detailed debugging and compliance logs for better traceability.
-        - **Integration with Installed Package Records:** Updates `installed.json` dynamically.
+    Core Features:
+        - Policy-Based Dependency Evaluation: Determines whether a package should be installed, upgraded, downgraded, or skipped.
+        - Automated Compliance Checking: Compares installed versions against target and latest versions.
+        - Dynamic Policy Enforcement: Adapts installation actions based on policies such as "latest" or "restricted".
+        - Structured Logging: Provides detailed debugging and compliance logs for traceability.
+        - Integration with Installed Package Records: Updates installed.json dynamically.
 
-    ## Usage
-    This module is invoked by the dependency management workflow to analyze package states and
-    apply policy-driven installation decisions.
+    Usage:
+        Evaluating Package Policies:
+            from packages.requirements.lib.policy_utils import policy_management
+            updated_packages = policy_management(configs)
 
-    ## Dependencies
-        - `subprocess`: For executing system commands.
-        - `json`: For handling structured package configurations.
-        - `platform`: For system detection.
-        - `importlib.metadata`: For retrieving installed package versions.
-        - `pathlib`: For managing configuration file paths.
-        - `log_utils`: Custom logging module for structured output.
-        - `package_utils`: Provides package management functions such as retrieving `installed.json`.
-        - `version_utils`: Handles installed and latest package version retrieval.
+        Checking a Specific Package Status:
+            from packages.requirements.lib.version_utils import installed_version
+            current_version = installed_version("requests", configs)
 
-    ## Notes
-        - This module ensures a **structured decision-making** process for package installations.
-        - It dynamically adapts to the system's constraints, ensuring **safe package management**.
+    Dependencies:
+        - sys - Handles system-level functions such as process termination.
+        - subprocess - Executes shell commands for package management.
+        - json - Handles structured dependency files.
+        - importlib.metadata - Retrieves installed package versions.
+        - functools.lru_cache - Caches function calls for efficiency.
+        - pathlib - Ensures platform-independent file path resolution.
+        - packages.appflow_tracer.lib.log_utils - Provides structured logging.
+        - package_utils - Retrieves installed.json and manages package installation.
+        - version_utils - Retrieves installed and latest package versions.
+
+    Expected Behavior:
+        - Ensures all required packages follow policy-based installation decisions.
+        - Prevents unintended upgrades/downgrades when policy is set to "restricted".
+        - Logs all policy enforcement actions for debugging and compliance tracking.
+
+    Exit Codes:
+        - 0: Execution completed successfully.
+        - 1: Failure due to missing configurations, package errors, or policy conflicts.
 
 FUNCTIONS
+    main() -> None
+
     policy_management(configs: dict) -> list
-        Evaluate package installation policies and update dependency statuses.
+        Function: policy_management(configs: dict) -> list
+        Description:
+            Evaluates package installation policies and updates dependency statuses.
 
-        This function analyzes each package in the dependency list, comparing its installed
-        version against the target and latest available versions. Based on the specified
-        policy, it determines whether the package should be installed, upgraded, downgraded,
-        or skipped.
+        Parameters:
+            - configs (dict): The configuration dictionary containing dependency policies.
 
-        ## Args:
-            - `configs` (`dict`): The configuration dictionary containing dependency policies.
+        Returns:
+            - list: The updated list of dependencies with policy-based statuses.
 
-        ## Returns:
-            - `list`: The updated list of dependencies with policy-based statuses.
+        Behavior:
+            - Analyzes installed packages and determines policy actions (install, upgrade, downgrade, or skip).
+            - Updates `installed.json` with the latest package states.
+            - Logs compliance decisions for debugging and tracking.
 
-        ## Policy Decision Logic:
-            1. **Missing Package (`status = "installing"`)**
-               - If the package is not installed, it is marked for installation.
-               - Installs either the `"latest"` or `"target"` version based on policy.
+        Policy Decision Logic:
+            1. **Missing Package (status = "installing")**
+               - Installs the package as per policy (either latest or target version).
 
-            2. **Outdated Package (`status = "outdated" | "upgrading"`)**
+            2. **Outdated Package (status = "outdated" | "upgrading")**
                - If installed version < target version:
-                 - `"latest"` policy → Upgrade to latest available version.
-                 - `"restricted"` policy → Keep outdated but log warning.
+                 - "latest" policy → Upgrade to latest available version.
+                 - "restricted" policy → Keep outdated but log a warning.
 
-            3. **Target Version Matched (`status = "matched"`)**
+            3. **Target Version Matched (status = "matched")**
                - If installed version == target version:
-                 - `"latest"` policy → Check if a newer version exists; mark as `"outdated"`.
-                 - Otherwise, mark as `"matched"` (no action needed).
+                 - "latest" policy → Check for newer versions and mark as "outdated".
+                 - Otherwise, mark as "matched" (no action needed).
 
-            4. **Upgraded Version Installed (`status = "downgraded" | "upgraded"`)**
+            4. **Upgraded Version Installed (status = "downgraded" | "upgraded")**
                - If installed version > target version:
-                 - `"restricted"` policy → Downgrade to target version.
-                 - `"latest"` policy → Keep upgraded.
+                 - "restricted" policy → Downgrade to target version.
+                 - "latest" policy → Keep upgraded.
 
-        ## Logging:
-            - Each package's evaluation is logged, showing its target, installed, and latest versions.
-            - Policy enforcement decisions are logged with detailed status messages.
-
-        ## Notes:
-            - This function modifies `configs["requirements"]` and updates `installed.json`.
+        Error Handling:
+            - Logs policy violations or missing configurations.
             - Ensures structured compliance before initiating installation processes.
 
 DATA

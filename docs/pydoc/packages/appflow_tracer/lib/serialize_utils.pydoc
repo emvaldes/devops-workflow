@@ -3,40 +3,84 @@
 Help on module packages.appflow_tracer.lib.serialize_utils in packages.appflow_tracer.lib:
 
 NAME
-    packages.appflow_tracer.lib.serialize_utils - # File: ./packages/appflow_tracer/lib/serialize_utils.py
+    packages.appflow_tracer.lib.serialize_utils - File Path: ./packages/appflow_tracer/lib/serialize_utils.py
+
+DESCRIPTION
+    Description:
+        The serialize_utils.py module provides functions for data serialization
+        and code sanitization, ensuring JSON compatibility and clean parsing.
+
+    Core Features:
+        - **Safe Serialization**: Converts Python objects to JSON-friendly formats.
+        - **String Sanitization**: Cleans and trims code strings while removing comments.
+        - **Structured Logging Integration**: Logs serialization results using `log_utils`.
+
+    Usage:
+        To safely serialize a Python object:
+            from serialize_utils import safe_serialize
+            result = safe_serialize({"key": "value"}, configs=CONFIGS)
+
+        To remove comments from a line of code:
+            from serialize_utils import sanitize_token_string
+            clean_code = sanitize_token_string("some_code()  # remove this comment")
+
+    Dependencies:
+        - json - Enables structured JSON serialization.
+        - tokenize - Tokenizes code for proper comment removal.
+        - io.StringIO - Handles text processing for tokenization.
+        - lib.system_variables - Provides project-wide settings.
+        - log_utils - Supports structured logging of serialization operations.
+
+    Global Behavior:
+        - `safe_serialize()` gracefully handles non-serializable objects.
+        - `sanitize_token_string()` removes comments while preserving meaningful text.
+        - Ensures logging is handled based on provided configurations.
+
+    Expected Behavior:
+        - Logs structured serialization results when enabled.
+        - JSON serialization avoids breaking due to unserializable objects.
+        - Comments are correctly stripped without altering the main code structure.
+
+    Exit Codes:
+        - 0: Execution completed successfully.
+        - 1: Failure due to serialization or parsing errors.
 
 FUNCTIONS
+    main() -> None
+
     safe_serialize(
         data: <built-in function any>,
         configs: dict,
         verbose: bool = False
     ) -> dict
-        Convert Python objects into a JSON-compatible serialized string with metadata.
+        Function: safe_serialize(
+            data: any,
+            configs: dict,
+            verbose: bool = False
+        ) -> dict
+        Description:
+            Converts Python objects into a JSON-compatible format with metadata.
 
-        This function ensures that data is properly serialized into a JSON string format.
-        If an object is not serializable, it attempts to extract its attributes or provide
-        meaningful information instead of just a memory address.
-
-        Args:
-            data (any): The Python object to serialize.
-            configs (dict): Configuration dictionary for logging and debugging.
-            verbose (bool, optional): If True, the JSON output is formatted with indentation.
+        Parameters:
+            - data (any): The Python object to serialize.
+            - configs (dict): Configuration dictionary for logging and debugging.
+            - verbose (bool, optional): If True, formats JSON output with indentation.
 
         Raises:
-            TypeError: If the provided data is not serializable.
-            ValueError: If there is an issue converting data to JSON.
+            - TypeError: If the provided data is not serializable.
+            - ValueError: If there is an issue converting data to JSON.
 
         Returns:
-            dict: A structured response containing serialization results.
-                - `success` (bool): Whether serialization was successful.
+            - dict: A structured response containing serialization results:
+                - `success` (bool): Indicates if serialization was successful.
                 - `serialized` (str): JSON string of serialized data or an error message.
                 - `type` (str): The type of the original object.
                 - `error` (str, optional): Error message if serialization failed.
 
         Workflow:
             1. Attempts to serialize the input data using `json.dumps()`.
-            2. If serialization fails, checks if the object has attributes (`__dict__`).
-            3. If the object is iterable (list, tuple, set), converts it into a list.
+            2. If serialization fails, checks for attributes (`__dict__`) and serializes them.
+            3. If the object is iterable, converts it into a list.
             4. Returns a structured response indicating success or failure.
 
         Example:
@@ -47,20 +91,18 @@ FUNCTIONS
             {'success': False, 'serialized': '[Unserializable data]', 'type': 'object', 'error': 'TypeError'}
 
     sanitize_token_string(line: str) -> str
-        Remove trailing comments and excess whitespace from a line of code.
+        Function: sanitize_token_string(line: str) -> str
+        Description:
+            Removes trailing comments and excess whitespace from a line of code.
 
-        This function processes a line of code and removes inline comments while preserving
-        meaningful text. The result is a clean line of code without unnecessary annotations.
-
-        Args:
-            line (str): A single line of text that may contain comments and extra spaces.
+        Parameters:
+            - line (str): A single line of text that may contain comments and extra spaces.
 
         Raises:
-            Exception: If an unexpected error occurs while parsing tokens.
+            - Exception: If an unexpected error occurs while parsing tokens.
 
         Returns:
-            str: The sanitized version of the input line, with comments and
-            unnecessary whitespace removed.
+            - str: The sanitized version of the input line with comments removed.
 
         Workflow:
             1. Tokenizes the input string using Python's `tokenize` module.

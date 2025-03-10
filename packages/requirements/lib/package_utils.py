@@ -3,56 +3,31 @@
 # File: ./packages/requirements/lib/package_utils.py
 # Version: 0.1.0
 
-"""
-# Package Management Utilities for Dependency Handling
-
-## Overview
-    This module provides utility functions for managing Python package dependencies in a structured
-    and policy-driven approach. It facilitates installing, backing up, restoring, and reviewing package
-    versions while ensuring compliance with system constraints.
-
-## Features
-    - **Backup & Restore Packages:** Saves and restores installed packages for migration or disaster recovery.
-    - **Policy-Based Package Installation:** Handles installation, upgrades, and downgrades based on predefined policies.
-    - **Dependency Review & Management:** Evaluates installed versions against required versions and logs compliance.
-    - **Homebrew & Pip Integration:** Uses Homebrew if applicable, otherwise falls back to Pip with appropriate safeguards.
-    - **Logging & Configuration Handling:** Ensures structured logging and configuration retrieval.
-
-## Usage
-    This module is primarily used by the dependency management system to enforce structured package installations
-    and compliance checks.
-
-## Dependencies
-    - `subprocess`: For executing Pip and Homebrew commands.
-    - `json`: For handling structured dependency configurations.
-    - `importlib.metadata`: For retrieving installed package versions.
-    - `shutil`: To check for external utilities.
-    - `pathlib`: For managing file paths.
-    - `functools.lru_cache`: To optimize repetitive queries.
-    - `log_utils`: Custom logging module for structured output.
-
-## Notes
-    - The module respects externally managed Python environments, ensuring system integrity.
-    - It dynamically detects installation methods and applies package management policies accordingly.
-"""
-
+# Standard library imports - Core system and OS interaction modules
 import sys
 import subprocess
 import shutil
 
+# Standard library imports - Utility modules
 import json
 import argparse
 import platform
 import logging
 
+# Standard library imports - Import system
 import importlib.metadata
 
+# Standard library imports - Function tools
 from functools import lru_cache
 
+# Standard library imports - Date and time handling
 from datetime import datetime, timezone
-from typing import Optional, Union
 
+# Standard library imports - File system-related module
 from pathlib import Path
+
+# Standard library imports - Type hinting (kept in a separate group)
+from typing import Optional, Union
 
 # Define base directories
 LIB_DIR = Path(__file__).resolve().parent.parent.parent / "lib"
@@ -64,6 +39,9 @@ if str(LIB_DIR) not in sys.path:
 # for path in sys.path:
 #     print(f'  - {path}')
 
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
 from lib import system_variables as environment
 from packages.appflow_tracer.lib import log_utils
 
@@ -72,23 +50,6 @@ from . import version_utils
 ## -----------------------------------------------------------------------------
 
 def backup_packages(file_path: str, configs: dict) -> None:
-    """
-    Back up all installed Python packages to a requirements-style list.
-
-    This function generates a list of installed packages using `pip freeze`
-    and saves it to the specified file for later restoration.
-
-    ## Args:
-        - `file_path` (`str`): The file path where the installed package list will be saved.
-        - `configs` (`dict`): Configuration dictionary used for logging.
-
-    ## Raises:
-        - `subprocess.CalledProcessError`: If the `pip freeze` command fails.
-
-    ## Notes:
-        - This function is useful for backing up environments before upgrades.
-        - The saved file can be used for migration or disaster recovery.
-    """
 
     try:
         with open(file_path, "w") as f:
@@ -112,28 +73,6 @@ def backup_packages(file_path: str, configs: dict) -> None:
 ## -----------------------------------------------------------------------------
 
 def install_package(package: str, version: Optional[str] = None, configs: dict = None) -> None:
-    """
-    Install or update a package using Brew (if applicable) or Pip.
-
-    This function installs a package using the preferred method:
-        - If Python is installed via Homebrew and the package is available in Brew, it uses `brew install`.
-        - Otherwise, it falls back to Pip, considering:
-          - `--user` for standalone installations.
-          - `--break-system-packages` if the system is externally managed and forced installation is enabled.
-          - Otherwise, prints manual installation instructions.
-
-    ## Args:
-        - `package` (`str`): The package name to install.
-        - `version` (`Optional[str]`): The specific version to install (default: latest).
-        - `configs` (`dict`): Configuration dictionary for logging and environment handling.
-
-    ## Returns:
-        - `None`: Executes the package installation process.
-
-    ## Notes:
-        - Ensures safe installation, respecting system constraints.
-        - Uses structured logging to report installation status.
-    """
 
     # Fetch environment details
     env_info = configs.get("environment", {})
@@ -207,25 +146,6 @@ def install_package(package: str, version: Optional[str] = None, configs: dict =
 ## -----------------------------------------------------------------------------
 
 def install_requirements(configs: dict, bypass: bool = False) -> None:
-    """
-    Install, upgrade, or downgrade dependencies based on policy rules.
-
-    This function processes dependencies listed in `configs["requirements"]` and applies
-    necessary package actions (install, upgrade, downgrade). It first retrieves evaluated
-    package statuses using `review_packages()`, ensuring a structured decision-making process.
-
-    ## Args:
-        - `configs` (`dict`): Configuration dictionary containing dependency requirements.
-        - `force_install` (`bool`): If True, all packages are installed immediately, ignoring policy.
-
-    ## Returns:
-        - `None`: Executes the required package installations.
-
-    ## Notes:
-        - This function enforces policy-based installation to maintain package consistency.
-        - It minimizes unnecessary installations by checking existing versions before applying changes.
-        - Dependencies are installed using either Brew or Pip, based on system constraints.
-    """
 
     log_utils.log_message(
         f'\n[INSTALL] Starting installation process...',
@@ -317,20 +237,6 @@ def install_requirements(configs: dict, bypass: bool = False) -> None:
 ## -----------------------------------------------------------------------------
 
 def install_requirements__legacy(configs: dict) -> None:
-    """
-    Retrieve the path to `installed.json` from the configuration dictionary.
-
-    This function extracts the configured path where installed package statuses are stored.
-
-    ## Args:
-        - `configs` (`dict`): The configuration dictionary.
-
-    ## Returns:
-        - `Path`: The resolved path to `installed.json`, or `None` if not configured.
-
-    ## Notes:
-        - This function ensures consistent access to installed package records.
-    """
 
     log_utils.log_message(
         f'\n[INSTALL] Starting installation process...',
@@ -407,21 +313,7 @@ def install_requirements__legacy(configs: dict) -> None:
 
 ## -----------------------------------------------------------------------------
 
-from pathlib import Path
-
 def installed_configfile(configs: dict) -> Path:
-    """
-    Retrieve the configured path to `installed.json`.
-
-    Args:
-        configs (dict): Configuration dictionary.
-
-    Returns:
-        Path: Path object pointing to `installed.json`.
-
-    Raises:
-        KeyError: If `configs["packages"]["installation"]["configs"]` is missing.
-    """
 
     # return configs.get("packages", {}).get("installation", {}).get("configs", None)
     try:
@@ -433,22 +325,6 @@ def installed_configfile(configs: dict) -> Path:
 ## -----------------------------------------------------------------------------
 
 def migrate_packages(file_path: str, configs: dict) -> None:
-    """
-    Review installed package versions and return an updated package status list.
-
-    This function checks all installed dependencies, compares them against target versions,
-    determines their status (installed, outdated, missing), and returns a structured package list.
-
-    ## Args:
-        - `configs` (`dict`): The configuration dictionary containing dependency policies.
-
-    ## Returns:
-        - `list`: A structured list of reviewed packages, including installation status.
-
-    ## Notes:
-        - The function also updates `installed.json` with the latest package states.
-        - Ensures a structured package evaluation process before applying changes.
-    """
 
     try:
         result = subprocess.run(
@@ -486,18 +362,6 @@ def migrate_packages(file_path: str, configs: dict) -> None:
 ## -----------------------------------------------------------------------------
 
 def packages_installed(configs: dict) -> None:
-    """
-    Prints the installed dependencies in a readable format.
-
-    This function reads `installed.json` and logs package names, required versions,
-    installed versions, and compliance status.
-
-    Args:
-        configs (dict): Configuration dictionary.
-
-    Returns:
-        None: Prints the installed package details.
-    """
 
     installed_filepath = installed_configfile(configs)  # Fetch dynamically
 
@@ -543,19 +407,6 @@ def packages_installed(configs: dict) -> None:
 ## -----------------------------------------------------------------------------
 
 def restore_packages(file_path: str, configs: dict) -> None:
-    """
-    Restores all previously backed-up Python packages by reading
-    the specified file and installing the packages listed in it.
-
-    This function should be executed after upgrading Python to ensure that
-    the same packages are available in the new Python environment.
-
-    Args:
-        file_path (str): The file path to the package list generated by `pip freeze`.
-
-    Raises:
-        subprocess.CalledProcessError: If the package installation fails.
-    """
 
     try:
         subprocess.run(
@@ -577,19 +428,6 @@ def restore_packages(file_path: str, configs: dict) -> None:
 ## -----------------------------------------------------------------------------
 
 def review_packages(configs: dict) -> list:
-    """
-    Reviews installed package versions and returns an updated package status list.
-
-    This function checks all installed dependencies, determines their status
-    (installed, outdated, missing), and returns the structured package data.
-    It also updates `installed.json` with the latest package states.
-
-    Args:
-        configs (dict): Configuration dictionary.
-
-    Returns:
-        list: A list of reviewed package data including installation status.
-    """
 
     installed_filepath = installed_configfile(configs)
 
@@ -634,3 +472,13 @@ def review_packages(configs: dict) -> list:
     )
 
     return installed_data  # Return the structured package list
+
+# Load documentation dynamically and apply module, function and objects docstrings
+from lib.pydoc_loader import load_pydocs
+load_pydocs(__file__, sys.modules[__name__])
+
+def main() -> None:
+    pass
+
+if __name__ == "__main__":
+    main()

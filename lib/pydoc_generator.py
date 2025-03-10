@@ -3,14 +3,19 @@
 # File: lib/pydoc_generator.py
 __version__ = "0.1.1"  ## Package version
 
-import sys
+# Standard library imports - Core system and OS interaction modules
 import os
+import sys
 
-import coverage
+# Standard library imports - Utility modules
 import re
 import subprocess
 
+# Standard library imports - File system-related module
 from pathlib import Path
+
+# Third-party library imports - Coverage analysis
+import coverage
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 

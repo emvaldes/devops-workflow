@@ -3,60 +3,23 @@
 # File: ./packages/appflow_tracer/lib/serialize_utils.py
 __version__ = "0.1.0"  ## Package version
 
-"""
-File Path: packages/appflow_tracer/lib/serialize_utils.py
+# Standard library imports - Core system module
+import sys
 
-Description:
-    Serialization and String Sanitization Utilities
-    This module provides helper functions for data serialization and
-    code sanitization, ensuring JSON compatibility and clean parsing.
+# Standard library imports - Utility modules
+import json  # Handles JSON serialization and deserialization
+import tokenize  # Used for tokenizing Python source code
 
-Core Features:
-    - **Safe Serialization**: Converts Python objects to JSON-friendly formats.
-    - **String Sanitization**: Cleans and trims code strings while removing comments.
+# Standard library imports - IO operations
+from io import StringIO  # In-memory file-like object
 
-Usage:
-    To safely serialize a Python object:
-    ```python
-    safe_serialize(data={"key": "value"}, configs=CONFIGS)
-    ```
+# Standard library imports - File system-related module
+from pathlib import Path
 
-    To remove comments from a line of code:
-    ```python
-    sanitize_token_string(data="some_code()  # this is a comment", configs=CONFIGS)
-    ```
+# Duplicate import removed: `json` was imported twice
 
-Dependencies:
-    - json
-    - tokenize
-    - io.StringIO (for text processing)
-    - lib.system_variables (for project settings)
-    - log_utils (for logging serialized data)
-
-Global Variables:
-    - Uses `category` and `default_indent` from `lib.system_variables`.
-
-Expected Behavior:
-    - `safe_serialize()` should gracefully handle non-serializable objects.
-    - `sanitize_token_string()` should remove comments and preserve meaningful text.
-
-Exit Codes:
-    - `0`: Successful execution.
-    - `1`: Failure due to serialization errors.
-
-Example:
-    ```python
-    from serialize_utils import safe_serialize, sanitize_token_string
-    print(safe_serialize({"name": "Alice"}))
-    ```
-"""
-
-import json
-import tokenize
-
-from io import StringIO
-
-import json
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 # Import category from system_variables
 from lib.system_variables import (
@@ -73,42 +36,6 @@ def safe_serialize(
     configs: dict,
     verbose: bool = False
 ) -> dict:
-    """
-    Convert Python objects into a JSON-compatible serialized string with metadata.
-
-    This function ensures that data is properly serialized into a JSON string format.
-    If an object is not serializable, it attempts to extract its attributes or provide
-    meaningful information instead of just a memory address.
-
-    Args:
-        data (any): The Python object to serialize.
-        configs (dict): Configuration dictionary for logging and debugging.
-        verbose (bool, optional): If True, the JSON output is formatted with indentation.
-
-    Raises:
-        TypeError: If the provided data is not serializable.
-        ValueError: If there is an issue converting data to JSON.
-
-    Returns:
-        dict: A structured response containing serialization results.
-            - `success` (bool): Whether serialization was successful.
-            - `serialized` (str): JSON string of serialized data or an error message.
-            - `type` (str): The type of the original object.
-            - `error` (str, optional): Error message if serialization failed.
-
-    Workflow:
-        1. Attempts to serialize the input data using `json.dumps()`.
-        2. If serialization fails, checks if the object has attributes (`__dict__`).
-        3. If the object is iterable (list, tuple, set), converts it into a list.
-        4. Returns a structured response indicating success or failure.
-
-    Example:
-        >>> safe_serialize({"key": "value"}, configs=configs)
-        {'success': True, 'serialized': '{"key": "value"}', 'type': 'dict'}
-
-        >>> safe_serialize(object(), configs=configs)
-        {'success': False, 'serialized': '[Unserializable data]', 'type': 'object', 'error': 'TypeError'}
-    """
 
     try:
         json_dumps = json.dumps(
@@ -177,35 +104,6 @@ def safe_serialize(
         return serialized_data
 
 def sanitize_token_string(line: str) -> str:
-    """
-    Remove trailing comments and excess whitespace from a line of code.
-
-    This function processes a line of code and removes inline comments while preserving
-    meaningful text. The result is a clean line of code without unnecessary annotations.
-
-    Args:
-        line (str): A single line of text that may contain comments and extra spaces.
-
-    Raises:
-        Exception: If an unexpected error occurs while parsing tokens.
-
-    Returns:
-        str: The sanitized version of the input line, with comments and
-        unnecessary whitespace removed.
-
-    Workflow:
-        1. Tokenizes the input string using Python's `tokenize` module.
-        2. Iterates through tokens and removes comments (`# ...`).
-        3. Preserves meaningful text while ensuring proper spacing.
-        4. Returns the cleaned version of the input line.
-
-    Example:
-        >>> sanitize_token_string("some_code()  # this is a comment")
-        'some_code()'
-
-        >>> sanitize_token_string("   another_line   ")
-        'another_line'
-    """
 
     # # Legacy code:
     # try:
@@ -241,3 +139,13 @@ def sanitize_token_string(line: str) -> str:
         return "".join(new_line).strip()  # Trim spaces/tabs/newlines
     except Exception:
         return line.strip()  # Ensure fallback trims spaces
+
+# Load documentation dynamically and apply module, function and objects docstrings
+from lib.pydoc_loader import load_pydocs
+load_pydocs(__file__, sys.modules[__name__])
+
+def main() -> None:
+    pass
+
+if __name__ == "__main__":
+    main()

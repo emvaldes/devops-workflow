@@ -3,16 +3,22 @@
 # File: ./lib/system_params.py
 __version__ = "0.1.0"  ## Package version
 
-import sys
+# Standard library imports - Core system and OS interaction modules
 import os
+import sys
 
+# Standard library imports - Utility modules
 import json
 import logging
 
+# Third-party library imports - Environment variable management
 from dotenv import load_dotenv
-from typing import Optional  # Import Optional for type hints
 
+# Standard library imports - File system-related module
 from pathlib import Path
+
+# Standard library imports - Type hinting (kept in a separate group)
+from typing import Optional  # Import Optional for type hints
 
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))

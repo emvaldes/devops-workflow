@@ -3,36 +3,20 @@
 # File: ./packages/appflow_tracer/__main__.py
 __version__ = "0.1.0"  ## Package version
 
-"""
-File Path: packages/appflow_tracer/__main__.py
+# Standard library imports - Core system module
+import sys
 
-Description:
-    AppFlow Tracing Package Entry Point
+# Standard library imports - File system-related module
+from pathlib import Path
 
-    This file serves as the execution entry point for the `appflow_tracer` package when run
-    in standalone mode. It initializes the logging system and starts the tracing execution flow.
-
-Core Features:
-    - **Standalone Execution**: Allows the package to be executed directly using `python -m packages.appflow_tracer`.
-    - **Logging Initialization**: Ensures structured logging is properly configured.
-    - **Main Function Invocation**: Calls the `main()` function from the `tracing` module.
-
-Usage:
-    To run the `appflow_tracer` package as a standalone script:
-    ```bash
-    python -m packages.appflow_tracer
-    ```
-
-Dependencies:
-    - tracing (for handling structured logging and execution flow)
-
-Example:
-    ```bash
-    python -m packages.appflow_tracer
-    ```
-"""
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from packages.appflow_tracer.tracing import main
 
 if __name__ == "__main__":
     main()
+
+# Load documentation dynamically and apply module, function and objects docstrings
+from lib.pydoc_loader import load_pydocs
+load_pydocs(__file__, sys.modules[__name__])

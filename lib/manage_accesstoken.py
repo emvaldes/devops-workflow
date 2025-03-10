@@ -3,8 +3,10 @@
 # File: ./lib/manage_accesstoken.py
 __version__ = "0.1.0"  ## Package version
 
+# Standard library imports - Core system module
 import sys
 
+# Standard library imports - File system-related module
 from pathlib import Path
 
 # Ensure the current directory is added to sys.path

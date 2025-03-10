@@ -3,11 +3,15 @@
 # File: ./lib/parsing_userinput.py
 __version__ = "0.1.0"  ## Package version
 
+# Standard library imports - Core system and OS interaction modules
 import sys
-import json
 import os
+
+# Standard library imports - Utility modules
+import json
 import logging
 
+# Standard library imports - File system-related module
 from pathlib import Path
 
 # Ensure the current directory is added to sys.path

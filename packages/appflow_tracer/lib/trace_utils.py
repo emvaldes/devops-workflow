@@ -3,74 +3,23 @@
 # File: ./packages/appflow_tracer/lib/trace_utils.py
 __version__ = "0.1.0"  ## Package version
 
-"""
-File Path: packages/appflow_tracer/lib/trace_utils.py
-
-Description:
-    Function Call and Execution Flow Tracing Utilities
-    This module provides **real-time function execution tracing** within the framework.
-    It captures **function calls and return values**, logs structured execution flow,
-    and ensures debugging visibility with minimal performance overhead.
-
-Core Features:
-    - **Function Call Tracing**: Logs function calls, arguments, and execution order.
-    - **Execution Flow Logging**: Captures return values and structured execution flow.
-    - **Project Scope Enforcement**: Excludes system functions and external dependencies.
-    - **Selective Filtering**: Ignores known logging utilities and non-essential functions.
-    - **Configurable Logging**: Enables logging dynamically based on configuration settings.
-
-Usage:
-    To enable tracing and track function calls:
-    ```python
-    import trace_utils
-    trace_utils.start_tracing()
-    ```
-
-Dependencies:
-    - sys
-    - json
-    - inspect
-    - logging
-    - lib.system_variables (for project settings)
-    - lib.log_utils (for structured logging)
-    - lib.file_utils (for project file validation)
-    - lib.serialize_utils (for safe data serialization)
-
-Global Variables:
-    - Uses `category` from `lib.system_variables`.
-
-Primary Functions:
-    - `start_tracing(logger, configs)`: Initializes function call tracing dynamically.
-    - `trace_all(logger, configs)`: Creates a **trace function** for `sys.settrace()`.
-    - `trace_events(frame, event, arg)`: Handles function call and return event logging.
-    - `call_events(logger, frame, filename, arg, configs)`: Logs function calls.
-    - `return_events(logger, frame, filename, arg, configs)`: Logs function return values.
-
-Expected Behavior:
-    - Tracing activates only when **enabled in the configuration**.
-    - Calls, returns, and execution paths are **logged dynamically**.
-    - Non-project files and system-level operations are **excluded from tracing**.
-    - Return values are **serialized safely** for structured logging.
-
-Exit Codes:
-    - `0`: Successful execution.
-    - `1`: Failure due to invalid configurations or execution tracing errors.
-
-Example:
-    ```python
-    from trace_utils import start_tracing
-    start_tracing()
-    ```
-"""
-
+# Standard library imports - Core system module
 import sys
-import json
 
+# Standard library imports - Utility modules
+import json
 import inspect
 import logging
 
-from typing import Callable
+# Standard library imports - Type-related modules
 from types import FrameType
+from typing import Callable
+
+# Standard library imports - File system-related module
+from pathlib import Path
+
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from . import (
     log_utils,
@@ -87,28 +36,6 @@ def start_tracing(
     logger: logging.Logger = None,
     configs: dict = None
 ) -> None:
-    """
-    Initialize and activate function call tracing.
-
-    This function sets up **function execution tracing**, ensuring:
-    - **Function call and return events** are logged in a structured manner.
-    - **Only project-specific files** are traced, excluding system libraries.
-    - **Logging is enabled dynamically** based on the provided configuration.
-
-    Args:
-        logger (logging.Logger, optional): Logger instance for structured logging. If None, a default logger is used.
-        configs (dict, optional): A dictionary containing tracing configurations. If None, the global CONFIGS will be used.
-
-    Raises:
-        RuntimeError: If tracing fails due to invalid configurations.
-
-    Returns:
-        None
-
-    Example:
-        >>> start_tracing()
-        # Tracing begins using the global configuration.
-    """
 
     # Initialize logger (logging.Logger) if None
     if logger is None:
@@ -138,28 +65,6 @@ def trace_all(
     logger: logging.Logger,
     configs: dict
 ) -> Callable:
-    """
-    Generate a function that traces execution flow within project-specific files.
-
-    This function returns a **callable trace handler** that:
-    - **Logs function calls and returns**, including caller context.
-    - **Ensures logging is project-restricted**, excluding non-project dependencies.
-    - **Filters system function calls and internal logging utilities.**
-
-    Args:
-        logger (logging.Logger): Logger instance for structured logging.
-        configs (dict): The configuration dictionary that controls tracing behavior.
-
-    Raises:
-        ValueError: If tracing configurations are missing or invalid.
-
-    Returns:
-        Callable: A trace function that can be passed to `sys.settrace()`.
-
-    Example:
-        >>> sys.settrace(trace_all(logger, configs))
-        # Tracing starts using the provided configuration.
-    """
 
     # Ensure configs is valid before using it
     if not configs or "logging" not in configs:
@@ -175,29 +80,6 @@ def trace_all(
         event: str,
         arg: object
     ) -> None:
-        """
-        Process and log function execution events (calls and returns).
-
-        This function is invoked for **each function call and return**, and it:
-        - **Identifies function calls** and logs caller details.
-        - **Handles return values**, including structured serialization.
-        - **Filters out non-project files** to prevent unnecessary logging.
-
-        Args:
-            frame (FrameType): The execution frame when the event occurred.
-            event (str): The event type (`"call"` for function calls, `"return"` for returns).
-            arg (object): The return value if the event is a return.
-
-        Raises:
-            Exception: If an error occurs while processing the event.
-
-        Returns:
-            None
-
-        Example:
-            >>> trace_events(frame, "call", None)
-            # Logs the function call if it's within the project scope.
-        """
 
         # print(f'\nTracing activated in {__name__}\n')
 
@@ -261,24 +143,6 @@ def call_events(
     arg: object,
     configs: dict
 ) -> None:
-    """
-    Handles logging of function call events.
-
-    This function:
-    - **Extracts caller details** including filename and function name.
-    - **Logs function invocation metadata** such as arguments and execution flow.
-    - **Filters out system and non-project calls** to keep logs relevant.
-
-    Args:
-        logger (logging.Logger): Logger instance for logging structured execution.
-        frame (FrameType): The execution frame where the function call occurred.
-        filename (str): The source file where the function call was invoked.
-        arg (object): The arguments passed to the function.
-        configs (dict): The configuration dictionary.
-
-    Returns:
-        None
-    """
 
     try:
 
@@ -332,24 +196,6 @@ def return_events(
     arg: object,
     configs: dict
 ) -> None:
-    """
-    Handles logging of function return events.
-
-    This function:
-    - **Captures return values** including their data type.
-    - **Serializes complex return values** for structured logging.
-    - **Logs execution flow and prevents excessive logging** for system functions.
-
-    Args:
-        logger (logging.Logger): Logger instance for logging structured execution.
-        frame (FrameType): The execution frame where the function return occurred.
-        filename (str): The source file where the return event occurred.
-        arg (object): The function's return value.
-        configs (dict): The configuration dictionary.
-
-    Returns:
-        None
-    """
 
     try:
 
@@ -421,3 +267,13 @@ def return_events(
     #     pass  # Ignore frames that cannot be inspected
     except Exception as e:
         logger.error(f'Error in trace_all return handling: {e}')
+
+# Load documentation dynamically and apply module, function and objects docstrings
+from lib.pydoc_loader import load_pydocs
+load_pydocs(__file__, sys.modules[__name__])
+
+def main() -> None:
+    pass
+
+if __name__ == "__main__":
+    main()
