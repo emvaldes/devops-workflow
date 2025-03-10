@@ -60,3 +60,9 @@ category = simple(
 # Load documentation dynamically and apply module, function and objects docstrings
 from lib.pydoc_loader import load_pydocs
 load_pydocs(__file__, sys.modules[__name__])
+
+def main() -> None:
+    pass
+
+if __name__ == "__main__":
+    main()

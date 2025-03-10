@@ -90,17 +90,6 @@ def test_parse_arguments(args, expected_attr, expected_value):
 # Test: collect_files()
 # ------------------------------------------------------------------------------
 
-# @pytest.fixture
-# def mock_project_structure(tmp_path):
-#     """Creates a temporary project structure for testing `collect_files()`."""
-#     base_dir = tmp_path / "mock_project"
-#     base_dir.mkdir(parents=True, exist_ok=True)
-#
-#     mock_file = base_dir / "mock_file.py"
-#     mock_file.write_text("def mock_function(): pass")  # Create a non-empty Python file
-#
-#     return base_dir, mock_file
-
 @pytest.fixture
 def mock_project_structure():
     """Mocks a project structure with Python files for `collect_files()` test."""
@@ -109,16 +98,6 @@ def mock_project_structure():
          patch("pathlib.Path.stat", return_value=MagicMock(st_size=10)):  # Simulate non-empty file
 
         yield Path("mock_project"), Path("mock_project/mock_file.py")
-
-# def test_collect_files(mock_project_structure):
-#     """Ensure `collect_files()` correctly identifies Python files."""
-#     base_dir, mock_file = mock_project_structure
-#     files_list = run.collect_files(base_dir, extensions=[".py"])
-#
-#     expected_files = {str(mock_file)}
-#     collected_files = {str(file) for file in files_list}
-#
-#     assert collected_files == expected_files, f"Expected {expected_files}, but got {collected_files}"
 
 def test_collect_files(mock_project_structure):
     """Ensure `collect_files()` correctly identifies Python files."""
@@ -199,27 +178,6 @@ def test_main_pydoc(mock_subprocess, mock_create_pydocs, monkeypatch, tmp_path):
 # ------------------------------------------------------------------------------
 # Test: main() - Coverage
 # ------------------------------------------------------------------------------
-
-# @patch("subprocess.run")
-# @patch("coverage.Coverage")
-# @patch("lib.pydoc_generator.generate_report")
-# def test_main_coverage(mock_generate_report, mock_coverage, mock_subprocess, monkeypatch):
-#     """Ensure `main()` correctly handles coverage processing."""
-#     monkeypatch.setattr("sys.argv", ["run.py", "--coverage"])
-#     test_file = Path(__file__).resolve()
-#
-#     mock_cov_instance = mock_coverage.return_value
-#     mock_cov_instance.start.return_value = None
-#     mock_cov_instance.stop.return_value = None
-#     mock_cov_instance.save.return_value = None
-#
-#     with patch("run.collect_files", return_value=[test_file]):
-#         run.main()
-#
-#     mock_cov_instance.start.assert_called_once()
-#     mock_cov_instance.stop.assert_called_once()
-#     mock_cov_instance.save.assert_called_once()
-#     mock_generate_report.assert_called_once()
 
 @patch("subprocess.run")
 @patch("subprocess.check_output", return_value="mock coverage output\n")  # ✅ Fix TypeError issue
