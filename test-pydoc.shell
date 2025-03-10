@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
 
-# while true; do rm .coverage.*; rm -rf ./logs/*; pytest -xsv tests/ && sleep 60 && clear; done;
-# while true; do rm -rf ./docs; python run.py --pydoc --coverage && sleep 60 && ctree ./docs && clear; done;
-# while true; do python -m packages.requirements.dependencies && sleep 60 && clear; done;
+# pytest -xvs tests/test_run.py ;
+# while true; do rm .coverage.*; rm -rf ./logs/*; pytest -xsv tests/ && sleep 300 && clear; done;
+# while true; do rm -rf ./docs; python run.py --pydoc --coverage && sleep 300 && ctree ./docs && clear; done;
+# while true; do python -m scripts.testing && sleep 300 && clear; done;
+# while true; do python -m packages.requirements.dependencies && sleep 300 && clear; done;
+# while true; do python -m packages.appflow_tracer && sleep 300 && clear; done;
+# while true; do python -m packages.appflow_tracer.tracing && sleep 300 && clear; done;
+# bash ./test-pydoc.shell ;
+
+## Library modules:
 
 python -m pydoc lib.__init__ | bat - ;
 
@@ -18,12 +25,20 @@ python -m pydoc lib.system_params | bat - ;
 python -m pydoc lib.system_variables | bat - ;
 python -m pydoc lib.timezone_localoffset | bat - ;
 
+## Packages modules:
+
 python -m pydoc packages.__init__ | bat - ;
+
+## Packages AppFlow-Tracer:
 
 python -m pydoc packages.appflow_tracer.__init__ | bat - ;
 python -m pydoc packages.appflow_tracer.__main__ | bat - ;
 
+## Packages AppFlow-Tracer - Tracing module:
+
 python -m pydoc packages.appflow_tracer.tracing | bat - ;
+
+## Packages AppFlow-Tracer - Sub-Modules Library:
 
 python -m pydoc packages.appflow_tracer.lib.__init__ | bat - ;
 python -m pydoc packages.appflow_tracer.lib.file_utils | bat - ;
@@ -31,13 +46,29 @@ python -m pydoc packages.appflow_tracer.lib.log_utils | bat - ;
 python -m pydoc packages.appflow_tracer.lib.serialize_utils | bat - ;
 python -m pydoc packages.appflow_tracer.lib.trace_utils | bat - ;
 
+## Packages Requirements:
+
 python -m pydoc packages.requirements.__init__ | bat - ;
 python -m pydoc packages.requirements.__main__ | bat - ;
 
+## Packages Requirements - Dependencies module:
+
 python -m pydoc packages.requirements.dependencies | bat - ;
+
+## Packages Requirements - Sub-Modules Library:
 
 python -m pydoc packages.requirements.lib.__init__ | bat - ;
 python -m pydoc packages.requirements.lib.brew_utils | bat - ;
 python -m pydoc packages.requirements.lib.package_utils | bat - ;
 python -m pydoc packages.requirements.lib.policy_utils | bat - ;
 python -m pydoc packages.requirements.lib.version_utils | bat - ;
+
+## Packages Framework:
+
+python -m pydoc run | bat - ;
+python -m pydoc tests.conftest | bat - ;
+python -m pydoc tests.mocks.config_loader | bat - ;
+
+## PyTesting Framework:
+
+python -m pydoc tests.test_run | bat - ;

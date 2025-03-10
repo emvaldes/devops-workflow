@@ -117,7 +117,6 @@ FUNCTIONS
 
 DATA
     LIB_DIR = PosixPath('<project-location>/lib')
-    __module_name__ = 'run'
 
 VERSION
     0.1.0

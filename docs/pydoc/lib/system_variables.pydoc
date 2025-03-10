@@ -49,6 +49,9 @@ DESCRIPTION
         - 0: Execution completed successfully.
         - 1: Error encountered during variable initialization.
 
+FUNCTIONS
+    main() -> None
+
 DATA
     category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...
     default_indent = 4

@@ -1,39 +1,21 @@
 #!/usr/bin/env python3
 
 # File: ./scripts/__init__.py
-__version__ = "0.1.0"  ## Package version
 
-"""
-File Path: ./scripts/__init__.py
+__package__ = "scripts"
+__module__ = "__init__"
 
-Description:
-    Scripts Package Initialization
+__version__ = "0.1.0"  # Modules version
 
-    This file marks the `scripts/` directory as a valid Python package. It ensures
-    that standalone scripts within the framework can be properly imported and executed.
+# Standard library imports - Core system module
+import sys
 
-Core Features:
-    - **Package Initialization**: Enables `scripts/` to be recognized as a Python package.
-    - **Modular Script Management**: Allows standalone scripts to be structured and executed efficiently.
-    - **Future Expansion**: Can be extended to initialize common utilities if needed.
+# Standard library imports - File system-related module
+from pathlib import Path
 
-Usage:
-    Scripts within `scripts/` should be explicitly imported when needed:
-    ```python
-    from scripts import some_script
-    some_script.execute()
-    ```
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-Important:
-    - This file **does not** automatically import submodules to prevent unnecessary execution.
-    - Individual scripts must be explicitly imported as required.
-
-Dependencies:
-    - None (This module solely serves as an initialization file)
-
-Example:
-    ```python
-    from scripts import example_script
-    example_script.run()
-    ```
-"""
+# Load documentation dynamically and apply module, function and objects docstrings
+from lib.pydoc_loader import load_pydocs
+load_pydocs(__file__, sys.modules[__name__])

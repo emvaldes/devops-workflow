@@ -1,10 +1,21 @@
 #!/usr/bin/env python3
 
 # File: ./tests/mocks/config_loader.py
-__version__ = "0.1.1"  ## Updated Package version
 
+__package__ = "tests.mocks"
+__module__ = "config_loader"
+
+__version__ = "0.1.0"  # Module version
+
+# Standard library imports - Core system module
+import sys
 import json
+
+# Standard library imports - File system-related module
 from pathlib import Path
+
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 MOCKS_DIR = Path(__file__).resolve().parent  # `tests/mocks/`
 
@@ -44,7 +55,6 @@ BASE_REQUIREMENTS_CONFIG = {
 
 # ✅ Base structure for `mock_installed.json` (installed packages)
 BASE_INSTALLED_CONFIG = {
-
     "colors": BASE_REQUIREMENTS_CONFIG["colors"],
     "logging": BASE_REQUIREMENTS_CONFIG["logging"],
     "tracing": BASE_REQUIREMENTS_CONFIG["tracing"],
@@ -84,3 +94,13 @@ def load_mock_installed() -> dict:
         data.setdefault(key, BASE_INSTALLED_CONFIG[key])
 
     return data
+
+def main() -> None:
+    pass
+
+# Load documentation dynamically and apply module, function and objects docstrings
+from lib.pydoc_loader import load_pydocs
+load_pydocs(__file__, sys.modules[__name__])
+
+if __name__ == "__main__":
+    main()

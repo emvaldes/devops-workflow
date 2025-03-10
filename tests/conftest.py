@@ -1,11 +1,28 @@
 #!/usr/bin/env python3
 
 # File: ./tests/conftest.py
-__version__ = "0.1.2"  ## Updated Package version
+
+__package__ = "tests"
+__module__ = "conftest"
+
+__version__ = "0.1.0"  # Updated Package version
+
+# Standard library imports - Core system module
+import sys
+
+# Standard library imports - File system-related module
+from pathlib import Path
 
 import pytest
 
-from pathlib import Path
+# Ensure the root project directory is in sys.path
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
 from mocks.config_loader import (
     load_mock_requirements,
     load_mock_installed
@@ -96,3 +113,13 @@ def installed_config(request) -> dict:
     base_config["packages"]["installation"]["configs"] = Path(base_config["packages"]["installation"]["configs"])
 
     return base_config
+
+def main() -> None:
+    pass
+
+# Load documentation dynamically and apply module, function and objects docstrings
+from lib.pydoc_loader import load_pydocs
+load_pydocs(__file__, sys.modules[__name__])
+
+if __name__ == "__main__":
+    main()

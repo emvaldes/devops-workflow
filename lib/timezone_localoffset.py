@@ -64,6 +64,10 @@ def main(
         print(f'Error processing time zone: {e}', file=sys.stderr)
         sys.exit( 1 )
 
+# Load documentation dynamically and apply module, function and objects docstrings
+from lib.pydoc_loader import load_pydocs
+load_pydocs(__file__, sys.modules[__name__])
+
 if __name__ == "__main__":
 
     # Command-line argument parsing for debug and verbose

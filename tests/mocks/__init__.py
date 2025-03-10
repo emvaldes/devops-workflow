@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-# File: ./packages/__init__.py
+# File: ./scripts/__init__.py
 
-__package__ = "packages"
+__package__ = "tests.mocks"
 __module__ = "__init__"
 
 __version__ = "0.1.0"  # Modules version

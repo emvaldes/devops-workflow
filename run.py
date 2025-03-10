@@ -2,19 +2,25 @@
 
 # File: ./run.py
 
-__module_name__ = "run"
-__version__ = "0.1.0"  ## Package version
+__module__ = "run"
+__version__ = "0.1.0"  # Module version
 
+# Standard library imports - Core system and OS interaction modules
+import os
+import sys
+import subprocess
+
+# Standard library imports - Utility modules
 import argparse
 import json
 import logging
-import os
 import pydoc
 import re
-import subprocess
-import sys
+
+# Standard library imports - File system-related module
 from pathlib import Path
 
+# Third-party library imports - Testing and coverage tools
 import coverage
 import pytest
 
@@ -31,15 +37,13 @@ if str(LIB_DIR) not in sys.path:
 ## Setup logging configuration
 # logging.basicConfig(level=logging.INFO)
 
+# Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from lib import pydoc_generator as pydoc_engine
 from lib import system_variables as environment
 from packages.appflow_tracer import tracing
 from packages.appflow_tracer.lib import log_utils
-
-# Load documentation dynamically
-from lib.pydoc_loader import load_pydocs
 
 def collect_files(
     target_dir: str,
@@ -174,12 +178,8 @@ def main():
             if coverage_files:
                 if Path(".coverage").exists() and Path(".coverage").stat().st_size > 0:
                     subprocess.run(
-                        [
-                            "python",
-                            "-m",
-                            "coverage",
-                            "combine"
-                        ], check=True
+                        ["python", "-m", "coverage", "combine"],
+                        check=True
                     )
                     log_utils.log_message(
                         f'Generating Coverage Report ...',
@@ -190,14 +190,7 @@ def main():
                         htmlcov_dir = Path("docs") / "htmlcov"
                         htmlcov_dir.mkdir(parents=True, exist_ok=True)
                         subprocess.run(
-                            [
-                                "python",
-                                "-m",
-                                "coverage",
-                                "html",
-                                "-d",
-                                str(htmlcov_dir)
-                            ],
+                            ["python", "-m", "coverage", "html", "-d", str(htmlcov_dir)],
                             check=True
                         )
                         # log_utils.log_message(
@@ -259,16 +252,14 @@ def main():
     #     configs=CONFIGS
     # )
 
-# # Load documentation dynamically and apply module, function and objects docstrings
-# MODULE_DOCSTRING, FUNCTION_DOCSTRINGS, VARIABLE_DOCSTRINGS = load_pydocs(__file__, sys.modules[__name__])
-# __doc__ = MODULE_DOCSTRING
+# Load documentation dynamically and apply module, function and objects docstrings
+from lib.pydoc_loader import load_pydocs
 load_pydocs(__file__, sys.modules[__name__])
 
 if __name__ == "__main__":
+    main()
 
     # print(f'Module Docstring:\n{__doc__}')
     #
     # print(f'parse_arguments.__doc__:\n{parse_arguments.__doc__}')
     # print(f'collect_files.__doc__:\n{collect_files.__doc__}')
-
-    main()

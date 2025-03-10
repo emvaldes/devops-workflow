@@ -1,13 +1,13 @@
 .DS_Store
 
-## .legacy
-## *--legacy.*
+.legacy
+*--legacy.*
 
 .outputs
 .project
 
-## .prototypes
-## *--prototype.*
+.prototypes
+*--prototype.*
 
 logs/
 !logs/.gitkeep  # Keeps the logs directory in Git but ignores its content
@@ -56,9 +56,9 @@ pip-delete-this-directory.txt
 ## htmlcov/
 .tox/
 .nox/
-.coverage
 
-## .coverage.*
+# .coverage
+.coverage.*
 
 .cache
 nosetests.xml
@@ -75,7 +75,7 @@ cover/
 
 # Django stuff:
 
-## *.log
+# *.log
 
 local_settings.py
 db.sqlite3
