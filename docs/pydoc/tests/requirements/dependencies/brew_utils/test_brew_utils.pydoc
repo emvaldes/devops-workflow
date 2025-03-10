@@ -1,0 +1,152 @@
+### Documentation for tests/requirements/dependencies/brew_utils/test_brew_utils.py
+
+Help on module tests.requirements.dependencies.brew_utils.test_brew_utils in tests.requirements.dependencies.brew_utils:
+
+NAME
+    tests.requirements.dependencies.brew_utils.test_brew_utils - # File: ./tests/appflow_tracer/brew_utils/brew_utils.py
+
+FUNCTIONS
+    test_brew_package_not_found()
+        Ensure `brew_info()` correctly handles non-existent packages.
+
+        **Test Strategy:**
+            - Mocks `subprocess.run` to simulate `brew info` failing.
+
+        Expected Output:
+            - `None` when the package is not found.
+
+    test_check_availability_failure()
+        ❌ **Test: Homebrew Availability (Failure)**
+
+        **Purpose:**
+        - Ensure `check_availability()` correctly identifies when Homebrew is **not installed**.
+
+        **Test Strategy:**
+        - **Clear `lru_cache`** before execution to ensure fresh results.
+        - **Mock `shutil.which()`** to return `None`, simulating a missing Homebrew installation.
+
+        **Expected Outcome:**
+        - Returns `False` when Homebrew is **not detected**.
+
+        **Scenario:**
+        - Homebrew is **not installed** or its binary is not in the system `PATH`.
+
+    test_check_availability_success()
+        ✅ **Test: Homebrew Availability (Success)**
+
+        **Purpose:**
+        - Verify that `check_availability()` correctly detects when Homebrew is installed.
+
+        **Test Strategy:**
+        - **Mock `shutil.which()`** to return a valid `brew` path.
+        - **Mock `subprocess.run()`** to simulate a successful `brew --version` command.
+
+        **Expected Outcome:**
+        - Returns `True` when Homebrew is detected.
+
+        **Scenario:**
+        - Homebrew is installed and accessible via `/usr/local/bin/brew`.
+
+    test_detect_environment_brew()
+        ✅ **Test: Detect Homebrew-Managed Python Environment**
+
+        **Purpose:**
+        - Validate that `detect_environment()` correctly identifies a **Homebrew-managed Python installation**.
+
+        **Test Strategy:**
+        - **Mock `check_availability()`** to return `True`, indicating Homebrew is installed.
+        - **Mock `subprocess.run()`** to simulate successful execution of `brew --prefix python`.
+
+        **Expected Outcome:**
+        - `INSTALL_METHOD`: `"brew"`
+        - `BREW_AVAILABLE`: `True`
+
+        **Scenario:**
+        - The system has Homebrew installed and Python is managed by Homebrew.
+
+    test_detect_environment_standalone()
+        ❌ **Test: Detect Standalone Python Environment**
+
+        **Purpose:**
+        - Ensure `detect_environment()` correctly identifies when Python is **not managed by Homebrew**.
+
+        **Test Strategy:**
+        - **Mock `check_availability()`** to return `False`, indicating Homebrew is missing.
+
+        **Expected Outcome:**
+        - `INSTALL_METHOD`: `"standalone"` or `"system"`
+        - `BREW_AVAILABLE`: `False`
+
+        **Scenario:**
+        - The system runs Python from system package managers (`apt`, `dnf`) or standalone installations.
+
+    test_latest_version_failure()
+        Ensure `latest_version()` returns `None` when the package does not exist in Homebrew.
+
+        **Test Strategy:**
+            - Mocks `subprocess.run` to raise `subprocess.CalledProcessError`.
+
+        Expected Output:
+            - `None` when the package is not found.
+
+    test_latest_version_success(installed_config)
+        ✅ **Test: Retrieve Latest Available Version of a Homebrew Package**
+
+        **Purpose:**
+        - Validate that `latest_version(package)` correctly extracts the latest stable version of a Homebrew package.
+
+        **Test Strategy:**
+        - Use **mocked package name & version** from `mock_installed.json`.
+        - **Mock `subprocess.run()`** to return valid `brew info` output.
+
+        **Expected Outcome:**
+        - Returns the latest version (e.g., `"8.3.5"`).
+
+        **Scenario:**
+        - The package is available in Homebrew and has a newer version.
+
+    test_version_installed(requirements_config)
+        ✅ **Test: Retrieve Installed Package Version (Homebrew)**
+
+        **Purpose:**
+        - Validate that `version(package)` correctly retrieves the installed version of a Homebrew-managed package.
+
+        **Test Strategy:**
+        - Use **mocked package name** from `mock_requirements.json`.
+        - **Mock `subprocess.run()`** to return a valid `brew list --versions` output.
+
+        **Expected Outcome:**
+        - Returns the installed version (e.g., `"1.6.10"`).
+
+        **Scenario:**
+        - The package exists and is installed via Homebrew.
+
+    test_version_not_installed()
+        ❌ **Test: Handle Missing Package in Homebrew**
+
+        **Purpose:**
+        - Ensure `version(package)` returns `None` when the package is not installed.
+
+        **Test Strategy:**
+        - **Mock `subprocess.run()`** to raise `subprocess.CalledProcessError`, simulating a missing package.
+
+        **Expected Outcome:**
+        - Returns `None` for non-existent packages.
+
+        **Scenario:**
+        - The package **is not installed** in Homebrew.
+
+DATA
+    ROOT_DIR = PosixPath('<project-location>')
+    __module_name__ = 'brew_utils'
+    __package_name__ = 'requirements'
+    pytestmark = MarkDecorator(mark=Mark(name='skipif', args=(Fal...': 'Ho...
+
+VERSION
+    0.1.0
+
+FILE
+    <project-location>/tests/requirements/dependencies/brew_utils/test_brew_utils.py
+
+
+

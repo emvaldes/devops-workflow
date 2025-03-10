@@ -1,0 +1,27 @@
+### Documentation for tests/mocks/config_loader.py
+
+Help on module tests.mocks.config_loader in tests.mocks:
+
+NAME
+    tests.mocks.config_loader - # File: ./tests/mocks/config_loader.py
+
+FUNCTIONS
+    load_mock_installed() -> dict
+        Load and return the contents of `mock_installed.json`, ensuring missing fields are populated.
+
+    load_mock_requirements() -> dict
+        Load and return the contents of `mock_requirements.json`, ensuring missing fields are populated.
+
+DATA
+    BASE_INSTALLED_CONFIG = {'colors': {}, 'environment': {'BREW_AVAILABLE...
+    BASE_REQUIREMENTS_CONFIG = {'colors': {}, 'environment': {'BREW_AVAILA...
+    MOCKS_DIR = PosixPath('<project-location>/tests/m...
+
+VERSION
+    0.1.1
+
+FILE
+    <project-location>/tests/mocks/config_loader.py
+
+
+

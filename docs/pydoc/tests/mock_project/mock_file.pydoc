@@ -1,9 +1,0 @@
-### Documentation for tests/mock_project/mock_file.py
-
-Name      Stmts   Miss  Cover
-----------------------------
-file1.py      10      2   80%
-file2.py      15      0  100%
-----------------------------
-TOTAL         25      2   92%
-

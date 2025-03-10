@@ -1,0 +1,103 @@
+# import importlib.util
+# from pathlib import Path
+# from typing import Tuple, Dict
+#
+# def load_doc(module_path: str) -> Tuple[str, Dict[str, str]]:
+#     """
+#     Dynamically loads module-level and function-level documentation from an external `.pydoc` file.
+#
+#     **Parameters:**
+#         - `module_path` (str): The full path of the Python module (`__file__` should be passed).
+#
+#     **Returns:**
+#         - `MODULE_DOCSTRING` (str): The module-level documentation.
+#         - `FUNCTION_DOCSTRINGS` (dict): A dictionary containing function names as keys and their docstrings as values.
+#
+#     **Behavior:**
+#         - Looks for a `.pydoc` file with the same name as the Python module.
+#         - If found, loads `MODULE_DOCSTRING` and `FUNCTION_DOCSTRINGS`.
+#         - If missing or an error occurs, returns fallback messages.
+#     """
+#
+#     doc_file = Path(module_path).with_suffix(".pydoc")
+#
+#     # 🔍 Debugging: Print the file path being used
+#     print(f"DEBUG: Checking for documentation file at {doc_file}")
+#
+#     if not doc_file.exists():
+#         print(f"DEBUG ERROR: Documentation file NOT FOUND at {doc_file}")
+#         return f"Error: Unable to load documentation file `{doc_file}`", {}
+#
+#     try:
+#         spec = importlib.util.spec_from_file_location("doc_module", str(doc_file))
+#
+#         if spec is None:
+#             print(f"DEBUG ERROR: Failed to create spec for {doc_file}")
+#             return f"Error: Unable to load documentation file `{doc_file}`", {}
+#
+#         if spec.loader is None:
+#             print(f"DEBUG ERROR: `spec.loader` is None for {doc_file}")
+#             return f"Error: `spec.loader` is None for `{doc_file}`", {}
+#
+#         # Load the `.pydoc` file as a Python module
+#         doc_module = importlib.util.module_from_spec(spec)
+#         spec.loader.exec_module(doc_module)
+#
+#         # Retrieve docstrings
+#         module_doc = getattr(doc_module, "MODULE_DOCSTRING", "No module-level documentation available.")
+#         function_docs = getattr(doc_module, "FUNCTION_DOCSTRINGS", {})
+#
+#         # Print debug info
+#         print(f"DEBUG: Successfully loaded documentation from {doc_file}")
+#         print(f"DEBUG: Module Docstring (first 200 chars): {module_doc[:200]}")
+#         print(f"DEBUG: Loaded {len(function_docs)} function docstrings.")
+#
+#         return module_doc, function_docs
+#
+#     except Exception as e:
+#         print(f"DEBUG ERROR: Exception while loading documentation - {e}")
+#         return f"Error loading documentation: {e}", {}
+
+import importlib.util
+from pathlib import Path
+from typing import Tuple, Dict
+
+def load_doc(module_path: str) -> Tuple[str, Dict[str, str]]:
+    """Loads module and function-level documentation from an external `.pydoc` file."""
+
+    doc_file = Path(module_path).with_suffix(".pydoc")
+
+    print(f"DEBUG: Checking for documentation file at {doc_file}")
+
+    if not doc_file.exists():
+        print(f"❌ DEBUG ERROR: Documentation file NOT FOUND at {doc_file}")
+        return f"Error: Unable to load documentation file `{doc_file}`", {}
+
+    try:
+        spec = importlib.util.spec_from_file_location("doc_module", str(doc_file))
+
+        if spec is None:
+            print(f"❌ DEBUG ERROR: `spec_from_file_location()` failed for {doc_file}")
+            return f"Error: Unable to load documentation file `{doc_file}`", {}
+
+        if spec.loader is None:
+            print(f"❌ DEBUG ERROR: `spec.loader` is None for {doc_file}")
+            return f"Error: `spec.loader` is None for `{doc_file}`", {}
+
+        print("✅ DEBUG: `spec` and `spec.loader` were created successfully!")
+
+        doc_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(doc_module)
+
+        module_doc = getattr(doc_module, "MODULE_DOCSTRING", "No module-level documentation available.")
+        function_docs = getattr(doc_module, "FUNCTION_DOCSTRINGS", {})
+
+        print("✅ DEBUG: Successfully loaded documentation!")
+        print(f"Module Docstring (First 200 chars): {module_doc[:200]}")
+        print(f"Loaded {len(function_docs)} function docstrings.")
+
+        return module_doc, function_docs
+
+    except Exception as e:
+        print(f"❌ DEBUG ERROR: Exception while loading documentation - {e}")
+        return f"Error loading documentation: {e}", {}

@@ -3,47 +3,6 @@
 # File: ./lib/system_params.py
 __version__ = "0.1.0"  ## Package version
 
-"""
-File: ./lib/system_params.py
-
-Description:
-    System Parameter Management
-    This module handles system-wide parameter management by loading runtime
-    parameters from JSON configuration files and merging them with environment variables.
-
-Core Features:
-    - **Configuration Loading**: Reads parameters from `runtime-params.json`, `project-params.json`, and `default-params.json`.
-    - **Environment Variable Management**: Dynamically sets system-wide environment variables.
-    - **Validation and Error Handling**: Ensures required parameters are initialized before execution.
-
-Usage:
-    To load and initialize system parameters:
-    ```bash
-    python system_params.py
-    ```
-
-Dependencies:
-    - os
-    - json
-    - logging
-    - dotenv
-    - pathlib
-    - lib.configure_params (for JSON merging and validation)
-
-Global Variables:
-    - `SYSTEM_PARAMS` (dict): Loaded system-wide parameters.
-    - `RUNTIME_PARAMS` (dict): Parameters dynamically merged at runtime.
-
-Exit Codes:
-    - `0`: Successful execution.
-    - `1`: Failure due to missing configuration files or invalid environment variables.
-
-Example:
-    ```bash
-    python system_params.py
-    ```
-"""
-
 import sys
 import os
 
@@ -76,27 +35,6 @@ from system_variables import (
 def load_json_config(
     runtime_params_filepath: Path
 ) -> dict:
-    """
-    Load environment variables from a JSON configuration file.
-
-    Reads a JSON file and ensures its structure is valid before returning
-    the parsed contents.
-
-    Args:
-        runtime_params_filepath (Path): The file path of the JSON configuration file.
-
-    Raises:
-        ValueError: If the JSON file is empty or has an invalid structure.
-        RuntimeError: If the file cannot be read.
-
-    Returns:
-        dict: The parsed JSON data containing system parameters.
-
-    Notes:
-        - If the file is empty, the function raises a `ValueError`.
-        - If the file contains invalid JSON, the function raises `RuntimeError`.
-        - Ensures robust error handling for corrupt or missing files.
-    """
 
     try:
         with open(runtime_params_filepath, "r") as file:
@@ -113,26 +51,6 @@ def get_runtime_variable(
     name: str,
     required: bool = False
 ) -> Optional[str]:
-    """
-    Retrieve an environment variable safely, handling missing or empty values.
-
-    This function fetches an environment variable and logs a warning if a required
-    variable is missing or empty.
-
-    Args:
-        name (str): The name of the environment variable to retrieve.
-        required (bool, optional): Whether the variable is mandatory. Defaults to False.
-
-    Raises:
-        RuntimeError: If there is an issue retrieving the environment variable.
-
-    Returns:
-        Optional[str]: The value of the environment variable, or None if it is missing.
-
-    Notes:
-        - If `required=True` and the variable is missing, a warning is logged.
-        - If an exception occurs, `RuntimeError` is raised.
-    """
 
     try:
         value = os.getenv(name)
@@ -146,33 +64,6 @@ def get_runtime_variable(
 def validate_runtime_params(
     runtime_params_filepath
 ):
-    """
-    Validates the existence and content of the runtime parameters JSON file.
-
-    This function checks whether the specified JSON file exists, is not empty,
-    and contains valid JSON. It raises appropriate exceptions if any of the
-    validation steps fail.
-
-    Args:
-        runtime_params_filepath (str or Path): The file path to the runtime parameters JSON file
-                                               that needs to be validated.
-
-    Raises:
-        FileNotFoundError: If the file specified by `runtime_params_filepath` does not exist.
-        ValueError: If the file is empty or if it does not contain valid JSON.
-
-    Notes:
-        - This function reads the file as a string, strips any leading or trailing whitespace,
-          and checks for content.
-        - The function ensures that the file contains valid JSON. If the file is malformed
-          or contains invalid JSON, a `ValueError` will be raised.
-        - If the file does not exist, a `FileNotFoundError` will be raised.
-
-    Example:
-        >>> validate_runtime_params("/path/to/runtime-params.json")
-        >>> # Raises ValueError if the file is empty or contains invalid JSON,
-        >>> # Raises FileNotFoundError if the file doesn't exist.
-    """
 
     if not os.path.exists(runtime_params_filepath):
         raise FileNotFoundError(f"{runtime_params_filepath} not found.")
@@ -283,3 +174,13 @@ except Exception as e:
 # ## Logging final merged configuration
 # logging.info("Default's merged configuration (RUNTIME_VARS):")
 # logging.info(json.dumps(defaults, indent=4))
+
+# Load documentation dynamically and apply module, function and objects docstrings
+from lib.pydoc_loader import load_pydocs
+load_pydocs(__file__, sys.modules[__name__])
+
+def main() -> None:
+    pass
+
+if __name__ == "__main__":
+    main()

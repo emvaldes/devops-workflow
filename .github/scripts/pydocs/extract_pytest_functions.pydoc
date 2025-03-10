@@ -1,0 +1,109 @@
+#!/usr/bin/env python3
+
+# Python File: ./.github/scripts/extract_pytest_functions.py
+__version__ = "0.1.0"  # Documentation version
+
+# Module-level documentation
+MODULE_DOCSTRING = """
+# Module: extract_pytest_functions.py
+
+## Overview
+The `extract_pytest_functions.py` script is responsible for analyzing Python files and extracting test functions written using the PyTest framework. It provides functionality to parse and retrieve test function definitions dynamically, making it useful for test automation, documentation generation, and validation.
+
+## Core Features:
+- **Static Code Analysis**: Uses Python's AST module to parse test functions without executing the code.
+- **PyTest Test Discovery**: Detects functions prefixed with `test_` and retrieves their definitions.
+- **Metadata Extraction**: Identifies test function names, decorators, and associated module information.
+- **Integration Support**: Designed to integrate with automation tools for reporting and validation.
+
+## Usage Examples:
+```bash
+python extract_pytest_functions.py --file tests/sample_test.py
+python extract_pytest_functions.py --dir tests/
+```
+
+The script processes Python files recursively (if a directory is provided) and outputs the discovered PyTest functions.
+"""
+
+# Function-level documentation
+FUNCTION_DOCSTRINGS = {
+    "parse_arguments": """
+    Parses and processes command-line arguments provided to the script.
+
+    ### Returns:
+    - `argparse.Namespace`: Object containing parsed command-line arguments.
+
+    ### Arguments Supported:
+    - `--file <file_path>`: Specifies a single Python file to analyze.
+    - `--dir <directory_path>`: Specifies a directory to recursively scan for test functions.
+
+    ### Behavior:
+    - Uses `argparse` to handle user input.
+    - Validates the provided file or directory path.
+    - Returns a structured namespace object for further processing.
+
+    ### Example Usage:
+    ```python
+    args = parse_arguments()
+    print(args.file)  # Accessing the provided file name
+    ```
+    """,
+
+    "extract_pytest_functions": """
+    Extracts all PyTest test functions from a given Python file.
+
+    ### Parameters:
+    - `file_path` (`str`): The absolute or relative path to the Python file to analyze.
+
+    ### Behavior:
+    - Parses the file using Python's AST (Abstract Syntax Tree) module.
+    - Identifies function definitions that start with `test_`.
+    - Collects metadata, including function names and decorators.
+    - Returns a list of discovered test function names.
+
+    ### Returns:
+    - `List[str]`: A list containing names of the discovered test functions.
+
+    ### Example Usage:
+    ```python
+    test_functions = extract_pytest_functions("tests/sample_test.py")
+    print(test_functions)  # Outputs: ['test_example', 'test_case_1']
+    ```
+    """,
+
+    "process_directory": """
+    Recursively scans a directory for Python files and extracts PyTest test functions.
+
+    ### Parameters:
+    - `directory_path` (`str`): The root directory to scan.
+
+    ### Behavior:
+    - Iterates through all Python files in the given directory.
+    - Calls `extract_pytest_functions()` on each Python file found.
+    - Aggregates discovered test function names.
+    - Handles invalid or inaccessible directories gracefully.
+
+    ### Returns:
+    - `Dict[str, List[str]]`: A dictionary where keys are file paths, and values are lists of extracted test functions.
+
+    ### Example Usage:
+    ```python
+    test_map = process_directory("tests/")
+    print(test_map)  # Outputs: {'tests/sample_test.py': ['test_example', 'test_case_1']}
+    ```
+    """,
+
+    "__main__": """
+    The script's main execution entry point.
+
+    ### Responsibilities:
+    - Parses command-line arguments using `parse_arguments()`.
+    - Determines whether to analyze a single file or scan a directory.
+    - Invokes the appropriate extraction function and outputs results.
+
+    ### Example Usage:
+    ```bash
+    python extract_pytest_functions.py --file tests/sample_test.py
+    ```
+    """
+}

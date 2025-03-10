@@ -3,93 +3,55 @@
 Help on module lib.accesstoken_expiration in lib:
 
 NAME
-    lib.accesstoken_expiration - # File: ./lib/accesstoken_expiration.py
+    lib.accesstoken_expiration
+
+DESCRIPTION
+    Overview
+        The `accesstoken_expiration.py` module manages Azure access tokens, retrieving expiration times and displaying the remaining validity duration.
+
+    Core Features:
+        - Fetches an Azure access token using `InteractiveBrowserCredential`.
+        - Extracts and displays token expiration information.
+        - Provides a function to check the remaining time before expiration.
+        - Handles Azure authentication errors gracefully.
+
+    Expected Behavior & Usage:
+        Retrieving Token Expiration:
+            from lib.accesstoken_expiration import print_token_expiration
+            expiration = print_token_expiration(debug=True)
+
+        Checking Remaining Validity:
+            from lib.accesstoken_expiration import print_remaining_time
+            print_remaining_time()
 
 FUNCTIONS
     get_access_token() -> Optional[datetime.datetime]
-        Retrieves an Azure access token and extracts its expiration time.
+        Retrieves an Azure access token and determines its expiration time.
 
         Returns:
-            datetime | None:
-                - The expiration datetime of the retrieved Azure access token.
-                - Returns None if an error occurs during token retrieval.
-
-        Raises:
-            AzureError: If authentication fails while fetching the token.
-            Exception: If an unexpected error occurs during the process.
-
-        Process:
-            1. Uses `InteractiveBrowserCredential()` to authenticate and fetch an access token.
-            2. Extracts the token expiration timestamp from the response.
-            3. Converts the expiration timestamp to a `datetime` object.
-            4. Stores the token globally for further use.
-
-        Notes:
-            - This function uses global storage (`AccessToken`) for token persistence.
-            - If authentication fails, the function logs an error and returns None.
+            Optional[datetime]: The expiration time of the access token, or None if retrieval fails.
 
     main(debug: bool = False) -> None
-        Main entry point to retrieve and manage Azure access token expiration.
+        Entry point function that executes the token retrieval and expiration checks.
 
-        Args:
-            debug (bool, optional): If True, enables detailed logging of token retrieval. Defaults to False.
-
-        Returns:
-            None: This function does not return values; it coordinates the retrieval and reporting processes.
-
-        Raises:
-            Exception: If a critical error occurs during execution.
-
-        Workflow:
-            1. Calls `print_token_expiration()` to retrieve and display the token's expiration time.
-            2. Calls `print_remaining_time()` to calculate and display the remaining validity time.
-
-        Notes:
-            - If an error occurs, an appropriate message is logged, and execution is halted.
-            - This function does not refresh tokens; it only reports existing credentials.
+        Parameters:
+            debug (bool, optional): Enables debugging mode. Defaults to False.
 
     print_remaining_time() -> None
-        Calculates and prints the remaining time before the Azure access token expires.
+        Computes and prints the remaining validity duration of the access token.
 
-        Returns:
-            None: This function does not return any values; it prints the remaining time instead.
-
-        Raises:
-            Exception: If an error occurs while computing the remaining time.
-
-        Calculation Process:
-            1. Checks if `TokenExpiration` is set.
-            2. Computes the time difference between the current time and expiration time.
-            3. Converts the time difference into hours, minutes, and seconds.
-            4. Prints the remaining time in a human-readable format.
-
-        Notes:
-            - If `TokenExpiration` is not set, the function logs an error message and exits.
-            - This function does not modify or renew the token; it only reports its expiration status.
+        Displays:
+            - Hours, minutes, and seconds left before expiration.
+            - An error message if expiration is not available.
 
     print_token_expiration(debug: bool = False) -> Optional[datetime.datetime]
-        Retrieves and prints the Azure access token expiration time.
+        Fetches and prints the access token expiration time.
 
-        Args:
-            debug (bool, optional): If True, prints the access token details for debugging. Defaults to False.
+        Parameters:
+            debug (bool, optional): Enables debug logging of token details. Defaults to False.
 
         Returns:
-            datetime | None:
-                - The expiration datetime of the access token.
-                - Returns None if the token cannot be retrieved.
-
-        Raises:
-            Exception: If an error occurs while retrieving or formatting the expiration time.
-
-        Workflow:
-            1. Calls `get_access_token()` to retrieve the token and its expiration time.
-            2. If successful, stores the expiration timestamp globally (`TokenExpiration`).
-            3. Optionally prints the full token JSON if `debug` mode is enabled.
-            4. Converts the expiration time to a human-readable format and displays it.
-
-        Notes:
-            - If the token cannot be retrieved, an error message is logged, and the function returns None.
-            - This function does not modify the token validity but only reports its status.
+            Optional[datetime]: The token expiration timestamp or None if unavailable.
 
 DATA
     AccessToken = None

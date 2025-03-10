@@ -4,47 +4,47 @@
 __version__ = "0.1.0"  ## Package version
 
 """
-Test Module: ./tests/appflow_tracer/tracing/test_file_utils.py
+PyTest Module: ./tests/appflow_tracer/tracing/test_file_utils.py
 
 This module contains unit tests for the `file_utils.py` module in `appflow_tracer.lib`.
 It ensures that file handling functions operate correctly, including:
 
-- **Path validation** for identifying project files.
-- **Log file management** to enforce maximum log retention limits.
-- **Relative path conversion** for standardizing file references.
-- **ANSI escape code removal** for cleaning log outputs.
+    - **Path validation** for identifying project files.
+    - **Log file management** to enforce maximum log retention limits.
+    - **Relative path conversion** for standardizing file references.
+    - **ANSI escape code removal** for cleaning log outputs.
 
 ## Use Cases:
-1. **Verify project file path validation**
-   - Ensures `file_utils.is_project_file()` correctly identifies files inside the project directory.
-   - Rejects paths outside the project directory.
+    1. **Verify project file path validation**
+       - Ensures `file_utils.is_project_file()` correctly identifies files inside the project directory.
+       - Rejects paths outside the project directory.
 
-2. **Ensure `file_utils.manage_logfiles()` properly removes excess logs**
-   - Simulates an environment where `max_logfiles` is exceeded.
-   - Validates that the oldest logs are deleted while respecting the limit.
-   - Compares the list of expected deleted logs against the actual returned list.
+    2. **Ensure `file_utils.manage_logfiles()` properly removes excess logs**
+       - Simulates an environment where `max_logfiles` is exceeded.
+       - Validates that the oldest logs are deleted while respecting the limit.
+       - Compares the list of expected deleted logs against the actual returned list.
 
-3. **Validate relative path conversion**
-   - Ensures `file_utils.relative_path()` correctly strips absolute paths into relative project paths.
-   - Removes `.py` file extensions for consistency.
+    3. **Validate relative path conversion**
+       - Ensures `file_utils.relative_path()` correctly strips absolute paths into relative project paths.
+       - Removes `.py` file extensions for consistency.
 
-4. **Confirm ANSI escape code removal**
-   - Verifies `file_utils.remove_ansi_escape_codes()` strips formatting sequences from log output.
-   - Ensures output is clean and human-readable.
+    4. **Confirm ANSI escape code removal**
+       - Verifies `file_utils.remove_ansi_escape_codes()` strips formatting sequences from log output.
+       - Ensures output is clean and human-readable.
 
 ## Improvements Implemented:
-- `file_utils.manage_logfiles()` now **returns a list of deleted files**, making validation straightforward.
-- The test dynamically **adjusts `max_logfiles`** to trigger controlled log deletion.
-- Instead of assuming a deletion count, the test **compares expected vs. actual deleted logs**.
-- Fixed `Path.stat()` mocking to properly handle `follow_symlinks=True`, preventing test failures.
-- Ensured logging does not interfere when disabled in `CONFIGS`.
+    - `file_utils.manage_logfiles()` now **returns a list of deleted files**, making validation straightforward.
+    - The test dynamically **adjusts `max_logfiles`** to trigger controlled log deletion.
+    - Instead of assuming a deletion count, the test **compares expected vs. actual deleted logs**.
+    - Fixed `Path.stat()` mocking to properly handle `follow_symlinks=True`, preventing test failures.
+    - Ensured logging does not interfere when disabled in `CONFIGS`.
 
 ## Expected Behavior:
-- **Logs exceeding `max_logfiles` are removed**, with older logs prioritized.
-- **Deleted logs are returned and verified** to ensure the function works correctly.
-- **Path handling and text sanitization functions operate as expected**.
-- **Logging is only enabled when explicitly set in `CONFIGS`.**
-- **Path handling and text sanitization functions operate as expected.**
+    - **Logs exceeding `max_logfiles` are removed**, with older logs prioritized.
+    - **Deleted logs are returned and verified** to ensure the function works correctly.
+    - **Path handling and text sanitization functions operate as expected**.
+    - **Logging is only enabled when explicitly set in `CONFIGS`.**
+    - **Path handling and text sanitization functions operate as expected.**
 
 """
 
@@ -52,8 +52,8 @@ import sys
 import os
 
 import json
-
 import pytest
+
 from unittest.mock import patch
 
 from pathlib import Path
@@ -64,6 +64,7 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))  # Add root directory to sys.path
 
 from lib import system_variables as environment
+
 from packages.appflow_tracer import tracing
 from packages.appflow_tracer.lib import file_utils
 
@@ -130,59 +131,48 @@ def test_manage_logfiles() -> None:
         It validates that the log management function works as expected.
     """
 
-    with patch(
-        "os.path.exists",
-        return_value=True
-    ), \
-    patch("os.makedirs"), \
-    patch.object(
-        Path,
-        "iterdir",
-        return_value=[Path(CONFIGS["logging"]["logs_dirname"])]
-    ), \
-    patch.object(
-        Path,
-        "is_dir",
-        return_value=True
-    ), \
-    patch.object(
-        Path,
-        "glob",
-        return_value=[
-            Path(f'{CONFIGS["logging"]["logs_dirname"]}/log{i}.txt') for i in range(10)
-        ]
-    ), \
-    patch(
-        "pathlib.Path.stat",
-        side_effect=lambda *args,
-        **kwargs: type(
-            'MockStat',
-            (),
-            {"st_mtime": 1739747800}
-        )()
-    ), \
-    patch("pathlib.Path.unlink") as mock_remove:
-        log_files = sorted(
-            Path(
-                CONFIGS["logging"]["logs_dirname"]
-            ).glob('*.txt'),
-            key=lambda f: f.stat().st_mtime
-        )
-        expected_deletions = log_files[:max(
-            0,
-            len(log_files) - CONFIGS['logging']['max_logfiles']
-        )]
-        deleted_logs = file_utils.manage_logfiles(CONFIGS)
-        # Ensure the deleted logs match expected deletions
-        assert set(deleted_logs) == set(f.as_posix() for f in expected_deletions), \
-            f'Expected {expected_deletions}, but got {deleted_logs}'
-        # Ensure return type is a list
-        assert isinstance(
-            deleted_logs,
-            list
-        )
-        # Ensure logs were actually deleted
-        assert len(deleted_logs) > 0, "No logs were deleted!"
+    with patch("os.path.exists", return_value=True), \
+         patch("os.makedirs"), \
+         patch.object(
+             Path, "iterdir",
+             return_value=[Path(CONFIGS["logging"]["logs_dirname"])]
+         ), \
+         patch.object(
+             Path, "is_dir",
+             return_value=True
+         ), \
+         patch.object(
+             Path, "glob",
+             return_value=[
+                 Path(f'{CONFIGS["logging"]["logs_dirname"]}/log{i}.txt') for i in range(10)
+             ]
+         ), \
+         patch(
+             "pathlib.Path.stat", side_effect=lambda *args,
+             **kwargs: type('MockStat', (), { "st_mtime": 1739747800 })()
+         ), \
+         patch("pathlib.Path.unlink") as mock_remove:
+             log_files = sorted(
+                 Path(
+                     CONFIGS["logging"]["logs_dirname"]
+                 ).glob('*.txt'),
+                 key=lambda f: f.stat().st_mtime
+             )
+             expected_deletions = log_files[:max(
+                 0,
+                 len(log_files) - CONFIGS['logging']['max_logfiles']
+             )]
+             deleted_logs = file_utils.manage_logfiles(CONFIGS)
+             # Ensure the deleted logs match expected deletions
+             assert set(deleted_logs) == set(f.as_posix() for f in expected_deletions), \
+                 f'Expected {expected_deletions}, but got {deleted_logs}'
+             # Ensure return type is a list
+             assert isinstance(
+                 deleted_logs,
+                 list
+             )
+             # Ensure logs were actually deleted
+             assert len(deleted_logs) > 0, "No logs were deleted!"
 
 def test_relative_path() -> None:
     """

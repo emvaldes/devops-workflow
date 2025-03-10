@@ -80,7 +80,7 @@ jobs:
             if .version.target then "\(.package)==\(.version.target)"
             else .package end' \
           "${PACKAGE_PARENT_DIR}/requirements.json" > requirements.txt ;
-          echo -e "Generated requirements.txt:" ;
+          echo -e "Generated:\nrequirements.txt:" ;
           cat requirements.txt ;
 
       - name: Cache Dependencies
@@ -100,7 +100,7 @@ jobs:
         run: |
 
           pip freeze > final-requirements.txt ;
-          echo -e "Generated final-requirements.txt: " ;
+          echo -e "Generated:\nfinal-requirements.txt: " ;
           cat final-requirements.txt ;
 
       - name: Upload requirements.txt

@@ -4,29 +4,29 @@
 __version__ = "0.1.0"  ## Package version
 
 """
-Test Module: test_tracing.py
+PyTest Module: test_tracing.py
 
 This module contains unit tests for the `tracing.py` module in `appflow_tracer`.
 It ensures that tracing, logging, and ANSI handling functions operate correctly.
 
 ## Tests:
-1. **`test_setup_logging()`**
-   - Validates that `tracing.setup_logging()` initializes logging correctly.
-   - Ensures configuration keys (`colors`, `logging`, `tracing`, `stats`) exist.
-   - Confirms `stats.created` remains static while `stats.updated` changes per execution.
+    1. **`test_setup_logging()`**
+       - Validates that `tracing.setup_logging()` initializes logging correctly.
+       - Ensures configuration keys (`colors`, `logging`, `tracing`, `stats`) exist.
+       - Confirms `stats.created` remains static while `stats.updated` changes per execution.
 
-2. **`test_print_capture()`**
-   - Ensures `tracing.PrintCapture` properly captures and logs print statements.
-   - Simulates `sys.stdout.write()` to verify expected output.
+    2. **`test_print_capture()`**
+       - Ensures `tracing.PrintCapture` properly captures and logs print statements.
+       - Simulates `sys.stdout.write()` to verify expected output.
 
-3. **`test_ansi_file_handler()`**
-   - Ensures `tracing.ANSIFileHandler` removes ANSI escape sequences before writing logs.
-   - Uses a helper function `remove_ansi()` to strip escape codes before emitting logs.
+    3. **`test_ansi_file_handler()`**
+       - Ensures `tracing.ANSIFileHandler` removes ANSI escape sequences before writing logs.
+       - Uses a helper function `remove_ansi()` to strip escape codes before emitting logs.
 
 ## Expected Behavior:
-- **Logging configurations are correctly assigned** during initialization.
-- **Print statements are redirected to the logging system**.
-- **ANSI escape sequences are stripped before logging** to prevent unwanted formatting.
+    - **Logging configurations are correctly assigned** during initialization.
+    - **Print statements are redirected to the logging system**.
+    - **ANSI escape sequences are stripped before logging** to prevent unwanted formatting.
 
 """
 
@@ -35,13 +35,20 @@ import os
 
 import json
 import logging
+import pytest
 import re
 
-import pytest
-from unittest.mock import patch, MagicMock
+from datetime import (
+    datetime,
+    timezone
+)
+
+from unittest.mock import (
+    patch,
+    MagicMock
+)
 
 from pathlib import Path
-from datetime import datetime, timezone
 
 # Ensure the root project directory is in sys.path
 ROOT_DIR = Path(__file__).resolve().parents[3]  # Adjust the number based on folder depth

@@ -4,47 +4,47 @@
 __version__ = "0.1.0"  ## Package version
 
 """
-Test Module: ./tests/appflow_tracer/tracing/test_log_utils.py
+PyTest Module: ./tests/appflow_tracer/tracing/test_log_utils.py
 
 This module contains unit tests for the `log_utils.py` module in `appflow_tracer.lib`.
 It ensures that logging functions operate correctly, including:
 
-- **Structured log message handling** for files and console.
-- **File-based log output** validation ensuring correct JSON formatting.
-- **ANSI-formatted console output** for colored log messages.
-- **Handling of different JSON formatting configurations** (compressed, pretty-printed, and sanitized).
+    - **Structured log message handling** for files and console.
+    - **File-based log output** validation ensuring correct JSON formatting.
+    - **ANSI-formatted console output** for colored log messages.
+    - **Handling of different JSON formatting configurations** (compressed, pretty-printed, and sanitized).
 
 ## Use Cases:
-1. **Validate structured logging via `log_utils.log_message()`**
-   - Ensures `log_utils.log_message()` correctly routes logs to files and console based on configuration.
-   - Verifies that JSON-formatted logs are properly serialized and categorized.
-   - Tests logging behavior with `tracing.json.compressed = True/False`.
+    1. **Validate structured logging via `log_utils.log_message()`**
+       - Ensures `log_utils.log_message()` correctly routes logs to files and console based on configuration.
+       - Verifies that JSON-formatted logs are properly serialized and categorized.
+       - Tests logging behavior with `tracing.json.compressed = True/False`.
 
-2. **Ensure `log_utils.output_logfile()` correctly writes logs to file**
-   - Simulates log file output and verifies the expected format.
-   - Ensures log messages are categorized correctly (INFO, WARNING, ERROR, etc.).
-   - Validates that JSON metadata is properly included in log files.
-   - Accounts for different JSON formatting modes.
+    2. **Ensure `log_utils.output_logfile()` correctly writes logs to file**
+       - Simulates log file output and verifies the expected format.
+       - Ensures log messages are categorized correctly (INFO, WARNING, ERROR, etc.).
+       - Validates that JSON metadata is properly included in log files.
+       - Accounts for different JSON formatting modes.
 
-3. **Test `log_utils.output_console()` for formatted console logging**
-   - Ensures ANSI color formatting is applied to console logs when enabled.
-   - Validates structured log messages are properly displayed with metadata.
-   - Supports various JSON formatting options (compressed, pretty-printed, sanitized).
+    3. **Test `log_utils.output_console()` for formatted console logging**
+       - Ensures ANSI color formatting is applied to console logs when enabled.
+       - Validates structured log messages are properly displayed with metadata.
+       - Supports various JSON formatting options (compressed, pretty-printed, sanitized).
 
 ## Improvements Implemented:
-- `log_utils.log_message()` now properly **differentiates between log levels** and handles structured data.
-- The test **isolates logging behavior** by dynamically disabling logging and tracing during execution.
-- JSON validation ensures that **log file output maintains correct formatting**.
-- Added multiple test scenarios to validate behavior under different `tracing.json` configurations:
-  - **Compressed JSON** (`tracing.json.compressed = True`)
-  - **Pretty-printed JSON** (`tracing.json.compressed = False`)
-  - **Sanitized JSON output**
+    - `log_utils.log_message()` now properly **differentiates between log levels** and handles structured data.
+    - The test **isolates logging behavior** by dynamically disabling logging and tracing during execution.
+    - JSON validation ensures that **log file output maintains correct formatting**.
+    - Added multiple test scenarios to validate behavior under different `tracing.json` configurations:
+      - **Compressed JSON** (`tracing.json.compressed = True`)
+      - **Pretty-printed JSON** (`tracing.json.compressed = False`)
+      - **Sanitized JSON output**
 
 ## Expected Behavior:
-- **Log messages are routed properly** to files or console depending on configuration.
-- **Structured JSON data is correctly serialized** and included in logs.
-- **ANSI color formatting is applied to console logs** where applicable.
-- **Tests correctly handle different JSON output formats** based on configuration.
+    - **Log messages are routed properly** to files or console depending on configuration.
+    - **Structured JSON data is correctly serialized** and included in logs.
+    - **ANSI color formatting is applied to console logs** where applicable.
+    - **Tests correctly handle different JSON output formats** based on configuration.
 
 """
 
@@ -53,12 +53,18 @@ import os
 
 import json
 import logging
+import pytest
 import re
 
-import pytest
-from unittest.mock import patch, MagicMock
+from datetime import (
+    datetime,
+    timezone
+)
+from unittest.mock import (
+    patch,
+    MagicMock
+)
 
-from datetime import datetime, timezone
 from pathlib import Path
 
 # Ensure the root project directory is in sys.path
@@ -67,6 +73,7 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))  # Add root directory to sys.path
 
 from lib import system_variables as environment
+
 from packages.appflow_tracer import tracing
 from packages.appflow_tracer.lib import log_utils
 

@@ -3,119 +3,65 @@
 Help on module lib.argument_parser in lib:
 
 NAME
-    lib.argument_parser - # File: ./lib/argument_parser.py
+    lib.argument_parser
+
+DESCRIPTION
+    Overview
+        The `argument_parser.py` module provides command-line argument parsing for system configurations.
+        It supports structured argument definitions from JSON configuration files.
+
+    Core Features:
+        - Loads argument configurations from system parameter files.
+        - Parses command-line arguments based on predefined options.
+        - Supports type conversion and validation for arguments.
+        - Enables debug mode for detailed argument inspection.
+
+    Expected Behavior & Usage:
+        Parsing CLI Arguments:
+            from lib.argument_parser import parse_arguments
+            args = parse_arguments(context=["debug", "verbose"], description="Azure CLI utility")
+            print(args.debug, args.verbose)
 
 FUNCTIONS
     convert_types(kwargs: Dict[str, Any]) -> Dict[str, Any]
-        Convert JSON type definitions into actual Python types.
+        Converts type annotations in argument definitions from string format to Python types.
 
-        This function modifies the argument properties dictionary by converting
-        type definitions from string format (e.g., "str", "int") into their corresponding
-        Python types.
-
-        Args:
-            kwargs (Dict[str, Any]): Dictionary of argument properties, potentially including a `type` field.
+        Parameters:
+            kwargs (Dict[str, Any]): Argument definition containing type annotations.
 
         Returns:
-            Dict[str, Any]: Updated dictionary with the `type` field converted to a Python type if applicable.
-
-        Notes:
-            - If `action="store_true"` is set, the `type` field is removed to avoid conflicts.
-            - Supports automatic conversion of `str`, `int`, and `bool` type definitions.
+            Dict[str, Any]: The argument definition with correct type mappings.
 
     load_argument_config() -> Dict[str, Any]
-        Load argument definitions from a JSON configuration file and validate them.
-
-        Reads a structured JSON file that defines command-line arguments, ensuring the file exists,
-        is correctly formatted, and contains valid content.
+        Loads argument definitions from a predefined JSON configuration file.
 
         Returns:
-            Dict[str, Any]: A dictionary containing the parsed argument definitions.
-
-        Raises:
-            FileNotFoundError: If the JSON configuration file does not exist.
-            ValueError: If the JSON file is empty or contains invalid JSON.
-            RuntimeError: If an unexpected error occurs while reading the file.
-
-        Notes:
-            - If the JSON configuration file is missing, execution is halted with an error.
-            - JSON parsing errors are logged to prevent execution failures.
+            Dict[str, Any]: Parsed argument definitions categorized by section.
 
     main() -> None
-        Main function for executing argument parsing when the script is run as a standalone module.
-
-        This function loads the argument configuration, parses command-line arguments, and
-        prints the parsed values in a structured JSON format.
-
-        Returns:
-            None: This function does not return values; it prints parsed argument data.
-
-        Raises:
-            Exception: If argument parsing fails.
-
-        Workflow:
-            1. Calls `parse_arguments()` to process command-line arguments.
-            2. Displays parsed argument values in a structured JSON format.
-            3. Logs errors if any required arguments are missing.
-
-        Notes:
-            - If the `--debug` flag is present, the parsed arguments are printed in JSON format.
-            - Ensures that command-line arguments are validated and processed correctly.
+        Main function to execute argument parsing and display parsed results.
 
     parse_arguments(args: Dict[str, Any]) -> argparse.Namespace
-        Process structured CLI arguments using argparse.
+        Parses command-line arguments using a structured parameter definition.
 
-        This function manually processes each argument defined in a structured dictionary,
-        ensuring correct type conversions and handling unknown arguments gracefully.
-
-        Args:
-            args (Dict[str, Any]): A dictionary containing structured argument definitions.
+        Parameters:
+            args (Dict[str, Any]): System parameter configurations defining available arguments.
 
         Returns:
-            argparse.Namespace: A namespace containing the parsed arguments as attributes.
-
-        Raises:
-            Exception: If an error occurs while adding arguments.
-
-        Workflow:
-            1. Reads structured arguments from `args` dictionary.
-            2. Converts type definitions from strings (e.g., `"int"`) to Python types.
-            3. Iterates over argument sections and adds them to an `argparse` parser.
-            4. Parses arguments and stores them in a namespace.
-            5. Logs any unknown arguments encountered.
-
-        Notes:
-            - If `store_true` or `store_false` actions are used, the `type` field is removed to prevent conflicts.
-            - If an argument is missing its `flags` field, an error is logged.
+            argparse.Namespace: The parsed arguments as an object.
 
     parse_arguments__prototype(
         context: Dict[str, Any] = None,
         description: str = 'Azure CLI utility'
     ) -> argparse.Namespace
-        Parse command-line arguments dynamically based on a JSON configuration file.
+        Parses command-line arguments based on predefined configurations.
 
-        This function loads structured argument definitions from a JSON file and dynamically
-        adds them to an argparse parser. It supports automatic type conversion and structured validation.
-
-        Args:
-            context (Dict[str, Any], optional): A dictionary specifying which arguments should be included. Defaults to None.
-            description (str, optional): A description for the command-line utility. Defaults to "Azure CLI utility".
+        Parameters:
+            context (Dict[str, Any], optional): Limits parsed arguments to the specified context. Defaults to None.
+            description (str, optional): Custom description for the argument parser. Defaults to "Azure CLI utility".
 
         Returns:
-            argparse.Namespace: A namespace containing the parsed arguments as attributes.
-
-        Raises:
-            Exception: If an error occurs while processing arguments.
-
-        Workflow:
-            1. Loads argument definitions from a JSON file.
-            2. Iterates through the defined sections and adds them to the argparse parser.
-            3. Converts argument types as needed and applies appropriate argument flags.
-            4. Parses command-line arguments and returns them in a structured namespace.
-
-        Notes:
-            - Required arguments are manually enforced in `main()`, rather than in `argparse`.
-            - If `--debug` is provided, the parsed arguments are printed in JSON format.
+            argparse.Namespace: Parsed command-line arguments.
 
 DATA
     Dict = typing.Dict
