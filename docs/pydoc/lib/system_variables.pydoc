@@ -3,7 +3,51 @@
 Help on module lib.system_variables in lib:
 
 NAME
-    lib.system_variables - # File: ./lib/system_variables.py
+    lib.system_variables - File Path: ./lib/system_variables.py
+
+DESCRIPTION
+    Description:
+        The system_variables.py module defines global paths, file names, and system-wide constants
+        for managing configurations, logging, and runtime parameter storage.
+
+    Core Features:
+        - **Project Path Management**: Defines and resolves key project directories.
+        - **Configuration File Paths**: Stores paths to runtime, system, and default configuration files.
+        - **Logging System Variables**: Defines log storage locations and log file retention settings.
+        - **ANSI Color Categories**: Provides categorized ANSI escape codes for structured terminal output.
+        - **Global Constants**: Stores universal defaults such as JSON indentation levels and max log files.
+
+    Usage:
+        Importing System Variables:
+            from lib.system_variables import project_root, project_logs
+            print(f"Project logs are stored in: {project_logs}")
+
+        Using ANSI Log Categories:
+            from lib.system_variables import category
+            print(f"{category.info.color}INFO: This is a test log{category.reset.color}")
+
+    Dependencies:
+        - types.SimpleNamespace - Defines structured namespaces for category-based logging.
+        - pathlib.Path - Ensures safe and platform-independent file path resolution.
+
+    Global Behavior:
+        - Provides a centralized reference for all project-wide variables.
+        - Ensures consistency across modules by defining static paths and configurations.
+        - Enhances logging with structured color-coded categories.
+
+    CLI Integration:
+        This module is designed as a global reference but can be imported for debugging system paths.
+
+    Example Execution:
+        python system_variables.py
+
+    Expected Behavior:
+        - Successfully defines all necessary global paths and system-wide constants.
+        - Provides a structured way to manage logging, configuration, and runtime parameters.
+
+    Exit Codes:
+        - 0: Execution completed successfully.
+        - 1: Error encountered during variable initialization.
 
 DATA
     category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...

@@ -1,5 +1,5 @@
 Name                      Stmts   Miss Branch BrPart  Cover
 -----------------------------------------------------------
-lib/system_variables.py      19     19      0      0     0%
+lib/system_variables.py      22     22      0      0     0%
 -----------------------------------------------------------
-TOTAL                        19     19      0      0     0%
+TOTAL                        22     22      0      0     0%

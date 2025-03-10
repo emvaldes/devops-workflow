@@ -3,15 +3,21 @@
 # File: ./lib/configure_params.py
 __version__ = "0.1.0"  ## Package version
 
+# Standard library imports - Core system modules
 import sys
 import os
 
+# Standard library imports - Utility modules
 import json
 import logging
 
+# Third-party library imports - Environment variable management
 from dotenv import load_dotenv, dotenv_values
-from typing import List, Dict, Tuple, Union
 
+# Standard library imports - Type hinting (kept in a separate group)
+from typing import Dict, List, Tuple, Union
+
+# Standard library imports - File system-related module
 from pathlib import Path
 
 # Ensure the current directory is added to sys.path

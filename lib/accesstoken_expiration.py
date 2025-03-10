@@ -3,15 +3,19 @@
 # File: ./lib/accesstoken_expiration.py
 __version__ = "0.1.0"  ## Package version
 
+# Standard library imports - Core system modules
 import sys
 
-from typing import Optional
+# Standard library imports - Date and file handling modules
 from datetime import datetime
-
 from pathlib import Path
 
-from azure.identity import InteractiveBrowserCredential
+# Standard library imports - Type hinting (kept in a separate group)
+from typing import Optional
+
+# Third-party library imports - Azure SDK modules
 from azure.core.exceptions import AzureError
+from azure.identity import InteractiveBrowserCredential
 
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))

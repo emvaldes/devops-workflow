@@ -3,33 +3,45 @@
 # Python File: ./lib/__init__.py
 __version__ = "0.1.0"  # Documentation version
 
-# Module-level documentation
 MODULE_DOCSTRING = """
-Overview:
-    The __init__.py file is responsible for marking the 'lib' directory as a Python package,
-    allowing its modules to be imported properly within the project.
+File Path: ./lib/__init__.py
 
-    This file serves as the entry point for the 'lib' package and may include shared imports,
-    initialization logic, or package-wide configuration settings.
+Overview:
+    The __init__.py file initializes the 'lib' directory as a Python package,
+    enabling structured imports for internal modules.
+
+Purpose:
+    - Ensures the directory is recognized as a Python package.
+    - Provides a centralized location for shared configurations or imports.
+    - Dynamically loads external documentation to maintain code clarity.
 
 Core Features:
-    - Package Initialization: Ensures 'lib' is recognized as a Python package.
-    - Shared Module Accessibility: Provides a central location for utility imports.
-    - Extensibility: Can be modified to include package-wide configurations if necessary.
+    - **Package Initialization**: Marks 'lib' as an importable package.
+    - **Dynamic Documentation Loading**: Uses 'pydoc_loader' to apply docstrings at runtime.
+    - **Shared Path Handling**: Adds the package directory to `sys.path` for accessibility.
+    - **Minimal Overhead**: Avoids automatic imports of all submodules unless explicitly required.
 
 Expected Behavior & Usage:
     Importing Modules from 'lib':
         from lib import system_variables, file_utils
 
-Example Integration:
-    from lib import log_utils
-        log_utils.log_message("Initialization successful.")
+    Using a Specific Submodule:
+        from lib.log_utils import log_message
+        log_message("Initialization successful.")
+
+    Dynamically Applying Documentation:
+        from lib.pydoc_loader import load_pydocs
+        load_pydocs(__file__, sys.modules[__name__])
 
 Important Notes:
-    - This file does not automatically import all submodules to prevent unnecessary overhead.
+    - This file **does not** automatically import all submodules to prevent unnecessary overhead.
     - Individual submodules must be explicitly imported when required.
+    - The `sys.path.insert()` modification ensures package accessibility but should not be removed unless explicitly handled elsewhere.
+    - Future extensions may include package-wide constants, configurations, or logging initialization.
 """
 
-# Function-level documentation
+# Function-level documentation (None needed for now)
 FUNCTION_DOCSTRINGS = {}
+
+# Variable-level documentation (None needed for now)
 VARIABLE_DOCSTRINGS = {}

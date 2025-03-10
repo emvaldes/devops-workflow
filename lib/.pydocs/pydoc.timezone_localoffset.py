@@ -4,62 +4,116 @@
 __version__ = "0.1.0"  # Documentation version
 
 MODULE_DOCSTRING = """
-Overview:
-    The `timezone_localoffset.py` module is responsible for retrieving and computing
-the local time zone and its offset from UTC. This module ensures accurate timekeeping
-and synchronization within the framework.
+File Path: ./lib/timezone_localoffset.py
+
+Description:
+    The timezone_localoffset.py module retrieves and calculates the local time zone and its offset from UTC.
+    It ensures accurate timekeeping and synchronization within the framework.
 
 Core Features:
-    - Detects the local time zone using `pytz`.
-    - Computes the time difference (offset) between local time and UTC.
-    - Provides CLI debugging capabilities for time zone verification.
+    - **Time Zone Detection**: Determines the local time zone using `pytz`.
+    - **UTC Offset Calculation**: Computes the difference between local time and UTC.
+    - **Command-Line Execution**: Provides CLI debugging for time zone information.
 
-Expected Behavior & Usage:
-    Retrieving and displaying the local time zone and offset:
-        python timezone_localoffset.py --debug
-
-    Programmatically obtaining the local offset:
+Usage:
+    Retrieving Local Time Zone and Offset:
         from lib.timezone_localoffset import get_local_offset
-        offset = get_local_offset()
+        offset = get_local_offset(debug=True)
+
+    Running as a CLI tool:
+        ```bash
+        python timezone_localoffset.py --debug
+        ```
+
+Dependencies:
+    - sys - Handles system error logging.
+    - pytz - Provides accurate time zone calculations.
+    - datetime - Retrieves current timestamps.
+    - argparse - Parses command-line arguments.
+
+Global Behavior:
+    - Fetches local time zone details dynamically.
+    - Computes the UTC offset in hours.
+    - Supports CLI execution with optional debug output.
+
+CLI Integration:
+    This module supports command-line execution to retrieve and display time zone details.
+
+Example Execution:
+    ```bash
+    python timezone_localoffset.py --debug
+    ```
+
+Expected Behavior:
+    - Successfully retrieves and prints the local time zone and offset.
+    - Displays additional debug information when enabled.
+    - Logs errors and exits with status `1` if time zone retrieval fails.
+
+Exit Codes:
+    - 0: Execution completed successfully.
+    - 1: Error encountered during time zone retrieval.
 """
 
 FUNCTION_DOCSTRINGS = {
     "get_local_offset": """
-    Retrieves and calculates the local time zone offset from UTC.
+    Function: get_local_offset(debug: bool = False) -> float
+    Description:
+        Retrieves and calculates the local time zone offset from UTC.
 
     Parameters:
-        debug (bool, optional): Enables additional debugging output. Defaults to False.
+        - debug (bool, optional): Enables additional debugging output. Defaults to False.
 
     Returns:
-        float: The UTC offset of the local time zone in hours.
+        - float: The UTC offset of the local time zone in hours.
 
-    Behavior:
-        - Detects the system's local time zone using `pytz`.
-        - Retrieves the current local time and UTC time.
-        - Computes the time offset in hours.
-        - Prints formatted output for debugging if `debug` is enabled.
+    Workflow:
+        1. Detects the system's local time zone using `pytz`.
+        2. Retrieves the current local time and UTC time.
+        3. Computes the time offset in hours.
+        4. Prints formatted output for debugging if `debug` is enabled.
 
     Notes:
-        - The default time zone is set to "America/Creston" but should be dynamically determined.
-        - If an error occurs, the function prints the error and exits with a failure code.
+        - The default time zone is set to `"America/Creston"`, but it should be dynamically
+          determined for broader applicability.
+        - If an error occurs, it is printed to `stderr`, and the function exits with a failure code.
+
+    Error Handling:
+        - Logs errors if time zone retrieval or UTC offset calculation fails.
     """,
     "main": """
-    Main execution function that processes time zone offset calculations.
+    Function: main(debug: bool = False) -> None
+    Description:
+        Main entry point for processing time zone offset calculations.
 
     Parameters:
-        debug (bool, optional): Enables additional debugging output. Defaults to False.
+        - debug (bool, optional): Enables additional debugging output. Defaults to False.
 
     Returns:
-        None: Handles execution flow without returning a value.
+        - None: This function does not return a value; it handles execution flow.
 
-    Behavior:
-        - Calls `get_local_offset()` to retrieve the local time zone and UTC offset.
-        - Captures and logs any errors that occur during execution.
-        - Exits with a non-zero status code if an error occurs.
-    """
+    Workflow:
+        1. Calls `get_local_offset()` with the `debug` flag.
+        2. Captures and logs any errors.
+        3. Exits with a non-zero status code if an error occurs.
+
+    Notes:
+        - The function can be triggered via the command-line interface (CLI).
+        - Debug mode prints additional details about the local time zone.
+
+    Error Handling:
+        - If an error occurs during time zone retrieval, the script exits with status `1`.
+    """,
 }
 
 VARIABLE_DOCSTRINGS = {
-    "LocalTimeZone": "Stores the detected local time zone as a `pytz.timezone` object.",
-    "LocalOffset": "Stores the computed UTC offset of the local time zone in hours."
+    "LocalTimeZone": """
+    - Description: Stores the detected local time zone.
+    - Type: pytz.timezone
+    - Usage: Assigned dynamically in `get_local_offset()` to store the current system time zone.
+    """,
+    "LocalOffset": """
+    - Description: Stores the UTC offset of the local time zone in hours.
+    - Type: float
+    - Usage: Assigned dynamically in `get_local_offset()` to store the computed UTC offset.
+    """,
 }

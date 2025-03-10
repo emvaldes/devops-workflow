@@ -1,5 +1,5 @@
 Name                     Stmts   Miss Branch BrPart  Cover
 ----------------------------------------------------------
-lib/pydoc_generator.py      86     60     10      3    28%
+lib/pydoc_generator.py      86     45     10      1    46%
 ----------------------------------------------------------
-TOTAL                       86     60     10      3    28%
+TOTAL                       86     45     10      1    46%

@@ -3,50 +3,17 @@
 # File: ./lib/timezone_localoffset.py
 __version__ = "0.1.0"  ## Package version
 
-"""
-File: ./lib/timezone_localoffset.py
-
-Description:
-    Local Time Zone and Offset Manager
-    This module retrieves and calculates the local time zone and its offset from UTC.
-    It ensures accurate timekeeping and synchronization within the framework.
-
-Core Features:
-    - **Time Zone Detection**: Determines the local time zone using `pytz`.
-    - **UTC Offset Calculation**: Computes the difference between local time and UTC.
-    - **Command-Line Execution**: Provides CLI debugging for time zone information.
-
-Usage:
-    To retrieve and display the local time zone and offset:
-    ```bash
-    python timezone_localoffset.py --debug
-    ```
-
-Dependencies:
-    - sys
-    - pytz
-    - datetime
-    - argparse
-
-Global Variables:
-    - `LocalTimeZone` (pytz.timezone): Stores the detected local time zone.
-    - `LocalOffset` (float): Stores the UTC offset of the local time zone in hours.
-
-Exit Codes:
-    - `0`: Successful execution.
-    - `1`: Failure due to time zone retrieval errors.
-
-Example:
-    ```bash
-    python timezone_localoffset.py --debug
-    ```
-"""
-
+# Standard library imports - Core system module
 import sys
-import pytz
 
+# Standard library imports - Date and time handling
 from datetime import datetime
+
+# Standard library imports - File system-related module
 from pathlib import Path
+
+# Third-party library imports - Timezone support
+import pytz
 
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -60,34 +27,6 @@ LocalOffset = None
 def get_local_offset(
     debug: bool = False
 ) -> float:
-    """
-    Retrieves and calculates the local time zone offset from UTC.
-
-    This function:
-    - Determines the local time zone using `pytz`.
-    - Computes the time difference (offset) between local time and UTC.
-    - Prints local and UTC time information in a structured format.
-
-    Args:
-        debug (bool, optional): Enables additional debugging output. Defaults to False.
-
-    Raises:
-        Exception: If there is an error retrieving the time zone or calculating the offset.
-
-    Returns:
-        float: The UTC offset of the local time zone in hours.
-
-    Workflow:
-        1. Detects the system's local time zone using `pytz`.
-        2. Retrieves the current local time and UTC time.
-        3. Computes the time offset in hours.
-        4. Prints formatted output for debugging if `debug` is enabled.
-
-    Notes:
-        - The default time zone is set to `"America/Creston"`, but it should be dynamically
-          determined for broader applicability.
-        - If an error occurs, it is printed to `stderr`, and the function exits with a failure code.
-    """
 
     global LocalTimeZone, LocalOffset
     try:
@@ -118,31 +57,6 @@ def get_local_offset(
 def main(
     debug: bool = False
 ) -> None:
-    """
-    Main entry point for processing time zone offset calculations.
-
-    This function:
-    - Calls `get_local_offset()` to retrieve the local time zone and UTC offset.
-    - Handles exceptions that may arise during execution.
-
-    Args:
-        debug (bool, optional): Enables additional debugging output. Defaults to False.
-
-    Raises:
-        SystemExit: If an error occurs during time zone retrieval, the script exits with status `1`.
-
-    Returns:
-        None: This function does not return a value; it handles execution flow.
-
-    Workflow:
-        1. Calls `get_local_offset()` with the `debug` flag.
-        2. Captures and logs any errors.
-        3. Exits with a non-zero status code if an error occurs.
-
-    Notes:
-        - The function can be triggered via the command-line interface (CLI).
-        - Debug mode prints additional details about the local time zone.
-    """
 
     try:
         get_local_offset( debug )
@@ -151,6 +65,7 @@ def main(
         sys.exit( 1 )
 
 if __name__ == "__main__":
+
     # Command-line argument parsing for debug and verbose
     parser = argparse.ArgumentParser(description="Retrieve and print local time zone and offset.")
     parser.add_argument("-d", "--debug", action="store_true", help="Enable debug mode")

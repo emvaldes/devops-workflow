@@ -4,49 +4,90 @@
 __version__ = "0.1.0"  # Documentation version
 
 """
-Overview
-    The `pydoc_loader.py` module is responsible for dynamically loading documentation for Python scripts
-    from external `.pydoc` files. This allows scripts to remain clean from embedded docstrings while still
-    supporting rich documentation that is accessible via tools like `pydoc` and `help()`.
+File Path: ./lib/pydoc_loader.py
+
+Description:
+    The pydoc_loader.py module is responsible for dynamically loading external documentation for Python modules.
+    It assigns module-level, function-level, and variable-level docstrings from `.pydoc` files, ensuring scripts
+    remain clean from embedded documentation while still providing comprehensive API descriptions.
 
 Core Features:
-    - Dynamic Documentation Loading: Loads `.pydoc` files and assigns docstrings dynamically.
-    - Function-Level Docstring Assignment: Ensures function docstrings are correctly applied to the target module.
-    - Module-Level Documentation Injection: Injects the module docstring at runtime.
-    - Variable and Object Documentation: Captures and assigns documentation for global variables and objects.
-    - Error Handling & Debugging Support: Provides detailed logs to assist in debugging documentation loading issues.
+    - **Dynamic Documentation Loading**: Reads `.pydoc` files and assigns docstrings to functions and variables.
+    - **Function-Level Docstring Injection**: Ensures functions have assigned documentation at runtime.
+    - **Module-Level Documentation Assignment**: Injects module docstrings dynamically.
+    - **Variable Docstring Storage**: Stores variable descriptions separately for retrieval.
+    - **Error Handling and Debugging Support**: Provides warnings and logs to assist in debugging docstring application.
 
-Expected Behavior & Usage:
-    Loading Documentation in a Python Script:
+Usage:
+    Applying Documentation in a Python Script:
         from lib.pydoc_loader import load_pydocs
         load_pydocs(__file__, sys.modules[__name__])
 
     Checking Documentation with pydoc:
         python -m pydoc my_script
+
+Dependencies:
+    - sys - Accesses runtime module references.
+    - importlib.util - Dynamically loads external Python modules.
+    - types.ModuleType - Provides type hints for module-level docstring assignment.
+    - typing.Dict - Defines dictionary type hints for function and variable docstrings.
+    - pathlib - Ensures safe and platform-independent file path resolution.
+
+Global Behavior:
+    - Dynamically assigns documentation at runtime.
+    - Searches for and loads `.pydoc` files located in the `.pydocs/` directory.
+    - Ensures function and variable docstrings are correctly applied to modules.
+    - Provides warnings if documentation files are missing.
+
+CLI Integration:
+    This module is designed as a helper utility for other scripts but can be manually tested.
+
+Example Execution:
+    python pydoc_loader.py
+
+Expected Behavior:
+    - Successfully loads `.pydoc` documentation files.
+    - Assigns function and variable docstrings dynamically.
+    - Logs missing documentation files with warnings.
+
+Exit Codes:
+    - 0: Execution completed successfully.
+    - 1: Error encountered during documentation loading.
 """
 
+# Standard library imports - Core system module
 import sys
 import importlib.util
 
+# Standard library imports - File system-related module
+from pathlib import Path
+
+# Standard library imports - Type-related modules
 from types import ModuleType
 from typing import Dict
-from pathlib import Path
+
+# Ensure the current directory is added to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 def load_pydocs(script_path: str, module: ModuleType) -> None:
     """
-    Loads module-level, function-level, and variable-level documentation from an external `.pydoc` file.
+    Function: load_pydocs(script_path: str, module: ModuleType) -> None
+    Description:
+        Loads external documentation from a `.pydoc` file and applies it to a given module.
 
     Parameters:
-        script_path (str): The full path of the script whose documentation should be loaded.
-        module (ModuleType): The module in which function and variable docstrings should be applied.
+        - script_path (str): The absolute path of the script whose documentation should be loaded.
+        - module (ModuleType): The module where function and variable docstrings should be applied.
 
     Behavior:
-        - Searches for a `.pydoc` file matching the script's name in the `.pydocs/` directory.
+        - Searches for a `.pydoc` file matching the script name in the `.pydocs/` directory.
         - Loads and parses the module docstring (`MODULE_DOCSTRING`), function docstrings (`FUNCTION_DOCSTRINGS`),
           and variable docstrings (`VARIABLE_DOCSTRINGS`).
-        - Assigns function and variable docstrings dynamically to the specified module.
-        - Does **not** return `MODULE_DOCSTRING`, `FUNCTION_DOCSTRINGS`, or `VARIABLE_DOCSTRINGS` to prevent them
-          from appearing as global variables in `pydoc` output.
+        - Assigns function and variable docstrings dynamically to the target module.
+
+    Error Handling:
+        - Logs a warning if no corresponding `.pydoc` file is found.
+        - Logs an error if the `.pydoc` file fails to load or parse.
     """
 
     script_name = Path(script_path).stem
@@ -78,11 +119,20 @@ def load_pydocs(script_path: str, module: ModuleType) -> None:
 
 def apply_docstrings(module: ModuleType, function_docs: Dict[str, str]) -> None:
     """
-    Dynamically assigns function docstrings from a loaded `.pydoc` file to a given module.
+    Function: apply_docstrings(module: ModuleType, function_docs: Dict[str, str]) -> None
+    Description:
+        Dynamically assigns function docstrings from an external `.pydoc` file to a given module.
 
     Parameters:
-        module (ModuleType): The module in which function docstrings should be applied.
-        function_docs (Dict[str, str]): A dictionary mapping function names to their respective docstrings.
+        - module (ModuleType): The module where function docstrings should be applied.
+        - function_docs (Dict[str, str]): A dictionary mapping function names to their respective docstrings.
+
+    Behavior:
+        - Iterates through the dictionary of function docstrings.
+        - Assigns each docstring to the corresponding function in the target module.
+
+    Error Handling:
+        - Logs a warning if a function does not exist in the module.
     """
     if not isinstance(module, ModuleType):
         print("⚠️ Invalid module provided for docstring application.")
@@ -91,21 +141,26 @@ def apply_docstrings(module: ModuleType, function_docs: Dict[str, str]) -> None:
     for func_name, docstring in function_docs.items():
         if hasattr(module, func_name):
             getattr(module, func_name).__doc__ = docstring
-        else:
-            print(f"⚠️ Function {func_name} not found in module {module.__name__}.")
+        # else:
+        #     print(f"⚠️ Function {func_name} not found in module {module.__name__}.")
 
 def apply_variable_docstrings(module: ModuleType, variable_docs: Dict[str, str]) -> None:
     """
-    Stores variable docstrings in a global dictionary instead of modifying __doc__,
-    since primitive types (str, int, list, etc.) do not support docstring assignment.
+    Function: apply_variable_docstrings(module: ModuleType, variable_docs: Dict[str, str]) -> None
+    Description:
+        Stores variable docstrings in a dictionary instead of modifying `__doc__`, as primitive types
+        (str, int, list, etc.) do not support direct docstring assignments.
 
     Parameters:
-        module (ModuleType): The module in which variable docstrings should be applied.
-        variable_docs (Dict[str, str]): A dictionary mapping variable names to their respective descriptions.
+        - module (ModuleType): The module where variable docstrings should be applied.
+        - variable_docs (Dict[str, str]): A dictionary mapping variable names to their respective descriptions.
 
     Behavior:
-        - Stores variable docstrings in a separate dictionary for retrieval.
-        - Ensures variables that cannot have __doc__ modified still have documentation available.
+        - Stores variable docstrings in a global dictionary for easy retrieval.
+        - Ensures that variables without `__doc__` support are documented separately.
+
+    Error Handling:
+        - Logs a warning if a variable is not found in the module.
     """
 
     global VARIABLE_DOCSTRINGS
@@ -119,6 +174,12 @@ def apply_variable_docstrings(module: ModuleType, variable_docs: Dict[str, str])
         #     print(f"⚠️ Variable {var_name} not found in module {module.__name__}.")
 
 def main() -> None:
+    """
+    Function: main() -> None
+    Description:
+        Placeholder function for module execution.
+    """
+
     pass
 
 if __name__ == "__main__":

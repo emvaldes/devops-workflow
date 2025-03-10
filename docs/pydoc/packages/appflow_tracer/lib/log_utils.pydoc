@@ -3,7 +3,59 @@
 Help on module packages.appflow_tracer.lib.log_utils in packages.appflow_tracer.lib:
 
 NAME
-    packages.appflow_tracer.lib.log_utils - # File: ./packages/appflow_tracer/lib/log_utils.py
+    packages.appflow_tracer.lib.log_utils - File Path: ./packages/appflow_tracer/lib/log_utils.py
+
+DESCRIPTION
+    Description:
+        The log_utils.py module provides structured logging utilities for handling
+        console and file-based logging. It ensures formatted, categorized logs with
+        support for custom levels, structured data, and ANSI-colored output.
+
+    Core Features:
+        - **Structured Log Messages**: Formats logs in a consistent manner.
+        - **Console and File Logging**: Sends logs to both the console and log files.
+        - **Custom Log Levels**: Supports INFO, WARNING, ERROR, DEBUG, etc.
+        - **ANSI Color Support**: Enables colored output for terminal logs.
+        - **JSON Data Logging**: Logs structured JSON data when required.
+
+    Usage:
+        To log a structured message:
+            from log_utils import log_message
+            log_message("System initialized", category.info.id, json_data={"status": "ready"})
+
+        To log a warning message:
+            log_message("Configuration file missing", category.warning.id)
+
+    Dependencies:
+        - sys - Handles system interactions.
+        - json - Enables structured JSON-based logging.
+        - logging - Provides core logging functionalities.
+        - datetime - Manages log timestamps.
+        - lib.system_variables - Loads global configuration settings.
+
+    Global Behavior:
+        - Logs messages to both console and files based on configuration settings.
+        - Maps log categories to appropriate logging levels (INFO, DEBUG, ERROR, etc.).
+        - Ensures JSON data is formatted properly if included in log messages.
+        - Supports disabling console logs while retaining file-based logs.
+
+    CLI Integration:
+        This module primarily serves as an internal utility but can be extended.
+
+    Example Execution:
+        ```python
+        from log_utils import log_message
+        log_message("Initialization complete", category.info.id)
+        ```
+
+    Expected Behavior:
+        - Ensures that logging configurations determine output destinations.
+        - Formats log messages consistently with timestamps and levels.
+        - Applies ANSI color formatting to enhance log visibility in terminals.
+
+    Exit Codes:
+        - 0: Execution completed successfully.
+        - 1: Failure due to logging configuration issues.
 
 FUNCTIONS
     log_message(
@@ -14,28 +66,31 @@ FUNCTIONS
         configs: dict = None,
         handler: logging.Logger = None
     ) -> None
-        Log a structured message with optional JSON data to both console and log files.
+        Function: log_message(
+            message: str,
+            log_category: str = "INFO",
+            json_data: dict = None,
+            serialize_json: bool = False,
+            configs: dict = None,
+            handler: logging.Logger = None
+        ) -> None
+        Description:
+            Logs a structured message with optional JSON data to both console and log files.
 
-        This function supports multiple log levels, formats messages in a structured manner,
-        and appends additional structured JSON data if provided. The behavior is influenced
-        by global configurations, such as whether logs should be written to a file or displayed
-        on the console.
-
-        Args:
-            message (str): The main log message.
-            log_category (str, optional): The log level/log_category. e.g.:
-                category.info.id, category.warning.id, category.error.id but defaults to category.info.id.
-            json_data (dict, optional): Additional structured JSON data to log.
-            serialize_json (bool, optional): If True, the `json_data` is serialized into a JSON string.
-            configs (dict, optional): Configuration dictionary. Defaults to global `CONFIGS` if not provided.
-            handler (logging.Logger, optional): The specific logger instance to use. Defaults to the global logger.
+        Parameters:
+            - message (str): The main log message.
+            - log_category (str, optional): The log level/category (e.g., category.info.id, category.warning.id).
+            - json_data (dict, optional): Additional structured JSON data to log.
+            - serialize_json (bool, optional): If True, serializes `json_data` into a JSON string.
+            - configs (dict, optional): Configuration dictionary. Defaults to global `CONFIGS` if not provided.
+            - handler (logging.Logger, optional): The specific logger instance to use.
 
         Raises:
-            KeyError: If the log category provided is invalid.
-            TypeError: If `json_data` is not a dictionary when `serialize_json` is True.
+            - KeyError: If the provided log category is invalid.
+            - TypeError: If `json_data` is not a dictionary when `serialize_json` is True.
 
         Returns:
-            None
+            - None
 
         Workflow:
             1. Determines the correct log level based on `log_category`.
@@ -44,9 +99,11 @@ FUNCTIONS
             4. Displays the message in the console if tracing is enabled.
 
         Example:
-            >>> log_message("This is an info message")
-            >>> log_message("This is a warning", category.warning.id)
-            >>> log_message("Structured log", json_data={"key": "value"})
+            >>> log_message("System initialized", category.info.id)
+            >>> log_message("Missing config", category.warning.id)
+            >>> log_message("Debug details", json_data={"module": "log_utils"})
+
+    main() -> None
 
     output_console(
         message: str,
@@ -54,25 +111,27 @@ FUNCTIONS
         json_data: dict = None,
         configs: dict = None
     ) -> None
-        Display a structured log message in the console with optional ANSI color formatting.
+        Function: output_console(
+            message: str,
+            log_category: str,
+            json_data: dict = None,
+            configs: dict = None
+        ) -> None
+        Description:
+            Displays a structured log message in the console with optional ANSI color formatting.
 
-        This function formats the given message according to the specified logging log-category
-        and appends structured JSON data if provided. ANSI color codes are applied based on
-        the logging configuration.
-
-        Args:
-            message (str): The main message to display.
-            log_category (str): The logging log_category. e.g.:
-                category.info.id, category.warning.id, category.error.id
-            json_data (dict, optional): Additional structured JSON data for output.
-            configs (dict, optional): Configuration dictionary for colors and formatting.
+        Parameters:
+            - message (str): The main message to display.
+            - log_category (str): The logging category (e.g., category.info.id, category.error.id).
+            - json_data (dict, optional): Additional structured JSON data for output.
+            - configs (dict, optional): Configuration dictionary for colors and formatting.
 
         Raises:
-            KeyError: If an invalid log category is provided.
-            TypeError: If `json_data` is not a dictionary.
+            - KeyError: If an invalid log category is provided.
+            - TypeError: If `json_data` is not a dictionary.
 
         Returns:
-            None
+            - None
 
         Workflow:
             1. Determines the ANSI color for the log category.
@@ -81,8 +140,8 @@ FUNCTIONS
             4. Displays structured JSON data if provided.
 
         Example:
-            >>> output_console("This is an info message", category.info.id)
-            >>> output_console("This is a warning", category.warning.id, {"details": "some data"})
+            >>> output_console("Service started", category.info.id)
+            >>> output_console("Config warning", category.warning.id, {"path": "/etc/config"})
 
     output_logfile(
         logger: logging.Logger,
@@ -90,23 +149,26 @@ FUNCTIONS
         log_category: str = 'INFO',
         json_data: dict = None
     ) -> None
-        Write a structured log message to a log file.
+        Function: output_logfile(
+            logger: logging.Logger,
+            message: str,
+            log_category: str = "INFO",
+            json_data: dict = None
+        ) -> None
+        Description:
+            Writes a structured log message to a designated log file.
 
-        This function appends the formatted log message to a log file associated with the
-        given logger. If structured data (`json_data`) is provided, it is included in the
-        log entry.
-
-        Args:
-            logger (logging.Logger): The logger instance used for writing logs.
-            message (str): The log message text.
-            log_category (str, optional): The log level/log_category. Defaults to "INFO".
-            json_data (dict, optional): Additional structured JSON data for the log entry.
+        Parameters:
+            - logger (logging.Logger): The logger instance used for writing logs.
+            - message (str): The log message text.
+            - log_category (str, optional): The log level/category (defaults to "INFO").
+            - json_data (dict, optional): Additional structured JSON data for the log entry.
 
         Raises:
-            OSError: If the log file cannot be accessed or written to.
+            - OSError: If the log file cannot be accessed or written to.
 
         Returns:
-            None
+            - None
 
         Workflow:
             1. Formats the log message with category and timestamp.
@@ -114,8 +176,8 @@ FUNCTIONS
             3. Writes the log entry to the designated log file.
 
         Example:
-            >>> logger = logging.getLogger("example_logger")
-            >>> output_logfile(logger, "This is a log message", {"extra_key": "value"})
+            >>> logger = logging.getLogger("app_logger")
+            >>> output_logfile(logger, "This is a log message", category.debug.id)
 
 DATA
     category = namespace(calls=namespace(id='CALL', color='\x1b...'), rese...

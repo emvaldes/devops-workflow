@@ -3,7 +3,55 @@
 Help on module packages.appflow_tracer.lib.trace_utils in packages.appflow_tracer.lib:
 
 NAME
-    packages.appflow_tracer.lib.trace_utils - # File: ./packages/appflow_tracer/lib/trace_utils.py
+    packages.appflow_tracer.lib.trace_utils - File Path: ./packages/appflow_tracer/lib/trace_utils.py
+
+DESCRIPTION
+    Description:
+        Function Call and Execution Flow Tracing Utilities
+        This module provides **real-time function execution tracing** within the framework.
+        It captures **function calls and return values**, logs structured execution flow,
+        and ensures debugging visibility with minimal performance overhead.
+
+    Core Features:
+        - **Function Call Tracing**: Logs function calls, arguments, and execution order.
+        - **Execution Flow Logging**: Captures return values and structured execution flow.
+        - **Project Scope Enforcement**: Excludes system functions and external dependencies.
+        - **Selective Filtering**: Ignores known logging utilities and non-essential functions.
+        - **Configurable Logging**: Enables logging dynamically based on configuration settings.
+
+    Usage:
+        To enable tracing and track function calls:
+            import trace_utils
+            trace_utils.start_tracing()
+
+    Dependencies:
+        - sys - Provides system-level tracing hooks.
+        - json - Enables structured JSON serialization for tracing.
+        - inspect - Extracts function metadata dynamically.
+        - logging - Supports structured execution logging.
+        - lib.system_variables - Provides logging categories.
+        - lib.log_utils - Manages structured logging output.
+        - lib.file_utils - Validates project file paths.
+        - lib.serialize_utils - Handles safe data serialization.
+
+    Global Behavior:
+        - Tracing activates only when **enabled in the configuration**.
+        - Calls, returns, and execution paths are **logged dynamically**.
+        - Non-project files and system-level operations are **excluded from tracing**.
+        - Return values are **serialized safely** for structured logging.
+
+    Expected Behavior:
+        - Tracing logs execution flow without excessive system-level noise.
+        - Only functions within the **project scope** are traced.
+        - Function return values are safely **serialized for debugging**.
+
+    Exit Codes:
+        - 0: Execution completed successfully.
+        - 1: Failure due to configuration issues or execution tracing errors.
+
+    Example:
+        from trace_utils import start_tracing
+        start_tracing()
 
 FUNCTIONS
     call_events(
@@ -13,22 +61,35 @@ FUNCTIONS
         arg: object,
         configs: dict
     ) -> None
-        Handles logging of function call events.
+        Function: call_events(
+            logger: logging.Logger,
+            frame: FrameType,
+            filename: str,
+            arg: object,
+            configs: dict
+        ) -> None
+        Description:
+            Handles logging of function call events.
 
-        This function:
-        - **Extracts caller details** including filename and function name.
-        - **Logs function invocation metadata** such as arguments and execution flow.
-        - **Filters out system and non-project calls** to keep logs relevant.
-
-        Args:
-            logger (logging.Logger): Logger instance for logging structured execution.
-            frame (FrameType): The execution frame where the function call occurred.
-            filename (str): The source file where the function call was invoked.
-            arg (object): The arguments passed to the function.
-            configs (dict): The configuration dictionary.
+        Parameters:
+            - logger (logging.Logger): Logger for structured execution.
+            - frame (FrameType): Execution frame at the function call site.
+            - filename (str): The file where the function call originated.
+            - arg (object): Arguments passed to the function.
+            - configs (dict): Configuration settings.
 
         Returns:
-            None
+            - None
+
+        Workflow:
+            1. Extracts caller function details.
+            2. Logs function execution metadata, including arguments.
+            3. Filters out system and external function calls.
+
+        Example:
+            >>> call_events(logger, frame, "file.py", args, configs)
+
+    main() -> None
 
     return_events(
         logger: logging.Logger,
@@ -37,66 +98,87 @@ FUNCTIONS
         arg: object,
         configs: dict
     ) -> None
-        Handles logging of function return events.
+        Function: return_events(
+            logger: logging.Logger,
+            frame: FrameType,
+            filename: str,
+            arg: object,
+            configs: dict
+        ) -> None
+        Description:
+            Handles logging of function return events.
 
-        This function:
-        - **Captures return values** including their data type.
-        - **Serializes complex return values** for structured logging.
-        - **Logs execution flow and prevents excessive logging** for system functions.
-
-        Args:
-            logger (logging.Logger): Logger instance for logging structured execution.
-            frame (FrameType): The execution frame where the function return occurred.
-            filename (str): The source file where the return event occurred.
-            arg (object): The function's return value.
-            configs (dict): The configuration dictionary.
+        Parameters:
+            - logger (logging.Logger): Logger for structured execution.
+            - frame (FrameType): Execution frame at the function return site.
+            - filename (str): The file where the return event occurred.
+            - arg (object): The function's return value.
+            - configs (dict): Configuration settings.
 
         Returns:
-            None
+            - None
+
+        Workflow:
+            1. Captures return values and execution flow.
+            2. Serializes return data for structured debugging.
+            3. Filters out system-level returns to avoid excessive logs.
+
+        Example:
+            >>> return_events(logger, frame, "file.py", return_value, configs)
 
     start_tracing(logger: logging.Logger = None, configs: dict = None) -> None
-        Initialize and activate function call tracing.
+        Function: start_tracing(
+            logger: logging.Logger = None,
+            configs: dict = None
+        ) -> None
+        Description:
+            Initializes function execution tracing.
 
-        This function sets up **function execution tracing**, ensuring:
-        - **Function call and return events** are logged in a structured manner.
-        - **Only project-specific files** are traced, excluding system libraries.
-        - **Logging is enabled dynamically** based on the provided configuration.
-
-        Args:
-            logger (logging.Logger, optional): Logger instance for structured logging. If None, a default logger is used.
-            configs (dict, optional): A dictionary containing tracing configurations. If None, the global CONFIGS will be used.
+        Parameters:
+            - logger (logging.Logger, optional): Logger instance for structured logging. Defaults to None.
+            - configs (dict, optional): Configuration dictionary controlling tracing behavior.
 
         Raises:
-            RuntimeError: If tracing fails due to invalid configurations.
+            - RuntimeError: If tracing fails due to invalid configurations.
 
         Returns:
-            None
+            - None
+
+        Workflow:
+            1. Sets up function tracing based on configuration.
+            2. Ensures logging is enabled before activating tracing.
+            3. Calls `trace_all()` to generate a trace handler.
 
         Example:
             >>> start_tracing()
-            # Tracing begins using the global configuration.
+            # Tracing starts using the global configuration.
 
     trace_all(logger: logging.Logger, configs: dict) -> Callable
-        Generate a function that traces execution flow within project-specific files.
+        Function: trace_all(
+            logger: logging.Logger,
+            configs: dict
+        ) -> Callable
+        Description:
+            Generates a function that traces execution flow within project-specific files.
 
-        This function returns a **callable trace handler** that:
-        - **Logs function calls and returns**, including caller context.
-        - **Ensures logging is project-restricted**, excluding non-project dependencies.
-        - **Filters system function calls and internal logging utilities.**
-
-        Args:
-            logger (logging.Logger): Logger instance for structured logging.
-            configs (dict): The configuration dictionary that controls tracing behavior.
+        Parameters:
+            - logger (logging.Logger): Logger instance for structured logging.
+            - configs (dict): Configuration dictionary controlling tracing behavior.
 
         Raises:
-            ValueError: If tracing configurations are missing or invalid.
+            - ValueError: If tracing configurations are missing or invalid.
 
         Returns:
-            Callable: A trace function that can be passed to `sys.settrace()`.
+            - Callable: A trace function that can be passed to `sys.settrace()`.
+
+        Workflow:
+            1. Ensures tracing configurations are valid.
+            2. Defines `trace_events()` to handle function call and return tracing.
+            3. Returns the trace handler function.
 
         Example:
             >>> sys.settrace(trace_all(logger, configs))
-            # Tracing starts using the provided configuration.
+            # Function tracing begins dynamically.
 
 DATA
     Callable = typing.Callable

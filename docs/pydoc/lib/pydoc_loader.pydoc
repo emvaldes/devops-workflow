@@ -7,40 +7,61 @@ NAME
 
 FUNCTIONS
     apply_docstrings(module: module, function_docs: Dict[str, str]) -> None
-        Dynamically assigns function docstrings from a loaded `.pydoc` file to a given module.
+        Function: apply_docstrings(module: ModuleType, function_docs: Dict[str, str]) -> None
+        Description:
+            Dynamically assigns function docstrings from an external `.pydoc` file to a given module.
 
         Parameters:
-            module (ModuleType): The module in which function docstrings should be applied.
-            function_docs (Dict[str, str]): A dictionary mapping function names to their respective docstrings.
+            - module (ModuleType): The module where function docstrings should be applied.
+            - function_docs (Dict[str, str]): A dictionary mapping function names to their respective docstrings.
+
+        Behavior:
+            - Iterates through the dictionary of function docstrings.
+            - Assigns each docstring to the corresponding function in the target module.
+
+        Error Handling:
+            - Logs a warning if a function does not exist in the module.
 
     apply_variable_docstrings(module: module, variable_docs: Dict[str, str]) -> None
-        Stores variable docstrings in a global dictionary instead of modifying __doc__,
-        since primitive types (str, int, list, etc.) do not support docstring assignment.
+        Function: apply_variable_docstrings(module: ModuleType, variable_docs: Dict[str, str]) -> None
+        Description:
+            Stores variable docstrings in a dictionary instead of modifying `__doc__`, as primitive types
+            (str, int, list, etc.) do not support direct docstring assignments.
 
         Parameters:
-            module (ModuleType): The module in which variable docstrings should be applied.
-            variable_docs (Dict[str, str]): A dictionary mapping variable names to their respective descriptions.
+            - module (ModuleType): The module where variable docstrings should be applied.
+            - variable_docs (Dict[str, str]): A dictionary mapping variable names to their respective descriptions.
 
         Behavior:
-            - Stores variable docstrings in a separate dictionary for retrieval.
-            - Ensures variables that cannot have __doc__ modified still have documentation available.
+            - Stores variable docstrings in a global dictionary for easy retrieval.
+            - Ensures that variables without `__doc__` support are documented separately.
+
+        Error Handling:
+            - Logs a warning if a variable is not found in the module.
 
     load_pydocs(script_path: str, module: module) -> None
-        Loads module-level, function-level, and variable-level documentation from an external `.pydoc` file.
+        Function: load_pydocs(script_path: str, module: ModuleType) -> None
+        Description:
+            Loads external documentation from a `.pydoc` file and applies it to a given module.
 
         Parameters:
-            script_path (str): The full path of the script whose documentation should be loaded.
-            module (ModuleType): The module in which function and variable docstrings should be applied.
+            - script_path (str): The absolute path of the script whose documentation should be loaded.
+            - module (ModuleType): The module where function and variable docstrings should be applied.
 
         Behavior:
-            - Searches for a `.pydoc` file matching the script's name in the `.pydocs/` directory.
+            - Searches for a `.pydoc` file matching the script name in the `.pydocs/` directory.
             - Loads and parses the module docstring (`MODULE_DOCSTRING`), function docstrings (`FUNCTION_DOCSTRINGS`),
               and variable docstrings (`VARIABLE_DOCSTRINGS`).
-            - Assigns function and variable docstrings dynamically to the specified module.
-            - Does **not** return `MODULE_DOCSTRING`, `FUNCTION_DOCSTRINGS`, or `VARIABLE_DOCSTRINGS` to prevent them
-              from appearing as global variables in `pydoc` output.
+            - Assigns function and variable docstrings dynamically to the target module.
+
+        Error Handling:
+            - Logs a warning if no corresponding `.pydoc` file is found.
+            - Logs an error if the `.pydoc` file fails to load or parse.
 
     main() -> None
+        Function: main() -> None
+        Description:
+            Placeholder function for module execution.
 
 DATA
     Dict = typing.Dict
