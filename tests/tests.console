@@ -1,11 +1,13 @@
-$ pytest -xsv tests/ ;
+$ rm .coverage.*; rm -rf ./logs/*; pytest -xsv tests/ ;
 
-=== test session starts ===
+rm: .coverage.*: No such file or directory
+=================================================================================================================== test session starts ====================================================================================================================
 platform darwin -- Python 3.13.2, pytest-8.3.5, pluggy-1.5.0 -- /usr/local/opt/python@3.13/bin/python3.13
 cachedir: .pytest_cache
 rootdir: /Users/emvaldes/.repos/devops/workflows
 plugins: cov-6.0.0, anyio-4.8.0
-collected 61 items
+collected 72 items
+
 tests/appflow_tracer/tracing/file_utils/test_file_utils.py::test_is_project_file PASSED
 tests/appflow_tracer/tracing/file_utils/test_file_utils.py::test_manage_logfiles PASSED
 tests/appflow_tracer/tracing/file_utils/test_file_utils.py::test_relative_path PASSED
@@ -46,11 +48,13 @@ tests/requirements/dependencies/package_utils/test_package_utils.py::test_instal
 tests/requirements/dependencies/package_utils/test_package_utils.py::test_install_requirements_adhoc PASSED
 tests/requirements/dependencies/package_utils/test_package_utils.py::test_restore_packages PASSED
 tests/requirements/dependencies/package_utils/test_package_utils.py::test_review_packages PASSED
+tests/requirements/dependencies/package_utils/test_package_utils.py::test_installed_configfile PASSED
 tests/requirements/dependencies/policy_utils/test_policy_utils.py::test_policy_management PASSED
 tests/requirements/dependencies/policy_utils/test_policy_utils.py::test_installed_configfile PASSED
 tests/requirements/dependencies/test_dependencies.py::test_parse_arguments[args0-./packages/requirements/requirements.json] PASSED
 tests/requirements/dependencies/test_dependencies.py::test_parse_arguments[args1-custom_requirements.json] PASSED
-tests/requirements/dependencies/test_dependencies.py::test_main CONFIGS: {
+tests/requirements/dependencies/test_dependencies.py::test_main CONFIGS:
+ {
     "colors": {
         "CALL": "\u001b[92m",
         "CRITICAL": "\u001b[41m",
@@ -68,7 +72,7 @@ tests/requirements/dependencies/test_dependencies.py::test_main CONFIGS: {
         "package_name": "requirements",
         "module_name": "dependencies",
         "logs_dirname": "logs/requirements",
-        "log_filename": "logs/requirements/dependencies_20250307224150.log"
+        "log_filename": "logs/requirements/dependencies_20250310221833.log"
     },
     "tracing": {
         "enable": true,
@@ -88,7 +92,7 @@ tests/requirements/dependencies/test_dependencies.py::test_main CONFIGS: {
     },
     "stats": {
         "created": "2025-03-03T18:12:57.579484+00:00",
-        "updated": "2025-03-08T05:42:17.040734+00:00"
+        "updated": "2025-03-11T05:19:13.812068+00:00"
     },
     "requirements": [
         {
@@ -116,7 +120,8 @@ tests/requirements/dependencies/test_dependencies.py::test_main CONFIGS: {
 }
 PASSED
 tests/requirements/dependencies/test_dependencies.py::test_main_restore PASSED
-tests/requirements/dependencies/test_dependencies.py::test_main_migration CONFIGS: {
+tests/requirements/dependencies/test_dependencies.py::test_main_migration CONFIGS:
+ {
     "colors": {
         "CALL": "\u001b[92m",
         "CRITICAL": "\u001b[41m",
@@ -134,7 +139,7 @@ tests/requirements/dependencies/test_dependencies.py::test_main_migration CONFIG
         "package_name": "requirements",
         "module_name": "dependencies",
         "logs_dirname": "logs/requirements",
-        "log_filename": "logs/requirements/dependencies_20250307224150.log"
+        "log_filename": "logs/requirements/dependencies_20250310221833.log"
     },
     "tracing": {
         "enable": true,
@@ -154,7 +159,7 @@ tests/requirements/dependencies/test_dependencies.py::test_main_migration CONFIG
     },
     "stats": {
         "created": "2025-03-03T18:12:57.579484+00:00",
-        "updated": "2025-03-08T05:42:29.201466+00:00"
+        "updated": "2025-03-11T05:19:27.000131+00:00"
     },
     "requirements": [
         {
@@ -281,104 +286,23 @@ tests/requirements/dependencies/version_utils/test_version_utils.py::test_window
 tests/requirements/dependencies/version_utils/test_version_utils.py::test_windows_version[NonExistentPackage-None] PASSED
 tests/requirements/dependencies/version_utils/test_version_utils.py::test_pip_latest_version[requests-2.28.0] PASSED
 tests/requirements/dependencies/version_utils/test_version_utils.py::test_pip_latest_version[numpy-None] PASSED
-tests/test_run.py::test_collect_files
-Mock Directory Structure:
-/Users/emvaldes/.repos/devops/workflows/tests/mock_project/mock_file.py
-
-Collected Files by collect_files():
-/Users/emvaldes/.repos/devops/workflows/tests/mock_project/mock_file.py
-PASSED
-tests/test_run.py::test_parse_arguments usage: run.py [-h] [-d] [-c] [-t TARGET]
-
-Verify installed dependencies for compliance. Use -d/--pydoc to generate documentation.Use -c/--coverage to enable test coverage tracking.Use -t/--target to execute a module.
-
-options:
-  -h, --help           show this help message and exit
-  -d, --pydoc          Generate documentation for Python files.
-  -c, --coverage       Enable test coverage tracking.
-  -t, --target TARGET  Execute target Package/Module or Script
-PASSED
-tests/test_run.py::test_main_coverage
-[ACTION] Coverage tracking enabled.
-
+tests/requirements/dependencies/version_utils/test_version_utils.py::test_brew_latest_version[wget-1.21.3] PASSED
+tests/requirements/dependencies/version_utils/test_version_utils.py::test_brew_latest_version[openssl-3.0.8] PASSED
+tests/test_conftest.py::test_get_base_config PASSED
+tests/test_conftest.py::test_requirements_config PASSED
+tests/test_conftest.py::test_installed_config PASSED
+tests/test_conftest.py::test_requirements_config_path_type PASSED
+tests/test_conftest.py::test_installed_config_path_type PASSED
+tests/test_run.py::test_parse_arguments[args0-pydoc-False] PASSED
+tests/test_run.py::test_parse_arguments[args1-pydoc-True] PASSED
+tests/test_run.py::test_parse_arguments[args2-coverage-True] PASSED
+tests/test_run.py::test_parse_arguments[args3-target-tests/example.py] PASSED
+tests/test_run.py::test_collect_files PASSED
+tests/test_run.py::test_main_pydoc
 [INFO] Project documentation: /Users/emvaldes/.repos/devops/workflows
-[INFO] Processing Python files:
-  - tests/test_run.py
-
-[REVIEW] Generating documentation: tests/test_run.py ...
-[ACTION] PyDoc Command: python -m pydoc tests.test_run
-[COVERAGE] Coverage saved to: docs/coverage/tests/test_run.coverage
-[PYDOC] Documentation saved to: docs/pydoc/tests/test_run.pydoc
-[COMPLETE] Finished processing: tests/test_run.py
 
 [INFO] Documentation completed successfully.
-[INFO] Found coverage files:
-  - tests/test_run.coverage
-  - packages/__init__.coverage
-  - lib/pkgconfig_loader.coverage
-  - lib/system_variables.coverage
-  - lib/system_params.coverage
-  - lib/timezone_localoffset.coverage
-  - lib/pydoc_generator.coverage
-  - lib/__init__.coverage
-  - lib/argument_parser.coverage
-  - lib/parsing_userinput.coverage
-  - lib/manage_accesstoken.coverage
-  - lib/configure_params.coverage
-  - lib/accesstoken_expiration.coverage
-  - packages/appflow_tracer/__main__.coverage
-  - packages/appflow_tracer/__init__.coverage
-  - packages/appflow_tracer/tracing.coverage
-  - packages/requirements/__main__.coverage
-  - packages/requirements/__init__.coverage
-  - packages/requirements/dependencies.coverage
-  - packages/requirements/lib/brew_utils.coverage
-  - packages/requirements/lib/version_utils.coverage
-  - packages/requirements/lib/__init__.coverage
-  - packages/requirements/lib/policy_utils.coverage
-  - packages/requirements/lib/package_utils.coverage
-  - packages/appflow_tracer/lib/__init__.coverage
-  - packages/appflow_tracer/lib/trace_utils.coverage
-  - packages/appflow_tracer/lib/serialize_utils.coverage
-  - packages/appflow_tracer/lib/log_utils.coverage
-  - packages/appflow_tracer/lib/file_utils.coverage
-
-Generating Coverage Report ...
-Coverage summary saved: docs/coverage/coverage.report
-
-Coverage Report:
-Name                                             Stmts   Miss Branch BrPart  Cover
-----------------------------------------------------------------------------------
-lib/__init__.py                                      2      2      0      0     0%
-lib/accesstoken_expiration.py                       65     65     12      0     0%
-lib/argument_parser.py                              84     84     34      0     0%
-lib/configure_params.py                            140    140     38      0     0%
-lib/manage_accesstoken.py                           22     22      2      0     0%
-lib/parsing_userinput.py                            57     57     20      0     0%
-lib/pkgconfig_loader.py                             95     95     36      0     0%
-lib/pydoc_generator.py                              81     40      8      1    49%
-lib/system_params.py                                71     71     14      0     0%
-lib/system_variables.py                             32     32      0      0     0%
-lib/timezone_localoffset.py                         43     43      4      0     0%
-packages/__init__.py                                 2      2      0      0     0%
-packages/appflow_tracer/__init__.py                  5      5      0      0     0%
-packages/appflow_tracer/__main__.py                  5      5      2      0     0%
-packages/appflow_tracer/lib/__init__.py              4      4      0      0     0%
-packages/appflow_tracer/lib/file_utils.py           42     42     12      0     0%
-packages/appflow_tracer/lib/log_utils.py            39     27     24      6    29%
-packages/appflow_tracer/lib/serialize_utils.py      41     41     12      0     0%
-packages/appflow_tracer/lib/trace_utils.py         116    116     44      0     0%
-packages/appflow_tracer/tracing.py                  86     80     28      1     6%
-packages/requirements/__init__.py                    4      4      0      0     0%
-packages/requirements/__main__.py                    5      5      2      0     0%
-packages/requirements/dependencies.py               69     69     18      0     0%
-packages/requirements/lib/__init__.py                3      3      0      0     0%
-packages/requirements/lib/brew_utils.py             79     79     26      0     0%
-packages/requirements/lib/package_utils.py         176    176     54      0     0%
-packages/requirements/lib/policy_utils.py           65     65     18      0     0%
-packages/requirements/lib/version_utils.py         118    118     32      0     0%
-----------------------------------------------------------------------------------
-TOTAL                                             1551   1492    440      8     3%
-
 PASSED
-tests/test_run.py::test_main_pydoc PASSED
+tests/test_run.py::test_main_coverage PASSED
+
+============================================================================================================== 72 passed in 70.92s (0:01:10) ===============================================================================================================

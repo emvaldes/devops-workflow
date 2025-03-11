@@ -1,64 +1,17 @@
-$ rm -rf ./docs; python run.py --pydoc --coverage ; ctree ./docs ;
+$ rm -rf ./docs; python run.py --pydoc --coverage ;
 
 [CALL] packages/appflow_tracer/tracing ( file_utils.manage_logfiles(CONFIGS) )
-[CALL] packages/appflow_tracer/tracing (setup_logging)[254] -> packages/appflow_tracer/lib/file_utils (manage_logfiles)[111]
-{"configs":{"colors":{"CALL":"\u001b[92m","CRITICAL":"\u001b[41m","DEBUG":"\u001b[96m","ERROR":"\u001b[31m","IMPORT":"\u001b[94m","INFO":"\u001b[97m","RETURN":"\u001b[93m","WARNING":"\u001b[91m","RESET":"\u001b[0m"},"logging":{"enable":true,"max_logfiles":5,"package_name":".","module_name":"run","logs_dirname":"logs","log_filename":"logs/run_20250305111551.log"},"tracing":{"enable":true,"json":{"compressed":true}},"events":{"call":true,"critical":false,"debug":true,"error":true,"import":false,"info":false,"return":true,"warning":false},"stats":{"created":"2025-03-03T18:10:45.863523+00:00","updated":"2025-03-05T18:15:51.496495+00:00"}}}
+[CALL] packages/appflow_tracer/tracing (setup_logging)[161] -> packages/appflow_tracer/lib/file_utils (manage_logfiles)[45]
+{"configs":{"colors":{"CALL":"\u001b[92m","CRITICAL":"\u001b[41m","DEBUG":"\u001b[96m","ERROR":"\u001b[31m","IMPORT":"\u001b[94m","INFO":"\u001b[97m","RETURN":"\u001b[93m","WARNING":"\u001b[91m","RESET":"\u001b[0m"},"logging":{"enable":true,"max_logfiles":5,"package_name":".","module_name":"run","logs_dirname":"logs","log_filename":"logs/run_20250310221845.log"},"tracing":{"enable":true,"json":{"compressed":true}},"events":{"call":true,"critical":false,"debug":false,"error":false,"import":false,"info":false,"return":true,"warning":false},"stats":{"created":"2025-03-03T18:10:45.863523+00:00","updated":"2025-03-11T05:18:45.769414+00:00"}}}
 [CALL] packages/appflow_tracer/lib/file_utils ( log_files = sorted( )
-[CALL] packages/appflow_tracer/lib/file_utils (manage_logfiles)[147] -> packages/appflow_tracer/lib/file_utils (<lambda>)[149]
-{"f":"logs/run_20250305111551.log"}
-[RETURN] packages/appflow_tracer/lib/file_utils[149] ( key=lambda f:f.stat().st_mtime ) -> float:
-1741198551.5242941
-[CALL] packages/appflow_tracer/lib/file_utils ( log_files = sorted( )
-[CALL] packages/appflow_tracer/lib/file_utils (manage_logfiles)[147] -> packages/appflow_tracer/lib/file_utils (<lambda>)[149]
-{"f":"logs/run_20250305111422.log"}
-[RETURN] packages/appflow_tracer/lib/file_utils[149] ( key=lambda f:f.stat().st_mtime ) -> float:
-1741198488.0129578
-[CALL] packages/appflow_tracer/lib/file_utils ( log_files = sorted( )
-[CALL] packages/appflow_tracer/lib/file_utils (manage_logfiles)[147] -> packages/appflow_tracer/lib/file_utils (<lambda>)[149]
-{"f":"logs/run_20250305104749.log"}
-[RETURN] packages/appflow_tracer/lib/file_utils[149] ( key=lambda f:f.stat().st_mtime ) -> float:
-1741196882.283738
-[CALL] packages/appflow_tracer/lib/file_utils ( log_files = sorted( )
-[CALL] packages/appflow_tracer/lib/file_utils (manage_logfiles)[147] -> packages/appflow_tracer/lib/file_utils (<lambda>)[149]
-{"f":"logs/run_20250305110412.log"}
-[RETURN] packages/appflow_tracer/lib/file_utils[149] ( key=lambda f:f.stat().st_mtime ) -> float:
-1741197854.1370049
-[CALL] packages/appflow_tracer/lib/file_utils ( log_files = sorted( )
-[CALL] packages/appflow_tracer/lib/file_utils (manage_logfiles)[147] -> packages/appflow_tracer/lib/file_utils (<lambda>)[149]
-{"f":"logs/run_20250305105822.log"}
-[RETURN] packages/appflow_tracer/lib/file_utils[149] ( key=lambda f:f.stat().st_mtime ) -> float:
-1741197503.4235935
-[CALL] packages/appflow_tracer/lib/file_utils ( log_files = sorted( )
-[CALL] packages/appflow_tracer/lib/file_utils (manage_logfiles)[147] -> packages/appflow_tracer/lib/file_utils (<lambda>)[149]
-{"f":"logs/run_20250305110421.log"}
-[RETURN] packages/appflow_tracer/lib/file_utils[149] ( key=lambda f:f.stat().st_mtime ) -> float:
-1741197887.0586202
-[CALL] packages/appflow_tracer/lib/file_utils ( log_utils.log_message(f'Deleted old log: {log_file.as_posix()}',category.warning.id,configs=configs) )
-[CALL] packages/appflow_tracer/lib/file_utils (manage_logfiles)[160] -> packages/appflow_tracer/lib/log_utils (log_message)[85]
-{"message":"Deleted old log: logs/run_20250305104749.log","log_category":"WARNING","json_data":null,"serialize_json":false,"configs":{"colors":{"CALL":"\u001b[92m","CRITICAL":"\u001b[41m","DEBUG":"\u001b[96m","ERROR":"\u001b[31m","IMPORT":"\u001b[94m","INFO":"\u001b[97m","RETURN":"\u001b[93m","WARNING":"\u001b[91m","RESET":"\u001b[0m"},"logging":{"enable":true,"max_logfiles":5,"package_name":".","module_name":"run","logs_dirname":"logs","log_filename":"logs/run_20250305111551.log"},"tracing":{"enable":true,"json":{"compressed":true}},"events":{"call":true,"critical":false,"debug":true,"error":true,"import":false,"info":false,"return":true,"warning":false},"stats":{"created":"2025-03-03T18:10:45.863523+00:00","updated":"2025-03-05T18:15:51.496495+00:00"}},"handler":null}
-[CALL] packages/appflow_tracer/lib/log_utils ( output_console(message,log_category,json_data or False,configs) )
-[CALL] packages/appflow_tracer/lib/log_utils (log_message)[148] -> packages/appflow_tracer/lib/log_utils (output_console)[196]
-{"message":"Deleted old log: logs/run_20250305104749.log","log_category":"WARNING","json_data":false,"configs":{"colors":{"CALL":"\u001b[92m","CRITICAL":"\u001b[41m","DEBUG":"\u001b[96m","ERROR":"\u001b[31m","IMPORT":"\u001b[94m","INFO":"\u001b[97m","RETURN":"\u001b[93m","WARNING":"\u001b[91m","RESET":"\u001b[0m"},"logging":{"enable":true,"max_logfiles":5,"package_name":".","module_name":"run","logs_dirname":"logs","log_filename":"logs/run_20250305111551.log"},"tracing":{"enable":true,"json":{"compressed":true}},"events":{"call":true,"critical":false,"debug":true,"error":true,"import":false,"info":false,"return":true,"warning":false},"stats":{"created":"2025-03-03T18:10:45.863523+00:00","updated":"2025-03-05T18:15:51.496495+00:00"}}}
-[CALL] packages/appflow_tracer/lib/log_utils ( print(console_message) )
-[CALL] packages/appflow_tracer/lib/log_utils (output_console)[238] -> packages/appflow_tracer/tracing (<lambda>)[236]
-[CALL] packages/appflow_tracer/tracing ( builtins.print=lambda*args,**kwargs:logger.info(" ".join(str(arg)for arg in args)) )
-[CALL] packages/appflow_tracer/tracing (<lambda>)[236] -> packages/appflow_tracer/tracing (<genexpr>)[236]
-{".0":"<tuple_iterator object at 0x109ceeaa0>"}
-[RETURN] packages/appflow_tracer/tracing[236] ( builtins.print=lambda*args,**kwargs:logger.info(" ".join(str(arg)for arg in args)) ) -> str:
-Deleted old log: logs/run_20250305104749.log
-[CALL] packages/appflow_tracer/tracing ( builtins.print=lambda*args,**kwargs:logger.info(" ".join(str(arg)for arg in args)) )
-[CALL] packages/appflow_tracer/tracing (<lambda>)[236] -> packages/appflow_tracer/tracing (<genexpr>)[236]
-{".0":"<tuple_iterator object at 0x109ceeaa0>"}
-[RETURN] packages/appflow_tracer/tracing[236] ( builtins.print=lambda*args,**kwargs:logger.info(" ".join(str(arg)for arg in args)) ) -> NoneType: None
-Deleted old log: logs/run_20250305104749.log
-[RETURN] packages/appflow_tracer/tracing[236] ( builtins.print=lambda*args,**kwargs:logger.info(" ".join(str(arg)for arg in args)) ) -> NoneType: None
-[RETURN] packages/appflow_tracer/lib/log_utils[239] ( if json_data: ) -> NoneType: None
-[RETURN] packages/appflow_tracer/lib/log_utils[148] ( output_console(message,log_category,json_data or False,configs) ) -> NoneType: None
-[RETURN] packages/appflow_tracer/lib/file_utils[164] ( return deleted_logs ) -> list:
-["logs/run_20250305104749.log"]
+[CALL] packages/appflow_tracer/lib/file_utils (manage_logfiles)[53] -> packages/appflow_tracer/lib/file_utils (<lambda>)[55]
+{"f":"logs/run_20250310221845.log"}
+[RETURN] packages/appflow_tracer/lib/file_utils[55] ( key=lambda f:f.stat().st_mtime ) -> float:
+1741670325.7926524
+[RETURN] packages/appflow_tracer/lib/file_utils[70] ( return deleted_logs ) -> list:
 [CALL] run ( args=parse_arguments() )
-[CALL] run (main)[217] -> run (parse_arguments)[142]
-[RETURN] run[180] ( return parser.parse_args() ) -> Namespace:
+[CALL] run (main)[106] -> run (parse_arguments)[70]
+[RETURN] run[93] ( return parser.parse_args() ) -> Namespace:
 {"pydoc":true,"coverage":true,"target":null}
 
 [ACTION] Coverage tracking enabled.
@@ -66,7 +19,9 @@ Deleted old log: logs/run_20250305104749.log
 [INFO] Project documentation: /Users/emvaldes/.repos/devops/workflows
 [INFO] Processing Python files:
   - run.py
+  - .prototypes/testing.py
   - tests/test_run.py
+  - tests/test_conftest.py
   - scripts/__init__.py
   - scripts/testing.py
   - packages/__init__.py
@@ -74,6 +29,7 @@ Deleted old log: logs/run_20250305104749.log
   - lib/accesstoken_expiration.py
   - lib/timezone_localoffset.py
   - lib/configure_params.py
+  - lib/pydoc_loader.py
   - lib/__init__.py
   - lib/system_params.py
   - lib/parsing_userinput.py
@@ -89,14 +45,24 @@ Deleted old log: logs/run_20250305104749.log
   - packages/requirements/__init__.py
   - packages/requirements/__main__.py
   - packages/requirements/dependencies.py
+  - packages/requirements/lib/version_utils.py
+  - packages/requirements/lib/__init__.py
+  - packages/requirements/lib/package_utils.py
+  - packages/requirements/lib/brew_utils.py
+  - packages/requirements/lib/policy_utils.py
   - packages/appflow_tracer/lib/serialize_utils.py
   - packages/appflow_tracer/lib/log_utils.py
   - packages/appflow_tracer/lib/trace_utils.py
   - packages/appflow_tracer/lib/__init__.py
   - packages/appflow_tracer/lib/file_utils.py
-  - tests/mock_project/mock_file.py
+  - tests/mocks/config_loader.py
+  - tests/mocks/__init__.py
   - tests/lib/test_pydoc_generator.py
   - tests/requirements/dependencies/test_dependencies.py
+  - tests/requirements/dependencies/policy_utils/test_policy_utils.py
+  - tests/requirements/dependencies/version_utils/test_version_utils.py
+  - tests/requirements/dependencies/brew_utils/test_brew_utils.py
+  - tests/requirements/dependencies/package_utils/test_package_utils.py
   - tests/appflow_tracer/tracing/test_tracing.py
   - tests/appflow_tracer/tracing/log_utils/test_log_utils.py
   - tests/appflow_tracer/tracing/serialize_utils/test_serialize_utils.py
@@ -109,11 +75,23 @@ Deleted old log: logs/run_20250305104749.log
 [PYDOC] Documentation saved to: docs/pydoc/run.pydoc
 [COMPLETE] Finished processing: run.py
 
+[REVIEW] Generating documentation: .prototypes/testing.py ...
+[ACTION] PyDoc Command: python -m pydoc ./.prototypes/testing.py
+[COVERAGE] No coverage data available: ".prototypes/testing.py". Skipping coverage report.
+[PYDOC] Documentation saved to: docs/pydoc/.prototypes/testing.pydoc
+[COMPLETE] Finished processing: .prototypes/testing.py
+
 [REVIEW] Generating documentation: tests/test_run.py ...
 [ACTION] PyDoc Command: python -m pydoc tests.test_run
 [COVERAGE] No coverage data available: "tests/test_run.py". Skipping coverage report.
 [PYDOC] Documentation saved to: docs/pydoc/tests/test_run.pydoc
 [COMPLETE] Finished processing: tests/test_run.py
+
+[REVIEW] Generating documentation: tests/test_conftest.py ...
+[ACTION] PyDoc Command: python -m pydoc tests.test_conftest
+[COVERAGE] No coverage data available: "tests/test_conftest.py". Skipping coverage report.
+[PYDOC] Documentation saved to: docs/pydoc/tests/test_conftest.pydoc
+[COMPLETE] Finished processing: tests/test_conftest.py
 
 [REVIEW] Generating documentation: scripts/__init__.py ...
 [ACTION] PyDoc Command: python -m pydoc scripts.__init__
@@ -156,6 +134,12 @@ Deleted old log: logs/run_20250305104749.log
 [COVERAGE] Coverage saved to: docs/coverage/lib/configure_params.coverage
 [PYDOC] Documentation saved to: docs/pydoc/lib/configure_params.pydoc
 [COMPLETE] Finished processing: lib/configure_params.py
+
+[REVIEW] Generating documentation: lib/pydoc_loader.py ...
+[ACTION] PyDoc Command: python -m pydoc lib.pydoc_loader
+[COVERAGE] Coverage saved to: docs/coverage/lib/pydoc_loader.coverage
+[PYDOC] Documentation saved to: docs/pydoc/lib/pydoc_loader.pydoc
+[COMPLETE] Finished processing: lib/pydoc_loader.py
 
 [REVIEW] Generating documentation: lib/__init__.py ...
 [ACTION] PyDoc Command: python -m pydoc lib.__init__
@@ -247,6 +231,36 @@ Deleted old log: logs/run_20250305104749.log
 [PYDOC] Documentation saved to: docs/pydoc/packages/requirements/dependencies.pydoc
 [COMPLETE] Finished processing: packages/requirements/dependencies.py
 
+[REVIEW] Generating documentation: packages/requirements/lib/version_utils.py ...
+[ACTION] PyDoc Command: python -m pydoc packages.requirements.lib.version_utils
+[COVERAGE] Coverage saved to: docs/coverage/packages/requirements/lib/version_utils.coverage
+[PYDOC] Documentation saved to: docs/pydoc/packages/requirements/lib/version_utils.pydoc
+[COMPLETE] Finished processing: packages/requirements/lib/version_utils.py
+
+[REVIEW] Generating documentation: packages/requirements/lib/__init__.py ...
+[ACTION] PyDoc Command: python -m pydoc packages.requirements.lib.__init__
+[COVERAGE] Coverage saved to: docs/coverage/packages/requirements/lib/__init__.coverage
+[PYDOC] Documentation saved to: docs/pydoc/packages/requirements/lib/__init__.pydoc
+[COMPLETE] Finished processing: packages/requirements/lib/__init__.py
+
+[REVIEW] Generating documentation: packages/requirements/lib/package_utils.py ...
+[ACTION] PyDoc Command: python -m pydoc packages.requirements.lib.package_utils
+[COVERAGE] Coverage saved to: docs/coverage/packages/requirements/lib/package_utils.coverage
+[PYDOC] Documentation saved to: docs/pydoc/packages/requirements/lib/package_utils.pydoc
+[COMPLETE] Finished processing: packages/requirements/lib/package_utils.py
+
+[REVIEW] Generating documentation: packages/requirements/lib/brew_utils.py ...
+[ACTION] PyDoc Command: python -m pydoc packages.requirements.lib.brew_utils
+[COVERAGE] Coverage saved to: docs/coverage/packages/requirements/lib/brew_utils.coverage
+[PYDOC] Documentation saved to: docs/pydoc/packages/requirements/lib/brew_utils.pydoc
+[COMPLETE] Finished processing: packages/requirements/lib/brew_utils.py
+
+[REVIEW] Generating documentation: packages/requirements/lib/policy_utils.py ...
+[ACTION] PyDoc Command: python -m pydoc packages.requirements.lib.policy_utils
+[COVERAGE] Coverage saved to: docs/coverage/packages/requirements/lib/policy_utils.coverage
+[PYDOC] Documentation saved to: docs/pydoc/packages/requirements/lib/policy_utils.pydoc
+[COMPLETE] Finished processing: packages/requirements/lib/policy_utils.py
+
 [REVIEW] Generating documentation: packages/appflow_tracer/lib/serialize_utils.py ...
 [ACTION] PyDoc Command: python -m pydoc packages.appflow_tracer.lib.serialize_utils
 [COVERAGE] Coverage saved to: docs/coverage/packages/appflow_tracer/lib/serialize_utils.coverage
@@ -277,11 +291,17 @@ Deleted old log: logs/run_20250305104749.log
 [PYDOC] Documentation saved to: docs/pydoc/packages/appflow_tracer/lib/file_utils.pydoc
 [COMPLETE] Finished processing: packages/appflow_tracer/lib/file_utils.py
 
-[REVIEW] Generating documentation: tests/mock_project/mock_file.py ...
-[ACTION] PyDoc Command: python -m pydoc tests.mock_project.mock_file
-[COVERAGE] No coverage data available: "tests/mock_project/mock_file.py". Skipping coverage report.
-[PYDOC] Documentation saved to: docs/pydoc/tests/mock_project/mock_file.pydoc
-[COMPLETE] Finished processing: tests/mock_project/mock_file.py
+[REVIEW] Generating documentation: tests/mocks/config_loader.py ...
+[ACTION] PyDoc Command: python -m pydoc tests.mocks.config_loader
+[COVERAGE] No coverage data available: "tests/mocks/config_loader.py". Skipping coverage report.
+[PYDOC] Documentation saved to: docs/pydoc/tests/mocks/config_loader.pydoc
+[COMPLETE] Finished processing: tests/mocks/config_loader.py
+
+[REVIEW] Generating documentation: tests/mocks/__init__.py ...
+[ACTION] PyDoc Command: python -m pydoc tests.mocks.__init__
+[COVERAGE] No coverage data available: "tests/mocks/__init__.py". Skipping coverage report.
+[PYDOC] Documentation saved to: docs/pydoc/tests/mocks/__init__.pydoc
+[COMPLETE] Finished processing: tests/mocks/__init__.py
 
 [REVIEW] Generating documentation: tests/lib/test_pydoc_generator.py ...
 [ACTION] PyDoc Command: python -m pydoc tests.lib.test_pydoc_generator
@@ -294,6 +314,30 @@ Deleted old log: logs/run_20250305104749.log
 [COVERAGE] No coverage data available: "tests/requirements/dependencies/test_dependencies.py". Skipping coverage report.
 [PYDOC] Documentation saved to: docs/pydoc/tests/requirements/dependencies/test_dependencies.pydoc
 [COMPLETE] Finished processing: tests/requirements/dependencies/test_dependencies.py
+
+[REVIEW] Generating documentation: tests/requirements/dependencies/policy_utils/test_policy_utils.py ...
+[ACTION] PyDoc Command: python -m pydoc tests.requirements.dependencies.policy_utils.test_policy_utils
+[COVERAGE] No coverage data available: "tests/requirements/dependencies/policy_utils/test_policy_utils.py". Skipping coverage report.
+[PYDOC] Documentation saved to: docs/pydoc/tests/requirements/dependencies/policy_utils/test_policy_utils.pydoc
+[COMPLETE] Finished processing: tests/requirements/dependencies/policy_utils/test_policy_utils.py
+
+[REVIEW] Generating documentation: tests/requirements/dependencies/version_utils/test_version_utils.py ...
+[ACTION] PyDoc Command: python -m pydoc tests.requirements.dependencies.version_utils.test_version_utils
+[COVERAGE] No coverage data available: "tests/requirements/dependencies/version_utils/test_version_utils.py". Skipping coverage report.
+[PYDOC] Documentation saved to: docs/pydoc/tests/requirements/dependencies/version_utils/test_version_utils.pydoc
+[COMPLETE] Finished processing: tests/requirements/dependencies/version_utils/test_version_utils.py
+
+[REVIEW] Generating documentation: tests/requirements/dependencies/brew_utils/test_brew_utils.py ...
+[ACTION] PyDoc Command: python -m pydoc tests.requirements.dependencies.brew_utils.test_brew_utils
+[COVERAGE] No coverage data available: "tests/requirements/dependencies/brew_utils/test_brew_utils.py". Skipping coverage report.
+[PYDOC] Documentation saved to: docs/pydoc/tests/requirements/dependencies/brew_utils/test_brew_utils.pydoc
+[COMPLETE] Finished processing: tests/requirements/dependencies/brew_utils/test_brew_utils.py
+
+[REVIEW] Generating documentation: tests/requirements/dependencies/package_utils/test_package_utils.py ...
+[ACTION] PyDoc Command: python -m pydoc tests.requirements.dependencies.package_utils.test_package_utils
+[COVERAGE] No coverage data available: "tests/requirements/dependencies/package_utils/test_package_utils.py". Skipping coverage report.
+[PYDOC] Documentation saved to: docs/pydoc/tests/requirements/dependencies/package_utils/test_package_utils.pydoc
+[COMPLETE] Finished processing: tests/requirements/dependencies/package_utils/test_package_utils.py
 
 [REVIEW] Generating documentation: tests/appflow_tracer/tracing/test_tracing.py ...
 [ACTION] PyDoc Command: python -m pydoc tests.appflow_tracer.tracing.test_tracing
@@ -327,7 +371,6 @@ Deleted old log: logs/run_20250305104749.log
 
 [INFO] Documentation completed successfully.
 [INFO] Found coverage files:
-  - tests/test_run.coverage
   - packages/__init__.coverage
   - lib/pkgconfig_loader.coverage
   - lib/system_variables.coverage
@@ -337,6 +380,7 @@ Deleted old log: logs/run_20250305104749.log
   - lib/__init__.coverage
   - lib/argument_parser.coverage
   - lib/parsing_userinput.coverage
+  - lib/pydoc_loader.coverage
   - lib/manage_accesstoken.coverage
   - lib/configure_params.coverage
   - lib/accesstoken_expiration.coverage
@@ -346,13 +390,18 @@ Deleted old log: logs/run_20250305104749.log
   - packages/requirements/__main__.coverage
   - packages/requirements/__init__.coverage
   - packages/requirements/dependencies.coverage
+  - packages/requirements/lib/brew_utils.coverage
+  - packages/requirements/lib/version_utils.coverage
+  - packages/requirements/lib/__init__.coverage
+  - packages/requirements/lib/policy_utils.coverage
+  - packages/requirements/lib/package_utils.coverage
   - packages/appflow_tracer/lib/__init__.coverage
   - packages/appflow_tracer/lib/trace_utils.coverage
   - packages/appflow_tracer/lib/serialize_utils.coverage
   - packages/appflow_tracer/lib/log_utils.coverage
   - packages/appflow_tracer/lib/file_utils.coverage
 
-Combined data file .coverage.emvaldes-imac-desktop.local.57043.XDaxokHx
+Combined data file .coverage.emvaldes-imac-desktop.local.3587.XfxkTAOx
 Generating Coverage Report ...
 Wrote HTML report to docs/htmlcov/index.html
 Coverage summary saved: docs/coverage/coverage.report
@@ -360,154 +409,34 @@ Coverage summary saved: docs/coverage/coverage.report
 Coverage Report:
 Name                                             Stmts   Miss Branch BrPart  Cover
 ----------------------------------------------------------------------------------
-lib/__init__.py                                      2      2      0      0     0%
-lib/accesstoken_expiration.py                       65     65     12      0     0%
-lib/argument_parser.py                              84     84     34      0     0%
+lib/__init__.py                                      6      6      0      0     0%
+lib/accesstoken_expiration.py                       68     68     12      0     0%
+lib/argument_parser.py                              85     85     34      0     0%
 lib/configure_params.py                            140    140     38      0     0%
-lib/manage_accesstoken.py                           22     22      2      0     0%
-lib/parsing_userinput.py                            57     57     20      0     0%
-lib/pkgconfig_loader.py                             95     95     36      0     0%
-lib/pydoc_generator.py                              81     40      8      1    49%
-lib/system_params.py                                71     71     14      0     0%
-lib/system_variables.py                             32     32      0      0     0%
-lib/timezone_localoffset.py                         43     43      4      0     0%
-packages/__init__.py                                 2      2      0      0     0%
-packages/appflow_tracer/__init__.py                  5      5      0      0     0%
-packages/appflow_tracer/__main__.py                  5      5      2      0     0%
-packages/appflow_tracer/lib/__init__.py              4      4      0      0     0%
-packages/appflow_tracer/lib/file_utils.py           42     42     12      0     0%
-packages/appflow_tracer/lib/log_utils.py            39     27     24      6    29%
-packages/appflow_tracer/lib/serialize_utils.py      41     41     12      0     0%
-packages/appflow_tracer/lib/trace_utils.py         116    116     44      0     0%
-packages/appflow_tracer/tracing.py                  86     80     28      1     6%
-packages/requirements/__init__.py                    4      4      0      0     0%
-packages/requirements/__main__.py                    5      5      2      0     0%
-packages/requirements/dependencies.py              190    190     58      0     0%
+lib/manage_accesstoken.py                           23     23      2      0     0%
+lib/parsing_userinput.py                            60     60     20      0     0%
+lib/pkgconfig_loader.py                             98     98     36      0     0%
+lib/pydoc_generator.py                              86     45     10      1    46%
+lib/pydoc_loader.py                                 43     43     16      0     0%
+lib/system_params.py                                76     76     16      0     0%
+lib/system_variables.py                             26     26      2      0     0%
+lib/timezone_localoffset.py                         44     44      4      0     0%
+packages/__init__.py                                 8      8      0      0     0%
+packages/appflow_tracer/__init__.py                  9      9      0      0     0%
+packages/appflow_tracer/__main__.py                  9      9      2      0     0%
+packages/appflow_tracer/lib/__init__.py              8      8      0      0     0%
+packages/appflow_tracer/lib/file_utils.py           48     48     14      0     0%
+packages/appflow_tracer/lib/log_utils.py            46     34     26      6    25%
+packages/appflow_tracer/lib/serialize_utils.py      48     48     14      0     0%
+packages/appflow_tracer/lib/trace_utils.py         123    123     46      0     0%
+packages/appflow_tracer/tracing.py                  88     82     28      1     6%
+packages/requirements/__init__.py                    8      8      0      0     0%
+packages/requirements/__main__.py                    9      9      2      0     0%
+packages/requirements/dependencies.py               71     71     18      0     0%
+packages/requirements/lib/__init__.py                8      8      0      0     0%
+packages/requirements/lib/brew_utils.py             97     97     32      0     0%
+packages/requirements/lib/package_utils.py         187    187     56      0     0%
+packages/requirements/lib/policy_utils.py           72     72     20      0     0%
+packages/requirements/lib/version_utils.py         126    126     34      0     0%
 ----------------------------------------------------------------------------------
-TOTAL                                             1231   1172    350      8     4%
-
-./docs/
-├── coverage/
-│   ├── coverage.report
-│   ├── lib/
-│   │   ├── __init__.coverage
-│   │   ├── accesstoken_expiration.coverage
-│   │   ├── argument_parser.coverage
-│   │   ├── configure_params.coverage
-│   │   ├── manage_accesstoken.coverage
-│   │   ├── parsing_userinput.coverage
-│   │   ├── pkgconfig_loader.coverage
-│   │   ├── pydoc_generator.coverage
-│   │   ├── system_params.coverage
-│   │   ├── system_variables.coverage
-│   │   └── timezone_localoffset.coverage
-│   ├── packages/
-│   │   ├── __init__.coverage
-│   │   ├── appflow_tracer/
-│   │   │   ├── __init__.coverage
-│   │   │   ├── __main__.coverage
-│   │   │   ├── lib/
-│   │   │   │   ├── __init__.coverage
-│   │   │   │   ├── file_utils.coverage
-│   │   │   │   ├── log_utils.coverage
-│   │   │   │   ├── serialize_utils.coverage
-│   │   │   │   └── trace_utils.coverage
-│   │   │   └── tracing.coverage
-│   │   └── requirements/
-│   │       ├── __init__.coverage
-│   │       ├── __main__.coverage
-│   │       └── dependencies.coverage
-│   └── tests/
-│       └── test_run.coverage
-├── htmlcov/
-│   ├── .gitignore
-│   ├── class_index.html
-│   ├── coverage_html_cb_6fb7b396.js
-│   ├── favicon_32_cb_58284776.png
-│   ├── function_index.html
-│   ├── index.html
-│   ├── keybd_closed_cb_ce680311.png
-│   ├── status.json
-│   ├── style_cb_8e611ae1.css
-│   ├── z_1616b7dfb29262ea___init___py.html
-│   ├── z_1616b7dfb29262ea___main___py.html
-│   ├── z_1616b7dfb29262ea_tracing_py.html
-│   ├── z_2d5ffa98a7be824b___init___py.html
-│   ├── z_2d5ffa98a7be824b_file_utils_py.html
-│   ├── z_2d5ffa98a7be824b_log_utils_py.html
-│   ├── z_2d5ffa98a7be824b_serialize_utils_py.html
-│   ├── z_2d5ffa98a7be824b_trace_utils_py.html
-│   ├── z_306ed2d68c6501e8___init___py.html
-│   ├── z_306ed2d68c6501e8_accesstoken_expiration_py.html
-│   ├── z_306ed2d68c6501e8_argument_parser_py.html
-│   ├── z_306ed2d68c6501e8_configure_params_py.html
-│   ├── z_306ed2d68c6501e8_manage_accesstoken_py.html
-│   ├── z_306ed2d68c6501e8_parsing_userinput_py.html
-│   ├── z_306ed2d68c6501e8_pkgconfig_loader_py.html
-│   ├── z_306ed2d68c6501e8_pydoc_generator_py.html
-│   ├── z_306ed2d68c6501e8_system_params_py.html
-│   ├── z_306ed2d68c6501e8_system_variables_py.html
-│   ├── z_306ed2d68c6501e8_timezone_localoffset_py.html
-│   ├── z_96d3bcc68b391967___init___py.html
-│   ├── z_96d3bcc68b391967___main___py.html
-│   ├── z_96d3bcc68b391967_dependencies_py.html
-│   └── z_ab0243a5b7dcef62___init___py.html
-└── pydoc/
-    ├── .github/
-    │   └── scripts/
-    │       ├── extract_pytest_functions.pydoc
-    │       └── extract_pytest_resources.pydoc
-    ├── lib/
-    │   ├── __init__.pydoc
-    │   ├── accesstoken_expiration.pydoc
-    │   ├── argument_parser.pydoc
-    │   ├── configure_params.pydoc
-    │   ├── manage_accesstoken.pydoc
-    │   ├── parsing_userinput.pydoc
-    │   ├── pkgconfig_loader.pydoc
-    │   ├── pydoc_generator.pydoc
-    │   ├── system_params.pydoc
-    │   ├── system_variables.pydoc
-    │   └── timezone_localoffset.pydoc
-    ├── packages/
-    │   ├── __init__.pydoc
-    │   ├── appflow_tracer/
-    │   │   ├── __init__.pydoc
-    │   │   ├── __main__.pydoc
-    │   │   ├── lib/
-    │   │   │   ├── __init__.pydoc
-    │   │   │   ├── file_utils.pydoc
-    │   │   │   ├── log_utils.pydoc
-    │   │   │   ├── serialize_utils.pydoc
-    │   │   │   └── trace_utils.pydoc
-    │   │   └── tracing.pydoc
-    │   └── requirements/
-    │       ├── __init__.pydoc
-    │       ├── __main__.pydoc
-    │       └── dependencies.pydoc
-    ├── run.pydoc
-    ├── scripts/
-    │   ├── __init__.pydoc
-    │   └── testing.pydoc
-    └── tests/
-        ├── appflow_tracer/
-        │   └── tracing/
-        │       ├── file_utils/
-        │       │   └── test_file_utils.pydoc
-        │       ├── log_utils/
-        │       │   └── test_log_utils.pydoc
-        │       ├── serialize_utils/
-        │       │   └── test_serialize_utils.pydoc
-        │       ├── test_tracing.pydoc
-        │       └── trace_utils/
-        │           └── test_trace_utils.pydoc
-        ├── lib/
-        │   └── test_pydoc_generator.pydoc
-        ├── mock_project/
-        │   └── mock_file.pydoc
-        ├── requirements/
-        │   └── dependencies/
-        │       └── test_dependencies.pydoc
-        └── test_run.pydoc
-
-29 directories, 94 files
+TOTAL                                             1720   1661    482      8     3%
