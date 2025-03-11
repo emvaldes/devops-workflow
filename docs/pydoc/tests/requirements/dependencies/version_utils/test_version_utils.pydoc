@@ -1,6 +1,5 @@
 ### Documentation for tests/requirements/dependencies/version_utils/test_version_utils.py
 
-⚠️ No .pydoc file found at <project-location>/tests/mocks/.pydocs/pydoc.__init__.py.
 Help on module tests.requirements.dependencies.version_utils.test_version_utils in tests.requirements.dependencies.version_utils:
 
 NAME
@@ -41,8 +40,6 @@ FUNCTIONS
 DATA
     ANY = <ANY>
     ROOT_DIR = PosixPath('<project-location>')
-    __module_name__ = 'version_utils'
-    __package_name__ = 'requirements'
 
 VERSION
     0.1.1

@@ -2,8 +2,8 @@
 
 # File: ./tests/appflow_tracer/brew_utils/brew_utils.py
 
-__package_name__ = "requirements"
-__module_name__ = "brew_utils"
+__package__ = "requirements"
+__module__ = "brew_utils"
 
 __version__ = "0.1.0"  ## Package version
 
@@ -83,7 +83,7 @@ from lib import system_variables as environment
 from packages.appflow_tracer.lib import log_utils
 from packages.requirements.lib import brew_utils
 
-# ✅ Skip the entire test suite if Homebrew is unavailable
+# Skip the entire test suite if Homebrew is unavailable
 pytestmark = pytest.mark.skipif(
     not brew_utils.check_availability(),
     reason="Homebrew is not available on this system."
@@ -96,7 +96,7 @@ pytestmark = pytest.mark.skipif(
 @pytest.mark.skipif(not brew_utils.check_availability(), reason="Homebrew is not available on this system.")
 def test_check_availability_success():
     """
-    ✅ **Test: Homebrew Availability (Success)**
+    **Test: Homebrew Availability (Success)**
 
     **Purpose:**
     - Verify that `check_availability()` correctly detects when Homebrew is installed.
@@ -120,7 +120,7 @@ def test_check_availability_success():
 
 def test_check_availability_failure():
     """
-    ❌ **Test: Homebrew Availability (Failure)**
+    **Test: Homebrew Availability (Failure)**
 
     **Purpose:**
     - Ensure `check_availability()` correctly identifies when Homebrew is **not installed**.
@@ -136,11 +136,11 @@ def test_check_availability_failure():
     - Homebrew is **not installed** or its binary is not in the system `PATH`.
     """
 
-    brew_utils.check_availability.cache_clear()  # ✅ Clear cache BEFORE calling the function.
+    brew_utils.check_availability.cache_clear()  # Clear cache BEFORE calling the function.
 
     with patch("shutil.which", return_value=None):
         result = brew_utils.check_availability()
-        assert result is False  # ✅ Expect False if Homebrew is missing
+        assert result is False  # Expect False if Homebrew is missing
 
 # -----------------------------------------------------------------------------
 
@@ -157,9 +157,9 @@ def test_brew_package_not_found():
 
     with patch("subprocess.run") as mock_run:
         mock_run.return_value.stderr = "Error: No formula found"
-        # ✅ Ensure the correct function name is used
+        # Ensure the correct function name is used
         result = brew_utils.brew_info("nonexistent_package")
-        assert result is None  # ✅ Expect `None` for missing packages
+        assert result is None  # Expect `None` for missing packages
 
 # -----------------------------------------------------------------------------
 # Test: detect_environment()
@@ -167,7 +167,7 @@ def test_brew_package_not_found():
 
 def test_detect_environment_brew():
     """
-    ✅ **Test: Detect Homebrew-Managed Python Environment**
+    **Test: Detect Homebrew-Managed Python Environment**
 
     **Purpose:**
     - Validate that `detect_environment()` correctly identifies a **Homebrew-managed Python installation**.
@@ -194,7 +194,7 @@ def test_detect_environment_brew():
 
 def test_detect_environment_standalone():
     """
-    ❌ **Test: Detect Standalone Python Environment**
+    **Test: Detect Standalone Python Environment**
 
     **Purpose:**
     - Ensure `detect_environment()` correctly identifies when Python is **not managed by Homebrew**.
@@ -213,7 +213,7 @@ def test_detect_environment_standalone():
     with patch("packages.requirements.lib.brew_utils.check_availability", return_value=False):
         env = brew_utils.detect_environment()
         assert env["INSTALL_METHOD"] in ["standalone", "system"]
-        assert env["BREW_AVAILABLE"] is False  # ✅ Confirm Homebrew is unavailable
+        assert env["BREW_AVAILABLE"] is False  # Confirm Homebrew is unavailable
 
 # -----------------------------------------------------------------------------
 # Test: version(package)
@@ -221,7 +221,7 @@ def test_detect_environment_standalone():
 
 def test_version_installed(requirements_config):
     """
-    ✅ **Test: Retrieve Installed Package Version (Homebrew)**
+    **Test: Retrieve Installed Package Version (Homebrew)**
 
     **Purpose:**
     - Validate that `version(package)` correctly retrieves the installed version of a Homebrew-managed package.
@@ -237,7 +237,7 @@ def test_version_installed(requirements_config):
     - The package exists and is installed via Homebrew.
     """
 
-    # ✅ Use the correct key: "requirements" instead of "dependencies"
+    # Use the correct key: "requirements" instead of "dependencies"
     package_name = requirements_config["requirements"][0]["package"]
     expected_version = requirements_config["requirements"][0]["version"]["target"]
 
@@ -248,7 +248,7 @@ def test_version_installed(requirements_config):
 
 def test_version_not_installed():
     """
-    ❌ **Test: Handle Missing Package in Homebrew**
+    **Test: Handle Missing Package in Homebrew**
 
     **Purpose:**
     - Ensure `version(package)` returns `None` when the package is not installed.
@@ -272,7 +272,7 @@ def test_version_not_installed():
 
 def test_latest_version_success(installed_config):
     """
-    ✅ **Test: Retrieve Latest Available Version of a Homebrew Package**
+    **Test: Retrieve Latest Available Version of a Homebrew Package**
 
     **Purpose:**
     - Validate that `latest_version(package)` correctly extracts the latest stable version of a Homebrew package.
@@ -288,7 +288,7 @@ def test_latest_version_success(installed_config):
     - The package is available in Homebrew and has a newer version.
     """
 
-    # ✅ Use the correct key: "requirements" instead of "dependencies"
+    # Use the correct key: "requirements" instead of "dependencies"
     package_name = installed_config["requirements"][0]["package"]
     latest_version = installed_config["requirements"][0]["version"]["latest"]
 

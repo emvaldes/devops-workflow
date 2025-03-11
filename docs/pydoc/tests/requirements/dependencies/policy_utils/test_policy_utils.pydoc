@@ -1,6 +1,5 @@
 ### Documentation for tests/requirements/dependencies/policy_utils/test_policy_utils.py
 
-⚠️ No .pydoc file found at <project-location>/tests/mocks/.pydocs/pydoc.__init__.py.
 Help on module tests.requirements.dependencies.policy_utils.test_policy_utils in tests.requirements.dependencies.policy_utils:
 
 NAME
@@ -32,8 +31,6 @@ FUNCTIONS
 
 DATA
     ROOT_DIR = PosixPath('<project-location>')
-    __module_name__ = 'policy_utils'
-    __package_name__ = 'requirements'
 
 VERSION
     0.1.0

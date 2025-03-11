@@ -2,8 +2,8 @@
 
 # File: ./tests/requirements/dependencies/version_utils/test_version_utils.py
 
-__package_name__ = "requirements"
-__module_name__ = "version_utils"
+__package__ = "requirements"
+__module__ = "version_utils"
 
 __version__ = "0.1.1"  ## Updated Test Module version
 
@@ -125,8 +125,8 @@ def test_latest_version(package, latest_version, requirements_config):
 # ------------------------------------------------------------------------------
 
 @pytest.mark.parametrize("package, installed_version", [
-    ("curl", "7.68.0"),  # ✅ Simulate installed package
-    ("vim", None),  # ✅ Simulate missing package
+    ("curl", "7.68.0"),  # Simulate installed package
+    ("vim", None),  # Simulate missing package
 ])
 def test_linux_version(package, installed_version):
     """

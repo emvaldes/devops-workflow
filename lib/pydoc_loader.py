@@ -164,12 +164,12 @@ def apply_variable_docstrings(module: ModuleType, variable_docs: Dict[str, str])
     """
 
     global VARIABLE_DOCSTRINGS
-    VARIABLE_DOCSTRINGS = {}  # ✅ Store variable docstrings here
+    VARIABLE_DOCSTRINGS = {}  # Store variable docstrings here
 
     for var_name, docstring in variable_docs.items():
         if hasattr(module, var_name):
             obj = getattr(module, var_name)
-            VARIABLE_DOCSTRINGS[var_name] = docstring  # ✅ Safe for all variable types
+            VARIABLE_DOCSTRINGS[var_name] = docstring  # Safe for all variable types
         # else:
         #     print(f"⚠️ Variable {var_name} not found in module {module.__name__}.")
 

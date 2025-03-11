@@ -73,7 +73,7 @@ function validate_parameters() {
 
     script_dirname="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
     # read -ra parameters <<< "$( sanitize_parameters "${@}" )";
-    # ✅ Capture output of sanitize_parameters as an array (preserving spaces)
+    # Capture output of sanitize_parameters as an array (preserving spaces)
     mapfile -t parameters < <( ${script_dirname}/sanitize-parameters.shell "${@}" );
     # echo -e; for param in "${parameters[@]}"; do echo -e "Parameter: ${param}"; done;
 

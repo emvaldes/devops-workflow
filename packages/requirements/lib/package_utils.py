@@ -172,7 +172,7 @@ def install_requirements(configs: dict, bypass: bool = False) -> None:
         latest_version = version_info["latest"]
         policy_mode = version_info["policy"]
 
-        # ✅ NEW: If force_install is True, override status to "adhoc"
+        # NEW: If force_install is True, override status to "adhoc"
         if bypass:
             status = "adhoc"
 
@@ -209,7 +209,7 @@ def install_requirements(configs: dict, bypass: bool = False) -> None:
                 environment.category.warning.id,
                 configs=configs
             )
-        # ✅ NEW: ELSE CLAUSE FOR FORCED INSTALLATION
+        # NEW: ELSE CLAUSE FOR FORCED INSTALLATION
         else:
             log_utils.log_message(
                 f'[AD-HOC] Forcing "{package}" installation (bypassing policy checks) ...',
