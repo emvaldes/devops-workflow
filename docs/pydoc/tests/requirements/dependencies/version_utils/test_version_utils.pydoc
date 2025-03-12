@@ -6,6 +6,9 @@ NAME
     tests.requirements.dependencies.version_utils.test_version_utils - # File: ./tests/requirements/dependencies/version_utils/test_version_utils.py
 
 FUNCTIONS
+    generate_random_package()
+        Generate a random non-existent package name to avoid conflicts with real packages.
+
     test_brew_latest_version(package, latest_version)
         Ensure `brew_utils.latest_version()` correctly retrieves the latest Homebrew package version.
 

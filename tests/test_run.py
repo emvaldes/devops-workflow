@@ -42,7 +42,12 @@ def serialize_configs(
     configs
 ):
 
-    return json.loads(json.dumps(configs, default=lambda o: str(o) if isinstance(o, Path) else o))
+    return json.loads(
+        json.dumps(
+            configs,
+            default=lambda o: str(o) if isinstance(o, Path) else o
+        )
+    )
 
 # ------------------------------------------------------------------------------
 # Test: parse_arguments()
@@ -71,7 +76,8 @@ def test_parse_arguments(
         parsed_args = run.parse_arguments()  # Call the function
 
         # Ensure correct argument parsing
-        assert getattr(parsed_args, expected_attr) == expected_value, \
+        assert getattr(
+            parsed_args, expected_attr) == expected_value, \
             f"Expected `{expected_attr}={expected_value}`, but got `{getattr(parsed_args, expected_attr, None)}`"
 
         mock_exit.assert_not_called()  # Ensure no forced exit happened

@@ -87,11 +87,17 @@ def mock_config():
 # Test: parse_arguments()
 # ------------------------------------------------------------------------------
 
-@pytest.mark.parametrize("args, expected", [
-    ([], "./packages/requirements/requirements.json"),  # Default value
-    (["-c", "custom_requirements.json"], "custom_requirements.json"),  # Custom value
-])
-def test_parse_arguments(args, expected):
+@pytest.mark.parametrize(
+    "args, expected",
+    [
+        ([], "./packages/requirements/requirements.json"),  # Default value
+        (["-c", "custom_requirements.json"], "custom_requirements.json"),  # Custom value
+    ]
+)
+def test_parse_arguments(
+    args,
+    expected
+):
     """
     Ensure `parse_arguments()` correctly handles command-line arguments.
 
@@ -167,14 +173,32 @@ def test_main(mock_config):
             }
         ]
     }
-    temp_installed_file.write_text(json.dumps(installed_mock, indent=4))
+    temp_installed_file.write_text(
+        json.dumps(installed_mock, indent=4)
+    )
 
     # Mock command-line arguments
-    with patch.object(sys, "argv", ["dependencies.py", "--backup-packages", "backup.json"]), \
-         patch("packages.requirements.lib.policy_utils.policy_management", return_value=mock_config.get("requirements", [])) as mock_policy, \
-         patch("packages.requirements.lib.package_utils.install_requirements", return_value=installed_mock["dependencies"]) as mock_install, \
-         patch("packages.requirements.lib.package_utils.backup_packages") as mock_backup, \
-         patch("packages.appflow_tracer.lib.log_utils.log_message") as mock_log:
+    with patch.object(
+            sys,
+            "argv",
+            ["dependencies.py", "--backup-packages", "backup.json"]
+         ), \
+         patch(
+             "packages.requirements.lib.policy_utils.policy_management",
+             return_value=mock_config.get(
+                 "requirements", []
+             )
+         ) as mock_policy, \
+         patch(
+             "packages.requirements.lib.package_utils.install_requirements",
+             return_value=installed_mock["dependencies"]
+         ) as mock_install, \
+         patch(
+             "packages.requirements.lib.package_utils.backup_packages"
+         ) as mock_backup, \
+         patch(
+             "packages.appflow_tracer.lib.log_utils.log_message"
+         ) as mock_log:
 
         dependencies.main()  # Execute main()
 
@@ -185,10 +209,16 @@ def test_main(mock_config):
         mock_install.assert_called_once()
 
         # Ensure backup operation was triggered
-        mock_backup.assert_called_once_with(file_path="backup.json", configs=ANY)
+        mock_backup.assert_called_once_with(
+            file_path="backup.json",
+            configs=ANY
+        )
 
         # Ensure logging was used
-        mock_log.assert_any_call(ANY, configs=ANY)
+        mock_log.assert_any_call(
+            ANY,
+            configs=ANY
+        )
 
 # ------------------------------------------------------------------------------
 
@@ -213,10 +243,16 @@ def test_main_restore(mock_config):
         dependencies.main()  # Execute main()
 
         # Ensure `restore_packages()` was called with the expected arguments
-        mock_restore.assert_called_once_with(file_path="restore.json", configs=ANY)
+        mock_restore.assert_called_once_with(
+            file_path="restore.json",
+            configs=ANY
+        )
 
         # Ensure logging was triggered
-        mock_log.assert_any_call(ANY, configs=ANY)
+        mock_log.assert_any_call(
+            ANY,
+            configs=ANY
+        )
 
 # ------------------------------------------------------------------------------
 
@@ -234,17 +270,33 @@ def test_main_migration(mock_config):
         - No installation occurs if only `--migrate-packages` is provided.
     """
 
-    with patch.object(sys, "argv", ["dependencies.py", "--migrate-packages", "migrate.json"]), \
-         patch("packages.requirements.lib.package_utils.migrate_packages") as mock_migrate, \
-         patch("packages.appflow_tracer.lib.log_utils.log_message") as mock_log:
+    with patch.object(
+            sys,
+            "argv",
+            ["dependencies.py", "--migrate-packages", "migrate.json"]
+         ), \
+         patch(
+             "packages.requirements.lib.package_utils.migrate_packages"
+         ) as mock_migrate, \
+         patch(
+             "packages.appflow_tracer.lib.log_utils.log_message"
+         ) as mock_log:
 
         dependencies.main()  # Execute main()
 
         # Convert PosixPath before logging
-        serialized_configs = serialize_configs(mock_config)
+        serialized_configs = serialize_configs(
+            mock_config
+        )
 
         # Ensure function calls receive converted configs
-        mock_migrate.assert_called_once_with(file_path="migrate.json", configs=ANY)
+        mock_migrate.assert_called_once_with(
+            file_path="migrate.json",
+            configs=ANY
+        )
 
         # Ensure logging does not fail due to PosixPath serialization
-        mock_log.assert_any_call(ANY, configs=ANY)  # Allow flexibility instead of exact match
+        mock_log.assert_any_call(
+            ANY,
+            configs=ANY
+        )  # Allow flexibility instead of exact match

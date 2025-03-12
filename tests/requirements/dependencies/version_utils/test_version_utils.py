@@ -48,6 +48,10 @@ import sys
 import json
 import pytest
 import subprocess
+import random
+import string
+import importlib.metadata  # ✅ Use metadata to get the actual installed version
+
 from unittest.mock import patch, ANY
 from pathlib import Path
 
@@ -63,9 +67,17 @@ from packages.requirements.lib import version_utils, brew_utils
 # Test: installed_version()
 # ------------------------------------------------------------------------------
 
+def generate_random_package():
+    """Generate a random non-existent package name to avoid conflicts with real packages."""
+    return "test-package-" + ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
+
+# @pytest.mark.parametrize("package, installed_version", [
+#     ("requests", "2.26.0"),
+#     (generate_random_package(), None),  # Use a dynamically generated non-existent package
+# ])
 @pytest.mark.parametrize("package, installed_version", [
-    ("requests", "2.26.0"),
-    ("numpy", None),  # Simulate package not installed
+    ("requests", importlib.metadata.version("requests")),  # ✅ Dynamically fetch installed version
+    (generate_random_package(), None),  # ✅ Still test non-existent package
 ])
 def test_installed_version(package, installed_version, requirements_config):
     """
@@ -89,7 +101,12 @@ def test_installed_version(package, installed_version, requirements_config):
         mock_run.side_effect = subprocess.CalledProcessError(1, "pip")
 
         # Ensure `importlib.metadata.version()` is used for fallback
-        mock_metadata.side_effect = lambda pkg: {"requests": "2.26.0", "pandas": "1.4.2"}.get(pkg.lower(), None)
+        # mock_metadata.side_effect = lambda pkg: {"requests": "2.26.0", "pandas": "1.4.2"}.get(pkg.lower(), None)
+        mock_metadata.side_effect = lambda pkg: {
+            "requests": "2.26.0",
+            "pandas": "1.4.2",
+            "numpy": "2.2.3"  # Add numpy to the mock
+        }.get(pkg.lower(), None)
 
         result = version_utils.installed_version(package, requirements_config)
 

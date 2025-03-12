@@ -44,21 +44,6 @@ DESCRIPTION
         - 1: Failure due to configuration loading errors.
 
 FUNCTIONS
-    load_config(json_file: str) -> dict
-        Function: load_config(json_file: str) -> dict
-
-        Description:
-            Loads JSON configuration from the specified file and returns the parsed data.
-
-        Parameters:
-            - json_file (str): The file path of the JSON configuration.
-
-        Returns:
-            - dict: Parsed JSON data as a dictionary.
-
-        Error Handling:
-            - Captures and prints errors if the file is missing or invalid.
-
     load_mock_installed() -> dict
         Function: load_mock_installed() -> dict
 
@@ -106,10 +91,14 @@ FUNCTIONS
 DATA
     BASE_INSTALLED_CONFIG = {'colors': {}, 'environment': {'BREW_AVAILABLE...
     BASE_REQUIREMENTS_CONFIG = {'colors': {}, 'environment': {'BREW_AVAILA...
-    JSON_FILE_PATH = '<project-location>/tests/mocks/...
+    INSTALLED_FILEPATH = '<project-location>/tests/mo...
+    LIB_DIR = PosixPath('<project-location>/lib')
     MOCKS_DIR = PosixPath('<project-location>/tests/m...
+    REQUIREMENTS_FILEPATH = '<project-location>/tests...
     SCRIPT_DIR = '<project-location>/tests/mocks'
-    config_data = {'colors': {}, 'environment': {'BREW_AVAILABLE': False, ...
+    installed_config = {'colors': {}, 'environment': {'BREW_AVAILABLE': Fa...
+    requirements_config = {'colors': {}, 'environment': {'BREW_AVAILABLE':...
+    validation_schema = {'requirements': [{}]}
 
 VERSION
     0.1.0

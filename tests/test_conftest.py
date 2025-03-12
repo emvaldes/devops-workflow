@@ -40,31 +40,59 @@ def test_get_base_config():
 
     package_name = "test_package"
     module_name = "test_module"
-    config = get_base_config(package_name, module_name)
+    config = get_base_config(
+        package_name,
+        module_name
+    )
 
     assert config["logging"]["package_name"] == package_name
     assert config["logging"]["module_name"] == module_name
-    assert isinstance(config["packages"]["installation"]["configs"], Path)
+    assert isinstance(
+        config["packages"]["installation"]["configs"],
+        Path
+    )
 
-def test_requirements_config(requirements_config):
+def test_requirements_config(
+    requirements_config
+):
 
     assert "logging" in requirements_config
     assert "requirements" in requirements_config
-    assert isinstance(requirements_config["requirements"], list)
-    assert len(requirements_config["requirements"]) > 0
+    assert isinstance(
+        requirements_config["requirements"],
+        list
+    )
+    assert len(
+        requirements_config["requirements"]
+    ) > 0
 
-def test_installed_config(installed_config):
+def test_installed_config(
+    installed_config
+):
 
     assert "dependencies" in installed_config
-    assert isinstance(installed_config["dependencies"], list)
+    assert isinstance(
+        installed_config["dependencies"],
+        list
+    )
 
-def test_requirements_config_path_type(requirements_config):
+def test_requirements_config_path_type(
+    requirements_config
+):
 
-    assert isinstance(requirements_config["packages"]["installation"]["configs"], Path)
+    assert isinstance(
+        requirements_config["packages"]["installation"]["configs"],
+        Path
+    )
 
-def test_installed_config_path_type(installed_config):
+def test_installed_config_path_type(
+    installed_config
+):
 
-    assert isinstance(installed_config["packages"]["installation"]["configs"], Path)
+    assert isinstance(
+        installed_config["packages"]["installation"]["configs"],
+        Path
+    )
 
 def main() -> None:
     pass

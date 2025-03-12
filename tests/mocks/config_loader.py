@@ -17,24 +17,22 @@ import json
 # Standard library imports - File system-related module
 from pathlib import Path
 
+# Define base directories
+LIB_DIR = Path(__file__).resolve().parent.parent.parent / "lib"
+if str(LIB_DIR) not in sys.path:
+    sys.path.insert(0, str(LIB_DIR))  # Dynamically add `lib/` to sys.path only if not present
+
+# # Debugging: Print sys.path to verify import paths
+# print("\n[DEBUG] sys.path contains:")
+# for path in sys.path:
+#     print(f'  - {path}')
+
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from lib import system_params as params_utils
+
 MOCKS_DIR = Path(__file__).resolve().parent  # `tests/mocks/`
-
-def load_config(json_file: str) -> dict:
-    """
-    Load JSON configuration from the specified file.
-
-    :param json_file: Path to the JSON configuration file.
-    :return: Parsed JSON data as a dictionary.
-    """
-    try:
-        with open(json_file, "r", encoding="utf-8") as file:
-            return json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        print(f"Error loading JSON file: {e}")
-        return {}
 
 def load_mock_requirements() -> dict:
 
@@ -69,35 +67,48 @@ def load_mock_installed() -> dict:
 def main() -> None:
     pass
 
+validation_schema = {
+    "requirements": [{}]  # Validate that the 'requirements' field is a list
+}
+
 # Determine the absolute path of the JSON file relative to this script
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-JSON_FILE_PATH = os.path.join(SCRIPT_DIR, "mock_requirements.json")
+REQUIREMENTS_FILEPATH=os.path.join(SCRIPT_DIR, "mock_requirements.json")
+INSTALLED_FILEPATH=os.path.join(SCRIPT_DIR, "mock_installed.json")
 
-# Load configuration
-config_data = load_config(JSON_FILE_PATH)
+# Load Requirements configuration
+requirements_config = params_utils.load_json_config(
+    json_filepath=REQUIREMENTS_FILEPATH,
+    validation_schema=validation_schema
+)
+# print(f'Config Data:\n{json.dumps(requirements_config, indent=4)}')
 
-# Apply transformation: Empty the "requirements" list
-if "requirements" in config_data and isinstance(
-    config_data["requirements"],
-    list
-):
-    config_data["requirements"] = []
+if requirements_config:
+    if "requirements" in requirements_config and isinstance(
+        requirements_config["requirements"],
+        list
+    ):
+        requirements_config["requirements"] = []
 
-# Assign the transformed configuration
 # Base structure for `mock_requirements.json` (policy settings)
-BASE_REQUIREMENTS_CONFIG = config_data
+BASE_REQUIREMENTS_CONFIG = requirements_config
+
+# Load Requirements configuration
+installed_config = params_utils.load_json_config(
+    json_filepath=INSTALLED_FILEPATH,
+    validation_schema=validation_schema
+)
+# print(f'Config Data:\n{json.dumps(installed_config, indent=4)}')
+
+if installed_config:
+    if "requirements" in installed_config and isinstance(
+        installed_config["requirements"],
+        list
+    ):
+        installed_config["requirements"] = []
 
 # Base structure for `mock_installed.json` (installed packages)
-BASE_INSTALLED_CONFIG = {
-    "colors": BASE_REQUIREMENTS_CONFIG["colors"],
-    "logging": BASE_REQUIREMENTS_CONFIG["logging"],
-    "tracing": BASE_REQUIREMENTS_CONFIG["tracing"],
-    "events": BASE_REQUIREMENTS_CONFIG["events"],
-    "stats": BASE_REQUIREMENTS_CONFIG["stats"],
-    "requirements": BASE_REQUIREMENTS_CONFIG["requirements"],
-    "packages": BASE_REQUIREMENTS_CONFIG["packages"],
-    "environment": BASE_REQUIREMENTS_CONFIG["environment"]
-}
+BASE_INSTALLED_CONFIG = installed_config
 
 # Load documentation dynamically and apply module, function and objects docstrings
 from lib.pydoc_loader import load_pydocs

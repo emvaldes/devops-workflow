@@ -201,21 +201,78 @@ def installed_version(package: str, configs: dict) -> Optional[str]:
                 configs=configs
             )
 
-    # If not found, fallback to `importlib.metadata.version()`
+    # # If not found, fallback to `importlib.metadata.version()`
+    # try:
+    #     version = importlib.metadata.version(package)
+    #     log_utils.log_message(
+    #         f'\n{debug_package} detected via importlib: {version}',
+    #         environment.category.debug.id,
+    #         configs=configs
+    #     )
+    #     return version
+    # except importlib.metadata.PackageNotFoundError:
+    #     log_utils.log_message(
+    #         f'{debug_package} NOT found via importlib.',
+    #         environment.category.debug.id,
+    #         configs=configs
+    #     )
+    #     return "not installed"  # Ensure we return a value instead of None
+    # except KeyError:  # Handle missing 'Version' field explicitly
+    #     log_utils.log_message(
+    #         f'{debug_package} metadata exists but lacks a version field.',
+    #         environment.category.debug.id,
+    #         configs=configs
+    #     )
+    #     return "unknown"  # Avoid crash when 'Version' field is missing
+
+    # try:
+    #     version = importlib.metadata.version(package)
+    #
+    #     if not version:  # ✅ Covers both None and empty string cases
+    #         raise importlib.metadata.PackageNotFoundError  # ✅ Raise the correct exception
+    #
+    #     log_utils.log_message(
+    #         f'\n{debug_package} detected via importlib: {version}',
+    #         environment.category.debug.id,
+    #         configs=configs
+    #     )
+    #     return version
+    #
+    # except (importlib.metadata.PackageNotFoundError, KeyError):  # ✅ Catch both exceptions properly
+    #     log_utils.log_message(
+    #         f'{debug_package} NOT found via importlib or missing version field.',
+    #         environment.category.debug.id,
+    #         configs=configs
+    #     )
+    #     return None  # ✅ Ensures None is returned correctly
+
     try:
-        version = importlib.metadata.version(package)
-        log_utils.log_message(
-            f'\n{debug_package} detected via importlib: {version}',
-            environment.category.debug.id,
-            configs=configs
-        )
-        return version
+        dist = importlib.metadata.distribution(package)  # ✅ Fetch distribution first
+
+        if "Version" in dist.metadata:  # ✅ Explicitly check if "Version" exists
+            version = dist.metadata["Version"]
+
+            log_utils.log_message(
+                f'\n{debug_package} detected via importlib: {version}',
+                environment.category.debug.id,
+                configs=configs
+            )
+            return version
+        else:
+            log_utils.log_message(
+                f'{debug_package} metadata exists but lacks a version field.',
+                environment.category.debug.id,
+                configs=configs
+            )
+            return None  # ✅ Return None if "Version" is missing
+
     except importlib.metadata.PackageNotFoundError:
         log_utils.log_message(
             f'{debug_package} NOT found via importlib.',
             environment.category.debug.id,
             configs=configs
         )
+        return None  # ✅ Ensures proper return when package is missing
 
     debug_checking = f'[DEBUG]   Checking "{package}"'
     # Use the correct package manager based on INSTALL_METHOD
