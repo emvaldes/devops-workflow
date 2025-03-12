@@ -55,15 +55,15 @@ def collect_files(
     if not target_path.is_dir():
         raise ValueError(f"Error: {target_dir} is not a valid directory.")
 
-    ignore_set = set(ignore_list) if ignore_list else set()  # ✅ Convert to set for faster lookups
+    ignore_set = set(ignore_list) if ignore_list else set()  # Convert to set for faster lookups
 
-    # ✅ Collect only non-empty matching files
+    # Collect only non-empty matching files
     files = [
         str(file.resolve())
         for ext in extensions
         for file in target_path.rglob(f"*{ext}")
-        if file.stat().st_size > 0  # ✅ Ensure file is not empty
-        and not any(file.match(pattern) for pattern in ignore_set)  # ✅ Ignore files in `ignore_list`
+        if file.stat().st_size > 0  # Ensure file is not empty
+        and not any(file.match(pattern) for pattern in ignore_set)  # Ignore files in `ignore_list`
     ]
     return files
 
@@ -139,7 +139,7 @@ def main():
             configs=CONFIGS
         )
         file_extensions = [".py"]  ## Defined by CLI flag
-        ignore_list = ["conftest.py", "tests/mocks", ".pydocs/*"]  # ✅ Ignore conftest.py & test-related paths
+        ignore_list = ["conftest.py", "tests/mocks", ".pydocs/*"]  # Ignore conftest.py & test-related paths
         # files_list = collect_files(
         #     project_path,
         #     file_extensions

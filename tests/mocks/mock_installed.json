@@ -1,4 +1,5 @@
 {
+    "colors": {},
     "logging": {
         "enable": true,
         "max_logfiles": 5,
@@ -13,6 +14,8 @@
             "compressed": false
         }
     },
+    "events": {},
+    "stats": {},
     "requirements": [
         {
             "package": "setuptools",
@@ -42,6 +45,12 @@
             }
         }
     ],
+    "packages": {
+        "installation": {
+            "forced": false,
+            "configs": "packages/requirements/installed.json"
+        }
+    },
     "environment": {
         "OS": "",
         "INSTALL_METHOD": "",

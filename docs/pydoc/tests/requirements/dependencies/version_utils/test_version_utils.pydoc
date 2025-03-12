@@ -1,12 +1,14 @@
 ### Documentation for tests/requirements/dependencies/version_utils/test_version_utils.py
 
-⚠️ No .pydoc file found at <project-location>/tests/mocks/.pydocs/pydoc.__init__.py.
 Help on module tests.requirements.dependencies.version_utils.test_version_utils in tests.requirements.dependencies.version_utils:
 
 NAME
     tests.requirements.dependencies.version_utils.test_version_utils - # File: ./tests/requirements/dependencies/version_utils/test_version_utils.py
 
 FUNCTIONS
+    generate_random_package()
+        Generate a random non-existent package name to avoid conflicts with real packages.
+
     test_brew_latest_version(package, latest_version)
         Ensure `brew_utils.latest_version()` correctly retrieves the latest Homebrew package version.
 
@@ -41,8 +43,6 @@ FUNCTIONS
 DATA
     ANY = <ANY>
     ROOT_DIR = PosixPath('<project-location>')
-    __module_name__ = 'version_utils'
-    __package_name__ = 'requirements'
 
 VERSION
     0.1.1

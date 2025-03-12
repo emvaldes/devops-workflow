@@ -2,8 +2,8 @@
 
 # File: ./tests/requirements/dependencies/policy_utils/test_policy_utils.py
 
-__package_name__ = "requirements"
-__module_name__ = "policy_utils"
+__package__ = "requirements"
+__module__ = "policy_utils"
 
 __version__ = "0.1.0"  ## Test Module version
 
@@ -76,11 +76,11 @@ def test_policy_management(requirements_config, installed_config):
         - `coverage` should be **marked as `installing` or `upgraded`**.
     """
 
-    # ✅ Ensure the structure is correct before continuing
+    # Ensure the structure is correct before continuing
     assert "requirements" in requirements_config, "ERROR: Missing 'requirements' in requirements_config."
     assert len(requirements_config["requirements"]) > 0, "ERROR: No dependencies found in mock_requirements.json."
 
-    # ✅ Ensure mock-installed config has data
+    # Ensure mock-installed config has data
     assert "requirements" in installed_config, "ERROR: Missing 'requirements' in installed_config."
     assert len(installed_config["requirements"]) > 0, "ERROR: No installed packages found."
 
@@ -91,7 +91,7 @@ def test_policy_management(requirements_config, installed_config):
          patch("packages.requirements.lib.package_utils.installed_configfile", return_value=Path("/tmp/test_installed.json")), \
          patch("packages.appflow_tracer.lib.log_utils.log_message") as mock_log:
 
-        # ✅ Mock installed & latest versions dynamically
+        # Mock installed & latest versions dynamically
         installed_versions = {dep["package"]: dep["version"]["latest"] for dep in installed_mock}
         mock_installed.side_effect = lambda pkg, _: installed_versions.get(pkg, None)
         mock_latest.side_effect = lambda pkg, _: {
@@ -102,14 +102,14 @@ def test_policy_management(requirements_config, installed_config):
 
         result = policy_utils.policy_management(requirements_config)
 
-        # ✅ Ensure package statuses are correctly assigned
+        # Ensure package statuses are correctly assigned
         status_map = {dep["package"]: dep["version"]["status"] for dep in result}
 
         assert status_map["setuptools"] == "upgraded"
         assert status_map["pytest"] in ["matched", "upgraded"]  # Allow flexibility in status
-        assert status_map["coverage"] in ["installing", "upgraded"]  # ✅ Coverage might be upgrading instead of installing
+        assert status_map["coverage"] in ["installing", "upgraded"]  # Coverage might be upgrading instead of installing
 
-        # ✅ Allow more flexible log validation
+        # Allow more flexible log validation
         log_messages = [call[0][0] for call in mock_log.call_args_list]
 
         assert any("[POLICY]  Package \"coverage\"" in msg for msg in log_messages), \

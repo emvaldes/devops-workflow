@@ -16,7 +16,7 @@ FUNCTIONS
             - `None` when the package is not found.
 
     test_check_availability_failure()
-        ❌ **Test: Homebrew Availability (Failure)**
+        **Test: Homebrew Availability (Failure)**
 
         **Purpose:**
         - Ensure `check_availability()` correctly identifies when Homebrew is **not installed**.
@@ -32,7 +32,7 @@ FUNCTIONS
         - Homebrew is **not installed** or its binary is not in the system `PATH`.
 
     test_check_availability_success()
-        ✅ **Test: Homebrew Availability (Success)**
+        **Test: Homebrew Availability (Success)**
 
         **Purpose:**
         - Verify that `check_availability()` correctly detects when Homebrew is installed.
@@ -48,7 +48,7 @@ FUNCTIONS
         - Homebrew is installed and accessible via `/usr/local/bin/brew`.
 
     test_detect_environment_brew()
-        ✅ **Test: Detect Homebrew-Managed Python Environment**
+        **Test: Detect Homebrew-Managed Python Environment**
 
         **Purpose:**
         - Validate that `detect_environment()` correctly identifies a **Homebrew-managed Python installation**.
@@ -65,7 +65,7 @@ FUNCTIONS
         - The system has Homebrew installed and Python is managed by Homebrew.
 
     test_detect_environment_standalone()
-        ❌ **Test: Detect Standalone Python Environment**
+        **Test: Detect Standalone Python Environment**
 
         **Purpose:**
         - Ensure `detect_environment()` correctly identifies when Python is **not managed by Homebrew**.
@@ -90,7 +90,7 @@ FUNCTIONS
             - `None` when the package is not found.
 
     test_latest_version_success(installed_config)
-        ✅ **Test: Retrieve Latest Available Version of a Homebrew Package**
+        **Test: Retrieve Latest Available Version of a Homebrew Package**
 
         **Purpose:**
         - Validate that `latest_version(package)` correctly extracts the latest stable version of a Homebrew package.
@@ -106,7 +106,7 @@ FUNCTIONS
         - The package is available in Homebrew and has a newer version.
 
     test_version_installed(requirements_config)
-        ✅ **Test: Retrieve Installed Package Version (Homebrew)**
+        **Test: Retrieve Installed Package Version (Homebrew)**
 
         **Purpose:**
         - Validate that `version(package)` correctly retrieves the installed version of a Homebrew-managed package.
@@ -122,7 +122,7 @@ FUNCTIONS
         - The package exists and is installed via Homebrew.
 
     test_version_not_installed()
-        ❌ **Test: Handle Missing Package in Homebrew**
+        **Test: Handle Missing Package in Homebrew**
 
         **Purpose:**
         - Ensure `version(package)` returns `None` when the package is not installed.
@@ -138,8 +138,6 @@ FUNCTIONS
 
 DATA
     ROOT_DIR = PosixPath('<project-location>')
-    __module_name__ = 'brew_utils'
-    __package_name__ = 'requirements'
     pytestmark = MarkDecorator(mark=Mark(name='skipif', args=(Fal...': 'Ho...
 
 VERSION

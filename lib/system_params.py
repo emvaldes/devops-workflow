@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 
 # File: ./lib/system_params.py
+
+__package__ = "lib"
+__module__ = "system_params"
+
 __version__ = "0.1.0"  ## Package version
 
 # Standard library imports - Core system and OS interaction modules
@@ -18,7 +22,12 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 # Standard library imports - Type hinting (kept in a separate group)
-from typing import Optional  # Import Optional for type hints
+from typing import (
+    Any,
+    Dict,
+    Optional,
+    Union
+)  # Import Any, Optional and Dict for type hints
 
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -38,20 +47,114 @@ from system_variables import (
     default_params_filepath
 )
 
-def load_json_config(
-    runtime_params_filepath: Path
-) -> dict:
+# def load_json_config(
+#     runtime_params_filepath: Path
+# ) -> dict:
+#
+#     try:
+#         with open(runtime_params_filepath, "r") as file:
+#             data = json.load(file)
+#             if not data:
+#                 raise ValueError(f'[ERROR] Empty JSON file "{runtime_params_filepath}". Please check the contents.')
+#             return data
+#     except json.JSONDecodeError as e:
+#         raise ValueError(f'[ERROR] Invalid JSON structure in "{runtime_params_filepath}".\nDetails: {e}')
+#     except Exception as e:
+#         raise RuntimeError(f'[ERROR] Unable to read "{runtime_params_filepath}". Details: {e}')
 
+def load_json_config(
+    json_filepath: str = "",  # Path to the JSON file
+    validation_schema: Optional[dict] = None
+) -> Union[bool, dict]:
+    """
+    Loads a JSON file and returns it as a dictionary.
+    It also validates the JSON structure if a validation_schema is provided.
+
+    :param json_filepath: Path to the JSON file to be loaded.
+    :param validation_schema: Optional schema for validating the loaded JSON structure.
+    :return: Parsed JSON data as a dictionary if successful, False otherwise.
+    """
+    def _validate_json(data: dict, validation_schema: Optional[dict], parent_key: str = '') -> bool:
+        """
+        Validates the parsed JSON data against the provided schema.
+
+        :param data: The loaded JSON data (parsed into a dictionary).
+        :param validation_schema: A dictionary that specifies the required keys and values.
+        :param parent_key: The parent key used for nested validation (used for error reporting).
+        :return: True if the validation passes, False otherwise.
+        """
+        if not validation_schema:
+            return True  # No validation required
+
+        for key, expected_value in validation_schema.items():
+            full_key = f"{parent_key}.{key}" if parent_key else key
+
+            # Check if the key exists in the data
+            if key not in data:
+                print(f"[ERROR] Missing required key: {full_key}")
+                return False
+
+            # Check if the value matches the expected type
+            if isinstance(expected_value, type):
+                # If expected_value is a type, ensure the data is of that type
+                if not isinstance(data[key], expected_value):
+                    print(f"[ERROR] Expected '{full_key}' to be of type {expected_value}, but got {type(data[key])}.")
+                    return False
+
+            elif isinstance(expected_value, list):
+                # If expected value is a list, ensure data[key] is a list
+
+                if not isinstance(data[key], list):
+                    print(f"[ERROR] Expected '{full_key}' to be a list, but got {type(data[key])}.")
+                    return False
+                # If the expected value list contains a dict, check if all items in data[key] are dicts
+                if expected_value and isinstance(expected_value[0], dict):
+                    if not all(isinstance(item, dict) for item in data[key]):
+                        print(f"[ERROR] Expected '{full_key}' to be a list of dictionaries, but found: {data[key]}")
+                        return False
+
+        return True
+
+    # Validate the file and read the JSON data
+    json_filepath = Path(json_filepath)
+
+    # Check if the file exists
+    if not json_filepath.exists():
+        print(f"[ERROR] JSON file not found at {json_filepath}")
+        return False
+
+    # Check if the file is indeed a JSON file
+    if not json_filepath.suffix.lower() == '.json':
+        print(f"[ERROR] File at {json_filepath} is not a JSON file.")
+        return False
+
+    # Try to open and parse the JSON file
     try:
-        with open(runtime_params_filepath, "r") as file:
+        with open(json_filepath, "r", encoding="utf-8") as file:
             data = json.load(file)
+            # print(f"DEBUG: Raw JSON Data from {json_filepath} -> {data}")  # ✅ Verify if JSON is read correctly
+
+            # Check if the data is empty
             if not data:
-                raise ValueError(f'[ERROR] Empty JSON file "{runtime_params_filepath}". Please check the contents.')
-            return data
+                print(f"[ERROR] JSON file at {json_filepath} is empty.")
+                return False
+
+            # If validation schema is provided, apply the validation
+            if validation_schema:
+                if not _validate_json(data, validation_schema):
+                    return False
+
+            return data  # ✅ Always return loaded data instead of modifying the object
+
+    except FileNotFoundError as e:
+        print(f"[ERROR] File not found: {e}")
+        return False
     except json.JSONDecodeError as e:
-        raise ValueError(f'[ERROR] Invalid JSON structure in "{runtime_params_filepath}".\nDetails: {e}')
+        print(f"[ERROR] Failed to decode JSON in file {json_filepath}. Details: {e}")
+        return False
     except Exception as e:
-        raise RuntimeError(f'[ERROR] Unable to read "{runtime_params_filepath}". Details: {e}')
+        print(f"[ERROR] Unexpected error while loading JSON from {json_filepath}. Details: {e}")
+        return False
 
 def get_runtime_variable(
     name: str,

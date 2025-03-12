@@ -2,8 +2,8 @@
 
 # File: ./tests/requirements/dependencies/package_utils/test_package_utils.py
 
-__package_name__ = "requirements"
-__module_name__ = "package_utils"
+__package__ = "requirements"
+__module__ = "package_utils"
 
 __version__ = "0.1.0"  ## Test Module version
 
@@ -128,21 +128,21 @@ def test_backup_packages(requirements_config):
 
     with patch("builtins.open", mock_file), \
          patch("subprocess.run") as mock_run, \
-         patch("packages.appflow_tracer.lib.log_utils.log_message") as mock_log:  # ✅ Mock log_message
+         patch("packages.appflow_tracer.lib.log_utils.log_message") as mock_log:  # Mock log_message
 
         package_utils.backup_packages("test_backup.txt", requirements_config)
 
-        # ✅ Ensure subprocess is correctly called to get package list
+        # Ensure subprocess is correctly called to get package list
         mock_run.assert_called_with(
             [sys.executable, "-m", "pip", "freeze"],
             stdout=mock_file.return_value,
             check=True
         )
 
-        # ✅ Ensure file writing is correctly triggered
+        # Ensure file writing is correctly triggered
         mock_file.assert_called_with("test_backup.txt", "w")
 
-        # ✅ Ensure logging was triggered (but no need for `configs["logging"]`)
+        # Ensure logging was triggered (but no need for `configs["logging"]`)
         mock_log.assert_any_call(
             "[INFO] Installed packages list saved to test_backup.txt",
             "INFO",
@@ -163,20 +163,20 @@ def test_install_package_pip(requirements_config):
         - Mocks `log_utils.log_message()` to prevent KeyError.
     """
 
-    package_name = requirements_config["requirements"][0]["package"]  # ✅ Use correct key
+    package_name = requirements_config["requirements"][0]["package"]  # Use correct key
 
     with patch("subprocess.run") as mock_run, \
          patch("packages.appflow_tracer.lib.log_utils.log_message") as mock_log:
 
         package_utils.install_package(package_name, configs=requirements_config)
 
-        # ✅ Ensure subprocess is correctly called to install package
+        # Ensure subprocess is correctly called to install package
         mock_run.assert_called_with(
             [sys.executable, "-m", "pip", "install", "--quiet", "--user", package_name],
             check=False
         )
 
-        # ✅ Ensure log_message was triggered with proper message
+        # Ensure log_message was triggered with proper message
         mock_log.assert_any_call(
             f'[INSTALL] Installing "{package_name}" via Pip (default mode)...',
             "ERROR",
@@ -197,7 +197,7 @@ def test_install_package_brew(installed_config):
         - Mocks `log_message()` to prevent `KeyError`.
     """
 
-    # ✅ Ensure the installed_config contains dependencies before proceeding
+    # Ensure the installed_config contains dependencies before proceeding
     assert len(installed_config["requirements"]) > 0, "ERROR: No packages found in mock_installed.json"
 
     package_name = installed_config["requirements"][0]["package"]
@@ -214,16 +214,16 @@ def test_install_package_brew(installed_config):
             }
         )
 
-        # ✅ Print actual logs for debugging
+        # Print actual logs for debugging
         print("LOGGED MESSAGES:", mock_log.call_args_list)
 
-        # ✅ Ensure `brew install` was called
+        # Ensure `brew install` was called
         mock_run.assert_called_with(["brew", "install", package_name], check=False)
 
-        # ✅ Normalize log messages for assertion
+        # Normalize log messages for assertion
         logged_messages = [" ".join(str(call.args[0]).split()) for call in mock_log.call_args_list]
 
-        # ✅ Ensure the expected message is present in any logged call
+        # Ensure the expected message is present in any logged call
         expected_log = f"[INSTALL] Installing \"{package_name}\" via Homebrew..."
         assert any(expected_log in msg for msg in logged_messages), f"Expected log message '{expected_log}' not found in {logged_messages}"
 
@@ -251,24 +251,24 @@ def test_install_requirements_adhoc(requirements_config):
     Ensure `install_requirements()` correctly bypasses policy checks when `status="adhoc"`.
     """
 
-    # ✅ Ensure config has the required key before modification
+    # Ensure config has the required key before modification
     assert "requirements" in requirements_config, "ERROR: Missing 'requirements' key in config."
     assert len(requirements_config["requirements"]) > 0, "ERROR: No dependencies found in requirements."
 
-    # ✅ Modify `requirements_config` to force installation
+    # Modify `requirements_config` to force installation
     requirements_config["requirements"][0]["version"]["status"] = "adhoc"
 
     with patch("packages.requirements.lib.package_utils.install_package") as mock_install, \
          patch("packages.appflow_tracer.lib.log_utils.log_message") as mock_log:
 
-        # ✅ Execute package installation
+        # Execute package installation
         package_utils.install_requirements(requirements_config)
 
-        # ✅ Extract log messages dynamically
+        # Extract log messages dynamically
         log_messages = [call.args[0] for call in mock_log.call_args_list]
         print("Captured Log Messages:", log_messages)
 
-        # ✅ Search for expected patterns in logs (more flexible)
+        # Search for expected patterns in logs (more flexible)
         expected_keywords = [
             "[AD-HOC] Forcing",
             "installation (bypassing policy checks)"
@@ -278,7 +278,7 @@ def test_install_requirements_adhoc(requirements_config):
             for message in log_messages
         ), "Expected '[AD-HOC]' log message not found!"
 
-        # ✅ Ensure `install_package()` was called for **all** dependencies
+        # Ensure `install_package()` was called for **all** dependencies
         for dep in requirements_config["requirements"]:
             mock_install.assert_any_call(dep["package"], None, requirements_config)
 
@@ -294,16 +294,16 @@ def test_restore_packages(requirements_config):
     with patch("subprocess.run") as mock_run, \
          patch("packages.appflow_tracer.lib.log_utils.log_message") as mock_log:
 
-        # ✅ Use structured config instead of empty `{}`
+        # Use structured config instead of empty `{}`
         package_utils.restore_packages("test_backup.txt", requirements_config)
 
-        # ✅ Ensure subprocess was called correctly
+        # Ensure subprocess was called correctly
         mock_run.assert_called_with(
             [sys.executable, "-m", "pip", "install", "--user", "-r", "test_backup.txt"],
             check=True
         )
 
-        # ✅ Ensure log message was generated
+        # Ensure log message was generated
         mock_log.assert_any_call(
             "[INFO] Installed packages restored successfully from test_backup.txt.",
             "INFO",
@@ -319,7 +319,7 @@ def test_review_packages(installed_config):
     Ensure `review_packages()` correctly evaluates installed package versions using `mock_installed.json`.
     """
 
-    # ✅ Ensure the config has the correct key before accessing it
+    # Ensure the config has the correct key before accessing it
     assert "requirements" in installed_config, "ERROR: Missing 'requirements' key in installed_config."
     assert len(installed_config["requirements"]) > 0, "ERROR: No installed packages found in mock_installed.json."
 

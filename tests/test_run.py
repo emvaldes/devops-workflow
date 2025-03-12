@@ -38,21 +38,35 @@ import run
 from packages.appflow_tracer import tracing
 
 # Convert PosixPath objects into strings for JSON serialization
-def serialize_configs(configs):
+def serialize_configs(
+    configs
+):
 
-    return json.loads(json.dumps(configs, default=lambda o: str(o) if isinstance(o, Path) else o))
+    return json.loads(
+        json.dumps(
+            configs,
+            default=lambda o: str(o) if isinstance(o, Path) else o
+        )
+    )
 
 # ------------------------------------------------------------------------------
 # Test: parse_arguments()
 # ------------------------------------------------------------------------------
 
-@pytest.mark.parametrize("args, expected_attr, expected_value", [
-    ([], "pydoc", False),  # Default value (no arguments)
-    (["--pydoc"], "pydoc", True),  # Enable PyDoc generation
-    (["--coverage"], "coverage", True),  # Enable Coverage Mode
-    (["--target", "tests/example.py"], "target", "tests/example.py"),  # Specify target file
-])
-def test_parse_arguments(args, expected_attr, expected_value):
+@pytest.mark.parametrize(
+    "args, expected_attr, expected_value",
+    [
+        ([], "pydoc", False),  # Default value (no arguments)
+        (["--pydoc"], "pydoc", True),  # Enable PyDoc generation
+        (["--coverage"], "coverage", True),  # Enable Coverage Mode
+        (["--target", "tests/example.py"], "target", "tests/example.py"),  # Specify target file
+    ]
+)
+def test_parse_arguments(
+    args,
+    expected_attr,
+    expected_value
+):
 
     test_args = ["run.py"] + args  # Ensure script name is included
 
@@ -62,7 +76,8 @@ def test_parse_arguments(args, expected_attr, expected_value):
         parsed_args = run.parse_arguments()  # Call the function
 
         # Ensure correct argument parsing
-        assert getattr(parsed_args, expected_attr) == expected_value, \
+        assert getattr(
+            parsed_args, expected_attr) == expected_value, \
             f"Expected `{expected_attr}={expected_value}`, but got `{getattr(parsed_args, expected_attr, None)}`"
 
         mock_exit.assert_not_called()  # Ensure no forced exit happened
@@ -74,13 +89,24 @@ def test_parse_arguments(args, expected_attr, expected_value):
 @pytest.fixture
 def mock_project_structure():
 
-    with patch("pathlib.Path.is_dir", return_value=True), \
-         patch("pathlib.Path.rglob", return_value=[Path("mock_project/mock_file.py")]), \
-         patch("pathlib.Path.stat", return_value=MagicMock(st_size=10)):  # Simulate non-empty file
+    with patch(
+            "pathlib.Path.is_dir",
+            return_value=True
+         ), \
+         patch(
+            "pathlib.Path.rglob",
+            return_value=[Path("mock_project/mock_file.py")]
+         ), \
+         patch(
+            "pathlib.Path.stat",
+            return_value=MagicMock(st_size=10)
+         ):  # Simulate non-empty file
 
         yield Path("mock_project"), Path("mock_project/mock_file.py")
 
-def test_collect_files(mock_project_structure):
+def test_collect_files(
+    mock_project_structure
+):
 
     base_dir, mock_file = mock_project_structure
     files_list = run.collect_files(base_dir, extensions=[".py"])
@@ -140,13 +166,24 @@ def test_collect_files(mock_project_structure):
 
 @patch("lib.pydoc_generator.create_pydocs")
 @patch("subprocess.run")
-def test_main_pydoc(mock_subprocess, mock_create_pydocs, monkeypatch, tmp_path):
+def test_main_pydoc(
+    mock_subprocess,
+    mock_create_pydocs,
+    monkeypatch,
+    tmp_path
+):
 
-    monkeypatch.setattr("sys.argv", ["run.py", "--pydoc"])
+    monkeypatch.setattr(
+        "sys.argv",
+        ["run.py", "--pydoc"]
+    )
     mock_file = tmp_path / "mock_file.py"
     mock_file.write_text("def mock_function(): pass")
 
-    with patch("run.collect_files", return_value=[mock_file]):
+    with patch(
+        "run.collect_files",
+        return_value=[mock_file]
+    ):
         run.main()
 
     mock_create_pydocs.assert_called_once_with(
@@ -161,7 +198,10 @@ def test_main_pydoc(mock_subprocess, mock_create_pydocs, monkeypatch, tmp_path):
 # ------------------------------------------------------------------------------
 
 @patch("subprocess.run")
-@patch("subprocess.check_output", return_value="mock coverage output\n")  # Fix TypeError issue
+@patch(
+    "subprocess.check_output",
+    return_value="mock coverage output\n"
+)  # Fix TypeError issue
 @patch("lib.pydoc_generator.generate_report")  # Mock PyDoc since coverage is part of it
 def test_main_coverage(
     mock_generate_report,

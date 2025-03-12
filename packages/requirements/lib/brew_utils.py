@@ -51,8 +51,8 @@ from packages.appflow_tracer.lib import log_utils
 @lru_cache(maxsize=1)  # Cache the result to avoid redundant subprocess calls
 def check_availability() -> bool:
 
-    if sys.platform != "darwin":  # ✅ Ensure it only runs on macOS
-        return False  # ✅ Prevents false positives on Ubuntu runners
+    if sys.platform != "darwin":  # Ensure it only runs on macOS
+        return False  # Prevents false positives on Ubuntu runners
 
     # Fast check: If Brew binary is not found, return False immediately
     brew_path = shutil.which("brew")

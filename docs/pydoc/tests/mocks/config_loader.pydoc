@@ -1,6 +1,5 @@
 ### Documentation for tests/mocks/config_loader.py
 
-⚠️ No .pydoc file found at <project-location>/tests/mocks/.pydocs/pydoc.__init__.py.
 Help on module tests.mocks.config_loader in tests.mocks:
 
 NAME
@@ -8,100 +7,98 @@ NAME
 
 DESCRIPTION
     Description:
-        Mock Configuration Loader for Test Environments
+        Mock Configuration Loader Module
 
-        This module provides structured mock configuration files for testing purposes. It ensures
-        that test cases operate with predictable configuration data by loading predefined JSON files
-        (`mock_requirements.json` and `mock_installed.json`).
+        This module provides utilities for loading mock JSON-based configurations used
+        in testing environments. It dynamically loads and processes configuration files,
+        ensuring structured fallback handling and maintaining data integrity.
 
     Core Features:
-        - Loads `mock_requirements.json` for testing dependency policies.
-        - Loads `mock_installed.json` for simulating installed packages.
-        - Ensures missing configuration fields are automatically populated.
-        - Prevents test failures due to missing or incomplete configuration files.
-
-    Expected Behavior:
-        - If `mock_requirements.json` or `mock_installed.json` is missing, a default structure is used.
-        - Test cases can rely on consistent configuration values.
-        - Returns structured dictionaries with all required configuration fields.
-
-    Dependencies:
-        - json (for reading and writing structured data)
-        - pathlib (for managing file paths)
+        - JSON Configuration Loading: Reads and validates structured JSON files.
+        - Base Configuration Handling: Ensures required fields exist in loaded configurations.
+        - Mock Data Processing: Allows simulated testing of dependency behaviors.
+        - Error Handling: Captures and logs missing or malformed JSON files.
 
     Usage:
-        ```python
-        from tests.mocks.config_loader import load_mock_requirements, load_mock_installed
+        To load mock requirements:
+            from tests.mocks.config_loader import load_mock_requirements
+            mock_config = load_mock_requirements()
 
-        requirements = load_mock_requirements()
-        installed = load_mock_installed()
-        ```
+        To load installed package mock data:
+            from tests.mocks.config_loader import load_mock_installed
+            installed_config = load_mock_installed()
+
+    Dependencies:
+        - sys - Handles system path modifications.
+        - os - Provides file system utilities.
+        - json - Loads and validates JSON-based configuration data.
+        - pathlib - Ensures safe file path resolution.
+
+    Global Behavior:
+        - Loads mock configuration data dynamically.
+        - Ensures missing configuration fields are populated with default values.
+        - Prevents errors due to missing or malformed configuration files.
+
+    Exit Codes:
+        - 0: Execution completed successfully.
+        - 1: Failure due to configuration loading errors.
 
 FUNCTIONS
     load_mock_installed() -> dict
-        Function: load_mock_installed()
+        Function: load_mock_installed() -> dict
 
         Description:
-            Loads and returns the contents of `mock_installed.json`, ensuring
-            that all required fields are present. If the file is missing, a default
-            base configuration is returned.
+            Loads and returns the contents of `mock_installed.json`, ensuring missing fields are populated.
 
         Parameters:
             - None
 
         Returns:
-            - dict: A structured dictionary representing the mock installed package configuration.
+            - dict: The processed installed package configuration dictionary.
 
         Behavior:
-            - If `mock_installed.json` exists, its contents are loaded.
-            - If the file is missing, a predefined base configuration is used.
-            - Ensures all required keys are present in the loaded data.
-
-        Example:
-            ```python
-            installed = load_mock_installed()
-            print(installed["packages"]["installation"]["configs"])
-            ```
-
-        Notes:
-            - Used for testing dependency installations and package state validation.
-            - Guarantees test cases receive structured data.
+            - Ensures structured test data for installed dependencies.
+            - Uses `BASE_INSTALLED_CONFIG` as a fallback if the file is missing.
 
     load_mock_requirements() -> dict
-        Function: load_mock_requirements()
+        Function: load_mock_requirements() -> dict
 
         Description:
-            Loads and returns the contents of `mock_requirements.json`, ensuring
-            that all required fields are present. If the file is missing, a default
-            base configuration is returned.
+            Loads and returns the contents of `mock_requirements.json`, ensuring missing fields are populated.
 
         Parameters:
             - None
 
         Returns:
-            - dict: A structured dictionary representing the mock requirements configuration.
+            - dict: The processed configuration dictionary with all necessary fields.
 
         Behavior:
-            - If `mock_requirements.json` exists, its contents are loaded.
-            - If the file is missing, a predefined base configuration is used.
-            - Ensures all required keys are present in the loaded data.
-
-        Example:
-            ```python
-            config = load_mock_requirements()
-            print(config["logging"]["enable"])  # True
-            ```
-
-        Notes:
-            - Prevents test failures due to missing configuration files.
-            - Populates default values for missing fields.
+            - Ensures a structured mock environment for package requirements.
+            - Uses `BASE_REQUIREMENTS_CONFIG` as a fallback if the file is missing.
 
     main() -> None
+        Function: main() -> None
+
+        Description:
+            Placeholder function for module execution.
+
+        Parameters:
+            - None
+
+        Returns:
+            - None
 
 DATA
     BASE_INSTALLED_CONFIG = {'colors': {}, 'environment': {'BREW_AVAILABLE...
     BASE_REQUIREMENTS_CONFIG = {'colors': {}, 'environment': {'BREW_AVAILA...
+    INSTALLED_FILEPATH = '<project-location>/tests/mo...
+    LIB_DIR = PosixPath('<project-location>/lib')
     MOCKS_DIR = PosixPath('<project-location>/tests/m...
+    REQUIREMENTS_FILEPATH = '<project-location>/tests...
+    SCRIPT_DIR = '<project-location>/tests/mocks'
+    installed_config = {'colors': {}, 'environment': {'BREW_AVAILABLE': Fa...
+    requirements_config = {'colors': {}, 'environment': {'BREW_AVAILABLE':...
+    validation_schema = {'requirements': [{}]}
 
 VERSION
     0.1.0

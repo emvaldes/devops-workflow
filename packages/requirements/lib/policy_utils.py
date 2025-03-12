@@ -113,10 +113,10 @@ def policy_management(configs: dict) -> list:
 
         elif installed_ver == target_version:
             if policy_mode == "latest" and available_ver and available_ver > installed_ver:
-                version_info["status"] = "outdated"  # ❌ Wrong when installed == target
+                version_info["status"] = "outdated"  # Wrong when installed == target
                 log_message = f'{policy_header} matches target but a newer version ({available_ver}) is available. Marking as outdated.'
             else:
-                version_info["status"] = "matched"  # ✅ Correct: If installed == target, it's "matched"
+                version_info["status"] = "matched"  # Correct: If installed == target, it's "matched"
                 log_message = f'{policy_header} matches the target version. No action needed.'
 
         else:  # installed_ver > target_version

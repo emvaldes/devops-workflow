@@ -13,6 +13,7 @@ import sys
 # Standard library imports - File system-related module
 from pathlib import Path
 
+# Third-party library import - Testing framework
 import pytest
 
 # Ensure the root project directory is in sys.path
@@ -28,18 +29,13 @@ from mocks.config_loader import (
     load_mock_installed
 )
 
-def get_base_config(package_name: str, module_name: str) -> dict:
-    """
-    Generate a base configuration dynamically based on package and module names.
+def get_base_config(
+    package_name: str,
+    module_name: str
+) -> dict:
 
-    Args:
-        package_name (str): The package name under test (e.g., "requirements").
-        module_name (str): The module name under test (e.g., "package_utils").
-
-    Returns:
-        dict: A base configuration dictionary.
-    """
     return {
+        "colors": {},
         "logging": {
             "enable": True,
             "max_logfiles": 5,
@@ -58,7 +54,7 @@ def get_base_config(package_name: str, module_name: str) -> dict:
         "packages": {
             "installation": {
                 "forced": False,
-                "configs": Path("packages/requirements/installed.json")  # ✅ Ensure Path object
+                "configs": Path("packages/requirements/installed.json")  # Ensure Path object
             }
         },
         "environment": {
@@ -71,46 +67,74 @@ def get_base_config(package_name: str, module_name: str) -> dict:
 
 @pytest.fixture
 def requirements_config(request) -> dict:
-    """
-    Fixture for loading policy-based package configurations from `mock_requirements.json`.
-    Ensures required fields exist.
-    """
-    package_name = getattr(request.module, "__package_name__", "unknown_package")
-    module_name = getattr(request.module, "__module_name__", "unknown_module")
 
-    base_config = get_base_config(package_name, module_name)
+    package_name = getattr(
+        request.module,
+        "__package__",
+        "unknown_package"
+    )
+    module_name = getattr(
+        request.module,
+        "__module__",
+        "unknown_module"
+    )
+
+    base_config = get_base_config(
+        package_name,
+        module_name
+    )
     mock_data = load_mock_requirements()
 
-    # ✅ Merge mock data while ensuring required fields exist
+    # Merge mock data while ensuring required fields exist
     for key in base_config:
-        base_config[key] = mock_data.get(key, base_config[key])
+        base_config[key] = mock_data.get(
+            key,
+            base_config[key]
+        )
 
-    # ✅ Convert installed.json path to Path object
-    base_config["packages"]["installation"]["configs"] = Path(base_config["packages"]["installation"]["configs"])
+    # Convert installed.json path to Path object
+    base_config["packages"]["installation"]["configs"] = Path(
+        base_config["packages"]["installation"]["configs"]
+    )
 
     return base_config
 
 @pytest.fixture
 def installed_config(request) -> dict:
-    """
-    Fixture for loading installed package configurations from `mock_installed.json`.
-    Ensures proper alignment between `dependencies` (installed.json) and `requirements` (CONFIGS).
-    """
-    package_name = getattr(request.module, "__package_name__", "unknown_package")
-    module_name = getattr(request.module, "__module_name__", "unknown_module")
 
-    base_config = get_base_config(package_name, module_name)
+    package_name = getattr(
+        request.module,
+        "__package__",
+        "unknown_package"
+    )
+    module_name = getattr(
+        request.module,
+        "__module__",
+        "unknown_module"
+    )
+
+    base_config = get_base_config(
+        package_name,
+        module_name
+    )
     mock_data = load_mock_installed()
 
-    # ✅ Ensure installed packages are loaded correctly
-    base_config["dependencies"] = mock_data.get("dependencies", [])  # 🔄 Keep `dependencies` instead of overriding `requirements`
+    # Ensure installed packages are loaded correctly
+    base_config["dependencies"] = mock_data.get(
+        "dependencies", []
+    )  # Keep `dependencies` instead of overriding `requirements`
 
-    # ✅ Merge remaining mock data into base config
+    # Merge remaining mock data into base config
     for key in base_config:
-        base_config[key] = mock_data.get(key, base_config[key])
+        base_config[key] = mock_data.get(
+            key,
+            base_config[key]
+        )
 
-    # ✅ Convert installed.json path to Path object
-    base_config["packages"]["installation"]["configs"] = Path(base_config["packages"]["installation"]["configs"])
+    # Convert installed.json path to Path object
+    base_config["packages"]["installation"]["configs"] = Path(
+        base_config["packages"]["installation"]["configs"]
+    )
 
     return base_config
 
