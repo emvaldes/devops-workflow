@@ -1,7 +1,7 @@
 $ rm .coverage.*; rm -rf ./logs/*; pytest -xsv tests/ ;
 
 rm: .coverage.*: No such file or directory
-=================================================================================================================== test session starts ====================================================================================================================
+==================================================================== test session starts ====================================================================
 platform darwin -- Python 3.13.2, pytest-8.3.5, pluggy-1.5.0 -- /usr/local/opt/python@3.13/bin/python3.13
 cachedir: .pytest_cache
 rootdir: /Users/emvaldes/.repos/devops/workflows
@@ -72,7 +72,7 @@ tests/requirements/dependencies/test_dependencies.py::test_main CONFIGS:
         "package_name": "requirements",
         "module_name": "dependencies",
         "logs_dirname": "logs/requirements",
-        "log_filename": "logs/requirements/dependencies_20250310221833.log"
+        "log_filename": "logs/requirements/dependencies_20250312185642.log"
     },
     "tracing": {
         "enable": true,
@@ -92,7 +92,7 @@ tests/requirements/dependencies/test_dependencies.py::test_main CONFIGS:
     },
     "stats": {
         "created": "2025-03-03T18:12:57.579484+00:00",
-        "updated": "2025-03-11T05:19:13.812068+00:00"
+        "updated": "2025-03-13T01:57:06.445232+00:00"
     },
     "requirements": [
         {
@@ -139,7 +139,7 @@ tests/requirements/dependencies/test_dependencies.py::test_main_migration CONFIG
         "package_name": "requirements",
         "module_name": "dependencies",
         "logs_dirname": "logs/requirements",
-        "log_filename": "logs/requirements/dependencies_20250310221833.log"
+        "log_filename": "logs/requirements/dependencies_20250312185642.log"
     },
     "tracing": {
         "enable": true,
@@ -159,7 +159,7 @@ tests/requirements/dependencies/test_dependencies.py::test_main_migration CONFIG
     },
     "stats": {
         "created": "2025-03-03T18:12:57.579484+00:00",
-        "updated": "2025-03-11T05:19:27.000131+00:00"
+        "updated": "2025-03-13T01:57:22.730455+00:00"
     },
     "requirements": [
         {
@@ -239,8 +239,8 @@ tests/requirements/dependencies/test_dependencies.py::test_main_migration CONFIG
             "version": {
                 "policy": "latest",
                 "target": "75.8.0",
-                "latest": "75.8.2",
-                "status": "upgraded"
+                "latest": null,
+                "status": "missing"
             }
         },
         {
@@ -276,8 +276,8 @@ tests/requirements/dependencies/test_dependencies.py::test_main_migration CONFIG
     }
 }
 PASSED
-tests/requirements/dependencies/version_utils/test_version_utils.py::test_installed_version[requests-2.26.0] PASSED
-tests/requirements/dependencies/version_utils/test_version_utils.py::test_installed_version[numpy-None] PASSED
+tests/requirements/dependencies/version_utils/test_version_utils.py::test_installed_version[requests-2.32.3] PASSED
+tests/requirements/dependencies/version_utils/test_version_utils.py::test_installed_version[test-package-xaywqu66-None] PASSED
 tests/requirements/dependencies/version_utils/test_version_utils.py::test_latest_version[requests-2.28.0] PASSED
 tests/requirements/dependencies/version_utils/test_version_utils.py::test_latest_version[numpy-1.23.4] PASSED
 tests/requirements/dependencies/version_utils/test_version_utils.py::test_linux_version[curl-7.68.0] PASSED
@@ -305,4 +305,4 @@ tests/test_run.py::test_main_pydoc
 PASSED
 tests/test_run.py::test_main_coverage PASSED
 
-============================================================================================================== 72 passed in 70.92s (0:01:10) ===============================================================================================================
+=============================================================== 72 passed in 60.52s (0:01:00) ===============================================================
