@@ -112,10 +112,10 @@ FUNCTIONS
             - Provides structured logging for missing configurations or invalid input.
 
 DATA
-    LIB_DIR = PosixPath('<project-location>/lib')
     Optional = typing.Optional
         Optional[X] is equivalent to Union[X, None].
 
+    ROOT_DIR = PosixPath('<project-location>')
     Union = typing.Union
         Union type; Union[X, Y] means either X or Y.
 

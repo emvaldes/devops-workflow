@@ -3,64 +3,110 @@
 Help on module tests.requirements.dependencies.test_dependencies in tests.requirements.dependencies:
 
 NAME
-    tests.requirements.dependencies.test_dependencies - # File: ./tests/requirements/dependencies/test_dependencies_utils.py
+    tests.requirements.dependencies.test_dependencies - File Path: tests/requirements/dependencies/test_dependencies_utils.py
+
+DESCRIPTION
+    Description:
+        This module contains unit tests for `dependencies.py`, ensuring proper functionality of
+        command-line argument parsing, dependency management workflows, and structured execution
+        of package operations (backup, restore, migration, and installation).
+
+    Core Features:
+        - **Command-Line Argument Parsing**: Ensures argument handling for dependency configurations.
+        - **Mock-Based Testing**: Simulates dependencies to validate package management behaviors.
+        - **Backup, Restore, and Migration Workflows**: Verifies correct execution logic.
+        - **Logging Validation**: Ensures structured log messages are generated as expected.
+        - **Dynamic Dependency Policy Enforcement**: Validates policy-based package management.
+
+    Mocking Strategy:
+        - `policy_utils.policy_management()` → Simulates policy enforcement logic.
+        - `package_utils.install_requirements()` → Mocks package installation logic.
+        - `package_utils.backup_packages()` → Ensures backup functionality executes correctly.
+        - `package_utils.restore_packages()` → Ensures restore functionality executes correctly.
+        - `package_utils.migrate_packages()` → Validates migration workflow.
+        - `log_utils.log_message()` → Verifies structured logging messages.
+
+    Usage:
+        Execute PyTest to run the test cases:
+            pytest tests/requirements/dependencies/test_dependencies_utils.py
+
+    Important Notes:
+        - This test module ensures no external API calls are made.
+        - Dependency enforcement logic is controlled through mock-based validation.
+        - All file-based operations are simulated and do not modify actual configurations.
+
+    Dependencies:
+        - pytest (for unit testing framework)
+        - argparse (for command-line argument handling)
+        - json (for serialization in testing scenarios)
+        - pathlib (for file path management)
+        - unittest.mock (for function patching and test isolation)
+
+    Example:
+        ```python
+        pytest tests/requirements/dependencies/test_dependencies_utils.py
+        ```
 
 FUNCTIONS
     mock_config()
-        Create a mock CONFIGS dictionary to simulate package management settings.
 
     serialize_configs(configs)
-        Convert PosixPath objects to strings for JSON serialization.
+        Convert `PosixPath` objects to strings for JSON serialization.
+
+        Args:
+            configs (dict): Dictionary containing configuration settings.
+
+        Returns:
+            dict: Serialized configuration dictionary with string paths.
 
     test_main(mock_config)
-        Ensure `main()` executes correctly with mocked dependencies, focusing on critical functionality.
+        Validate the execution of the `main()` function.
 
         **Test Strategy:**
-            - Mocks command-line arguments (`--backup-packages`, `--restore-packages`, etc.).
-            - Ensures package installation is executed as expected.
-            - Verifies that logging messages are generated.
+            - Mocks dependency policies, package installation, and logging.
+            - Ensures proper execution of package management workflows.
+            - Simulates backup and restore operations.
 
         **Expected Behavior:**
-            - `policy_management()` is called for dependency policy enforcement.
-            - `install_requirements()` installs packages based on evaluated policies.
-            - Backup, restore, and migration options execute correctly when passed.
-            - `installed.json` is properly updated.
+            - Policy enforcement function is called before installation.
+            - Backup and restore commands trigger appropriate function calls.
+            - Log messages are generated for major execution steps.
 
     test_main_migration(mock_config)
-        Ensure `main()` executes migration functionality correctly.
+        Validate migration functionality within the `main()` function.
 
         **Test Strategy:**
-            - Mocks `--migrate-packages` argument.
-            - Ensures `migrate_packages()` is executed as expected.
-            - Verifies correct logging behavior.
+            - Mocks the `--migrate-packages` command-line argument.
+            - Ensures `migrate_packages()` function is executed correctly.
+            - Validates structured logging behavior.
 
         **Expected Behavior:**
             - Migration operation is triggered.
             - No installation occurs if only `--migrate-packages` is provided.
 
     test_main_restore(mock_config)
-        Ensure `main()` executes restore functionality correctly.
+        Validate restore functionality within the `main()` function.
 
         **Test Strategy:**
-            - Mocks `--restore-packages` argument.
-            - Ensures `restore_packages()` is executed as expected.
-            - Verifies correct logging behavior.
+            - Mocks the `--restore-packages` command-line argument.
+            - Ensures `restore_packages()` function is correctly executed.
+            - Validates structured logging behavior.
 
         **Expected Behavior:**
             - Restore operation is triggered.
-            - No installation occurs if only `--restore-packages` is provided.
+            - No package installation occurs if only `--restore-packages` is provided.
 
     test_parse_arguments(args, expected)
-        Ensure `parse_arguments()` correctly handles command-line arguments.
+        Validate the behavior of `parse_arguments()` function.
 
         **Test Strategy:**
-        - Patch `sys.argv` to prevent argparse from exiting unexpectedly.
-        - Mock `sys.exit` to catch any unwanted exits.
-        - Validate that `--config` is correctly assigned.
+            - Mocks `sys.argv` to simulate command-line arguments.
+            - Ensures correct default values and argument overrides.
+            - Prevents `argparse` from exiting unexpectedly.
 
         **Expected Behavior:**
-        - `requirements.json` is used as default if no `-c` argument is provided.
-        - If `-c <file>` is passed, it should override the default.
+            - Default configuration file is `requirements.json`.
+            - If `-c <file>` is provided, it overrides the default value.
 
 DATA
     ANY = <ANY>

@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
 # File: ./lib/accesstoken_expiration.py
+
+__package__ = "lib"
+__module__ = "accesstoken_expiration"
+
 __version__ = "0.1.0"  ## Package version
+
+#-------------------------------------------------------------------------------
 
 # Standard library imports - Core system modules
 import sys
@@ -17,13 +23,12 @@ from typing import Optional
 from azure.core.exceptions import AzureError
 from azure.identity import InteractiveBrowserCredential
 
+#-------------------------------------------------------------------------------
+
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-# Global variables
-TokenScope = "https://management.azure.com/"
-AccessToken = None
-TokenExpiration = None
+#-------------------------------------------------------------------------------
 
 def get_access_token() -> Optional[datetime]:
 
@@ -45,6 +50,8 @@ def get_access_token() -> Optional[datetime]:
             file=sys.stderr
         )
         return None
+
+#-------------------------------------------------------------------------------
 
 def print_token_expiration(
     debug: bool = False
@@ -96,6 +103,8 @@ def print_token_expiration(
             file=sys.stderr
         )
 
+#-------------------------------------------------------------------------------
+
 def print_remaining_time() -> None:
 
     try:
@@ -120,6 +129,15 @@ def print_remaining_time() -> None:
             file=sys.stderr
         )
 
+#-------------------------------------------------------------------------------
+
+# Global variables
+TokenScope = "https://management.azure.com/"
+AccessToken = None
+TokenExpiration = None
+
+#-------------------------------------------------------------------------------
+
 def main(
     debug: bool = False
 ) -> None:
@@ -134,9 +152,13 @@ def main(
         )
         sys.exit(1)
 
+#-------------------------------------------------------------------------------
+
 # Load documentation dynamically and apply module, function and objects docstrings
 from lib.pydoc_loader import load_pydocs
 load_pydocs(__file__, sys.modules[__name__])
+
+#-------------------------------------------------------------------------------
 
 if __name__ == "__main__":
 

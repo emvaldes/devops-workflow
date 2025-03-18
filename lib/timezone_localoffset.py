@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
 # File: ./lib/timezone_localoffset.py
+
+__package__ = "lib"
+__module__ = "timezone_localoffset"
+
 __version__ = "0.1.0"  ## Package version
+
+#-------------------------------------------------------------------------------
 
 # Standard library imports - Core system module
 import sys
@@ -15,14 +21,16 @@ from pathlib import Path
 # Third-party library imports - Timezone support
 import pytz
 
+#-------------------------------------------------------------------------------
+
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+#-------------------------------------------------------------------------------
+
 # from lib.argument_parser import parse_arguments
 
-# Global variables for time zone and offset
-LocalTimeZone = None
-LocalOffset = None
+#-------------------------------------------------------------------------------
 
 def get_local_offset(
     debug: bool = False
@@ -54,6 +62,14 @@ def get_local_offset(
     except Exception as e:
         print(f'Error retrieving time zone: {e}', file=sys.stderr)
 
+#-------------------------------------------------------------------------------
+
+# Global variables for time zone and offset
+LocalTimeZone = None
+LocalOffset = None
+
+#-------------------------------------------------------------------------------
+
 def main(
     debug: bool = False
 ) -> None:
@@ -64,9 +80,13 @@ def main(
         print(f'Error processing time zone: {e}', file=sys.stderr)
         sys.exit( 1 )
 
+#-------------------------------------------------------------------------------
+
 # Load documentation dynamically and apply module, function and objects docstrings
 from lib.pydoc_loader import load_pydocs
 load_pydocs(__file__, sys.modules[__name__])
+
+#-------------------------------------------------------------------------------
 
 if __name__ == "__main__":
 

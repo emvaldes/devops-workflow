@@ -169,6 +169,9 @@ FUNCTIONS
             - Logs an error message if the coverage command fails.
 
     main() -> None
+        Function: main() -> None
+        Description:
+            Placeholder function for module execution.
 
 VERSION
     0.1.1

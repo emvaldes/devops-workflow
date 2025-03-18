@@ -1,5 +1,5 @@
 Name                                    Stmts   Miss Branch BrPart  Cover
 -------------------------------------------------------------------------
-packages/requirements/dependencies.py      71     71     18      0     0%
+packages/requirements/dependencies.py      73     73     18      0     0%
 -------------------------------------------------------------------------
-TOTAL                                      71     71     18      0     0%
+TOTAL                                      73     73     18      0     0%

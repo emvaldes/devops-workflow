@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
 # File: ./lib/configure_params.py
+
+__package__ = "lib"
+__module__ = "configure_params"
+
 __version__ = "0.1.0"  ## Package version
+
+#-------------------------------------------------------------------------------
 
 # Standard library imports - Core system modules
 import sys
@@ -20,13 +26,16 @@ from typing import Dict, List, Tuple, Union
 # Standard library imports - File system-related module
 from pathlib import Path
 
+#-------------------------------------------------------------------------------
+
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+#-------------------------------------------------------------------------------
 
 from lib.system_variables import (
     system_params_filepath
 )
-
 from lib.system_variables import (
     project_root,
     env_filepath,
@@ -37,9 +46,7 @@ from lib.system_variables import (
     system_params_listing
 )
 
-env_file_header = "## Environment variables (auto-generated)\n\n"
-
-# logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
+#-------------------------------------------------------------------------------
 
 def load_json_sources(
     filepaths: List[str],
@@ -100,6 +107,8 @@ def load_json_sources(
 #         logging.error(f'Error retrieving runtime variables: {e}')
 #         sys.exit(1)
 
+#-------------------------------------------------------------------------------
+
 def fetching_runtime_variables() -> Dict[
     str, Dict[str, Union[str, Dict[str, str]]]
 ]:
@@ -128,6 +137,8 @@ def fetching_runtime_variables() -> Dict[
         logging.error(f'Error retrieving runtime variables: {e}')
         sys.exit(1)
 
+#-------------------------------------------------------------------------------
+
 def initialize_env_file() -> None:
 
     try:
@@ -140,6 +151,8 @@ def initialize_env_file() -> None:
         logging.error(f'Failed to initialize .env file: {e}')
         sys.exit(1)
 
+#-------------------------------------------------------------------------------
+
 def initialize_runtime_file() -> None:
 
     try:
@@ -151,6 +164,8 @@ def initialize_runtime_file() -> None:
     except Exception as e:
         logging.error(f'Failed to initialize {runtime_params_filename} file: {e}')
         sys.exit(1)
+
+#-------------------------------------------------------------------------------
 
 def populate_env_file() -> bool:
 
@@ -171,6 +186,8 @@ def populate_env_file() -> bool:
     except Exception as e:
         logging.error(f'Error populating .env file: {e}')
         return False
+
+#-------------------------------------------------------------------------------
 
 def populate_runtime_file() -> bool:
 
@@ -199,6 +216,8 @@ def populate_runtime_file() -> bool:
         logging.critical(f'ERROR: Unable to initialize {runtime_params_filename} config file. Details: {e}')
         sys.exit(1)
 
+#-------------------------------------------------------------------------------
+
 def validate_env_file() -> bool:
 
     try:
@@ -216,6 +235,8 @@ def validate_env_file() -> bool:
         logging.error(f'Error validating .env file: {e}')
         return False
 
+#-------------------------------------------------------------------------------
+
 def validate_runtime_file() -> bool:
 
     try:
@@ -232,6 +253,13 @@ def validate_runtime_file() -> bool:
     except Exception as e:
         logging.error(f'Error validating .env file: {e}')
         return False
+
+#-------------------------------------------------------------------------------
+
+env_file_header = "## Environment variables (auto-generated)\n\n"
+# logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
+
+#-------------------------------------------------------------------------------
 
 def main() -> Tuple[Dict, Dict]:
 
@@ -251,9 +279,13 @@ def main() -> Tuple[Dict, Dict]:
         logging.error(f'Error processing environment configuration: {e}')
         return {}
 
+#-------------------------------------------------------------------------------
+
 # Load documentation dynamically and apply module, function and objects docstrings
 from lib.pydoc_loader import load_pydocs
 load_pydocs(__file__, sys.modules[__name__])
+
+#-------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()

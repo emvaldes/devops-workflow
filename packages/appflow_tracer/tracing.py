@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
 # File: ./packages/appflow_tracer/tracing.py
+
+__package__ = "packages.appflow_tracer"
+__module__ = "tracing"
+
 __version__ = "0.1.0"  ## Package version
+
+#-------------------------------------------------------------------------------
 
 # Standard library imports - Core system module
 import sys
@@ -24,18 +30,17 @@ from pathlib import Path
 # Standard library imports - Type hinting (kept in a separate group)
 from typing import Optional, Union
 
-# Define base directories
-LIB_DIR = Path(__file__).resolve().parent.parent.parent / "lib"
-if str(LIB_DIR) not in sys.path:
-    sys.path.insert(0, str(LIB_DIR))  # Dynamically add `lib/` to sys.path only if not present
+#-------------------------------------------------------------------------------
 
-# Debugging: Print sys.path to verify import paths
-# print("\n[DEBUG] sys.path contains:")
-# for path in sys.path:
-#     print(f'  - {path}')
+# Ensure the root project directory is in sys.path
+ROOT_DIR = Path(__file__).resolve().parents[2]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+#-------------------------------------------------------------------------------
 
 # Import system_variables from lib.system_variables
 from lib.system_variables import (
@@ -43,19 +48,17 @@ from lib.system_variables import (
     project_logs,
     default_indent
 )
-
 # Import trace_utils from lib.*_utils
 from .lib import (
     file_utils,
     log_utils,
     trace_utils
 )
-
 from lib import (
     pkgconfig_loader as pkgconfig
 )
 
-# ---------- Module functions:
+#-------------------------------------------------------------------------------
 
 def setup_logging(
     configs: Optional[dict] = None,
@@ -161,22 +164,26 @@ def setup_logging(
     file_utils.manage_logfiles(CONFIGS)
     return CONFIGS
 
+#-------------------------------------------------------------------------------
+
 class PrintCapture(logging.StreamHandler):
 
+    #---------------------------------------------------------------------------
     # def emit(self, record):
     def emit(self, record: logging.LogRecord) -> None:
-
         log_entry = self.format(record)
         sys.__stdout__.write(log_entry + "\n")  # Write to actual stdout
         sys.__stdout__.flush()  # Ensure immediate flushing
-
     # def emit(self, record):
     #     log_entry = self.format(record)
     #     sys.__stdout__.write(log_entry + "\n")  # Write to actual stdout
     #     sys.__stdout__.flush()  # Ensure immediate flushing
 
+#-------------------------------------------------------------------------------
+
 class ANSIFileHandler(logging.FileHandler):
 
+    #---------------------------------------------------------------------------
     # def emit(self, record):
     def emit(self, record: logging.LogRecord) -> None:
 
@@ -185,26 +192,29 @@ class ANSIFileHandler(logging.FileHandler):
             return  # Skip internal Python logging module logs
         super().emit(record)  # Proceed with normal logging
 
-# ---------- Module Global variables:
+#-------------------------------------------------------------------------------
 
 LOGGING = None
 CONFIGS = None
 logger = None  # Global logger instance
 
-# ---------- Module operations:
+#-------------------------------------------------------------------------------
 
 def main() -> None:
 
     global LOGGING, CONFIGS, logger  # Ensure CONFIGS is globally accessible
-
     # Ensure logging is set up globally before anything else
     CONFIGS = setup_logging(events=["call", "return"])
     # CONFIGS = setup_logging(events={"call": True, "return": False})
     # print( f'CONFIGS: {json.dumps(CONFIGS, indent=default_indent)}' )
 
+#-------------------------------------------------------------------------------
+
 # Load documentation dynamically and apply module, function and objects docstrings
 from lib.pydoc_loader import load_pydocs
 load_pydocs(__file__, sys.modules[__name__])
+
+#-------------------------------------------------------------------------------
 
 # Automatically start tracing when executed directly
 if __name__ == "__main__":

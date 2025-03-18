@@ -1,5 +1,5 @@
 Name                                         Stmts   Miss Branch BrPart  Cover
 ------------------------------------------------------------------------------
-packages/requirements/lib/package_utils.py     187    187     56      0     0%
+packages/requirements/lib/package_utils.py     187    187     54      0     0%
 ------------------------------------------------------------------------------
-TOTAL                                          187    187     56      0     0%
+TOTAL                                          187    187     54      0     0%

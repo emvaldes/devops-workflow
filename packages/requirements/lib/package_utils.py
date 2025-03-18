@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
 # File: ./packages/requirements/lib/package_utils.py
-# Version: 0.1.0
+
+__package__ = "packages.requirements.lib"
+__module__ = "package_utils"
+
+__version__ = "0.1.0"  ## Package version
+
+#-------------------------------------------------------------------------------
 
 # Standard library imports - Core system and OS interaction modules
 import sys
@@ -29,18 +35,12 @@ from pathlib import Path
 # Standard library imports - Type hinting (kept in a separate group)
 from typing import Optional, Union
 
-# Define base directories
-LIB_DIR = Path(__file__).resolve().parent.parent.parent / "lib"
-if str(LIB_DIR) not in sys.path:
-    sys.path.insert(0, str(LIB_DIR))  # Dynamically add `lib/` to sys.path only if not present
-
-# # Debugging: Print sys.path to verify import paths
-# print("\n[DEBUG] sys.path contains:")
-# for path in sys.path:
-#     print(f'  - {path}')
+#-------------------------------------------------------------------------------
 
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+#-------------------------------------------------------------------------------
 
 from lib import system_variables as environment
 from packages.appflow_tracer.lib import log_utils
@@ -49,7 +49,10 @@ from . import version_utils
 
 ## -----------------------------------------------------------------------------
 
-def backup_packages(file_path: str, configs: dict) -> None:
+def backup_packages(
+    file_path: str,
+    configs: dict
+) -> None:
 
     try:
         with open(file_path, "w") as f:
@@ -72,14 +75,17 @@ def backup_packages(file_path: str, configs: dict) -> None:
 
 ## -----------------------------------------------------------------------------
 
-def install_package(package: str, version: Optional[str] = None, configs: dict = None) -> None:
+def install_package(
+    package: str,
+    version: Optional[str] = None,
+    configs: dict = None
+) -> None:
 
     # Fetch environment details
     env_info = configs.get("environment", {})
     brew_available = env_info.get("INSTALL_METHOD") == "brew"  # Python is managed via Brew
     externally_managed = env_info.get("EXTERNALLY_MANAGED", False)  # Check if Pip is restricted
     forced_install = configs.get("packages", {}).get("installation", {}).get("forced", False)
-
     # Check if Brew is available & controls Python
     if brew_available:
         log_utils.log_message(
@@ -91,7 +97,6 @@ def install_package(package: str, version: Optional[str] = None, configs: dict =
             capture_output=True,
             text=True
         )
-
         if "Error:" not in brew_list.stderr:
             # If Brew has the package, install it
             log_utils.log_message(
@@ -106,15 +111,12 @@ def install_package(package: str, version: Optional[str] = None, configs: dict =
                 f'[WARNING] Package "{package}" is not available via Brew. Falling back to Pip...',
                 configs=configs
             )
-
     # Use Pip (if Brew is not managing Python OR package not found in Brew)
     pip_install_cmd = [sys.executable, "-m", "pip", "install", "--quiet", "--user"]
-
     if version:
         pip_install_cmd.append(f'{package}=={version}')
     else:
         pip_install_cmd.append(package)
-
     if externally_managed:
         # 2A: Pip is restricted → Handle controlled environment
         if forced_install:
@@ -140,19 +142,20 @@ def install_package(package: str, version: Optional[str] = None, configs: dict =
             configs=configs
         )
         subprocess.run(pip_install_cmd, check=False)
-
     return  # Exit after installation
 
 ## -----------------------------------------------------------------------------
 
-def install_requirements(configs: dict, bypass: bool = False) -> None:
+def install_requirements(
+    configs: dict,
+    bypass: bool = False
+) -> None:
 
     log_utils.log_message(
         f'\n[INSTALL] Starting installation process...',
         environment.category.error.id,
         configs=configs
     )
-
     installed_filepath = installed_configfile(configs)
     if not installed_filepath.exists():
         log_utils.log_message(
@@ -160,10 +163,8 @@ def install_requirements(configs: dict, bypass: bool = False) -> None:
             configs=configs
         )
         sys.exit(1)  # Exit to prevent further failures
-
     # Use `review_packages()` to get the evaluated package statuses
     reviewed_packages = review_packages(configs)
-
     for dep in reviewed_packages:
         package = dep["package"]
         version_info = dep["version"]
@@ -171,11 +172,9 @@ def install_requirements(configs: dict, bypass: bool = False) -> None:
         target_version = version_info["target"]
         latest_version = version_info["latest"]
         policy_mode = version_info["policy"]
-
         # NEW: If force_install is True, override status to "adhoc"
         if bypass:
             status = "adhoc"
-
         # Policy-driven installation decisions
         if status == "installing" or status == "missing":
             log_utils.log_message(
@@ -188,21 +187,18 @@ def install_requirements(configs: dict, bypass: bool = False) -> None:
                 latest_version if policy_mode == "latest" else target_version,
                 configs
             )
-
         elif status == "upgrading" or status == "outdated":
             log_utils.log_message(
                 f'\n[UPGRADE] Upgrading "{package}" to latest version ({latest_version})...',
                 configs=configs
             )
             install_package(package, None, configs)  # None means latest
-
         elif status == "downgraded" or (status == "upgraded" and policy_mode == "enforce"):
             log_utils.log_message(
                 f'[DOWNGRADE] Downgrading "{package}" to {target_version}...',
                 configs=configs
             )
             install_package(package, target_version, configs)
-
         elif status in ["restricted", "matched"]:
             log_utils.log_message(
                 f'[SKIP]    Skipping "{package}" is {status}, no changes needed.',
@@ -216,11 +212,9 @@ def install_requirements(configs: dict, bypass: bool = False) -> None:
                 configs=configs
             )
             install_package(package, None, configs)
-
     # Write back to `installed.json` **only once** after processing all packages
     with installed_filepath.open("w") as f:
         json.dump({ "dependencies": reviewed_packages }, f, indent=4)
-
     log_utils.log_message(
         f'\n[INSTALL] Package Configuration updated at {installed_filepath}',
         environment.category.error.id,
@@ -231,19 +225,19 @@ def install_requirements(configs: dict, bypass: bool = False) -> None:
         environment.category.error.id,
         configs=configs
     )
-
     return reviewed_packages
 
 ## -----------------------------------------------------------------------------
 
-def install_requirements__legacy(configs: dict) -> None:
+def install_requirements__legacy(
+    configs: dict
+) -> None:
 
     log_utils.log_message(
         f'\n[INSTALL] Starting installation process...',
         environment.category.error.id,
         configs=configs
     )
-
     installed_filepath = installed_configfile(configs)  # Fetch dynamically
     if not installed_filepath.exists():
         log_utils.log_message(
@@ -251,10 +245,8 @@ def install_requirements__legacy(configs: dict) -> None:
             configs=configs
         )
         sys.exit(1)  # Exit to prevent further failures
-
     # Use the `requirements` list from `CONFIGS`
     requirements = configs["requirements"]
-
     for dep in requirements:
         package = dep["package"]
         version_info = dep["version"]
@@ -262,7 +254,6 @@ def install_requirements__legacy(configs: dict) -> None:
         target_version = version_info["target"]
         latest_version = version_info["latest"]
         policy_mode = version_info["policy"]
-
         if status == "installing":
             log_utils.log_message(
                 f'[INSTALL] Installing {package} ({"latest" if policy_mode == "latest" else target_version})...',
@@ -274,32 +265,27 @@ def install_requirements__legacy(configs: dict) -> None:
                 latest_version if policy_mode == "latest" else target_version,
                 configs
             )
-
         elif status == "upgrading":
             log_utils.log_message(
                 f'\n[UPGRADE] Upgrading "{package}" to latest version ({latest_version})...',
                 configs=configs
             )
             install_package(package, None, configs)  # None means latest
-
         elif status == "downgraded":
             log_utils.log_message(
                 f'[DOWNGRADE] Downgrading "{package}" to {target_version}...',
                 configs=configs
             )
             install_package(package, target_version, configs)
-
         elif status in ["restricted", "matched"]:
             log_utils.log_message(
                 f'[SKIP]    Skipping "{package}" is {status}, no changes needed.',
                 environment.category.warning.id,
                 configs=configs
             )
-
     # Write back to `installed.json` **only once** after processing all packages
     with installed_filepath.open("w") as f:
         json.dump({ "dependencies": requirements }, f, indent=4)
-
     log_utils.log_message(
         f'\n[INSTALL] Package Configuration updated at {installed_filepath}',
         environment.category.error.id,
@@ -313,7 +299,9 @@ def install_requirements__legacy(configs: dict) -> None:
 
 ## -----------------------------------------------------------------------------
 
-def installed_configfile(configs: dict) -> Path:
+def installed_configfile(
+    configs: dict
+) -> Path:
 
     # return configs.get("packages", {}).get("installation", {}).get("configs", None)
     try:
@@ -324,7 +312,10 @@ def installed_configfile(configs: dict) -> Path:
 
 ## -----------------------------------------------------------------------------
 
-def migrate_packages(file_path: str, configs: dict) -> None:
+def migrate_packages(
+    file_path: str,
+    configs: dict
+) -> None:
 
     try:
         result = subprocess.run(
@@ -334,24 +325,20 @@ def migrate_packages(file_path: str, configs: dict) -> None:
             check=True
         )
         installed_packages = result.stdout.splitlines()
-
         # Save package list before migration
         with open(file_path, "w") as f:
             f.write("\n".join(installed_packages))
-
         for package in installed_packages:
             pkg_name = package.split("==")[0]
             subprocess.run(
                 [sys.executable, "-m", "pip", "install", "--user", pkg_name],
                 check=False
             )
-
         log_utils.log_message(
             f'[INFO] Packages have been migrated and the list is saved to {file_path}.',
             environment.category.info.id,
             configs=configs
         )
-
     except subprocess.CalledProcessError as e:
         log_utils.log_message(
             f'[WARNING] Failed to migrate packages: {e}',
@@ -361,43 +348,37 @@ def migrate_packages(file_path: str, configs: dict) -> None:
 
 ## -----------------------------------------------------------------------------
 
-def packages_installed(configs: dict) -> None:
+def packages_installed(
+    configs: dict
+) -> None:
 
     installed_filepath = installed_configfile(configs)  # Fetch dynamically
-
     if not installed_filepath or not installed_filepath.exists():
         log_utils.log_message(
             f'[WARNING] Installed package file not found: {installed_filepath}',
             configs=configs
         )
         return
-
     try:
         with installed_filepath.open("r") as f:
             installed_data = json.load(f)
-
         dependencies = installed_data.get("dependencies", [])
-
         if not dependencies:
             log_utils.log_message(
                 "[INFO] No installed packages found.",
                 configs=configs
             )
             return
-
         log_utils.log_message("\n[INSTALLED PACKAGES]", configs=configs)
-
         for dep in dependencies:
             package = dep.get("package", "Unknown")
             target_version = dep.get("version", {}).get("target", "N/A")
             get_installed_version = dep.get("version", {}).get("latest", "Not Installed")
             status = dep.get("version", {}).get("status", "Unknown")
-
             log_utils.log_message(
                 f'- {package} (Target: {target_version}, Installed: {get_installed_version}, Status: {status})',
                 configs=configs
             )
-
     except json.JSONDecodeError:
         log_utils.log_message(
             f'[ERROR] Invalid JSON structure in {installed_filepath}.',
@@ -406,7 +387,10 @@ def packages_installed(configs: dict) -> None:
 
 ## -----------------------------------------------------------------------------
 
-def restore_packages(file_path: str, configs: dict) -> None:
+def restore_packages(
+    file_path: str,
+    configs: dict
+) -> None:
 
     try:
         subprocess.run(
@@ -427,20 +411,18 @@ def restore_packages(file_path: str, configs: dict) -> None:
 
 ## -----------------------------------------------------------------------------
 
-def review_packages(configs: dict) -> list:
+def review_packages(
+    configs: dict
+) -> list:
 
     installed_filepath = installed_configfile(configs)
-
     dependencies = configs.get("requirements", [])  # Ensure it defaults to an empty list
     installed_data = []
-
     for dep in dependencies:
         package_name = dep["package"]
         package_policy = dep["version"]["policy"]
         target_version = dep["version"]["target"]
-
         installed_version = version_utils.installed_version(package_name, configs)
-
         # Determine package-name status
         if installed_version == target_version:
             status = "latest"
@@ -450,7 +432,6 @@ def review_packages(configs: dict) -> list:
             status = "outdated"
         else:
             status = "missing"  # Package is not installed
-
         installed_data.append({
             "package": package_name,
             "version": {
@@ -460,25 +441,28 @@ def review_packages(configs: dict) -> list:
                 "status": status
             }
         })
-
     # Write to installed.json **once** after processing all dependencies
     with open(installed_filepath, "w") as file:
         json.dump({"dependencies": installed_data}, file, indent=4)
-
     log_utils.log_message(
         f'\n[UPDATE]  Updated JSON Config with packages status in: {installed_filepath}',
         environment.category.error.id,
         configs=configs
     )
-
     return installed_data  # Return the structured package list
+
+#-------------------------------------------------------------------------------
+
+def main() -> None:
+    pass
+
+#-------------------------------------------------------------------------------
 
 # Load documentation dynamically and apply module, function and objects docstrings
 from lib.pydoc_loader import load_pydocs
 load_pydocs(__file__, sys.modules[__name__])
 
-def main() -> None:
-    pass
+#-------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()

@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
 # File: ./packages/requirements/dependencies.py
+
+__package__ = "packages.requirements"
+__module__ = "dependencies"
+
 __version__ = "0.1.0"  ## Package version
+
+#-------------------------------------------------------------------------------
 
 # Standard library imports - Core system and OS interaction modules
 import sys
@@ -28,24 +34,21 @@ from pathlib import Path
 # Standard library imports - Type hinting (kept in a separate group)
 from typing import Optional, Union
 
-# Define base directories
-LIB_DIR = Path(__file__).resolve().parent.parent.parent / "lib"
-if str(LIB_DIR) not in sys.path:
-    sys.path.insert(0, str(LIB_DIR))  # Dynamically add `lib/` to sys.path only if not present
+#-------------------------------------------------------------------------------
 
-# # Debugging: Print sys.path to verify import paths
-# print("\n[DEBUG] sys.path contains:")
-# for path in sys.path:
-#     print(f'  - {path}')
+# Ensure the root project directory is in sys.path
+ROOT_DIR = Path(__file__).resolve().parents[2]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from lib import system_variables as environment
+#-------------------------------------------------------------------------------
 
+from lib import system_variables as environment
 from packages.appflow_tracer import tracing
 from packages.appflow_tracer.lib import log_utils
-
 # Import trace_utils from lib.*_utils
 from .lib import (
     brew_utils,
@@ -109,12 +112,9 @@ def main() -> None:
 
     # Ensure the variable exists globally
     global CONFIGS
-
     args = parse_arguments()
-
     # CONFIGS = tracing.setup_logging(events=False)
     CONFIGS = tracing.setup_logging(events=["call", "return"])
-
     # Load the JSON file contents before passing to policy_utils.policy_management
     location = Path(args.requirements)
     if not location.exists():
@@ -124,19 +124,15 @@ def main() -> None:
             configs=CONFIGS
         )
         sys.exit(1)
-
     with location.open("r") as f:
         CONFIGS["requirements"] = json.load(f).get("dependencies", [])
-
     log_utils.log_message(
         f'\nInitializing Package Dependencies Management process...',
         configs=CONFIGS
     )
-
     # Get the directory of `requirements.json`
     # installed_filepath = str(location.parent / "installed.json")  # Ensure it's always a string
     installed_filepath = location.parent / "installed.json"  # Ensures the correct file path
-
     # Ensure the file exists; if not, create an empty JSON object
     if not installed_filepath.exists():
         log_utils.log_message(
@@ -149,12 +145,10 @@ def main() -> None:
         )  # Ensure directory exists
         with installed_filepath.open("w") as f:
             json.dump({}, f, indent=4)  # Create empty JSON object
-
     # Ensure 'packages' structure exists in CONFIGS
     CONFIGS.setdefault( "packages", {} ).setdefault(
         "installation", { "forced": args.force, "configs": installed_filepath }
     )
-
     if args.backup_packages is not None:
         log_utils.log_message(
             f'[INFO] Running backup with file: "{args.backup_packages}"',
@@ -165,7 +159,6 @@ def main() -> None:
             file_path=args.backup_packages,
             configs=CONFIGS
         )
-
     if args.restore_packages is not None:
         log_utils.log_message(
             f'[INFO] Running restore from file: "{args.restore_packages}"',
@@ -176,7 +169,6 @@ def main() -> None:
             file_path=args.restore_packages,
             configs=CONFIGS
         )
-
     if args.migrate_packages is not None:
         log_utils.log_message(
             f'[INFO] Running migration and saving to file: "{args.migrate_packages}"',
@@ -187,7 +179,6 @@ def main() -> None:
             file_path=args.migrate_packages,
             configs=CONFIGS
         )
-
     if args.show_installed:
         if installed_filepath.exists():
             with installed_filepath.open("r") as f:
@@ -199,34 +190,32 @@ def main() -> None:
                 configs=CONFIGS
             )
         return  # Exit after showing installed packages
-
     environment_info = brew_utils.detect_environment()
     log_utils.log_message(
         f'\n[ENVIRONMENT] Detected Python Environment: {json.dumps(environment_info, indent=4)}',
         configs=CONFIGS
     )
-
     CONFIGS.setdefault("environment", {}).update(environment_info)
-
     CONFIGS["requirements"] = policy_utils.policy_management(
         configs=CONFIGS
     )
-
     CONFIGS["requirements"] = package_utils.install_requirements( configs=CONFIGS )
-
     print(
         f'CONFIGS:\n',
         f'{json.dumps(CONFIGS, indent=environment.default_indent, default=str)}'
     )
-
     # log_utils.log_message(
     #     f'Logs are being saved in: {CONFIGS["logging"].get("log_filename")}',
     #     configs=CONFIGS
     # )
 
+#-------------------------------------------------------------------------------
+
 # Load documentation dynamically and apply module, function and objects docstrings
 from lib.pydoc_loader import load_pydocs
 load_pydocs(__file__, sys.modules[__name__])
+
+#-------------------------------------------------------------------------------
 
 # Automatically start tracing when executed directly
 if __name__ == "__main__":

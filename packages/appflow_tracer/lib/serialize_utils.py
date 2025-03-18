@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
 # File: ./packages/appflow_tracer/lib/serialize_utils.py
+
+__package__ = "packages.appflow_tracer.lib"
+__module__ = "serialize_utils"
+
 __version__ = "0.1.0"  ## Package version
+
+#-------------------------------------------------------------------------------
 
 # Standard library imports - Core system module
 import sys
@@ -16,20 +22,21 @@ from io import StringIO  # In-memory file-like object
 # Standard library imports - File system-related module
 from pathlib import Path
 
-# Duplicate import removed: `json` was imported twice
+#-------------------------------------------------------------------------------
 
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+#-------------------------------------------------------------------------------
 
 # Import category from system_variables
 from lib.system_variables import (
     default_indent,
     category
 )
+from . import log_utils
 
-from . import (
-    log_utils
-)
+#-------------------------------------------------------------------------------
 
 def safe_serialize(
     data: any,
@@ -103,7 +110,11 @@ def safe_serialize(
         # )
         return serialized_data
 
-def sanitize_token_string(line: str) -> str:
+#-------------------------------------------------------------------------------
+
+def sanitize_token_string(
+    line: str
+) -> str:
 
     # # Legacy code:
     # try:
@@ -140,12 +151,18 @@ def sanitize_token_string(line: str) -> str:
     except Exception:
         return line.strip()  # Ensure fallback trims spaces
 
+#-------------------------------------------------------------------------------
+
+def main() -> None:
+    pass
+
+#-------------------------------------------------------------------------------
+
 # Load documentation dynamically and apply module, function and objects docstrings
 from lib.pydoc_loader import load_pydocs
 load_pydocs(__file__, sys.modules[__name__])
 
-def main() -> None:
-    pass
+#-------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()

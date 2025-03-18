@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
 # File: ./packages/appflow_tracer/lib/file_utils.py
+
+__package__ = "packages.appflow_tracer.lib"
+__module__ = "file_utils"
+
 __version__ = "0.1.0"  ## Package version
+
+#-------------------------------------------------------------------------------
 
 # Standard library imports - Core system module
 import sys
@@ -12,7 +18,11 @@ import re
 # Standard library imports - File system-related module
 from pathlib import Path
 
+#-------------------------------------------------------------------------------
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+#-------------------------------------------------------------------------------
 
 # Import system_variables from lib.system_variables
 from lib.system_variables import (
@@ -22,10 +32,9 @@ from lib.system_variables import (
     default_indent,
     category
 )
+from . import log_utils
 
-from . import (
-    log_utils
-)
+#-------------------------------------------------------------------------------
 
 def is_project_file(
     filename: str
@@ -41,6 +50,8 @@ def is_project_file(
     except (TypeError, ValueError):
         # Handle None or unexpected inputs gracefully
         return False
+
+#-------------------------------------------------------------------------------
 
 def manage_logfiles(
     configs: dict = None
@@ -69,6 +80,8 @@ def manage_logfiles(
                     log_utils.log_message(f'Error deleting {log_file.as_posix()}: {e}', category.error.id, configs=configs)
     return deleted_logs
 
+#-------------------------------------------------------------------------------
+
 def relative_path(
     filepath: str
 ) -> str:
@@ -78,6 +91,8 @@ def relative_path(
     except ValueError:
         return filepath.replace(".py", "")  # Return original if not within project
 
+#-------------------------------------------------------------------------------
+
 def remove_ansi_escape_codes(
     text: str
 ) -> str:
@@ -85,12 +100,18 @@ def remove_ansi_escape_codes(
     ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
     return ansi_escape.sub('', text)
 
+#-------------------------------------------------------------------------------
+
+def main() -> None:
+    pass
+
+#-------------------------------------------------------------------------------
+
 # Load documentation dynamically and apply module, function and objects docstrings
 from lib.pydoc_loader import load_pydocs
 load_pydocs(__file__, sys.modules[__name__])
 
-def main() -> None:
-    pass
+#-------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()

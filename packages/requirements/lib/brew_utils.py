@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
 # File: ./packages/requirements/lib/brew_utils.py
-# Version: 0.1.0
+
+__package__ = "packages.requirements.lib"
+__module__ = "brew_utils"
+
+__version__ = "0.1.0"  ## Package version
+
+#-------------------------------------------------------------------------------
 
 # Standard library imports - Core system and OS interaction modules
 import sys
@@ -30,18 +36,12 @@ from pathlib import Path
 # Standard library imports - Type hinting (kept in a separate group)
 from typing import Optional, Union
 
-# Define base directories
-LIB_DIR = Path(__file__).resolve().parent.parent.parent / "lib"
-if str(LIB_DIR) not in sys.path:
-    sys.path.insert(0, str(LIB_DIR))  # Dynamically add `lib/` to sys.path only if not present
-
-# # Debugging: Print sys.path to verify import paths
-# print("\n[DEBUG] sys.path contains:")
-# for path in sys.path:
-#     print(f'  - {path}')
+#-------------------------------------------------------------------------------
 
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+#-------------------------------------------------------------------------------
 
 from lib import system_variables as environment
 from packages.appflow_tracer.lib import log_utils
@@ -53,12 +53,10 @@ def check_availability() -> bool:
 
     if sys.platform != "darwin":  # Ensure it only runs on macOS
         return False  # Prevents false positives on Ubuntu runners
-
     # Fast check: If Brew binary is not found, return False immediately
     brew_path = shutil.which("brew")
     if not brew_path:
         return False
-
     try:
         subprocess.run(
             [ "brew", "--version" ],
@@ -72,7 +70,9 @@ def check_availability() -> bool:
 
 ## -----------------------------------------------------------------------------
 
-def brew_info(package: str) -> Optional[str]:
+def brew_info(
+    package: str
+) -> Optional[str]:
 
     try:
         result = subprocess.run(
@@ -81,14 +81,11 @@ def brew_info(package: str) -> Optional[str]:
             text=True,
             check=True
         )
-
         # If error message appears, package does not exist
         if "Error: No formula found" in result.stderr:
             return None
-
         # Extract the version from Brew's output (first line)
         return result.stdout.split("\n")[0].split()[1]  # Example: "example_package 1.2.3" → "1.2.3"
-
     except subprocess.CalledProcessError:
         return None  # Return None if the command fails
 
@@ -97,19 +94,16 @@ def brew_info(package: str) -> Optional[str]:
 def detect_environment() -> dict:
 
     brew_available = check_availability()
-
     env_info = {
         "OS": platform.system().lower(),  # "windows", "linux", "darwin" (macOS)
         "INSTALL_METHOD": "standalone",   # Default to standalone Python installation
         "EXTERNALLY_MANAGED": False,      # Assume pip installs are allowed
         "BREW_AVAILABLE": brew_available  # Use precomputed Brew availability
     }
-
     # Check for EXTERNALLY-MANAGED marker (Linux/macOS)
     external_marker = Path(sys.prefix) / "lib" / f'python{sys.version_info.major}.{sys.version_info.minor}' / "EXTERNALLY-MANAGED"
     if external_marker.exists():
         env_info["EXTERNALLY_MANAGED"] = True
-
     # If Brew is available, determine if Python is installed via Brew
     if brew_available:
         try:
@@ -123,7 +117,6 @@ def detect_environment() -> dict:
                 env_info["INSTALL_METHOD"] = "brew"
         except (subprocess.CalledProcessError, FileNotFoundError):
             pass
-
     # Linux: Check if Python is installed via APT (Debian/Ubuntu) or DNF (Fedora)
     elif env_info["OS"] == "linux":
         try:
@@ -141,11 +134,9 @@ def detect_environment() -> dict:
                     env_info["INSTALL_METHOD"] = "system"  # DNF-managed
             except FileNotFoundError:
                 pass
-
         # Ensure standalone classification if not system-managed
         if env_info["INSTALL_METHOD"] == "system" and not (Path("/usr/bin/python3").exists() or Path("/usr/local/bin/python3").exists()):
             env_info["INSTALL_METHOD"] = "standalone"
-
     # Windows: Check if Python is from Microsoft Store
     elif env_info["OS"] == "windows":
         try:
@@ -160,12 +151,13 @@ def detect_environment() -> dict:
                 env_info["INSTALL_METHOD"] = "microsoft_store"
         except (subprocess.CalledProcessError, FileNotFoundError):
             pass
-
     return env_info
 
 # ------------------------------------------------------
 
-def version(package: str) -> Optional[str]:
+def version(
+    package: str
+) -> Optional[str]:
 
     try:
         result = subprocess.run(
@@ -180,7 +172,9 @@ def version(package: str) -> Optional[str]:
 
 ## -----------------------------------------------------------------------------
 
-def latest_version(package: str) -> Optional[str]:
+def latest_version(
+    package: str
+) -> Optional[str]:
 
     # try:
     #     result = subprocess.run(
@@ -208,15 +202,20 @@ def latest_version(package: str) -> Optional[str]:
                 return match.group(1)  # Extract the version number
     except subprocess.CalledProcessError:
         return None  # Brew failed
-
     return None  # No version found
+
+#-------------------------------------------------------------------------------
+
+def main() -> None:
+    pass
+
+#-------------------------------------------------------------------------------
 
 # Load documentation dynamically and apply module, function and objects docstrings
 from lib.pydoc_loader import load_pydocs
 load_pydocs(__file__, sys.modules[__name__])
 
-def main() -> None:
-    pass
+#-------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()

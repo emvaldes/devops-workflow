@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
 # File: ./packages/appflow_tracer/lib/__init__.py
+
+__package__ = "packages.appflow_tracer.lib"
+__module__ = "__init__"
+
 __version__ = "0.1.0"  ## Package version
+
+#-------------------------------------------------------------------------------
 
 # Standard library imports - Core system module
 import sys
@@ -9,8 +15,12 @@ import sys
 # Standard library imports - File system-related module
 from pathlib import Path
 
+#-------------------------------------------------------------------------------
+
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+#-------------------------------------------------------------------------------
 
 # Import and expose key submodules
 from . import (
@@ -20,12 +30,16 @@ from . import (
     trace_utils
 )
 
+#-------------------------------------------------------------------------------
+
 __all__ = [
     "file_utils",
     "log_utils",
     "serialize_utils",
     "trace_utils"
 ]
+
+#-------------------------------------------------------------------------------
 
 # Load documentation dynamically and apply module, function and objects docstrings
 from lib.pydoc_loader import load_pydocs

@@ -89,7 +89,6 @@ FUNCTIONS
             - Ensures structured compliance before initiating installation processes.
 
 DATA
-    LIB_DIR = PosixPath('<project-location>/packages/...
     Optional = typing.Optional
         Optional[X] is equivalent to Union[X, None].
 
@@ -122,6 +121,9 @@ DATA
 
         - You cannot subclass or instantiate a union.
         - You can use Optional[X] as a shorthand for Union[X, None].
+
+VERSION
+    0.1.0
 
 FILE
     <project-location>/packages/requirements/lib/policy_utils.py

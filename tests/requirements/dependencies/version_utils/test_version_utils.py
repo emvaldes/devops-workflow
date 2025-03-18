@@ -50,7 +50,7 @@ import pytest
 import subprocess
 import random
 import string
-import importlib.metadata  # ✅ Use metadata to get the actual installed version
+import importlib.metadata  # Use metadata to get the actual installed version
 
 from unittest.mock import patch, ANY
 from pathlib import Path
@@ -76,8 +76,8 @@ def generate_random_package():
 #     (generate_random_package(), None),  # Use a dynamically generated non-existent package
 # ])
 @pytest.mark.parametrize("package, installed_version", [
-    ("requests", importlib.metadata.version("requests")),  # ✅ Dynamically fetch installed version
-    (generate_random_package(), None),  # ✅ Still test non-existent package
+    ("requests", importlib.metadata.version("requests")),  # Dynamically fetch installed version
+    (generate_random_package(), None),  # Still test non-existent package
 ])
 def test_installed_version(package, installed_version, requirements_config):
     """

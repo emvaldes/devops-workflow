@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
 # File: ./lib/parsing_userinput.py
+
+__package__ = "lib"
+__module__ = "parsing_userinput"
+
 __version__ = "0.1.0"  ## Package version
+
+#-------------------------------------------------------------------------------
 
 # Standard library imports - Core system and OS interaction modules
 import sys
@@ -14,8 +20,12 @@ import logging
 # Standard library imports - File system-related module
 from pathlib import Path
 
+#-------------------------------------------------------------------------------
+
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+#-------------------------------------------------------------------------------
 
 def request_input(
     prompt: str,
@@ -41,6 +51,8 @@ def request_input(
         print("\nERROR: Input interrupted by user. Exiting cleanly.")
         exit(1)
 
+#-------------------------------------------------------------------------------
+
 def user_interview(
     arguments_config: dict,
     missing_vars: list
@@ -55,6 +67,8 @@ def user_interview(
                 logging.debug(f'Prompting user for: {var} - Default: {default_value}')
                 user_inputs[var] = request_input(prompt_message, required=True, default=default_value)
     return user_inputs
+
+#-------------------------------------------------------------------------------
 
 def parse_and_collect_user_inputs(
     arguments_config_path: str,
@@ -80,12 +94,18 @@ def parse_and_collect_user_inputs(
     logging.info("No missing required environment variables. Proceeding without user interaction.")
     return {}
 
+#-------------------------------------------------------------------------------
+
 def main() -> None:
     pass
+
+#-------------------------------------------------------------------------------
 
 # Load documentation dynamically and apply module, function and objects docstrings
 from lib.pydoc_loader import load_pydocs
 load_pydocs(__file__, sys.modules[__name__])
+
+#-------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()

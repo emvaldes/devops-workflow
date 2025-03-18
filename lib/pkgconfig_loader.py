@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
 # File: ./lib/pkgconfig_loader.py
+
+__package__ = "lib"
+__module__ = "pkgconfig_loader"
+
 __version__ = "0.1.0"  ## Package version
+
+#-------------------------------------------------------------------------------
 
 # Standard library imports - Core system and OS interaction modules
 import os
@@ -20,8 +26,12 @@ from pathlib import Path
 # Standard library imports - Type hinting (kept in a separate group)
 from typing import Optional, Union
 
+#-------------------------------------------------------------------------------
+
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+#-------------------------------------------------------------------------------
 
 from system_variables import (
     project_root,
@@ -32,9 +42,7 @@ from system_variables import (
     category
 )
 
-# Generate unique timestamp for log filename (avoiding collisions)
-# timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')[:-3]
-timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+#-------------------------------------------------------------------------------
 
 def config_logfile(
     config: dict,
@@ -48,6 +56,8 @@ def config_logfile(
     else:
         return logs_dirname / f'{config["logging"]["package_name"]}_{timestamp}.log'
 
+#-------------------------------------------------------------------------------
+
 def package_configs(
     overrides: Optional[dict] = None
 ) -> dict:
@@ -58,14 +68,12 @@ def package_configs(
         if config_file.exists():
             with open(config_file, "r") as f:
                 return json.load(f)
-
         # print( f'Config File does not exists: {Path(config_file).stem}.json' )
         # Default configuration if JSON file is missing
         module_name = Path(__file__).stem
         package_name = Path(__file__).resolve().parent.name
         logs_dirname = str(project_logs / package_name)
         # log_timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-
         config = {
             "colors": {
                 category.calls.id    : category.calls.color,     # Green
@@ -114,17 +122,16 @@ def package_configs(
                     config[key].update(value)  # Merge nested dictionaries
                 else:
                     config[key] = value  # Add new keys
-
         # Generate log file path
         config["logging"]["log_filename"] = str(config_logfile(config))  # Generate the log file path
         # print( f'Config Type:   {type( config )}' )
         # print( f'Config Object: {json.dumps(config, indent=default_indent)}' )
-
         return config
-
     except (FileNotFoundError, json.JSONDecodeError) as e:
         print(f'Error loading {config_file}: {e}')
         sys.exit(1)
+
+#-------------------------------------------------------------------------------
 
 def setup_configs(
     absolute_path: Path,
@@ -136,40 +143,31 @@ def setup_configs(
     caller_path = sys._getframe(1).f_globals.get("__file__", None)
     if caller_path is None:
         raise RuntimeError("Cannot determine calling module's file path. Ensure this function is called within a script, not an interactive shell.")
-
     # Convert to Path object before extracting details
     caller_path = Path(caller_path).resolve()
-
     # Identify the package directory and name
     package_path = caller_path.parent
     package_name = package_path.name
-
     # Coller-specific location and naming
     if logname_override:
         module_name = logname_override
-
     # Check if given_path is in the hierarchy of check_path
     if project_packages in absolute_path.parents:
         module_name = absolute_path.relative_to(project_packages)
     package_name = module_name.parent
     module_name = module_name.stem
-
     # print(f'Package Name: {package_name}\nModule Name: {module_name}')
-
     target_filename = absolute_path.stem
     # Determine expected configuration file path (stored in the package)
     config_file = Path(absolute_path.parent / f'{target_filename}.json')
     # print(f'\nConfig File: {config_file}')
-
     if not config_file.exists():
         # Ensure the parent directories exist
         config_file.parent.mkdir(parents=True, exist_ok=True)
         # Create the file if it does not exist
         config_file.touch(exist_ok=True)
         # print(f'Config File "{config_file}" created successfully.')
-
     config = None  # Default state if the file doesn't exist or is invalid
-
     if config_file.exists():
         try:
             # Try to open and read the file
@@ -195,10 +193,8 @@ def setup_configs(
         except (OSError, IOError) as e:
             print(f'Unable to read {config_file}: {e}')
             config = None  # Proceed to regenerate or handle as needed
-
     if config is None:
         config = package_configs()  # Call `package_configs()` to create a base config
-
     # Default event settings
     default_events = config["events"]
     # Transform `events` into the proper format
@@ -216,13 +212,11 @@ def setup_configs(
         config["events"] = {**default_events, **events}
     else:
         raise ValueError("Invalid `events` format. Must be None, bool, list, or dict.")
-
     # Ensure the "logging" section is properly updated
     logs_dirname = project_logs / package_name
     logs_dirname.mkdir(parents=True, exist_ok=True)  # Ensure log directory exists
     target_logfile = logs_dirname.relative_to(project_root) / module_name
     # print( logs_dirname, target_logfile )
-
     config["logging"].update({
         "package_name": str(package_name),
         "module_name": str(module_name),
@@ -230,26 +224,35 @@ def setup_configs(
         "log_filename": str(f'{target_logfile}.log')      # Relative path
     })
     # print(json.dumps(config, indent=4))
-
     # Update "updated" timestamp only if modifications were needed
     config["stats"]["updated"] = datetime.now(timezone.utc).isoformat()
     # Save the modified configuration to disk in the correct package location
     with open(config_file, "w") as f:
         json.dump(config, f, indent=default_indent)
     # print(f'Configuration updated: {config_file}')
-
     # Config -> Logging -> Log Filename (current log-file)
     config["logging"]["log_filename"] = str(f'{target_logfile}_{timestamp}.log')
     # print(json.dumps(config, indent=4))
-
     return config
+
+#-------------------------------------------------------------------------------
+
+# Generate unique timestamp for log filename (avoiding collisions)
+# timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')[:-3]
+timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+
+#-------------------------------------------------------------------------------
 
 def main() -> None:
     pass
 
+#-------------------------------------------------------------------------------
+
 # Load documentation dynamically and apply module, function and objects docstrings
 from lib.pydoc_loader import load_pydocs
 load_pydocs(__file__, sys.modules[__name__])
+
+#-------------------------------------------------------------------------------
 
 if __name__ == "__main__":
 

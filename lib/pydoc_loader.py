@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
 # Python File: ./lib/pydoc_loader.py
+
+__package__ = "lib"
+__module__ = "pydoc_loader"
+
 __version__ = "0.1.0"  # Documentation version
+
+#-------------------------------------------------------------------------------
 
 """
 File Path: ./lib/pydoc_loader.py
@@ -55,6 +61,8 @@ Exit Codes:
     - 1: Error encountered during documentation loading.
 """
 
+#-------------------------------------------------------------------------------
+
 # Standard library imports - Core system module
 import sys
 import importlib.util
@@ -66,10 +74,17 @@ from pathlib import Path
 from types import ModuleType
 from typing import Dict
 
+#-------------------------------------------------------------------------------
+
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-def load_pydocs(script_path: str, module: ModuleType) -> None:
+#-------------------------------------------------------------------------------
+
+def load_pydocs(
+    script_path: str,
+    module: ModuleType
+) -> None:
     """
     Function: load_pydocs(script_path: str, module: ModuleType) -> None
     Description:
@@ -93,31 +108,29 @@ def load_pydocs(script_path: str, module: ModuleType) -> None:
     script_name = Path(script_path).stem
     pydoc_dir = Path(script_path).resolve().parent / ".pydocs"
     pydoc_path = pydoc_dir / f"pydoc.{script_name}.py"
-
     if not pydoc_path.exists():
         print(f"⚠️ No .pydoc file found at {pydoc_path}.")
         return
-
     try:
         spec = importlib.util.spec_from_file_location(f"pydoc_{script_name}", str(pydoc_path))
-
         if spec is None or spec.loader is None:
             raise ImportError(f"⚠️ Could not load {pydoc_path}")
-
         pydoc_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(pydoc_module)
-
         # Assign module docstring
         module.__doc__ = getattr(pydoc_module, "MODULE_DOCSTRING", "No module documentation available.")
-
         # Apply function and variable docstrings
         apply_docstrings(module, getattr(pydoc_module, "FUNCTION_DOCSTRINGS", {}))
         apply_variable_docstrings(module, getattr(pydoc_module, "VARIABLE_DOCSTRINGS", {}))
-
     except Exception as e:
         print(f"Failed to load .pydoc file: {e}")
 
-def apply_docstrings(module: ModuleType, function_docs: Dict[str, str]) -> None:
+#-------------------------------------------------------------------------------
+
+def apply_docstrings(
+    module: ModuleType,
+    function_docs: Dict[str, str]
+) -> None:
     """
     Function: apply_docstrings(module: ModuleType, function_docs: Dict[str, str]) -> None
     Description:
@@ -137,14 +150,18 @@ def apply_docstrings(module: ModuleType, function_docs: Dict[str, str]) -> None:
     if not isinstance(module, ModuleType):
         print("⚠️ Invalid module provided for docstring application.")
         return
-
     for func_name, docstring in function_docs.items():
         if hasattr(module, func_name):
             getattr(module, func_name).__doc__ = docstring
         # else:
-        #     print(f"⚠️ Function {func_name} not found in module {module.__name__}.")
+        #     print(f"Function {func_name} not found in module {module.__name__}.")
 
-def apply_variable_docstrings(module: ModuleType, variable_docs: Dict[str, str]) -> None:
+#-------------------------------------------------------------------------------
+
+def apply_variable_docstrings(
+    module: ModuleType,
+    variable_docs: Dict[str, str]
+) -> None:
     """
     Function: apply_variable_docstrings(module: ModuleType, variable_docs: Dict[str, str]) -> None
     Description:
@@ -165,13 +182,14 @@ def apply_variable_docstrings(module: ModuleType, variable_docs: Dict[str, str])
 
     global VARIABLE_DOCSTRINGS
     VARIABLE_DOCSTRINGS = {}  # Store variable docstrings here
-
     for var_name, docstring in variable_docs.items():
         if hasattr(module, var_name):
             obj = getattr(module, var_name)
             VARIABLE_DOCSTRINGS[var_name] = docstring  # Safe for all variable types
         # else:
-        #     print(f"⚠️ Variable {var_name} not found in module {module.__name__}.")
+        #     print(f"Variable {var_name} not found in module {module.__name__}.")
+
+#-------------------------------------------------------------------------------
 
 def main() -> None:
     """
@@ -181,6 +199,8 @@ def main() -> None:
     """
 
     pass
+
+#-------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()

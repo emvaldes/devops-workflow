@@ -1,5 +1,5 @@
 Name                        Stmts   Miss Branch BrPart  Cover
 -------------------------------------------------------------
-lib/manage_accesstoken.py      23     23      2      0     0%
+lib/manage_accesstoken.py      25     25      2      0     0%
 -------------------------------------------------------------
-TOTAL                          23     23      2      0     0%
+TOTAL                          25     25      2      0     0%

@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
 # File: ./lib/argument_parser.py
+
+__package__ = "lib"
+__module__ = "argument_parser"
+
 __version__ = "0.1.0"  ## Package version
+
+#-------------------------------------------------------------------------------
 
 # Standard library imports - Core system modules
 import sys
@@ -18,12 +24,18 @@ from pathlib import Path
 # Standard library imports - Type hinting (should be in a separate group)
 from typing import Any, Dict
 
+#-------------------------------------------------------------------------------
+
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+#-------------------------------------------------------------------------------
 
 from lib.system_variables import (
     system_params_filepath
 )
+
+#-------------------------------------------------------------------------------
 
 def load_argument_config() -> Dict[str, Any]:
 
@@ -43,6 +55,8 @@ def load_argument_config() -> Dict[str, Any]:
     except Exception as e:
         raise RuntimeError(f'ERROR: Unable to read "{system_params_filepath}". Details: {e}')
 
+#-------------------------------------------------------------------------------
+
 def convert_types(
     kwargs: Dict[str, Any]
 ) -> Dict[str, Any]:
@@ -54,6 +68,8 @@ def convert_types(
     elif "type" in kwargs and kwargs["type"] in type_mapping:
         kwargs["type"] = type_mapping[kwargs["type"]]
     return kwargs
+
+#-------------------------------------------------------------------------------
 
 def parse_arguments__prototype(
     context: Dict[str, Any] = None,
@@ -82,6 +98,8 @@ def parse_arguments__prototype(
         print(json.dumps(vars(args), indent=4))
     return args
 
+#-------------------------------------------------------------------------------
+
 def parse_arguments(
     args: Dict[str, Any]
 ) -> argparse.Namespace:
@@ -93,9 +111,7 @@ def parse_arguments(
         "float": float,
         "bool": bool
     }
-
     # print(f'System Parameters (loaded): {json.dumps(args, indent=4)}')
-
     parsed_args = {}  # Store parsed arguments manually
     for section, section_data in args.items():
         if "options" in section_data:
@@ -128,8 +144,9 @@ def parse_arguments(
     # Log any unknown arguments that were ignored
     if unknown:
         logging.warning(f'Unknown CLI arguments ignored: {unknown}')
-
     return args
+
+#-------------------------------------------------------------------------------
 
 def main() -> None:
 
@@ -137,9 +154,13 @@ def main() -> None:
     print("\nArgument parsing completed successfully.")
     print(json.dumps(vars(args), indent=4))
 
+#-------------------------------------------------------------------------------
+
 # Load documentation dynamically and apply module, function and objects docstrings
 from lib.pydoc_loader import load_pydocs
 load_pydocs(__file__, sys.modules[__name__])
+
+#-------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()

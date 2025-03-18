@@ -1,5 +1,5 @@
 Name                      Stmts   Miss Branch BrPart  Cover
 -----------------------------------------------------------
-lib/configure_params.py     140    140     38      0     0%
+lib/configure_params.py     142    142     38      0     0%
 -----------------------------------------------------------
-TOTAL                       140    140     38      0     0%
+TOTAL                       142    142     38      0     0%

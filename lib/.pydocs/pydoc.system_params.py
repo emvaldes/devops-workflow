@@ -16,6 +16,8 @@ Core Features:
     - **Runtime Parameter Validation**: Ensures required parameters are available before execution.
     - **Logging and Error Handling**: Provides structured logging for debugging and troubleshooting.
     - **Automatic File Creation**: Generates missing configuration files when necessary.
+    - **Runtime Parameter Merging**: Merges multiple sources of runtime parameters dynamically.
+    - **Configuration Synchronization**: Ensures runtime parameters are consistent with system parameters.
 
 Usage:
     Loading Runtime Configuration:
@@ -36,7 +38,7 @@ Dependencies:
     - json - Loads, parses, and validates configuration data.
     - logging - Provides structured logging for debugging and execution tracking.
     - dotenv (load_dotenv) - Loads environment variables from a `.env` file.
-    - typing (Optional) - Defines flexible function return types.
+    - typing (Any, Dict, Optional, Union) - Defines flexible function return types.
     - pathlib - Ensures safe and platform-independent file path resolution.
 
 Global Behavior:
@@ -44,6 +46,7 @@ Global Behavior:
     - Validates that all required system parameters are available.
     - Generates missing configuration files when needed.
     - Ensures environment variables are set correctly.
+    - Synchronizes runtime parameters with system parameters.
 
 CLI Integration:
     This module is primarily used as an internal component but can be executed manually for debugging.
@@ -63,24 +66,32 @@ Exit Codes:
 
 FUNCTION_DOCSTRINGS = {
     "load_json_config": """
-    Function: load_json_config(runtime_params_filepath: Path) -> dict
+    Function: load_json_config(json_filepath: str, validation_schema: Optional[dict] = None) -> Union[bool, dict]
     Description:
-        Loads a JSON configuration file and validates its contents.
+        Loads a JSON configuration file and validates its contents against an optional schema.
 
     Parameters:
-        - runtime_params_filepath (Path): Path to the JSON configuration file.
+        - json_filepath (str): Path to the JSON configuration file.
+        - validation_schema (Optional[dict]): Optional schema for validating the loaded JSON structure.
 
     Returns:
-        - dict: The parsed configuration dictionary.
+        - Union[bool, dict]: The parsed configuration dictionary if successful, False otherwise.
 
     Behavior:
-        - Reads the specified JSON file.
-        - Ensures the file is not empty and contains valid JSON.
-        - Returns the parsed configuration dictionary.
+        - Reads the specified JSON file and ensures it is not empty.
+        - Optionally validates the parsed JSON data against a provided schema.
+        - Returns the parsed configuration dictionary or False on failure.
 
     Error Handling:
-        - Raises ValueError if the JSON file is empty or malformed.
-        - Raises RuntimeError if the file cannot be read.
+        - Prints error messages for missing, empty, or malformed JSON files.
+        - Returns False if validation fails.
+
+    Sub-function:
+        _validate_json(data: dict, validation_schema: Optional[dict], parent_key: str = '') -> bool
+        - Validates the parsed JSON data against the provided schema.
+        - Ensures required keys exist and values match expected types.
+        - Prints error messages for missing keys or incorrect types.
+        - Returns True if the validation passes, False otherwise.
     """,
     "get_runtime_variable": """
     Function: get_runtime_variable(name: str, required: bool = False) -> Optional[str]
@@ -110,8 +121,8 @@ FUNCTION_DOCSTRINGS = {
         - runtime_params_filepath (Path): The file path of the runtime parameters JSON.
 
     Behavior:
-        - Ensures the runtime parameters file exists.
-        - Checks that the file is non-empty and contains valid JSON.
+        - Ensures the runtime parameters file exists and is non-empty.
+        - Checks that the file contains valid JSON data.
 
     Error Handling:
         - Raises FileNotFoundError if the file is missing.
@@ -120,8 +131,13 @@ FUNCTION_DOCSTRINGS = {
     "main": """
     Function: main() -> None
     Description:
-        Placeholder function for module execution.
-    """,
+        Main entry point for executing system parameter initialization and validation.
+
+    Behavior:
+        - Ensures runtime parameters file exists or generates it dynamically.
+        - Calls `configure_params()` to generate runtime parameters.
+        - Logs execution steps and handles errors appropriately.
+    """
 }
 
 VARIABLE_DOCSTRINGS = {
@@ -145,4 +161,9 @@ VARIABLE_DOCSTRINGS = {
     - Type: Path
     - Usage: Serves as a fallback configuration file.
     """,
+    "validation_schema": """
+    - Description: JSON schema used for validating loaded configuration data.
+    - Type: dict
+    - Usage: Ensures that JSON files adhere to a predefined structure before processing.
+    """
 }

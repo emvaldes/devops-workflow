@@ -115,9 +115,6 @@ FUNCTIONS
             args = parse_arguments()
             print(args.module)  # Accessing the provided module name
 
-DATA
-    LIB_DIR = PosixPath('<project-location>/lib')
-
 VERSION
     0.1.0
 

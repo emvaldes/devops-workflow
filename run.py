@@ -2,8 +2,12 @@
 
 # File: ./run.py
 
+__package__ = "devops"
 __module__ = "run"
+
 __version__ = "0.1.0"  # Module version
+
+#-------------------------------------------------------------------------------
 
 # Standard library imports - Core system and OS interaction modules
 import os
@@ -24,15 +28,7 @@ from pathlib import Path
 import coverage
 import pytest
 
-## Define base directories
-LIB_DIR = Path(__file__).resolve().parent / "lib"
-if str(LIB_DIR) not in sys.path:
-    sys.path.insert(0, str(LIB_DIR))  # Dynamically add `lib/` to sys.path only if not present
-
-## Debugging: Print sys.path to verify import paths
-# print("\n[DEBUG] sys.path contains:")
-# for path in sys.path:
-#     print(f'  - {path}')
+#-------------------------------------------------------------------------------
 
 ## Setup logging configuration
 # logging.basicConfig(level=logging.INFO)
@@ -40,10 +36,15 @@ if str(LIB_DIR) not in sys.path:
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+#-------------------------------------------------------------------------------
+
 from lib import pydoc_generator as pydoc_engine
 from lib import system_variables as environment
+
 from packages.appflow_tracer import tracing
 from packages.appflow_tracer.lib import log_utils
+
+#-------------------------------------------------------------------------------
 
 def collect_files(
     target_dir: str,
@@ -54,9 +55,7 @@ def collect_files(
     target_path = Path(target_dir).resolve()
     if not target_path.is_dir():
         raise ValueError(f"Error: {target_dir} is not a valid directory.")
-
     ignore_set = set(ignore_list) if ignore_list else set()  # Convert to set for faster lookups
-
     # Collect only non-empty matching files
     files = [
         str(file.resolve())
@@ -65,7 +64,10 @@ def collect_files(
         if file.stat().st_size > 0  # Ensure file is not empty
         and not any(file.match(pattern) for pattern in ignore_set)  # Ignore files in `ignore_list`
     ]
+
     return files
+
+#-------------------------------------------------------------------------------
 
 def parse_arguments() -> argparse.Namespace:
 
@@ -91,6 +93,8 @@ def parse_arguments() -> argparse.Namespace:
         help="Execute target Package/Module or Script"
     )
     return parser.parse_args()
+
+#-------------------------------------------------------------------------------
 
 def main():
 
@@ -149,7 +153,6 @@ def main():
             extensions=file_extensions,
             ignore_list=ignore_list
         )
-
         pydoc_engine.create_pydocs(
             project_path=project_path,
             base_path=base_path,
@@ -252,9 +255,13 @@ def main():
     #     configs=CONFIGS
     # )
 
+#-------------------------------------------------------------------------------
+
 # Load documentation dynamically and apply module, function and objects docstrings
 from lib.pydoc_loader import load_pydocs
 load_pydocs(__file__, sys.modules[__name__])
+
+#-------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()

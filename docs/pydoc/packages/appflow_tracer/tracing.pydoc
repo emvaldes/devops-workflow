@@ -479,11 +479,11 @@ FUNCTIONS
 
 DATA
     CONFIGS = None
-    LIB_DIR = PosixPath('<project-location>/lib')
     LOGGING = None
     Optional = typing.Optional
         Optional[X] is equivalent to Union[X, None].
 
+    ROOT_DIR = PosixPath('<project-location>')
     Union = typing.Union
         Union type; Union[X, Y] means either X or Y.
 

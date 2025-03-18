@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
 # File: ./lib/manage_accesstoken.py
+
+__package__ = "lib"
+__module__ = "manage_accesstoken"
+
 __version__ = "0.1.0"  ## Package version
+
+#-------------------------------------------------------------------------------
 
 # Standard library imports - Core system module
 import sys
@@ -9,13 +15,19 @@ import sys
 # Standard library imports - File system-related module
 from pathlib import Path
 
+#-------------------------------------------------------------------------------
+
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+#-------------------------------------------------------------------------------
 
 # from lib import system_params
 from lib.timezone_localoffset import get_local_offset
 from lib.accesstoken_expiration import print_token_expiration
 from lib.argument_parser import parse_arguments
+
+#-------------------------------------------------------------------------------
 
 def manage_accesstoken() -> None:
 
@@ -39,6 +51,8 @@ def manage_accesstoken() -> None:
         )
         sys.exit(1)
 
+#-------------------------------------------------------------------------------
+
 def main() -> None:
 
     # args = parse_arguments(
@@ -49,7 +63,6 @@ def main() -> None:
     # globals.DEBUG_MODE = args.debug
     # globals.VERBOSE_MODE = args.verbose
     # manage_accesstoken()
-
     args = parse_arguments(
         context=["debug", "verbose"],
         description="Azure session and token expiration management."
@@ -58,9 +71,13 @@ def main() -> None:
     verbose_mode = args.verbose
     manage_accesstoken(debug_mode, verbose_mode)
 
+#-------------------------------------------------------------------------------
+
 # Load documentation dynamically and apply module, function and objects docstrings
 from lib.pydoc_loader import load_pydocs
 load_pydocs(__file__, sys.modules[__name__])
+
+#-------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()

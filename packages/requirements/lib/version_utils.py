@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
 # File: ./packages/requirements/lib/version_utils.py
-# Version: 0.1.0
+
+__package__ = "packages.requirements.lib"
+__module__ = "version_utils"
+
+__version__ = "0.1.0"  ## Package version
+
+#-------------------------------------------------------------------------------
 
 # Standard library imports - Core system and OS interaction modules
 import sys
@@ -29,36 +35,30 @@ from pathlib import Path
 # Standard library imports - Type hinting (kept in a separate group)
 from typing import Optional, Union
 
-# Define base directories
-LIB_DIR = Path(__file__).resolve().parent.parent.parent / "lib"
-if str(LIB_DIR) not in sys.path:
-    sys.path.insert(0, str(LIB_DIR))  # Dynamically add `lib/` to sys.path only if not present
-
-# # Debugging: Print sys.path to verify import paths
-# print("\n[DEBUG] sys.path contains:")
-# for path in sys.path:
-#     print(f'  - {path}')
+#-------------------------------------------------------------------------------
 
 # Ensure the current directory is added to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+#-------------------------------------------------------------------------------
+
 from lib import system_variables as environment
 from packages.appflow_tracer.lib import log_utils
-
 from . import brew_utils
 
 # ------------------------------------------------------
 
-def latest_version(package: str, configs: dict) -> Optional[str]:
+def latest_version(
+    package: str,
+    configs: dict
+) -> Optional[str]:
 
     env_info = configs.get("environment", {})
     install_method = env_info.get("INSTALL_METHOD")
-
     # Default: Always check Pip first
     latest_pip_version = pip_latest_version(package)
     if latest_pip_version:
         return latest_pip_version  # Return immediately if Pip has it
-
     # Dispatch to correct package manager
     match install_method:
         case "brew":
@@ -67,12 +67,13 @@ def latest_version(package: str, configs: dict) -> Optional[str]:
             return linux_latest_version(package)
         case "microsoft_store":
             return windows_latest_version(package)
-
     return None  # No version found
 
 ## -----------------------------------------------------------------------------
 
-def linux_version(package: str) -> Optional[str]:
+def linux_version(
+    package: str
+) -> Optional[str]:
 
     try:
         result = subprocess.run(
@@ -86,7 +87,6 @@ def linux_version(package: str) -> Optional[str]:
                 return line.split(":")[1].strip()
     except (FileNotFoundError, subprocess.CalledProcessError):
         pass  # DPKG not found or package missing, try RPM
-
     try:
         result = subprocess.run(
             [ "rpm", "-q", package ],
@@ -100,7 +100,9 @@ def linux_version(package: str) -> Optional[str]:
 
 ## -----------------------------------------------------------------------------
 
-def linux_latest_version(package: str) -> Optional[str]:
+def linux_latest_version(
+    package: str
+) -> Optional[str]:
 
     try:
         result = subprocess.run(
@@ -113,7 +115,6 @@ def linux_latest_version(package: str) -> Optional[str]:
             return result.stdout.splitlines()[0].split("|")[1].strip()  # Extract version
     except FileNotFoundError:
         pass  # Try DNF if APT is unavailable
-
     try:
         result = subprocess.run(
             [ "dnf", "list", "available", package ],
@@ -128,7 +129,9 @@ def linux_latest_version(package: str) -> Optional[str]:
 
 # ------------------------------------------------------
 
-def windows_version(package: str) -> Optional[str]:
+def windows_version(
+    package: str
+) -> Optional[str]:
 
     try:
         result = subprocess.run(
@@ -144,7 +147,9 @@ def windows_version(package: str) -> Optional[str]:
 
 ## -----------------------------------------------------------------------------
 
-def windows_latest_version(package: str) -> Optional[str]:
+def windows_latest_version(
+    package: str
+) -> Optional[str]:
 
     try:
         result = subprocess.run(
@@ -159,13 +164,14 @@ def windows_latest_version(package: str) -> Optional[str]:
 
 ## -----------------------------------------------------------------------------
 
-def installed_version(package: str, configs: dict) -> Optional[str]:
+def installed_version(
+    package: str,
+    configs: dict
+) -> Optional[str]:
 
     env = configs.get("environment", {})
     install_method = env.get("INSTALL_METHOD")
-
     debug_package = f'[DEBUG]   Package "{package}"'
-
     # Check Pip First (Preferred)
     if not env.get("EXTERNALLY_MANAGED", False):  # Only check Pip if not externally managed
         try:
@@ -176,10 +182,8 @@ def installed_version(package: str, configs: dict) -> Optional[str]:
                 text=True,
                 check=True
             )
-
             installed_packages = json.loads(result.stdout)
             package_versions = {pkg["name"].lower(): pkg["version"] for pkg in installed_packages}
-
             if package.lower() in package_versions:
                 version = package_versions[package.lower()]
                 log_utils.log_message(
@@ -194,13 +198,11 @@ def installed_version(package: str, configs: dict) -> Optional[str]:
                     environment.category.debug.id,
                     configs=configs
                 )
-
         except (subprocess.CalledProcessError, json.JSONDecodeError) as e:
             log_utils.log_message(
                 f'[ERROR] Pip list failed: {e}',
                 configs=configs
             )
-
     # # If not found, fallback to `importlib.metadata.version()`
     # try:
     #     version = importlib.metadata.version(package)
@@ -224,12 +226,11 @@ def installed_version(package: str, configs: dict) -> Optional[str]:
     #         configs=configs
     #     )
     #     return "unknown"  # Avoid crash when 'Version' field is missing
-
     # try:
     #     version = importlib.metadata.version(package)
     #
-    #     if not version:  # ✅ Covers both None and empty string cases
-    #         raise importlib.metadata.PackageNotFoundError  # ✅ Raise the correct exception
+    #     if not version:  # Covers both None and empty string cases
+    #         raise importlib.metadata.PackageNotFoundError  # Raise the correct exception
     #
     #     log_utils.log_message(
     #         f'\n{debug_package} detected via importlib: {version}',
@@ -238,20 +239,17 @@ def installed_version(package: str, configs: dict) -> Optional[str]:
     #     )
     #     return version
     #
-    # except (importlib.metadata.PackageNotFoundError, KeyError):  # ✅ Catch both exceptions properly
+    # except (importlib.metadata.PackageNotFoundError, KeyError):  # Catch both exceptions properly
     #     log_utils.log_message(
     #         f'{debug_package} NOT found via importlib or missing version field.',
     #         environment.category.debug.id,
     #         configs=configs
     #     )
-    #     return None  # ✅ Ensures None is returned correctly
-
+    #     return None  # Ensures None is returned correctly
     try:
-        dist = importlib.metadata.distribution(package)  # ✅ Fetch distribution first
-
-        if "Version" in dist.metadata:  # ✅ Explicitly check if "Version" exists
+        dist = importlib.metadata.distribution(package)  # Fetch distribution first
+        if "Version" in dist.metadata:  # Explicitly check if "Version" exists
             version = dist.metadata["Version"]
-
             log_utils.log_message(
                 f'\n{debug_package} detected via importlib: {version}',
                 environment.category.debug.id,
@@ -264,16 +262,14 @@ def installed_version(package: str, configs: dict) -> Optional[str]:
                 environment.category.debug.id,
                 configs=configs
             )
-            return None  # ✅ Return None if "Version" is missing
-
+            return None  # Return None if "Version" is missing
     except importlib.metadata.PackageNotFoundError:
         log_utils.log_message(
             f'{debug_package} NOT found via importlib.',
             environment.category.debug.id,
             configs=configs
         )
-        return None  # ✅ Ensures proper return when package is missing
-
+        return None  # Ensures proper return when package is missing
     debug_checking = f'[DEBUG]   Checking "{package}"'
     # Use the correct package manager based on INSTALL_METHOD
     match install_method:
@@ -285,7 +281,6 @@ def installed_version(package: str, configs: dict) -> Optional[str]:
                 configs=configs
             )
             return version
-
         case "system":
             version = linux_version(package)
             log_utils.log_message(
@@ -294,7 +289,6 @@ def installed_version(package: str, configs: dict) -> Optional[str]:
                 configs=configs
             )
             return version
-
         case "microsoft_store":
             version = windows_version(package)
             log_utils.log_message(
@@ -303,19 +297,19 @@ def installed_version(package: str, configs: dict) -> Optional[str]:
                 configs=configs
             )
             return version
-
     error_package = f'[ERROR] Package "{package}"'
     log_utils.log_message(
         f'{error_package} was NOT found in any method!',
         environment.category.error.id,
         configs=configs
     )
-
     return None  # Package not found via any method
 
 ## -----------------------------------------------------------------------------
 
-def pip_latest_version(package: str) -> Optional[str]:
+def pip_latest_version(
+    package: str
+) -> Optional[str]:
 
     try:
         result = subprocess.run(
@@ -331,12 +325,18 @@ def pip_latest_version(package: str) -> Optional[str]:
     except subprocess.CalledProcessError:
         return None
 
+#-------------------------------------------------------------------------------
+
+def main() -> None:
+    pass
+
+#-------------------------------------------------------------------------------
+
 # Load documentation dynamically and apply module, function and objects docstrings
 from lib.pydoc_loader import load_pydocs
 load_pydocs(__file__, sys.modules[__name__])
 
-def main() -> None:
-    pass
+#-------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()
