@@ -1,6 +1,6 @@
 # GitHub CI/CD Automation Framework
 
-[![Pipeline - Requirements/Dependencies](https://github.com/emvaldes/devops-workflow/actions/workflows/pkgs.module-dependencies.yaml/badge.svg)](https://github.com/emvaldes/devops-workflow/actions/workflows/pkgs.module-dependencies.yaml)
+[![Pipeline - Requirements/Dependencies](https://github.com/emvaldes/devops-workflow/actions/workflows/pkgs.module-dependencies.yaml/badge.svg)](https://github.com/emvaldes/devops-workflow/actions/workflows/pkgs.module-dependencies.yaml)<br />
 [![Pipeline - AppFlow-Tracer/Tracing](https://github.com/emvaldes/devops-workflow/actions/workflows/pkgs.module-tracing.yaml/badge.svg)](https://github.com/emvaldes/devops-workflow/actions/workflows/pkgs.module-tracing.yaml)
 
 ## Overview
