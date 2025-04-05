@@ -1,5 +1,8 @@
 # GitHub CI/CD Automation Framework
 
+[![Pipeline - Requirements/Dependencies](https://github.com/emvaldes/devops-workflow/actions/workflows/pkgs.module-dependencies.yaml/badge.svg)](https://github.com/emvaldes/devops-workflow/actions/workflows/pkgs.module-dependencies.yaml)
+[![Pipeline - AppFlow-Tracer/Tracing](https://github.com/emvaldes/devops-workflow/actions/workflows/pkgs.module-tracing.yaml/badge.svg)](https://github.com/emvaldes/devops-workflow/actions/workflows/pkgs.module-tracing.yaml)
+
 ## Overview
 
 This repository contains a **comprehensive and highly flexible CI/CD automation framework** utilizing GitHub Actions. It is designed to streamline software delivery by automating key DevOps processes, ensuring robustness, efficiency, and scalability.
